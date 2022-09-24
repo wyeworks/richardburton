@@ -22,7 +22,6 @@ defmodule RichardBurtonWeb do
       use Phoenix.Controller, namespace: RichardBurtonWeb
 
       import Plug.Conn
-      import RichardBurtonWeb.Gettext
       alias RichardBurtonWeb.Router.Helpers, as: Routes
     end
   end
@@ -54,7 +53,6 @@ defmodule RichardBurtonWeb do
   def channel do
     quote do
       use Phoenix.Channel
-      import RichardBurtonWeb.Gettext
     end
   end
 
@@ -64,7 +62,6 @@ defmodule RichardBurtonWeb do
       import Phoenix.View
 
       import RichardBurtonWeb.ErrorHelpers
-      import RichardBurtonWeb.Gettext
       alias RichardBurtonWeb.Router.Helpers, as: Routes
     end
   end
