@@ -5,6 +5,16 @@ defmodule RichardBurton.TranslatedBook do
   use Ecto.Schema
   import Ecto.Changeset
 
+  @derive {Jason.Encoder,
+           only: [
+             :authors,
+             :country,
+             :original_authors,
+             :original_title,
+             :publisher,
+             :title,
+             :year
+           ]}
   schema "translated_books" do
     field :authors, :string
     field :country, :string
