@@ -48,11 +48,24 @@ defmodule RichardBurton.TranslatedBook do
       :publisher
     ])
     |> put_assoc(:original_book, original_book)
+    |> unique_constraint([
+      :authors,
+      :title,
+      :year,
+      :country,
+      :publisher
+    ])
   end
 
-  def insert(attrs) do
+  def maybe_insert(attrs) do
     %__MODULE__{}
     |> changeset(attrs)
-    |> Repo.insert()
+    |> Repo.maybe_insert(
+      authors: attrs.authors,
+      title: attrs.title,
+      year: attrs.year,
+      country: attrs.country,
+      publisher: attrs.publisher
+    )
   end
 end

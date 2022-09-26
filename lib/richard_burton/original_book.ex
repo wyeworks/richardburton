@@ -28,13 +28,6 @@ defmodule RichardBurton.OriginalBook do
   def maybe_insert(attrs) do
     %__MODULE__{}
     |> changeset(attrs)
-    |> Repo.insert()
-    |> case do
-      {:ok, book} ->
-        book
-
-      {:error, _} ->
-        Repo.get_by!(__MODULE__, authors: attrs.authors, title: attrs.title)
-    end
+    |> Repo.maybe_insert(authors: attrs.authors, title: attrs.title)
   end
 end
