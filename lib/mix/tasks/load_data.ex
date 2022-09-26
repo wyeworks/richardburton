@@ -49,5 +49,5 @@ defmodule Mix.Tasks.Rb.LoadData do
   end
 
   defp insert_all(entries),
-    do: Enum.map(entries, &TranslatedBook.insert/1)
+    do: Enum.map(entries, &TranslatedBook.maybe_insert/1)
 end
