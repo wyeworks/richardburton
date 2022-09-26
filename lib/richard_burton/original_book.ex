@@ -5,6 +5,7 @@ defmodule RichardBurton.OriginalBook do
   use Ecto.Schema
   import Ecto.Changeset
 
+  alias RichardBurton.Repo
   alias RichardBurton.TranslatedBook
 
   schema "original_books" do
@@ -17,9 +18,23 @@ defmodule RichardBurton.OriginalBook do
   end
 
   @doc false
-  def changeset(original_book, attrs) do
+  def changeset(original_book, attrs \\ %{}) do
     original_book
     |> cast(attrs, [:authors, :title])
     |> validate_required([:authors, :title])
+    |> unique_constraint([:authors, :title])
+  end
+
+  def maybe_insert(attrs) do
+    %__MODULE__{}
+    |> changeset(attrs)
+    |> Repo.insert()
+    |> case do
+      {:ok, book} ->
+        book
+
+      {:error, _} ->
+        Repo.get_by!(__MODULE__, authors: attrs.authors, title: attrs.title)
+    end
   end
 end

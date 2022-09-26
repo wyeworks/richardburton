@@ -5,6 +5,7 @@ defmodule RichardBurton.TranslatedBook do
   use Ecto.Schema
   import Ecto.Changeset
 
+  alias RichardBurton.Repo
   alias RichardBurton.OriginalBook
 
   @derive {Jason.Encoder,
@@ -28,23 +29,30 @@ defmodule RichardBurton.TranslatedBook do
   end
 
   @doc false
-  def changeset(translated_book, attrs) do
+  def changeset(translated_book, attrs \\ %{}) do
+    original_book = OriginalBook.maybe_insert(attrs.original_book)
+
     translated_book
     |> cast(attrs, [
       :title,
       :authors,
       :year,
       :country,
-      :publisher,
-      :original_id
+      :publisher
     ])
     |> validate_required([
       :title,
       :authors,
       :year,
       :country,
-      :publisher,
-      :original_id
+      :publisher
     ])
+    |> put_assoc(:original_book, original_book)
+  end
+
+  def insert(attrs) do
+    %__MODULE__{}
+    |> changeset(attrs)
+    |> Repo.insert()
   end
 end

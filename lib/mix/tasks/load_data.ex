@@ -5,6 +5,7 @@ defmodule Mix.Tasks.Rb.LoadData do
   use Mix.Task
 
   alias RichardBurton.Repo
+  alias RichardBurton.OriginalBook
   alias RichardBurton.TranslatedBook
 
   def run(_) do
@@ -26,23 +27,27 @@ defmodule Mix.Tasks.Rb.LoadData do
       ]
     )
     |> Enum.map(&deserialize/1)
-    |> insert_all_in_transaction
+    |> insert_all
   end
 
   defp deserialize(row) do
     {year, _} = Integer.parse(row.year)
 
-    %TranslatedBook{
+    original_book = %{
+      title: row.original_title,
+      authors: row.original_authors
+    }
+
+    %{
       title: row.title,
       authors: row.authors,
       year: year,
       country: row.country,
       publisher: row.publisher,
-      original_title: row.original_title,
-      original_authors: row.original_authors
+      original_book: original_book
     }
   end
 
-  defp insert_all(entries), do: Enum.map(entries, fn entry -> Repo.insert(entry) end)
-  defp insert_all_in_transaction(entries), do: Repo.transaction(fn -> insert_all(entries) end)
+  defp insert_all(entries),
+    do: Enum.map(entries, &TranslatedBook.insert/1)
 end
