@@ -13,7 +13,11 @@ config :richard_burton,
 # Configures the endpoint
 config :richard_burton, RichardBurtonWeb.Endpoint,
   url: [host: "localhost"],
-  render_errors: [view: RichardBurtonWeb.ErrorView, accepts: ~w(json), layout: false],
+  render_errors: [
+    view: RichardBurtonWeb.ErrorView,
+    accepts: ~w(json),
+    layout: false
+  ],
   pubsub_server: RichardBurton.PubSub,
   live_view: [signing_salt: "L5BIKL+B"]
 
