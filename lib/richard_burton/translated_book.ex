@@ -5,12 +5,12 @@ defmodule RichardBurton.TranslatedBook do
   use Ecto.Schema
   import Ecto.Changeset
 
+  alias RichardBurton.OriginalBook
+
   @derive {Jason.Encoder,
            only: [
              :authors,
              :country,
-             :original_authors,
-             :original_title,
              :publisher,
              :title,
              :year
@@ -18,11 +18,11 @@ defmodule RichardBurton.TranslatedBook do
   schema "translated_books" do
     field :authors, :string
     field :country, :string
-    field :original_authors, :string
-    field :original_title, :string
     field :publisher, :string
     field :title, :string
     field :year, :integer
+
+    belongs_to :original_book, OriginalBook
 
     timestamps()
   end
@@ -31,22 +31,20 @@ defmodule RichardBurton.TranslatedBook do
   def changeset(translated_book, attrs) do
     translated_book
     |> cast(attrs, [
-      :original_title,
-      :original_authors,
       :title,
       :authors,
       :year,
       :country,
-      :publisher
+      :publisher,
+      :original_id
     ])
     |> validate_required([
-      :original_title,
-      :original_authors,
       :title,
       :authors,
       :year,
       :country,
-      :publisher
+      :publisher,
+      :original_id
     ])
   end
 end
