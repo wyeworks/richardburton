@@ -1,6 +1,6 @@
 defmodule RichardBurton.OriginalBook do
   @moduledoc """
-  Model for original books
+  Schema for original books
   """
   use Ecto.Schema
   import Ecto.Changeset
@@ -28,6 +28,6 @@ defmodule RichardBurton.OriginalBook do
   def maybe_insert(attrs) do
     %__MODULE__{}
     |> changeset(attrs)
-    |> Repo.maybe_insert(authors: attrs.authors, title: attrs.title)
+    |> Repo.maybe_insert([:authors, :title])
   end
 end

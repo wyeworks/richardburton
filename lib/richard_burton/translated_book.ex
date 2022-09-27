@@ -1,29 +1,20 @@
 defmodule RichardBurton.TranslatedBook do
   @moduledoc """
-  Model for translated books
+  Schema for translated books
   """
   use Ecto.Schema
   import Ecto.Changeset
 
   alias RichardBurton.Repo
   alias RichardBurton.OriginalBook
+  alias RichardBurton.Publication
 
-  @derive {Jason.Encoder,
-           only: [
-             :authors,
-             :country,
-             :publisher,
-             :title,
-             :year
-           ]}
+  @derive {Jason.Encoder, only: [:authors]}
   schema "translated_books" do
     field :authors, :string
-    field :country, :string
-    field :publisher, :string
-    field :title, :string
-    field :year, :integer
 
     belongs_to :original_book, OriginalBook
+    has_many :publications, Publication
 
     timestamps()
   end
@@ -33,39 +24,15 @@ defmodule RichardBurton.TranslatedBook do
     original_book = OriginalBook.maybe_insert(attrs.original_book)
 
     translated_book
-    |> cast(attrs, [
-      :title,
-      :authors,
-      :year,
-      :country,
-      :publisher
-    ])
-    |> validate_required([
-      :title,
-      :authors,
-      :year,
-      :country,
-      :publisher
-    ])
+    |> cast(attrs, [:authors])
+    |> validate_required([:authors])
     |> put_assoc(:original_book, original_book)
-    |> unique_constraint([
-      :authors,
-      :title,
-      :year,
-      :country,
-      :publisher
-    ])
+    |> unique_constraint([:authors, :original_book_id])
   end
 
   def maybe_insert(attrs) do
     %__MODULE__{}
     |> changeset(attrs)
-    |> Repo.maybe_insert(
-      authors: attrs.authors,
-      title: attrs.title,
-      year: attrs.year,
-      country: attrs.country,
-      publisher: attrs.publisher
-    )
+    |> Repo.maybe_insert([:authors, :original_book])
   end
 end
