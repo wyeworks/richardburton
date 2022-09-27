@@ -9,7 +9,7 @@ defmodule RichardBurton.TranslatedBook do
   alias RichardBurton.OriginalBook
   alias RichardBurton.Publication
 
-  @derive {Jason.Encoder, only: [:authors]}
+  @derive {Jason.Encoder, only: [:authors, :publications, :original_book]}
   schema "translated_books" do
     field :authors, :string
 
@@ -34,5 +34,10 @@ defmodule RichardBurton.TranslatedBook do
     %__MODULE__{}
     |> changeset(attrs)
     |> Repo.maybe_insert([:authors, :original_book])
+  end
+
+  def all do
+    Repo.all(__MODULE__)
+    |> Repo.preload([:publications, :original_book])
   end
 end
