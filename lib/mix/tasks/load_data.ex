@@ -43,6 +43,6 @@ defmodule Mix.Tasks.Rb.LoadData do
     }
   end
 
-  defp insert_all(entries), do: entries |> Enum.map(fn entry -> Repo.insert(entry) end)
+  defp insert_all(entries), do: Enum.map(entries, fn entry -> Repo.insert(entry) end)
   defp insert_all_in_transaction(entries), do: Repo.transaction(fn -> insert_all(entries) end)
 end
