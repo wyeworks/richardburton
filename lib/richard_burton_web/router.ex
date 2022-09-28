@@ -7,6 +7,8 @@ defmodule RichardBurtonWeb.Router do
 
   scope "/api", RichardBurtonWeb do
     pipe_through :api
+
+    resources "/books/translated", TranslatedBookController, only: [:index]
   end
 
   # Enables LiveDashboard only for development
