@@ -6,6 +6,6 @@ defmodule RichardBurtonWeb.TranslatedBookController do
   alias RichardBurton.TranslatedBook
 
   def index(conn, _params) do
-    conn |> json(Repo.all(TranslatedBook))
+    json(conn, Repo.all(TranslatedBook))
   end
 end
