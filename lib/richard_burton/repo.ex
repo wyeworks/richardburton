@@ -3,20 +3,18 @@ defmodule RichardBurton.Repo do
     otp_app: :richard_burton,
     adapter: Ecto.Adapters.Postgres
 
-  def maybe_insert(changeset, keys) do
-    %module{} = changeset.data
-
+  def maybe_insert!(changeset, keys) do
     keyword_list_id =
       changeset.changes
       |> Enum.filter(fn {key, _val} -> Enum.member?(keys, key) end)
       |> Enum.map(&parse_keyword_list_id/1)
 
-    changeset
-    |> insert()
-    |> case do
-      {:ok, struct} -> struct
-      {:error, _} -> get_by!(module, keyword_list_id)
-    end
+    insert!(
+      changeset,
+      on_conflict: [set: keyword_list_id],
+      conflict_target: Keyword.keys(keyword_list_id),
+      returning: true
+    )
   end
 
   defp parse_keyword_list_id({key, %Ecto.Changeset{} = changeset}) do

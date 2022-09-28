@@ -26,9 +26,9 @@ defmodule RichardBurton.OriginalBook do
     |> unique_constraint([:authors, :title])
   end
 
-  def maybe_insert(attrs) do
+  def maybe_insert!(attrs) do
     %__MODULE__{}
     |> changeset(attrs)
-    |> Repo.maybe_insert([:authors, :title])
+    |> Repo.maybe_insert!([:authors, :title])
   end
 end
