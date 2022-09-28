@@ -21,7 +21,7 @@ defmodule RichardBurton.TranslatedBook do
 
   @doc false
   def changeset(translated_book, attrs \\ %{}) do
-    original_book = OriginalBook.maybe_insert(attrs.original_book)
+    original_book = OriginalBook.maybe_insert!(attrs.original_book)
 
     translated_book
     |> cast(attrs, [:authors])
@@ -30,10 +30,10 @@ defmodule RichardBurton.TranslatedBook do
     |> unique_constraint([:authors, :original_book_id])
   end
 
-  def maybe_insert(attrs) do
+  def maybe_insert!(attrs) do
     %__MODULE__{}
     |> changeset(attrs)
-    |> Repo.maybe_insert([:authors, :original_book])
+    |> Repo.maybe_insert!([:authors, :original_book])
   end
 
   def all do
