@@ -4,8 +4,6 @@ defmodule Mix.Tasks.Rb.LoadData do
   """
   use Mix.Task
 
-  alias RichardBurton.Repo
-  alias RichardBurton.OriginalBook
   alias RichardBurton.TranslatedBook
 
   def run(_) do
