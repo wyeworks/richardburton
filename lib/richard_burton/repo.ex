@@ -9,7 +9,7 @@ defmodule RichardBurton.Repo do
     changeset
     |> __MODULE__.insert()
     |> case do
-      {:ok, book} -> book
+      {:ok, struct} -> struct
       {:error, _} -> __MODULE__.get_by!(module, keys)
     end
   end
