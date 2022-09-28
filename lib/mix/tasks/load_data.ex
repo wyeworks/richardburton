@@ -27,7 +27,7 @@ defmodule Mix.Tasks.Rb.LoadData do
       ]
     )
     |> Enum.map(&deserialize/1)
-    |> insert_all
+    |> Enum.map(&TranslatedBook.maybe_insert/1)
   end
 
   defp deserialize(row) do
@@ -47,7 +47,4 @@ defmodule Mix.Tasks.Rb.LoadData do
       original_book: original_book
     }
   end
-
-  defp insert_all(entries),
-    do: Enum.map(entries, &TranslatedBook.maybe_insert/1)
 end
