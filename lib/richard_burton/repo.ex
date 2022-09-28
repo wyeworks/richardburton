@@ -7,10 +7,10 @@ defmodule RichardBurton.Repo do
     %module{} = changeset.data
 
     changeset
-    |> __MODULE__.insert()
+    |> insert()
     |> case do
       {:ok, struct} -> struct
-      {:error, _} -> __MODULE__.get_by!(module, keys)
+      {:error, _} -> get_by!(module, keys)
     end
   end
 end
