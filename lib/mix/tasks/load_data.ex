@@ -13,7 +13,7 @@ defmodule Mix.Tasks.Rb.LoadData do
     File.cwd!()
     |> Path.join('data.csv')
     |> File.stream!()
-    |> CSV.decode(
+    |> CSV.decode!(
       separator: ?;,
       headers: [
         :original_authors,
@@ -25,12 +25,9 @@ defmodule Mix.Tasks.Rb.LoadData do
         :publisher
       ]
     )
-    |> Enum.map(&clean/1)
     |> Enum.map(&deserialize/1)
     |> insert_all_in_transaction
   end
-
-  defp clean({:ok, row}), do: row
 
   defp deserialize(row) do
     {year, _} = Integer.parse(row.year)
