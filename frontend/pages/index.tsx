@@ -9,6 +9,7 @@ import {
   useFloating,
 } from "@floating-ui/react-dom-interactions";
 import Toggle from "components/Toggle";
+import Head from "next/head";
 
 const Home: NextPage = () => {
   const { data: translatedBooks } = useQuery<TranslatedBook[]>(
@@ -30,18 +31,22 @@ const Home: NextPage = () => {
   });
 
   return (
-    <div className="grid h-full p-8 mx-auto overflow-y-scroll gap-y-8 max-w-7xl">
-      <header className="space-y-2 text-center">
-        <h1 className="text-5xl">Richard Burton Platform</h1>
-        <h2 className="text-2xl">
-          A database about Brazilian literature in translation
-        </h2>
-      </header>
+    <>
+      <Head>
+        <title>Richard Burton</title>
+      </Head>
+      <div className="grid h-full p-8 mx-auto overflow-y-scroll gap-y-8 max-w-7xl">
+        <header className="space-y-2 text-center">
+          <h1 className="text-5xl">Richard Burton Platform</h1>
+          <h2 className="text-2xl">
+            A database about Brazilian literature in translation
+          </h2>
+        </header>
 
         <aside
           ref={floating}
           style={{ top: y ?? 0, left: x ?? 0, position: strategy }}
-          className="w-48 p-2 space-y-2 rounded"
+          className="p-2 space-y-2 rounded"
         >
           <Toggle label="Original title" />
           <Toggle label="Original authors" />
