@@ -3,6 +3,7 @@ import { useQuery } from "react-query";
 import { API } from "app";
 import {
   FlatPublication,
+  FlatPublicationKey,
   PUBLICATION_ATTRIBUTES,
   PUBLICATION_ATTRIBUTE_LABELS,
   TranslatedBook,
@@ -10,11 +11,13 @@ import {
 import PublicationIndex from "components/PublicationIndex";
 import {
   autoUpdate,
+  flip,
   offset,
   useFloating,
 } from "@floating-ui/react-dom-interactions";
 import Toggle from "components/Toggle";
 import Head from "next/head";
+import { useState } from "react";
 
 const toFlatPublication = (book: TranslatedBook): FlatPublication => {
   const [firstPublication] = book.publications;
@@ -33,6 +36,14 @@ const toFlatPublication = (book: TranslatedBook): FlatPublication => {
 const toFlatPublications = (books: TranslatedBook[]): FlatPublication[] => {
   return books.map(toFlatPublication);
 };
+
+const DEFAULT_COLUMNS: FlatPublicationKey[] = [
+  "originalAuthors",
+  "originalTitle",
+  "title",
+  "authors",
+  "year",
+];
 
 const Home: NextPage = () => {
   const { data: translatedBooks } = useQuery<TranslatedBook[]>(
@@ -53,6 +64,8 @@ const Home: NextPage = () => {
     whileElementsMounted: autoUpdate,
   });
 
+  const [columns, setColumns] = useState(new Set(DEFAULT_COLUMNS));
+
   return (
     <>
       <Head>
@@ -71,15 +84,31 @@ const Home: NextPage = () => {
           style={{ top: y ?? 0, left: x ?? 0, position: strategy }}
           className="p-2 space-y-2 rounded"
         >
-          {PUBLICATION_ATTRIBUTES.map((attribute) => (
-            <Toggle label={PUBLICATION_ATTRIBUTE_LABELS[attribute]} />
-          ))}
+          {PUBLICATION_ATTRIBUTES.map((attribute) => {
+            const isActive = columns.has(attribute);
+            const newColumns = new Set(columns);
+
+            if (isActive) {
+              newColumns.delete(attribute);
+            } else {
+              newColumns.add(attribute);
+            }
+
+            return (
+              <Toggle
+                key={attribute}
+                label={PUBLICATION_ATTRIBUTE_LABELS[attribute]}
+                startsChecked={isActive}
+                onChange={() => setColumns(newColumns)}
+              />
+            );
+          })}
         </aside>
         <main ref={reference} className="overflow-scroll">
           {translatedBooks ? (
             <PublicationIndex
               entries={toFlatPublications(translatedBooks)}
-              columns={PUBLICATION_ATTRIBUTES}
+              columns={columns}
             />
           ) : (
             "loading..."
