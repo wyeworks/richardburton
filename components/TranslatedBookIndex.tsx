@@ -10,6 +10,10 @@ const COUNTRIES: Record<string, string> = {
   NZ: "New Zealand",
 };
 
+const Header: FC<PropsWithChildren> = ({ children }) => {
+  return <th className="sticky top-0 py-2 bg-gray-100">{children}</th>;
+};
+
 const Column: FC<PropsWithChildren> = ({ children }) => {
   return <td className="max-w-xs px-2 py-1 truncate justify">{children}</td>;
 };
@@ -19,16 +23,16 @@ type Props = { entries: TranslatedBook[] };
 const TranslatedBookIndex: FC<Props> = ({ entries }) => {
   return (
     <table>
-      <thead>
-        <th>Original title</th>
-        <th>Original authors</th>
-        <th>Translators</th>
-        <th>Title</th>
-        <th>Year</th>
-        <th>Country</th>
-        <th>Publisher</th>
-      </thead>
       <tbody>
+        <tr>
+          <Header>Original title</Header>
+          <Header>Original authors</Header>
+          <Header>Translators</Header>
+          <Header>Title</Header>
+          <Header>Year</Header>
+          <Header>Country</Header>
+          <Header>Publisher</Header>
+        </tr>
         {entries.map(
           ({ authors, originalBook, publications: [firstPublication] }) => (
             <tr>
