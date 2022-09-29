@@ -1,8 +1,24 @@
-import '../styles/globals.css'
-import type { AppProps } from 'next/app'
+import "styles/globals.css";
+import type { AppProps } from "next/app";
+import { QueryClient, QueryClientProvider } from "react-query";
+import { FC } from "react";
+import axios from "axios";
+import axiosCaseConverter from "axios-case-converter";
 
-function MyApp({ Component, pageProps }: AppProps) {
-  return <Component {...pageProps} />
-}
+const queryClient = new QueryClient();
+const API = axiosCaseConverter(
+  axios.create({
+    baseURL: process.env.NEXT_PUBLIC_API_URL,
+  })
+);
 
-export default MyApp
+const App: FC<AppProps> = ({ Component, pageProps }) => {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <Component {...pageProps} />
+    </QueryClientProvider>
+  );
+};
+
+export { API };
+export default App;
