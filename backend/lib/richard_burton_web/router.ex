@@ -2,13 +2,13 @@ defmodule RichardBurtonWeb.Router do
   use RichardBurtonWeb, :router
 
   pipeline :api do
-    plug :accepts, ["json"]
+    plug(:accepts, ["json"])
   end
 
   scope "/api", RichardBurtonWeb do
-    pipe_through :api
+    pipe_through(:api)
 
-    resources "/books/translated", TranslatedBookController, only: [:index]
+    resources("/books/translated", TranslatedBookController, only: [:index])
   end
 
   # Enables LiveDashboard only for development
@@ -22,9 +22,9 @@ defmodule RichardBurtonWeb.Router do
     import Phoenix.LiveDashboard.Router
 
     scope "/" do
-      pipe_through [:fetch_session, :protect_from_forgery]
+      pipe_through([:fetch_session, :protect_from_forgery])
 
-      live_dashboard "/dashboard", metrics: RichardBurtonWeb.Telemetry
+      live_dashboard("/dashboard", metrics: RichardBurtonWeb.Telemetry)
     end
   end
 end
