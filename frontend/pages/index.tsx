@@ -60,7 +60,7 @@ const Home: NextPage = () => {
 
   const { reference, floating, x, y, strategy } = useFloating({
     placement: "right-start",
-    middleware: [offset(20)],
+    middleware: [offset(20), flip()],
     whileElementsMounted: autoUpdate,
   });
 
@@ -71,8 +71,8 @@ const Home: NextPage = () => {
       <Head>
         <title>Richard Burton</title>
       </Head>
-      <div className="grid h-full p-8 mx-auto overflow-y-scroll gap-y-8 max-w-7xl">
-        <header className="space-y-2 text-center">
+      <div className="flex flex-col h-full p-8 overflow-hidden gap-y-8 2xl:mx-auto max-w-7xl pr-52">
+        <header className="space-y-2 text-center ">
           <h1 className="text-5xl">Richard Burton Platform</h1>
           <h2 className="text-2xl">
             A database about Brazilian literature in translation
@@ -82,7 +82,7 @@ const Home: NextPage = () => {
         <aside
           ref={floating}
           style={{ top: y ?? 0, left: x ?? 0, position: strategy }}
-          className="p-2 space-y-2 rounded"
+          className="w-48 p-2 space-y-2 rounded"
         >
           {PUBLICATION_ATTRIBUTES.map((attribute) => {
             const isActive = columns.has(attribute);
@@ -104,7 +104,7 @@ const Home: NextPage = () => {
             );
           })}
         </aside>
-        <main ref={reference} className="overflow-scroll">
+        <main ref={reference} className="w-full overflow-scroll">
           {translatedBooks ? (
             <PublicationIndex
               entries={toFlatPublications(translatedBooks)}
