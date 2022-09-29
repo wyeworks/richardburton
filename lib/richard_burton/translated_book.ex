@@ -5,12 +5,13 @@ defmodule RichardBurton.TranslatedBook do
   use Ecto.Schema
   import Ecto.Changeset
 
+  alias RichardBurton.Repo
+  alias RichardBurton.OriginalBook
+
   @derive {Jason.Encoder,
            only: [
              :authors,
              :country,
-             :original_authors,
-             :original_title,
              :publisher,
              :title,
              :year
@@ -18,21 +19,21 @@ defmodule RichardBurton.TranslatedBook do
   schema "translated_books" do
     field :authors, :string
     field :country, :string
-    field :original_authors, :string
-    field :original_title, :string
     field :publisher, :string
     field :title, :string
     field :year, :integer
+
+    belongs_to :original_book, OriginalBook
 
     timestamps()
   end
 
   @doc false
-  def changeset(translated_book, attrs) do
+  def changeset(translated_book, attrs \\ %{}) do
+    original_book = OriginalBook.maybe_insert(attrs.original_book)
+
     translated_book
     |> cast(attrs, [
-      :original_title,
-      :original_authors,
       :title,
       :authors,
       :year,
@@ -40,13 +41,31 @@ defmodule RichardBurton.TranslatedBook do
       :publisher
     ])
     |> validate_required([
-      :original_title,
-      :original_authors,
       :title,
       :authors,
       :year,
       :country,
       :publisher
     ])
+    |> put_assoc(:original_book, original_book)
+    |> unique_constraint([
+      :authors,
+      :title,
+      :year,
+      :country,
+      :publisher
+    ])
+  end
+
+  def maybe_insert(attrs) do
+    %__MODULE__{}
+    |> changeset(attrs)
+    |> Repo.maybe_insert(
+      authors: attrs.authors,
+      title: attrs.title,
+      year: attrs.year,
+      country: attrs.country,
+      publisher: attrs.publisher
+    )
   end
 end
