@@ -22,7 +22,9 @@ type FlatPublication = Publication & {
   authors: TranslatedBook["authors"];
 };
 
-const PUBLICATION_ATTRIBUTES: (keyof FlatPublication)[] = [
+type FlatPublicationKey = keyof FlatPublication;
+
+const PUBLICATION_ATTRIBUTES: FlatPublicationKey[] = [
   "originalTitle",
   "originalAuthors",
   "title",
@@ -32,7 +34,7 @@ const PUBLICATION_ATTRIBUTES: (keyof FlatPublication)[] = [
   "publisher",
 ];
 
-const PUBLICATION_ATTRIBUTE_LABELS: Record<keyof FlatPublication, string> = {
+const PUBLICATION_ATTRIBUTE_LABELS: Record<FlatPublicationKey, string> = {
   authors: "Translators",
   originalAuthors: "Original Authors",
   originalTitle: "Original Title",
@@ -43,4 +45,4 @@ const PUBLICATION_ATTRIBUTE_LABELS: Record<keyof FlatPublication, string> = {
 };
 
 export { PUBLICATION_ATTRIBUTES, PUBLICATION_ATTRIBUTE_LABELS };
-export type { TranslatedBook, FlatPublication };
+export type { TranslatedBook, FlatPublication, FlatPublicationKey };

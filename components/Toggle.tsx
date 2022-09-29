@@ -2,13 +2,14 @@ import { FC, useState } from "react";
 import classNames from "classnames";
 import CheckIcon from "assets/check.svg";
 
-type Props = { label: string };
+type Props = { label: string; startsChecked: boolean; onChange: () => void };
 
-const Toggle: FC<Props> = ({ label }) => {
-  const [isChecked, setIsChecked] = useState(false);
+const Toggle: FC<Props> = ({ label, startsChecked, onChange }) => {
+  const [isChecked, setIsChecked] = useState(startsChecked);
 
   const handleClick = () => {
     setIsChecked((isChecked) => !isChecked);
+    onChange();
   };
 
   return (
