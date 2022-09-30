@@ -5,7 +5,7 @@ defmodule RichardBurton.Repo do
 
   def maybe_insert!(changeset, conflict_target) do
     unique_key = replace_unique_key_assocs_with_ids(conflict_target, changeset)
-    unique_key_values = get_unique_key_values(unique_key, changeset)
+    unique_key_values = get_unique_key_values(conflict_target, changeset)
     unique_key_with_values = Enum.zip(unique_key, unique_key_values)
 
     insert!(
@@ -34,7 +34,7 @@ defmodule RichardBurton.Repo do
   defp get_unique_key_values(unique_key, changeset) do
     Enum.map(unique_key, fn key ->
       case changeset.changes[key] do
-        %Ecto.Changeset{} -> changeset.data.id
+        %Ecto.Changeset{} -> changeset.changes[key].data.id
         _ -> changeset.changes[key]
       end
     end)
