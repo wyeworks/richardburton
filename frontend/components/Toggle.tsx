@@ -17,7 +17,7 @@ const Toggle: FC<Props> = ({ label, startsChecked, onChange }) => {
       className={classNames(
         "flex px-2 py-1 transition-colors rounded-lg font-base shadow-sm w-full text-left",
         isChecked
-          ? "bg-blue-500 hover:bg-blue-600 text-white"
+          ? "bg-indigo-600 hover:bg-indigo-700 text-white"
           : "bg-gray-100 hover:bg-gray-200"
       )}
       onClick={handleClick}
