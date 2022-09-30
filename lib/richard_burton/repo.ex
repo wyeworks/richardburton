@@ -3,31 +3,40 @@ defmodule RichardBurton.Repo do
     otp_app: :richard_burton,
     adapter: Ecto.Adapters.Postgres
 
-  def maybe_insert!(changeset, unique_key) do
-    keyword_list_id =
-      changeset.changes
-      |> Enum.filter(fn {key, _val} -> Enum.member?(unique_key, key) end)
-      |> Enum.map(&parse_keyword_list_id/1)
+  def maybe_insert!(changeset, conflict_target) do
+    unique_key = replace_unique_key_assocs_with_ids(conflict_target, changeset)
+    unique_key_values = get_unique_key_values(unique_key, changeset)
+    unique_key_with_values = Enum.zip(unique_key, unique_key_values)
 
     insert!(
       changeset,
-      on_conflict: [set: keyword_list_id],
-      conflict_target: Keyword.keys(keyword_list_id),
+      on_conflict: [set: unique_key_with_values],
+      conflict_target: unique_key,
       returning: true
     )
   end
 
-  defp parse_keyword_list_id({key, %Ecto.Changeset{} = changeset}) do
-    parsed_key =
-      key
-      |> Atom.to_string()
-      |> Kernel.<>("_id")
-      |> String.to_existing_atom()
+  defp replace_unique_key_assocs_with_ids(unique_key, changeset) do
+    Enum.map(unique_key, fn key ->
+      case changeset.changes[key] do
+        %Ecto.Changeset{} ->
+          key
+          |> Atom.to_string()
+          |> Kernel.<>("_id")
+          |> String.to_existing_atom()
 
-    {parsed_key, changeset.data.id}
+        _ ->
+          key
+      end
+    end)
   end
 
-  defp parse_keyword_list_id({key, val}) do
-    {key, val}
+  defp get_unique_key_values(unique_key, changeset) do
+    Enum.map(unique_key, fn key ->
+      case changeset.changes[key] do
+        %Ecto.Changeset{} -> changeset.data.id
+        _ -> changeset.changes[key]
+      end
+    end)
   end
 end
