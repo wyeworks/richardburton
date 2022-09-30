@@ -37,7 +37,8 @@ defmodule RichardBurton.TranslatedBook do
   end
 
   def all do
-    Repo.all(__MODULE__)
+    __MODULE__
+    |> Repo.all()
     |> Repo.preload([:publications, :original_book])
   end
 end
