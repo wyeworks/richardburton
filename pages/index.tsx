@@ -38,7 +38,6 @@ const toFlatPublications = (books: TranslatedBook[]): FlatPublication[] => {
 };
 
 const DEFAULT_COLUMNS: FlatPublicationKey[] = [
-  "originalAuthors",
   "originalTitle",
   "title",
   "authors",
