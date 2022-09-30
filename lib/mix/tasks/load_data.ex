@@ -4,7 +4,7 @@ defmodule Mix.Tasks.Rb.LoadData do
   """
   use Mix.Task
 
-  alias RichardBurton.TranslatedBook
+  alias RichardBurton.Publication
 
   def run(_) do
     Mix.Task.run("app.start")
@@ -25,24 +25,24 @@ defmodule Mix.Tasks.Rb.LoadData do
       ]
     )
     |> Enum.map(&deserialize/1)
-    |> Enum.map(&TranslatedBook.maybe_insert/1)
+    |> Enum.map(&Publication.maybe_insert!/1)
   end
 
   defp deserialize(row) do
     {year, _} = Integer.parse(row.year)
 
-    original_book = %{
-      title: row.original_title,
-      authors: row.original_authors
-    }
-
     %{
       title: row.title,
-      authors: row.authors,
       year: year,
       country: row.country,
       publisher: row.publisher,
-      original_book: original_book
+      translated_book: %{
+        authors: row.authors,
+        original_book: %{
+          title: row.original_title,
+          authors: row.original_authors
+        }
+      }
     }
   end
 end
