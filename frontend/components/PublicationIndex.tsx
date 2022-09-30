@@ -36,7 +36,7 @@ const PublicationIndex: FC<Props> = ({ entries, columns }) => {
           ))}
         </tr>
         {entries.map((entry) => (
-          <tr key={JSON.stringify(entry)}>
+          <tr key={JSON.stringify(entry)} className="hover:bg-indigo-100">
             {attributes.map((key) => (
               <td key={key} className="max-w-xs px-2 py-1 truncate justify">
                 {key === "country" ? COUNTRIES[entry[key]] : entry[key]}
