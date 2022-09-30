@@ -3,10 +3,10 @@ defmodule RichardBurton.Repo do
     otp_app: :richard_burton,
     adapter: Ecto.Adapters.Postgres
 
-  def maybe_insert!(changeset, keys) do
+  def maybe_insert!(changeset, unique_key) do
     keyword_list_id =
       changeset.changes
-      |> Enum.filter(fn {key, _val} -> Enum.member?(keys, key) end)
+      |> Enum.filter(fn {key, _val} -> Enum.member?(unique_key, key) end)
       |> Enum.map(&parse_keyword_list_id/1)
 
     insert!(
