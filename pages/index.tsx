@@ -12,6 +12,7 @@ import PublicationIndex from "components/PublicationIndex";
 import Toggle from "components/Toggle";
 import Head from "next/head";
 import { useState } from "react";
+import PublicationUpload from "components/PublicationUpload";
 
 const toFlatPublication = (book: TranslatedBook): FlatPublication => {
   const [firstPublication] = book.publications;
@@ -67,8 +68,8 @@ const Home: NextPage = () => {
         </header>
 
         <main className="w-full overflow-scroll">
-          <>
-            <aside className="absolute right-0 w-48 p-2 space-y-2">
+          <aside className="absolute right-0 w-48 p-2 space-y-6">
+            <div className="space-y-2">
               {PUBLICATION_ATTRIBUTES.map((attribute) => {
                 const isActive = columns.has(attribute);
                 const newColumns = new Set(columns);
@@ -88,16 +89,17 @@ const Home: NextPage = () => {
                   />
                 );
               })}
-            </aside>
-            {translatedBooks ? (
-              <PublicationIndex
-                entries={toFlatPublications(translatedBooks)}
-                columns={columns}
-              />
-            ) : (
-              "loading..."
-            )}
-          </>
+            </div>
+            <PublicationUpload />
+          </aside>
+          {translatedBooks ? (
+            <PublicationIndex
+              entries={toFlatPublications(translatedBooks)}
+              columns={columns}
+            />
+          ) : (
+            "loading..."
+          )}
         </main>
       </div>
     </>
