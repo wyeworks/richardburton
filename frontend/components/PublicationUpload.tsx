@@ -1,9 +1,10 @@
-import { ChangeEventHandler, FC, useState } from "react";
+import { ChangeEventHandler, FC } from "react";
 import UploadIcon from "assets/upload.svg";
-import { FlatPublication } from "types";
+import { useSetRecoilState } from "recoil";
+import uploadedPublicationsAtom from "recoil/uploadedPublicationsAtom";
 
 const PublicationUpload: FC = () => {
-  const [, setUploadedPublications] = useState<FlatPublication[] | undefined>();
+  const setUploadedPublications = useSetRecoilState(uploadedPublicationsAtom);
 
   const handleChange: ChangeEventHandler<HTMLInputElement> = async (event) => {
     if (event.target.files) {
