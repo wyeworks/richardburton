@@ -59,7 +59,7 @@ const Home: NextPage = () => {
       <Head>
         <title>Richard Burton</title>
       </Head>
-      <div className="relative flex flex-col h-full p-8 overflow-hidden gap-y-8 2xl:mx-auto max-w-7xl pr-52">
+      <div className="relative flex flex-col h-full p-8 overflow-hidden gap-y-8 xl:mx-auto max-w-7xl pr-52">
         <header className="space-y-2 text-center ">
           <h1 className="text-5xl">Richard Burton Platform</h1>
           <h2 className="text-2xl">
