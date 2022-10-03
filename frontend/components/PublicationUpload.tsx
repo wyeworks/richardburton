@@ -2,6 +2,7 @@ import { ChangeEventHandler, FC } from "react";
 import UploadIcon from "assets/upload.svg";
 import { useSetRecoilState } from "recoil";
 import uploadedPublicationsAtom from "recoil/uploadedPublicationsAtom";
+import Router from "next/router";
 
 const PublicationUpload: FC = () => {
   const setUploadedPublications = useSetRecoilState(uploadedPublicationsAtom);
@@ -34,6 +35,8 @@ const PublicationUpload: FC = () => {
             })
           )
       );
+
+      Router.push("publications/new");
     }
   };
 
