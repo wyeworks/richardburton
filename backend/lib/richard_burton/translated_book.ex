@@ -21,7 +21,7 @@ defmodule RichardBurton.TranslatedBook do
 
   @doc false
   def changeset(translated_book, attrs \\ %{}) do
-    original_book = OriginalBook.maybe_insert!(attrs.original_book)
+    original_book = OriginalBook.maybe_insert!(attrs["original_book"])
 
     translated_book
     |> cast(attrs, [:authors])
