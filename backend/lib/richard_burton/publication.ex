@@ -31,15 +31,17 @@ defmodule RichardBurton.Publication do
     |> unique_constraint([:title, :year, :country, :publisher])
   end
 
-  def maybe_insert!(attrs) do
-    %__MODULE__{}
-    |> changeset(attrs)
-    |> Repo.maybe_insert!([:title, :year, :country, :publisher])
-  end
-
   def all do
     __MODULE__
     |> Repo.all()
     |> Repo.preload(translated_book: [:original_book])
+  end
+
+  def insert(attrs) do
+    %__MODULE__{} |> changeset(attrs) |> Repo.insert()
+  end
+
+  def insert_all(entries) do
+    Repo.transaction(fn -> Enum.map(entries, &insert/1) end)
   end
 end

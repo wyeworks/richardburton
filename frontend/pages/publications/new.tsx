@@ -1,13 +1,25 @@
 import type { NextPage } from "next";
-import { PUBLICATION_ATTRIBUTES } from "types";
+import { fromFlatPublications, PUBLICATION_ATTRIBUTES } from "types";
 import PublicationIndex from "components/PublicationIndex";
 import Head from "next/head";
 import { useRecoilValue } from "recoil";
 import uploadedPublicationsAtom from "recoil/uploadedPublicationsAtom";
 import Button from "components/Button";
+import { API } from "app";
+import Router from "next/router";
 
-const Home: NextPage = () => {
+const NewPublications: NextPage = () => {
   const uploadedPublications = useRecoilValue(uploadedPublicationsAtom);
+
+  const handleSubmit = async () => {
+    if (uploadedPublications) {
+      await API.post(
+        "publications",
+        fromFlatPublications(uploadedPublications)
+      );
+      Router.push("/");
+    }
+  };
 
   return (
     <>
@@ -37,7 +49,7 @@ const Home: NextPage = () => {
                 />
               </div>
               <aside>
-                <Button label="Submit" onClick={() => {}} />
+                <Button label="Submit" onClick={handleSubmit} />
               </aside>
             </section>
           ) : (
@@ -49,4 +61,4 @@ const Home: NextPage = () => {
   );
 };
 
-export default Home;
+export default NewPublications;

@@ -14,6 +14,7 @@ const PublicationUpload: FC = () => {
       setUploadedPublications(
         (await file.text())
           .split("\n")
+          .filter((string) => string.trim().length > 0)
           .map((row) => row.split(";"))
           .map(
             ([
