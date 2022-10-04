@@ -2,44 +2,17 @@ import type { NextPage } from "next";
 import { useQuery } from "react-query";
 import { API } from "app";
 import {
-  FlatPublication,
   FlatPublicationKey,
   Publication,
   PUBLICATION_ATTRIBUTES,
   PUBLICATION_ATTRIBUTE_LABELS,
+  toFlatPublications,
 } from "types";
 import PublicationIndex from "components/PublicationIndex";
 import Toggle from "components/Toggle";
 import Head from "next/head";
 import { useState } from "react";
 import PublicationUpload from "components/PublicationUpload";
-
-const toFlatPublication = (publication: Publication): FlatPublication => {
-  const {
-    title,
-    year,
-    country,
-    publisher,
-    translatedBook: {
-      authors,
-      originalBook: { authors: originalAuthors, title: originalTitle },
-    },
-  } = publication;
-
-  return {
-    originalTitle,
-    originalAuthors,
-    authors,
-    title,
-    year,
-    country,
-    publisher,
-  };
-};
-
-const toFlatPublications = (publications: Publication[]): FlatPublication[] => {
-  return publications.map(toFlatPublication);
-};
 
 const DEFAULT_COLUMNS: FlatPublicationKey[] = [
   "originalTitle",

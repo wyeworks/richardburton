@@ -8,7 +8,7 @@ defmodule RichardBurtonWeb.Router do
   scope "/api", RichardBurtonWeb do
     pipe_through(:api)
 
-    resources("/publications", PublicationController, only: [:index])
+    resources("/publications", PublicationController, only: [:index, :create])
   end
 
   # Enables LiveDashboard only for development
