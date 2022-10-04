@@ -50,7 +50,7 @@ const Home: NextPage = () => {
         </header>
 
         <main className="w-full overflow-scroll">
-          <aside className="absolute right-0 w-48 p-2 space-y-6">
+          <aside className="absolute right-0 p-2 space-y-6">
             <div className="space-y-2">
               {PUBLICATION_ATTRIBUTES.map((attribute) => {
                 const isActive = columns.has(attribute);
