@@ -32,15 +32,15 @@ defmodule Mix.Tasks.Rb.LoadData do
     {year, _} = Integer.parse(row.year)
 
     %{
-      title: row.title,
-      year: year,
-      country: row.country,
-      publisher: row.publisher,
-      translated_book: %{
-        authors: row.authors,
-        original_book: %{
-          title: row.original_title,
-          authors: row.original_authors
+      "title" => row.title,
+      "year" => year,
+      "country" => row.country,
+      "publisher" => row.publisher,
+      "translated_book" => %{
+        "authors" => row.authors,
+        "original_book" => %{
+          "title" => row.original_title,
+          "authors" => row.original_authors
         }
       }
     }

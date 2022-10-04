@@ -22,7 +22,7 @@ defmodule RichardBurton.Publication do
 
   @doc false
   def changeset(publication, attrs \\ %{}) do
-    translated_book = TranslatedBook.maybe_insert!(attrs.translated_book)
+    translated_book = TranslatedBook.maybe_insert!(attrs["translated_book"])
 
     publication
     |> cast(attrs, [:title, :year, :country, :publisher])
