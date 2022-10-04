@@ -1,10 +1,3 @@
-type Publication = {
-  title: string;
-  country: string;
-  year: number;
-  publisher: string;
-};
-
 type OriginalBook = {
   title: string;
   authors: string;
@@ -13,10 +6,17 @@ type OriginalBook = {
 type TranslatedBook = {
   authors: string;
   originalBook: OriginalBook;
-  publications: Publication[];
 };
 
-type FlatPublication = Publication & {
+type Publication = {
+  title: string;
+  country: string;
+  year: number;
+  publisher: string;
+  translatedBook: TranslatedBook;
+};
+
+type FlatPublication = Omit<Publication, "translatedBook"> & {
   originalTitle: OriginalBook["title"];
   originalAuthors: OriginalBook["authors"];
   authors: TranslatedBook["authors"];
@@ -45,4 +45,4 @@ const PUBLICATION_ATTRIBUTE_LABELS: Record<FlatPublicationKey, string> = {
 };
 
 export { PUBLICATION_ATTRIBUTES, PUBLICATION_ATTRIBUTE_LABELS };
-export type { TranslatedBook, FlatPublication, FlatPublicationKey };
+export type { Publication, FlatPublication, FlatPublicationKey };

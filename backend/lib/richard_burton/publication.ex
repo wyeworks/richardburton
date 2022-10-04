@@ -8,14 +8,14 @@ defmodule RichardBurton.Publication do
   alias RichardBurton.Repo
   alias RichardBurton.TranslatedBook
 
-  @derive {Jason.Encoder, only: [:country, :publisher, :title, :year]}
+  @derive {Jason.Encoder, only: [:country, :publisher, :title, :year, :translated_book]}
   schema "publications" do
-    field :country, :string
-    field :publisher, :string
-    field :title, :string
-    field :year, :integer
+    field(:country, :string)
+    field(:publisher, :string)
+    field(:title, :string)
+    field(:year, :integer)
 
-    belongs_to :translated_book, TranslatedBook
+    belongs_to(:translated_book, TranslatedBook)
 
     timestamps()
   end
@@ -35,5 +35,11 @@ defmodule RichardBurton.Publication do
     %__MODULE__{}
     |> changeset(attrs)
     |> Repo.maybe_insert!([:title, :year, :country, :publisher])
+  end
+
+  def all do
+    __MODULE__
+    |> Repo.all()
+    |> Repo.preload(translated_book: [:original_book])
   end
 end

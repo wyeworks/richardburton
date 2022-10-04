@@ -4,9 +4,9 @@ import { API } from "app";
 import {
   FlatPublication,
   FlatPublicationKey,
+  Publication,
   PUBLICATION_ATTRIBUTES,
   PUBLICATION_ATTRIBUTE_LABELS,
-  TranslatedBook,
 } from "types";
 import PublicationIndex from "components/PublicationIndex";
 import Toggle from "components/Toggle";
@@ -14,22 +14,31 @@ import Head from "next/head";
 import { useState } from "react";
 import PublicationUpload from "components/PublicationUpload";
 
-const toFlatPublication = (book: TranslatedBook): FlatPublication => {
-  const [firstPublication] = book.publications;
+const toFlatPublication = (publication: Publication): FlatPublication => {
+  const {
+    title,
+    year,
+    country,
+    publisher,
+    translatedBook: {
+      authors,
+      originalBook: { authors: originalAuthors, title: originalTitle },
+    },
+  } = publication;
 
   return {
-    originalTitle: book.originalBook.title,
-    originalAuthors: book.originalBook.authors,
-    authors: book.authors,
-    title: firstPublication.title,
-    year: firstPublication.year,
-    country: firstPublication.country,
-    publisher: firstPublication.publisher,
+    originalTitle,
+    originalAuthors,
+    authors,
+    title,
+    year,
+    country,
+    publisher,
   };
 };
 
-const toFlatPublications = (books: TranslatedBook[]): FlatPublication[] => {
-  return books.map(toFlatPublication);
+const toFlatPublications = (publications: Publication[]): FlatPublication[] => {
+  return publications.map(toFlatPublication);
 };
 
 const DEFAULT_COLUMNS: FlatPublicationKey[] = [
@@ -40,11 +49,11 @@ const DEFAULT_COLUMNS: FlatPublicationKey[] = [
 ];
 
 const Home: NextPage = () => {
-  const { data: translatedBooks } = useQuery<TranslatedBook[]>(
-    "translated-books",
+  const { data: publications } = useQuery<Publication[]>(
+    "publications",
     async () => {
       try {
-        const { data } = await API.get("/books/translated");
+        const { data } = await API.get("publications");
         return data;
       } catch (error) {
         return error;
@@ -92,9 +101,9 @@ const Home: NextPage = () => {
             </div>
             <PublicationUpload />
           </aside>
-          {translatedBooks ? (
+          {publications ? (
             <PublicationIndex
-              entries={toFlatPublications(translatedBooks)}
+              entries={toFlatPublications(publications)}
               columns={columns}
             />
           ) : (
