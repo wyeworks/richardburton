@@ -44,5 +44,67 @@ const PUBLICATION_ATTRIBUTE_LABELS: Record<FlatPublicationKey, string> = {
   year: "Year",
 };
 
-export { PUBLICATION_ATTRIBUTES, PUBLICATION_ATTRIBUTE_LABELS };
+const toFlatPublication = (p: Publication): FlatPublication => {
+  const {
+    title,
+    year,
+    country,
+    publisher,
+    translatedBook: {
+      authors,
+      originalBook: { authors: originalAuthors, title: originalTitle },
+    },
+  } = p;
+
+  return {
+    originalTitle,
+    originalAuthors,
+    authors,
+    title,
+    year,
+    country,
+    publisher,
+  };
+};
+
+const toFlatPublications = (ps: Publication[]): FlatPublication[] => {
+  return ps.map(toFlatPublication);
+};
+
+const fromFlatPublication = (fp: FlatPublication): Publication => {
+  const {
+    originalTitle,
+    originalAuthors,
+    authors,
+    title,
+    year,
+    country,
+    publisher,
+  } = fp;
+
+  return {
+    title,
+    year,
+    country,
+    publisher,
+    translatedBook: {
+      authors,
+      originalBook: {
+        title: originalTitle,
+        authors: originalAuthors,
+      },
+    },
+  };
+};
+
+const fromFlatPublications = (fps: FlatPublication[]): Publication[] => {
+  return fps.map(fromFlatPublication);
+};
+
+export {
+  PUBLICATION_ATTRIBUTES,
+  PUBLICATION_ATTRIBUTE_LABELS,
+  toFlatPublications,
+  fromFlatPublications,
+};
 export type { Publication, FlatPublication, FlatPublicationKey };
