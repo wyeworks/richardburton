@@ -49,4 +49,8 @@ defmodule RichardBurton.TranslatedBook do
     |> changeset(attrs)
     |> Repo.maybe_insert!([:authors, :original_book])
   end
+
+  def all() do
+    __MODULE__ |> Repo.all() |> Repo.preload(:original_book)
+  end
 end

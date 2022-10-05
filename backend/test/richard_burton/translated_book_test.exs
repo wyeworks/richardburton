@@ -62,4 +62,19 @@ defmodule RichardBurton.TranslatedBookTest do
       assert %{authors: ["has already been taken"]} = errors_on(changeset)
     end
   end
+
+  describe("maybe_insert/1") do
+    test "when there is no translated_book with the provided :authors and :original_book, inserts it" do
+      assert [] = TranslatedBook.all()
+      translated_book = TranslatedBook.maybe_insert!(@valid_attrs)
+      assert [translated_book] == TranslatedBook.all()
+    end
+
+    test "when there is a translated_book with the provided :authors and :original_book, returns the pre-existent one" do
+      translated_book_fixture()
+      [translated_book] = TranslatedBook.all()
+      same_translated_book = TranslatedBook.maybe_insert!(@valid_attrs)
+      assert translated_book == same_translated_book
+    end
+  end
 end
