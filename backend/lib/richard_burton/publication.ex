@@ -28,6 +28,13 @@ defmodule RichardBurton.Publication do
       publication
       |> cast(attrs, [:title, :year, :country, :publisher])
       |> cast_assoc(:translated_book)
+      |> validate_required([
+        :title,
+        :year,
+        :country,
+        :publisher,
+        :translated_book
+      ])
 
     # Check if translated_book is valid
     cond do
@@ -39,8 +46,14 @@ defmodule RichardBurton.Publication do
         # Compute complete changeset with the complete translated_book associated
         publication
         |> cast(attrs, [:title, :year, :country, :publisher])
-        |> validate_required([:title, :year, :country, :publisher])
         |> put_assoc(:translated_book, translated_book)
+        |> validate_required([
+          :title,
+          :year,
+          :country,
+          :publisher,
+          :translated_book
+        ])
         |> unique_constraint([:title, :year, :country, :publisher])
 
       not result.valid? ->
