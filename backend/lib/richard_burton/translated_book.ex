@@ -23,7 +23,10 @@ defmodule RichardBurton.TranslatedBook do
   def changeset(translated_book, attrs \\ %{}) do
     # Compute basic changeset with original_book validation
     result =
-      translated_book |> cast(attrs, [:authors]) |> cast_assoc(:original_book)
+      translated_book
+      |> cast(attrs, [:authors])
+      |> cast_assoc(:original_book)
+      |> validate_required([:authors, :original_book])
 
     # Check if original_book is valid
     cond do
@@ -35,8 +38,8 @@ defmodule RichardBurton.TranslatedBook do
         # Compute complete changeset with the complete original_book associated
         translated_book
         |> cast(attrs, [:authors])
-        |> validate_required([:authors])
         |> put_assoc(:original_book, original_book)
+        |> validate_required([:authors, :original_book])
         |> unique_constraint([:authors, :original_book_id])
 
       not result.valid? ->
