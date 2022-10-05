@@ -21,13 +21,27 @@ defmodule RichardBurton.TranslatedBook do
 
   @doc false
   def changeset(translated_book, attrs \\ %{}) do
-    original_book = OriginalBook.maybe_insert!(attrs["original_book"])
+    # Compute basic changeset with original_book validation
+    result =
+      translated_book |> cast(attrs, [:authors]) |> cast_assoc(:original_book)
 
-    translated_book
-    |> cast(attrs, [:authors])
-    |> validate_required([:authors])
-    |> put_assoc(:original_book, original_book)
-    |> unique_constraint([:authors, :original_book_id])
+    # Check if original_book is valid
+    cond do
+      result.valid? ->
+        # Insert or fetch the valid original book
+        original_book = OriginalBook.maybe_insert!(attrs["original_book"])
+
+        # Compute complete changeset with the complete original_book associated
+        translated_book
+        |> cast(attrs, [:authors])
+        |> put_assoc(:original_book, original_book)
+        |> validate_required([:authors])
+        |> unique_constraint([:authors, :original_book_id])
+
+      not result.valid? ->
+        # Return the changeset with the original_book validation errors
+        result
+    end
   end
 
   def maybe_insert!(attrs) do
