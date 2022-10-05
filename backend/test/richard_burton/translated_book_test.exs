@@ -51,7 +51,7 @@ defmodule RichardBurton.TranslatedBookTest do
     end
 
     test "when :original_book is nil, is invalid" do
-      changeset = changeset_fixture(%{original_book: %{}})
+      changeset = changeset_fixture(%{original_book: nil})
       assert not changeset.valid?
     end
 
