@@ -58,4 +58,19 @@ defmodule RichardBurton.OriginalBookTest do
       assert %{authors: ["has already been taken"]} = errors_on(changeset)
     end
   end
+
+  describe("maybe_insert/1") do
+    test "when there is no original_book with the provided :authors and :title, inserts it" do
+      assert [] = Repo.all(OriginalBook)
+      original_book = OriginalBook.maybe_insert!(@valid_attrs)
+      assert [original_book] == Repo.all(OriginalBook)
+    end
+
+    test "when there is a original_book with the provided :authors and :title, returns the pre-existent one" do
+      original_book_fixture()
+      [original_book] = Repo.all(OriginalBook)
+      same_original_book = OriginalBook.maybe_insert!(@valid_attrs)
+      assert original_book == same_original_book
+    end
+  end
 end
