@@ -8,8 +8,8 @@ defmodule RichardBurton.TranslatedBookTest do
   alias RichardBurton.TranslatedBook
 
   @valid_attrs %{
-    "authors" => "Richard Burton and Isabel Burton",
-    "original_book" => %{
+    authors: "Richard Burton and Isabel Burton",
+    original_book: %{
       authors: "J. M. Pereira da Silva",
       title: "Manuel de Moraes: crônica do século XVII"
     }
@@ -34,24 +34,24 @@ defmodule RichardBurton.TranslatedBookTest do
     end
 
     test "when :authors is blank, is invalid" do
-      changeset = changeset_fixture(%{"authors" => ""})
+      changeset = changeset_fixture(%{authors: ""})
       assert not changeset.valid?
       assert %{authors: ["can't be blank"]} = errors_on(changeset)
     end
 
     test "when :authors is nil, is invalid" do
-      changeset = changeset_fixture(%{"authors" => nil})
+      changeset = changeset_fixture(%{authors: nil})
       assert not changeset.valid?
       assert %{authors: ["can't be blank"]} = errors_on(changeset)
     end
 
     test "when :original_book is empty, is invalid" do
-      changeset = changeset_fixture(%{"original_book" => %{}})
+      changeset = changeset_fixture(%{original_book: %{}})
       assert not changeset.valid?
     end
 
     test "when :original_book is nil, is invalid" do
-      changeset = changeset_fixture(%{"original_book" => %{}})
+      changeset = changeset_fixture(%{original_book: %{}})
       assert not changeset.valid?
     end
 

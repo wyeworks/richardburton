@@ -29,13 +29,14 @@ defmodule RichardBurton.TranslatedBook do
     cond do
       result.valid? ->
         # Insert or fetch the valid original book
-        original_book = OriginalBook.maybe_insert!(attrs["original_book"])
+        original_book_attrs = result.changes.original_book.changes
+        original_book = OriginalBook.maybe_insert!(original_book_attrs)
 
         # Compute complete changeset with the complete original_book associated
         translated_book
         |> cast(attrs, [:authors])
-        |> put_assoc(:original_book, original_book)
         |> validate_required([:authors])
+        |> put_assoc(:original_book, original_book)
         |> unique_constraint([:authors, :original_book_id])
 
       not result.valid? ->
