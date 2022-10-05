@@ -8,7 +8,8 @@ defmodule RichardBurton.Publication do
   alias RichardBurton.Repo
   alias RichardBurton.TranslatedBook
 
-  @derive {Jason.Encoder, only: [:country, :publisher, :title, :year, :translated_book]}
+  @derive {Jason.Encoder,
+           only: [:country, :publisher, :title, :year, :translated_book]}
   schema "publications" do
     field(:country, :string)
     field(:publisher, :string)
