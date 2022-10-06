@@ -24,6 +24,27 @@ defmodule RichardBurton.DataCase do
       import Ecto.Changeset
       import Ecto.Query
       import RichardBurton.DataCase
+
+      def changeset_fixture(_attrs) do
+        raise "Not implemented"
+      end
+
+      def test_invalid_attr_value(name, value, error \\ false) do
+        changeset = %{} |> Map.put(name, value) |> changeset_fixture
+        assert not changeset.valid?
+
+        if error do
+          assert Map.put(%{}, name, error) == errors_on(changeset)
+        end
+      end
+
+      def test_not_blank(attr),
+        do: test_invalid_attr_value(attr, "", ["can't be blank"])
+
+      def test_not_nil(attr),
+        do: test_invalid_attr_value(attr, nil, ["can't be blank"])
+
+      defoverridable changeset_fixture: 1
     end
   end
 

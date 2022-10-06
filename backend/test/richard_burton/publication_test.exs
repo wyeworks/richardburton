@@ -33,21 +33,6 @@ defmodule RichardBurton.PublicationTest do
       attrs |> changeset_fixture |> Repo.insert()
     end
 
-    def test_invalid_attr_value(name, value, error \\ false) do
-      changeset = %{} |> Map.put(name, value) |> changeset_fixture
-      assert not changeset.valid?
-
-      if error do
-        assert Map.put(%{}, name, error) == errors_on(changeset)
-      end
-    end
-
-    def test_not_blank(attr),
-      do: test_invalid_attr_value(attr, "", ["can't be blank"])
-
-    def test_not_nil(attr),
-      do: test_invalid_attr_value(attr, nil, ["can't be blank"])
-
     test "when non-blank :title, :country, :year, :publisher and :translated_book are provided, is valid" do
       changeset = changeset_fixture()
       assert changeset.valid?
