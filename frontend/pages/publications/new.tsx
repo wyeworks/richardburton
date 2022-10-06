@@ -14,7 +14,7 @@ const NewPublications: NextPage = () => {
   const handleSubmit = async () => {
     if (uploadedPublications) {
       await API.post(
-        "publications",
+        "publications/bulk",
         fromFlatPublications(uploadedPublications)
       );
       Router.push("/");

@@ -7,7 +7,7 @@ defmodule RichardBurtonWeb.PublicationController do
     json(conn, Publication.all())
   end
 
-  def create(conn, %{"_json" => entries}) do
+  def create_all(conn, %{"_json" => entries}) do
     Enum.each(entries, &Publication.insert/1)
     conn |> put_status(:created) |> json(%{})
   end
