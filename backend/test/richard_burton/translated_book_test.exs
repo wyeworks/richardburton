@@ -20,10 +20,6 @@ defmodule RichardBurton.TranslatedBookTest do
   end
 
   describe "changeset/2" do
-    def translated_book_fixture(attrs \\ %{}) do
-      attrs |> changeset_fixture |> Repo.insert()
-    end
-
     test "when non-blank :authors and :original_book are provided, is valid" do
       changeset = changeset_fixture()
       assert changeset.valid?
@@ -39,12 +35,8 @@ defmodule RichardBurton.TranslatedBookTest do
     test "when :original_book is nil, is invalid",
       do: test_not_nil(:original_book)
 
-    test "when there is a translated_book with the provided :authors and :title, is invalid" do
-      {:ok, _} = translated_book_fixture(@valid_attrs)
-      {:error, changeset} = translated_book_fixture(@valid_attrs)
-      assert not changeset.valid?
-      assert %{authors: ["has already been taken"]} = errors_on(changeset)
-    end
+    test "when a translated_book with the provided attributes exists, is invalid",
+      do: test_unique_constraint(:authors)
   end
 
   describe("maybe_insert/1") do
@@ -55,7 +47,7 @@ defmodule RichardBurton.TranslatedBookTest do
     end
 
     test "when there is a translated_book with the provided :authors and :original_book, returns the pre-existent one" do
-      translated_book_fixture()
+      entity_fixture(@valid_attrs)
       [translated_book] = TranslatedBook.all()
       same_translated_book = TranslatedBook.maybe_insert!(@valid_attrs)
       assert translated_book == same_translated_book

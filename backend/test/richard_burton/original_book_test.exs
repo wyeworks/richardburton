@@ -32,12 +32,8 @@ defmodule RichardBurton.OriginalBookTest do
     test "when :title is blank, is invalid", do: test_not_blank(:title)
     test "when :title is nil, is invalid", do: test_not_nil(:title)
 
-    test "when there is a original_book with the provided :authors and :title, is invalid" do
-      {:ok, _} = original_book_fixture(@valid_attrs)
-      {:error, changeset} = original_book_fixture(@valid_attrs)
-      assert not changeset.valid?
-      assert %{authors: ["has already been taken"]} = errors_on(changeset)
-    end
+    test "when a original_book with the provided attributes exists, is invalid",
+      do: test_unique_constraint(:authors)
   end
 
   describe("maybe_insert/1") do

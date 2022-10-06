@@ -38,6 +38,10 @@ defmodule RichardBurton.DataCase do
         )
       end
 
+      def entity_fixture(attrs) do
+        attrs |> changeset_fixture |> Repo.insert()
+      end
+
       def test_invalid_attr_value(name, value, error \\ false) do
         changeset = %{} |> Map.put(name, value) |> changeset_fixture
         assert not changeset.valid?
@@ -52,6 +56,19 @@ defmodule RichardBurton.DataCase do
 
       def test_not_nil(attr),
         do: test_invalid_attr_value(attr, nil, ["can't be blank"])
+
+      def test_unique_constraint(unique_constraint_name) do
+        {_struct, _changeset, valid_attrs} = entity()
+
+        {:ok, _} = entity_fixture(valid_attrs)
+        {:error, changeset} = entity_fixture(valid_attrs)
+
+        expected_errors =
+          Map.put(%{}, unique_constraint_name, ["has already been taken"])
+
+        assert not changeset.valid?
+        assert expected_errors == errors_on(changeset)
+      end
 
       defoverridable entity: 0
     end
