@@ -108,4 +108,54 @@ defmodule RichardBurton.PublicationTest do
       assert({:error, @skeleton_attrs_error_map} == validate(@skeleton_attrs))
     end
   end
+
+  describe "insert_all/1" do
+    import Publication, only: [insert_all: 1]
+
+    test "when many valid publications are provided, inserts them" do
+      assert [] == Publication.all()
+
+      {:ok, publications} =
+        insert_all([
+          @valid_attrs,
+          Map.put(@valid_attrs, :year, 1887),
+          Map.put(@valid_attrs, :year, 1888),
+          Map.put(@valid_attrs, :year, 1889),
+          Map.put(@valid_attrs, :year, 1890)
+        ])
+
+      preloaded_publications =
+        Repo.preload(publications, translated_book: [:original_book])
+
+      assert preloaded_publications == Publication.all()
+    end
+
+    test "when invalid publications are provided, rolls back and returns the first error" do
+      assert [] == Publication.all()
+
+      {:error, description} =
+        insert_all([
+          @valid_attrs,
+          @valid_attrs,
+          Map.put(@valid_attrs, :year, 1888),
+          Map.put(@valid_attrs, :year, 1889),
+          Map.put(@valid_attrs, :year, 1890)
+        ])
+
+      assert {@valid_attrs, :conflict} = description
+
+      {:error, description} =
+        insert_all([
+          @valid_attrs,
+          Map.put(@valid_attrs, :year, 1888),
+          @skeleton_attrs,
+          Map.put(@valid_attrs, :year, 1889),
+          Map.put(@valid_attrs, :year, 1890)
+        ])
+
+      assert {@skeleton_attrs, @skeleton_attrs_error_map} == description
+
+      assert [] == Publication.all()
+    end
+  end
 end
