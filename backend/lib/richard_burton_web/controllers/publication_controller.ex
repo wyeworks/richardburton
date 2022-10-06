@@ -7,8 +7,7 @@ defmodule RichardBurtonWeb.PublicationController do
     json(conn, Publication.all())
   end
 
-  def create(conn, params) do
-    entries = params["_json"]
+  def create(conn, %{"_json" => entries}) do
     Publication.insert_all(entries)
     conn |> put_status(:created) |> json(%{})
   end
