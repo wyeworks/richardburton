@@ -23,8 +23,7 @@ config :richard_burton, RichardBurtonWeb.Endpoint,
   check_origin: false,
   code_reloader: true,
   debug_errors: true,
-  secret_key_base:
-    "WFkOQxggFrvLxxLc2Eaw4huoo1ncbDpVoDXHJPLI+rqrEF8OOmuN0xXqv1lBzZ5I",
+  secret_key_base: "WFkOQxggFrvLxxLc2Eaw4huoo1ncbDpVoDXHJPLI+rqrEF8OOmuN0xXqv1lBzZ5I",
   watchers: []
 
 # ## SSL Support
