@@ -37,28 +37,27 @@ defmodule RichardBurton.Publication do
       ])
 
     # Check if translated_book is valid
-    cond do
-      result.valid? ->
-        # Insert or fetch the valid translated_book
-        translated_book_attrs = get_translated_book_attrs_from_changeset(result)
-        translated_book = TranslatedBook.maybe_insert!(translated_book_attrs)
+    if result.valid? do
+      # Insert or fetch the valid translated_book
+      translated_book_attrs = get_translated_book_attrs_from_changeset(result)
+      translated_book = TranslatedBook.maybe_insert!(translated_book_attrs)
 
-        # Compute complete changeset with the complete translated_book associated
-        publication
-        |> cast(attrs, [:title, :year, :country, :publisher])
-        |> put_assoc(:translated_book, translated_book)
-        |> validate_required([
-          :title,
-          :year,
-          :country,
-          :publisher,
-          :translated_book
-        ])
-        |> unique_constraint([:title, :year, :country, :publisher])
-
-      not result.valid? ->
-        # Return the changeset with the translated_book validation errors
-        result
+      # Compute complete changeset with the complete translated_book associated
+      publication
+      |> cast(attrs, [:title, :year, :country, :publisher])
+      |> put_assoc(:translated_book, translated_book)
+      |> validate_required([
+        :title,
+        :year,
+        :country,
+        :publisher,
+        :translated_book
+      ])
+      |> unique_constraint([:title, :year, :country, :publisher])
+    else
+      result.valid?
+      # Return the changeset with the translated_book validation errors
+      result
     end
   end
 

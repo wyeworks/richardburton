@@ -29,22 +29,21 @@ defmodule RichardBurton.TranslatedBook do
       |> validate_required([:authors, :original_book])
 
     # Check if original_book is valid
-    cond do
-      result.valid? ->
-        # Insert or fetch the valid original book
-        original_book_attrs = result.changes.original_book.changes
-        original_book = OriginalBook.maybe_insert!(original_book_attrs)
+    if result.valid? do
+      # Insert or fetch the valid original book
+      original_book_attrs = result.changes.original_book.changes
+      original_book = OriginalBook.maybe_insert!(original_book_attrs)
 
-        # Compute complete changeset with the complete original_book associated
-        translated_book
-        |> cast(attrs, [:authors])
-        |> put_assoc(:original_book, original_book)
-        |> validate_required([:authors, :original_book])
-        |> unique_constraint([:authors, :original_book_id])
-
-      not result.valid? ->
-        # Return the changeset with the original_book validation errors
-        result
+      # Compute complete changeset with the complete original_book associated
+      translated_book
+      |> cast(attrs, [:authors])
+      |> put_assoc(:original_book, original_book)
+      |> validate_required([:authors, :original_book])
+      |> unique_constraint([:authors, :original_book_id])
+    else
+      result.valid?
+      # Return the changeset with the original_book validation errors
+      result
     end
   end
 
