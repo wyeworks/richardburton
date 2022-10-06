@@ -68,50 +68,44 @@ defmodule RichardBurton.PublicationTest do
   end
 
   describe "insert/1" do
+    import Publication, only: [insert: 1]
+
     test "when inserting valid publications, returns {:ok, publication}" do
-      assert({:ok, @valid_attrs} = Publication.insert(@valid_attrs))
+      assert({:ok, @valid_attrs} = insert(@valid_attrs))
     end
 
     test "when inserting a duplicate publication, returns {:error, :conflict}" do
-      {:ok, _publication} = Publication.insert(@valid_attrs)
-      assert {:error, :conflict} = Publication.insert(@valid_attrs)
+      {:ok, _publication} = entity_fixture(@valid_attrs)
+      assert {:error, :conflict} = insert(@valid_attrs)
     end
 
     test "when inserting an empty publication, returns an error map with :required errors" do
-      assert(
-        {:error, @empty_attrs_error_map} == Publication.insert(@empty_attrs)
-      )
+      assert({:error, @empty_attrs_error_map} == insert(@empty_attrs))
     end
 
     test "when inserting an skeleton publication, returns a deep error map with :required errors" do
-      assert(
-        {:error, @skeleton_attrs_error_map} ==
-          Publication.insert(@skeleton_attrs)
-      )
+      assert({:error, @skeleton_attrs_error_map} == insert(@skeleton_attrs))
     end
   end
 
   describe "validate/1" do
+    import Publication, only: [validate: 1]
+
     test "when validating valid publications, returns {:ok, publication}" do
-      assert({:ok} = Publication.validate(@valid_attrs))
+      assert({:ok} = validate(@valid_attrs))
     end
 
     test "when validating a duplicate publication, returns {:error, :conflict}" do
-      {:ok, _publication} = Publication.insert(@valid_attrs)
-      assert {:error, :conflict} = Publication.validate(@valid_attrs)
+      {:ok, _publication} = entity_fixture(@valid_attrs)
+      assert {:error, :conflict} = validate(@valid_attrs)
     end
 
     test "when validating an empty publication, returns an error map with :required errors" do
-      assert(
-        {:error, @empty_attrs_error_map} == Publication.validate(@empty_attrs)
-      )
+      assert({:error, @empty_attrs_error_map} == validate(@empty_attrs))
     end
 
     test "when validating an skeleton publication, returns a deep error map with :required errors" do
-      assert(
-        {:error, @skeleton_attrs_error_map} ==
-          Publication.validate(@skeleton_attrs)
-      )
+      assert({:error, @skeleton_attrs_error_map} == validate(@skeleton_attrs))
     end
   end
 end
