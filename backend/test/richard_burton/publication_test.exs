@@ -124,8 +124,7 @@ defmodule RichardBurton.PublicationTest do
           Map.put(@valid_attrs, :year, 1890)
         ])
 
-      preloaded_publications =
-        Repo.preload(publications, translated_book: [:original_book])
+      preloaded_publications = Repo.preload(publications, translated_book: [:original_book])
 
       assert preloaded_publications == Publication.all()
     end
