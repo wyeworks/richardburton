@@ -65,10 +65,19 @@ defmodule RichardBurton.Publication do
   end
 
   def insert(attrs) do
-    %__MODULE__{} |> changeset(attrs) |> Repo.insert()
-  end
+    %__MODULE__{}
+    |> changeset(attrs)
+    |> Repo.insert()
+    |> case do
+      {:ok, publication} ->
+        {:ok, publication}
 
-  def insert_all(entries) do
-    Repo.transaction(fn -> Enum.map(entries, &insert/1) end)
+      {:error, changeset} ->
+        Repo.get_errors(changeset)
+        |> case do
+          %{title: :unique} -> {:error, :conflict}
+          error_map -> {:error, error_map}
+        end
+    end
   end
 end
