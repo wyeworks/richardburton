@@ -21,6 +21,8 @@ defmodule RichardBurton.PublicationTest do
     }
   }
 
+  @skeleton_attrs %{translated_book: %{original_book: %{}}}
+
   def entity do
     {%Publication{}, &Publication.changeset/2, @valid_attrs}
   end
@@ -43,5 +45,41 @@ defmodule RichardBurton.PublicationTest do
 
     test "when a publication with the provided attributes exists, is invalid",
       do: test_unique_constraint(:title)
+  end
+
+  describe "insert/1" do
+    test "when inserting a duplicate publication, sreturns {:error, :conflict}" do
+      {:ok, _publication} = Publication.insert(@valid_attrs)
+      assert {:error, :conflict} = Publication.insert(@valid_attrs)
+    end
+
+    test "when inserting an empty publication, returns an error map with :required errors" do
+      assert(
+        {:error,
+         %{
+           title: :required,
+           country: :required,
+           year: :required,
+           publisher: :required,
+           translated_book: :required
+         }} == Publication.insert(%{})
+      )
+    end
+
+    test "when inserting an skeleton publication, returns a deep error map with :required errors" do
+      assert(
+        {:error,
+         %{
+           title: :required,
+           country: :required,
+           year: :required,
+           publisher: :required,
+           translated_book: %{
+             authors: :required,
+             original_book: %{authors: :required, title: :required}
+           }
+         }} == Publication.insert(@skeleton_attrs)
+      )
+    end
   end
 end
