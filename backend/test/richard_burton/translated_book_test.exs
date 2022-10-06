@@ -33,27 +33,14 @@ defmodule RichardBurton.TranslatedBookTest do
       assert %{} = errors_on(changeset)
     end
 
-    test "when :authors is blank, is invalid" do
-      changeset = changeset_fixture(%{authors: ""})
-      assert not changeset.valid?
-      assert %{authors: ["can't be blank"]} = errors_on(changeset)
-    end
+    test "when :authors is blank, is invalid", do: test_not_blank(:authors)
+    test "when :authors is nil, is invalid", do: test_not_nil(:authors)
 
-    test "when :authors is nil, is invalid" do
-      changeset = changeset_fixture(%{authors: nil})
-      assert not changeset.valid?
-      assert %{authors: ["can't be blank"]} = errors_on(changeset)
-    end
+    test "when :original_book is empty, is invalid",
+      do: test_invalid_attr_value(:original_book, %{})
 
-    test "when :original_book is empty, is invalid" do
-      changeset = changeset_fixture(%{original_book: %{}})
-      assert not changeset.valid?
-    end
-
-    test "when :original_book is nil, is invalid" do
-      changeset = changeset_fixture(%{original_book: nil})
-      assert not changeset.valid?
-    end
+    test "when :original_book is nil, is invalid",
+      do: test_not_nil(:original_book)
 
     test "when there is a translated_book with the provided :authors and :title, is invalid" do
       {:ok, _} = translated_book_fixture(@valid_attrs)

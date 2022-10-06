@@ -27,29 +27,10 @@ defmodule RichardBurton.OriginalBookTest do
       assert %{} = errors_on(changeset)
     end
 
-    test "when :authors is blank, is invalid" do
-      changeset = changeset_fixture(%{authors: ""})
-      assert not changeset.valid?
-      assert %{authors: ["can't be blank"]} = errors_on(changeset)
-    end
-
-    test "when :authors is nil, is invalid" do
-      changeset = changeset_fixture(%{authors: nil})
-      assert not changeset.valid?
-      assert %{authors: ["can't be blank"]} = errors_on(changeset)
-    end
-
-    test "when :title is blank, is invalid" do
-      changeset = changeset_fixture(%{title: ""})
-      assert not changeset.valid?
-      assert %{title: ["can't be blank"]} = errors_on(changeset)
-    end
-
-    test "when :title is nil, is invalid" do
-      changeset = changeset_fixture(%{title: nil})
-      assert not changeset.valid?
-      assert %{title: ["can't be blank"]} = errors_on(changeset)
-    end
+    test "when :authors is blank, is invalid", do: test_not_blank(:authors)
+    test "when :authors is nil, is invalid", do: test_not_nil(:authors)
+    test "when :title is blank, is invalid", do: test_not_blank(:title)
+    test "when :title is nil, is invalid", do: test_not_nil(:title)
 
     test "when there is a original_book with the provided :authors and :title, is invalid" do
       {:ok, _} = original_book_fixture(@valid_attrs)
