@@ -15,14 +15,11 @@ defmodule RichardBurton.TranslatedBookTest do
     }
   }
 
-  describe "changeset/2" do
-    def changeset_fixture(attrs \\ %{}) do
-      TranslatedBook.changeset(
-        %TranslatedBook{},
-        Enum.into(attrs, @valid_attrs)
-      )
-    end
+  def entity do
+    {%TranslatedBook{}, &TranslatedBook.changeset/2, @valid_attrs}
+  end
 
+  describe "changeset/2" do
     def translated_book_fixture(attrs \\ %{}) do
       attrs |> changeset_fixture |> Repo.insert()
     end

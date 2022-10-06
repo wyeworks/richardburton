@@ -25,8 +25,17 @@ defmodule RichardBurton.DataCase do
       import Ecto.Query
       import RichardBurton.DataCase
 
-      def changeset_fixture(_attrs) do
+      def entity do
         raise "Not implemented"
+      end
+
+      def changeset_fixture(attrs \\ %{}) do
+        {struct, changeset, valid_attrs} = entity()
+
+        changeset.(
+          struct,
+          Enum.into(attrs, valid_attrs)
+        )
       end
 
       def test_invalid_attr_value(name, value, error \\ false) do
@@ -44,7 +53,7 @@ defmodule RichardBurton.DataCase do
       def test_not_nil(attr),
         do: test_invalid_attr_value(attr, nil, ["can't be blank"])
 
-      defoverridable changeset_fixture: 1
+      defoverridable entity: 0
     end
   end
 

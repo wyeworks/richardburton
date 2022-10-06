@@ -12,11 +12,11 @@ defmodule RichardBurton.OriginalBookTest do
     title: "Manuel de Moraes: crônica do século XVII"
   }
 
-  describe "changeset/2" do
-    def changeset_fixture(attrs \\ %{}) do
-      OriginalBook.changeset(%OriginalBook{}, Enum.into(attrs, @valid_attrs))
-    end
+  def entity do
+    {%OriginalBook{}, &OriginalBook.changeset/2, @valid_attrs}
+  end
 
+  describe "changeset/2" do
     def original_book_fixture(attrs \\ %{}) do
       attrs |> changeset_fixture |> Repo.insert()
     end

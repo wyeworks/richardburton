@@ -21,14 +21,11 @@ defmodule RichardBurton.PublicationTest do
     }
   }
 
-  describe "changeset/2" do
-    def changeset_fixture(attrs \\ %{}) do
-      Publication.changeset(
-        %Publication{},
-        Enum.into(attrs, @valid_attrs)
-      )
-    end
+  def entity do
+    {%Publication{}, &Publication.changeset/2, @valid_attrs}
+  end
 
+  describe "changeset/2" do
     def publication_fixture(attrs \\ %{}) do
       attrs |> changeset_fixture |> Repo.insert()
     end
