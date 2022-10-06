@@ -8,7 +8,20 @@ defmodule RichardBurtonWeb.PublicationController do
   end
 
   def create_all(conn, %{"_json" => entries}) do
-    Enum.each(entries, &Publication.insert/1)
-    conn |> put_status(:created) |> json(%{})
+    {status, response_body} =
+      entries
+      |> Publication.insert_all()
+      |> case do
+        {:ok, publications} ->
+          {:created, publications}
+
+        {:error, {attrs, :conflict}} ->
+          {:conflict, attrs}
+
+        {:error, {attrs, errors}} ->
+          {:bad_request, %{attrs: attrs, errors: errors}}
+      end
+
+    conn |> put_status(status) |> json(response_body)
   end
 end
