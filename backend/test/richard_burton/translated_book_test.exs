@@ -20,12 +20,7 @@ defmodule RichardBurton.TranslatedBookTest do
   end
 
   describe "changeset/2" do
-    test "when non-blank :authors and :original_book are provided, is valid" do
-      changeset = changeset_fixture()
-      assert changeset.valid?
-      assert %{} = errors_on(changeset)
-    end
-
+    test "when valid attributes are provided, is valid", do: test_valid_attrs()
     test "when :authors is blank, is invalid", do: test_not_blank(:authors)
     test "when :authors is nil, is invalid", do: test_not_nil(:authors)
 

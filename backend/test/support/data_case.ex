@@ -42,6 +42,12 @@ defmodule RichardBurton.DataCase do
         attrs |> changeset_fixture |> Repo.insert()
       end
 
+      def test_valid_attrs() do
+        changeset = changeset_fixture()
+        assert changeset.valid?
+        assert %{} = errors_on(changeset)
+      end
+
       def test_invalid_attr_value(name, value, error \\ false) do
         changeset = %{} |> Map.put(name, value) |> changeset_fixture
         assert not changeset.valid?
