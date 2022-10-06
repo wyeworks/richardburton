@@ -102,4 +102,20 @@ defmodule RichardBurton.Publication do
       error_map -> error_map
     end
   end
+
+  def insert_all(attrs_list) do
+    Repo.transaction(fn ->
+      Enum.map(attrs_list, &insert_or_rollback/1)
+    end)
+  end
+
+  defp insert_or_rollback(attrs) do
+    case insert(attrs) do
+      {:ok, publication} ->
+        publication
+
+      {:error, errors} ->
+        Repo.rollback({attrs, errors})
+    end
+  end
 end
