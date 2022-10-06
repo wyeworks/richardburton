@@ -73,11 +73,33 @@ defmodule RichardBurton.Publication do
         {:ok, publication}
 
       {:error, changeset} ->
-        Repo.get_errors(changeset)
-        |> case do
-          %{title: :unique} -> {:error, :conflict}
-          error_map -> {:error, error_map}
-        end
+        {:error, get_errors(changeset)}
+    end
+  end
+
+  def validate(attrs) do
+    changeset = changeset(%__MODULE__{}, attrs)
+
+    if changeset.valid? do
+      unique_key = [:title, :country, :year, :publisher]
+      unique_key_values = Repo.get_unique_key_values(unique_key, changeset)
+
+      __MODULE__
+      |> Repo.get_by(Enum.zip(unique_key, unique_key_values))
+      |> case do
+        nil -> {:ok}
+        _publication -> {:error, :conflict}
+      end
+    else
+      {:error, get_errors(changeset)}
+    end
+  end
+
+  defp get_errors(changeset) do
+    Repo.get_errors(changeset)
+    |> case do
+      %{title: :unique} -> :conflict
+      error_map -> error_map
     end
   end
 end

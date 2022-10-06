@@ -21,7 +21,27 @@ defmodule RichardBurton.PublicationTest do
     }
   }
 
+  @empty_attrs %{}
   @skeleton_attrs %{translated_book: %{original_book: %{}}}
+
+  @empty_attrs_error_map %{
+    title: :required,
+    country: :required,
+    year: :required,
+    publisher: :required,
+    translated_book: :required
+  }
+
+  @skeleton_attrs_error_map %{
+    title: :required,
+    country: :required,
+    year: :required,
+    publisher: :required,
+    translated_book: %{
+      authors: :required,
+      original_book: %{authors: :required, title: :required}
+    }
+  }
 
   def entity do
     {%Publication{}, &Publication.changeset/2, @valid_attrs}
@@ -48,37 +68,49 @@ defmodule RichardBurton.PublicationTest do
   end
 
   describe "insert/1" do
-    test "when inserting a duplicate publication, sreturns {:error, :conflict}" do
+    test "when inserting valid publications, returns {:ok, publication}" do
+      assert({:ok, @valid_attrs} = Publication.insert(@valid_attrs))
+    end
+
+    test "when inserting a duplicate publication, returns {:error, :conflict}" do
       {:ok, _publication} = Publication.insert(@valid_attrs)
       assert {:error, :conflict} = Publication.insert(@valid_attrs)
     end
 
     test "when inserting an empty publication, returns an error map with :required errors" do
       assert(
-        {:error,
-         %{
-           title: :required,
-           country: :required,
-           year: :required,
-           publisher: :required,
-           translated_book: :required
-         }} == Publication.insert(%{})
+        {:error, @empty_attrs_error_map} == Publication.insert(@empty_attrs)
       )
     end
 
     test "when inserting an skeleton publication, returns a deep error map with :required errors" do
       assert(
-        {:error,
-         %{
-           title: :required,
-           country: :required,
-           year: :required,
-           publisher: :required,
-           translated_book: %{
-             authors: :required,
-             original_book: %{authors: :required, title: :required}
-           }
-         }} == Publication.insert(@skeleton_attrs)
+        {:error, @skeleton_attrs_error_map} ==
+          Publication.insert(@skeleton_attrs)
+      )
+    end
+  end
+
+  describe "validate/1" do
+    test "when validating valid publications, returns {:ok, publication}" do
+      assert({:ok} = Publication.validate(@valid_attrs))
+    end
+
+    test "when validating a duplicate publication, returns {:error, :conflict}" do
+      {:ok, _publication} = Publication.insert(@valid_attrs)
+      assert {:error, :conflict} = Publication.validate(@valid_attrs)
+    end
+
+    test "when validating an empty publication, returns an error map with :required errors" do
+      assert(
+        {:error, @empty_attrs_error_map} == Publication.validate(@empty_attrs)
+      )
+    end
+
+    test "when validating an skeleton publication, returns a deep error map with :required errors" do
+      assert(
+        {:error, @skeleton_attrs_error_map} ==
+          Publication.validate(@skeleton_attrs)
       )
     end
   end
