@@ -26,10 +26,6 @@ defmodule RichardBurton.PublicationTest do
   end
 
   describe "changeset/2" do
-    def publication_fixture(attrs \\ %{}) do
-      attrs |> changeset_fixture |> Repo.insert()
-    end
-
     test "when non-blank :title, :country, :year, :publisher and :translated_book are provided, is valid" do
       changeset = changeset_fixture()
       assert changeset.valid?
@@ -50,11 +46,7 @@ defmodule RichardBurton.PublicationTest do
     test "when :translated_book is nil, is invalid",
       do: test_not_nil(:translated_book)
 
-    test "when there is a publication with the provided :title, :country, :year and :publisher, is invalid" do
-      {:ok, _} = publication_fixture(@valid_attrs)
-      {:error, changeset} = publication_fixture(@valid_attrs)
-      assert not changeset.valid?
-      assert %{title: ["has already been taken"]} = errors_on(changeset)
-    end
+    test "when a publication with the provided attributes exists, is invalid",
+      do: test_unique_constraint(:title)
   end
 end
