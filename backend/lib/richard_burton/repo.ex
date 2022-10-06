@@ -31,7 +31,7 @@ defmodule RichardBurton.Repo do
     end)
   end
 
-  defp get_unique_key_values(unique_key, changeset) do
+  def get_unique_key_values(unique_key, changeset) do
     Enum.map(unique_key, fn key ->
       case changeset.changes[key] do
         %Ecto.Changeset{} -> changeset.changes[key].data.id
