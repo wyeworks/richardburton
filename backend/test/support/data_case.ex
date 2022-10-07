@@ -50,7 +50,7 @@ defmodule RichardBurton.DataCase do
 
       def test_invalid_attr_value(name, value, error \\ false) do
         changeset = %{} |> Map.put(name, value) |> changeset_fixture
-        assert not changeset.valid?
+        refute changeset.valid?, "Changeset is valid"
 
         if error do
           assert Map.put(%{}, name, error) == errors_on(changeset)
@@ -72,7 +72,7 @@ defmodule RichardBurton.DataCase do
         expected_errors =
           Map.put(%{}, unique_constraint_name, ["has already been taken"])
 
-        assert not changeset.valid?
+        refute changeset.valid?, "Changeset is valid"
         assert expected_errors == errors_on(changeset)
       end
 
