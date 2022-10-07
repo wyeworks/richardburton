@@ -35,18 +35,19 @@ defmodule RichardBurton.TranslatedBook do
       original_book = OriginalBook.maybe_insert!(original_book_attrs)
 
       # Compute complete changeset with the complete original_book associated
-      translated_book
-      |> cast(attrs, [:authors])
+      result
       |> put_assoc(:original_book, original_book)
-      |> validate_required([:authors, :original_book])
       |> unique_constraint([:authors, :original_book_id])
     else
-      result.valid?
       # Return the changeset with the original_book validation errors
       result
     end
   end
 
+  @spec maybe_insert!(
+          :invalid
+          | %{optional(:__struct__) => none, optional(atom | binary) => any}
+        ) :: any
   def maybe_insert!(attrs) do
     %__MODULE__{}
     |> changeset(attrs)
