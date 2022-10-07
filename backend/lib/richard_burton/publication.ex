@@ -43,19 +43,10 @@ defmodule RichardBurton.Publication do
       translated_book = TranslatedBook.maybe_insert!(translated_book_attrs)
 
       # Compute complete changeset with the complete translated_book associated
-      publication
-      |> cast(attrs, [:title, :year, :country, :publisher])
+      result
       |> put_assoc(:translated_book, translated_book)
-      |> validate_required([
-        :title,
-        :year,
-        :country,
-        :publisher,
-        :translated_book
-      ])
       |> unique_constraint([:title, :year, :country, :publisher])
     else
-      result.valid?
       # Return the changeset with the translated_book validation errors
       result
     end
