@@ -71,7 +71,9 @@ defmodule RichardBurton.PublicationTest do
     import Publication, only: [insert: 1]
 
     test "when inserting valid publications, returns {:ok, publication}" do
-      assert({:ok, @valid_attrs} = insert(@valid_attrs))
+      result = insert(@valid_attrs)
+      [p] = Publication.all()
+      assert {:ok, p} == result
     end
 
     test "when inserting a duplicate publication, returns {:error, :conflict}" do
