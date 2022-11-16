@@ -39,8 +39,7 @@ defmodule RichardBurton.Publication do
     # Check if translated_book is valid
     if result.valid? do
       # Insert or fetch the valid translated_book
-      translated_book_attrs = get_translated_book_attrs_from_changeset(result)
-      translated_book = TranslatedBook.maybe_insert!(translated_book_attrs)
+      translated_book = TranslatedBook.maybe_insert!(attrs.translated_book)
 
       # Compute complete changeset with the complete translated_book associated
       result
@@ -50,12 +49,6 @@ defmodule RichardBurton.Publication do
       # Return the changeset with the translated_book validation errors
       result
     end
-  end
-
-  defp get_translated_book_attrs_from_changeset(changeset) do
-    translated_book_changes = changeset.changes.translated_book.changes
-    original_book = Map.from_struct(translated_book_changes.original_book.data)
-    Map.merge(translated_book_changes, %{original_book: original_book})
   end
 
   def all do

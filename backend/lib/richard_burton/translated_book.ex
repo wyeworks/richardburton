@@ -31,8 +31,7 @@ defmodule RichardBurton.TranslatedBook do
     # Check if original_book is valid
     if result.valid? do
       # Insert or fetch the valid original book
-      original_book_attrs = result.changes.original_book.changes
-      original_book = OriginalBook.maybe_insert!(original_book_attrs)
+      original_book = OriginalBook.maybe_insert!(attrs.original_book)
 
       # Compute complete changeset with the complete original_book associated
       result
