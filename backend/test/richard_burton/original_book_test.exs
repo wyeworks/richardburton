@@ -8,8 +8,8 @@ defmodule RichardBurton.OriginalBookTest do
   alias RichardBurton.OriginalBook
 
   @valid_attrs %{
-    authors: "J. M. Pereira da Silva",
-    title: "Manuel de Moraes: crônica do século XVII"
+    "authors" => "J. M. Pereira da Silva",
+    "title" => "Manuel de Moraes: crônica do século XVII"
   }
 
   def entity do
@@ -22,10 +22,10 @@ defmodule RichardBurton.OriginalBookTest do
     end
 
     test "when valid attributes are provided, is valid", do: test_valid_attrs()
-    test "when :authors is blank, is invalid", do: test_not_blank(:authors)
-    test "when :authors is nil, is invalid", do: test_not_nil(:authors)
-    test "when :title is blank, is invalid", do: test_not_blank(:title)
-    test "when :title is nil, is invalid", do: test_not_nil(:title)
+    test "when :authors is blank, is invalid", do: test_not_blank("authors")
+    test "when :authors is nil, is invalid", do: test_not_nil("authors")
+    test "when :title is blank, is invalid", do: test_not_blank("title")
+    test "when :title is nil, is invalid", do: test_not_nil("title")
 
     test "when a original_book with the provided attributes exists, is invalid",
       do: test_unique_constraint(:authors)
