@@ -53,7 +53,8 @@ defmodule RichardBurton.DataCase do
         refute changeset.valid?, "Changeset is valid"
 
         if error do
-          assert Map.put(%{}, name, error) == errors_on(changeset)
+          assert Map.put(%{}, String.to_atom(name), error) ==
+                   errors_on(changeset)
         end
       end
 
