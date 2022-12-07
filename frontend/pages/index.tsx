@@ -2,34 +2,17 @@ import type { NextPage } from "next";
 import { useQuery } from "react-query";
 import { API } from "app";
 import {
-  FlatPublication,
   FlatPublicationKey,
+  Publication,
   PUBLICATION_ATTRIBUTES,
   PUBLICATION_ATTRIBUTE_LABELS,
-  TranslatedBook,
+  toFlatPublications,
 } from "types";
 import PublicationIndex from "components/PublicationIndex";
 import Toggle from "components/Toggle";
 import Head from "next/head";
 import { useState } from "react";
-
-const toFlatPublication = (book: TranslatedBook): FlatPublication => {
-  const [firstPublication] = book.publications;
-
-  return {
-    originalTitle: book.originalBook.title,
-    originalAuthors: book.originalBook.authors,
-    authors: book.authors,
-    title: firstPublication.title,
-    year: firstPublication.year,
-    country: firstPublication.country,
-    publisher: firstPublication.publisher,
-  };
-};
-
-const toFlatPublications = (books: TranslatedBook[]): FlatPublication[] => {
-  return books.map(toFlatPublication);
-};
+import PublicationUpload from "components/PublicationUpload";
 
 const DEFAULT_COLUMNS: FlatPublicationKey[] = [
   "originalTitle",
@@ -39,11 +22,11 @@ const DEFAULT_COLUMNS: FlatPublicationKey[] = [
 ];
 
 const Home: NextPage = () => {
-  const { data: translatedBooks } = useQuery<TranslatedBook[]>(
-    "translated-books",
+  const { data: publications } = useQuery<Publication[]>(
+    "publications",
     async () => {
       try {
-        const { data } = await API.get("/books/translated");
+        const { data } = await API.get("publications");
         return data;
       } catch (error) {
         return error;
@@ -58,7 +41,7 @@ const Home: NextPage = () => {
       <Head>
         <title>Richard Burton</title>
       </Head>
-      <div className="relative flex flex-col h-full p-8 overflow-hidden gap-y-8 2xl:mx-auto max-w-7xl pr-52">
+      <div className="relative flex flex-col h-full p-8 overflow-hidden gap-y-8 xl:mx-auto max-w-7xl pr-52">
         <header className="space-y-2 text-center ">
           <h1 className="text-5xl">Richard Burton Platform</h1>
           <h2 className="text-2xl">
@@ -67,8 +50,8 @@ const Home: NextPage = () => {
         </header>
 
         <main className="w-full overflow-scroll">
-          <>
-            <aside className="absolute right-0 w-48 p-2 space-y-2">
+          <aside className="absolute right-0 p-2 space-y-6">
+            <div className="space-y-2">
               {PUBLICATION_ATTRIBUTES.map((attribute) => {
                 const isActive = columns.has(attribute);
                 const newColumns = new Set(columns);
@@ -88,16 +71,17 @@ const Home: NextPage = () => {
                   />
                 );
               })}
-            </aside>
-            {translatedBooks ? (
-              <PublicationIndex
-                entries={toFlatPublications(translatedBooks)}
-                columns={columns}
-              />
-            ) : (
-              "loading..."
-            )}
-          </>
+            </div>
+            <PublicationUpload />
+          </aside>
+          {publications ? (
+            <PublicationIndex
+              entries={toFlatPublications(publications)}
+              columns={columns}
+            />
+          ) : (
+            "loading..."
+          )}
         </main>
       </div>
     </>
