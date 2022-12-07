@@ -10,10 +10,10 @@ defmodule RichardBurton.OriginalBook do
 
   @derive {Jason.Encoder, only: [:authors, :title]}
   schema "original_books" do
-    field :authors, :string
-    field :title, :string
+    field(:authors, :string)
+    field(:title, :string)
 
-    has_many :translated_books, TranslatedBook
+    has_many(:translated_books, TranslatedBook)
 
     timestamps()
   end

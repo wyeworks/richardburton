@@ -21,18 +21,39 @@ defmodule RichardBurton.TranslatedBook do
 
   @doc false
   def changeset(translated_book, attrs \\ %{}) do
-    original_book = OriginalBook.maybe_insert!(attrs["original_book"])
+    # Compute basic changeset with original_book validation
+    result =
+      translated_book
+      |> cast(attrs, [:authors])
+      |> cast_assoc(:original_book)
+      |> validate_required([:authors, :original_book])
 
-    translated_book
-    |> cast(attrs, [:authors])
-    |> validate_required([:authors])
-    |> put_assoc(:original_book, original_book)
-    |> unique_constraint([:authors, :original_book_id])
+    # Check if original_book is valid
+    if result.valid? do
+      # Insert or fetch the valid original book
+      original_book = OriginalBook.maybe_insert!(attrs["original_book"])
+
+      # Compute complete changeset with the complete original_book associated
+      result
+      |> put_assoc(:original_book, original_book)
+      |> unique_constraint([:authors, :original_book_id])
+    else
+      # Return the changeset with the original_book validation errors
+      result
+    end
   end
 
+  @spec maybe_insert!(
+          :invalid
+          | %{optional(:__struct__) => none, optional(atom | binary) => any}
+        ) :: any
   def maybe_insert!(attrs) do
     %__MODULE__{}
     |> changeset(attrs)
     |> Repo.maybe_insert!([:authors, :original_book])
+  end
+
+  def all() do
+    __MODULE__ |> Repo.all() |> Repo.preload(:original_book)
   end
 end
