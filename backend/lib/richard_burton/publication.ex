@@ -8,21 +8,21 @@ defmodule RichardBurton.Publication do
   alias RichardBurton.Repo
   alias RichardBurton.TranslatedBook
 
-  @derive {Jason.Encoder, only: [:country, :publisher, :title, :year]}
+  @derive {Jason.Encoder, only: [:country, :publisher, :title, :year, :translated_book]}
   schema "publications" do
-    field :country, :string
-    field :publisher, :string
-    field :title, :string
-    field :year, :integer
+    field(:country, :string)
+    field(:publisher, :string)
+    field(:title, :string)
+    field(:year, :integer)
 
-    belongs_to :translated_book, TranslatedBook
+    belongs_to(:translated_book, TranslatedBook)
 
     timestamps()
   end
 
   @doc false
   def changeset(publication, attrs \\ %{}) do
-    translated_book = TranslatedBook.maybe_insert!(attrs.translated_book)
+    translated_book = TranslatedBook.maybe_insert!(attrs["translated_book"])
 
     publication
     |> cast(attrs, [:title, :year, :country, :publisher])
@@ -31,9 +31,17 @@ defmodule RichardBurton.Publication do
     |> unique_constraint([:title, :year, :country, :publisher])
   end
 
-  def maybe_insert!(attrs) do
-    %__MODULE__{}
-    |> changeset(attrs)
-    |> Repo.maybe_insert!([:title, :year, :country, :publisher])
+  def all do
+    __MODULE__
+    |> Repo.all()
+    |> Repo.preload(translated_book: [:original_book])
+  end
+
+  def insert(attrs) do
+    %__MODULE__{} |> changeset(attrs) |> Repo.insert()
+  end
+
+  def insert_all(entries) do
+    Repo.transaction(fn -> Enum.map(entries, &insert/1) end)
   end
 end

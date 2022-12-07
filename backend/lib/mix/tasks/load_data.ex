@@ -25,22 +25,22 @@ defmodule Mix.Tasks.Rb.LoadData do
       ]
     )
     |> Enum.map(&deserialize/1)
-    |> Enum.map(&Publication.maybe_insert!/1)
+    |> Publication.insert_all
   end
 
   defp deserialize(row) do
     {year, _} = Integer.parse(row.year)
 
     %{
-      title: row.title,
-      year: year,
-      country: row.country,
-      publisher: row.publisher,
-      translated_book: %{
-        authors: row.authors,
-        original_book: %{
-          title: row.original_title,
-          authors: row.original_authors
+      "title" => row.title,
+      "year" => year,
+      "country" => row.country,
+      "publisher" => row.publisher,
+      "translated_book" => %{
+        "authors" => row.authors,
+        "original_book" => %{
+          "title" => row.original_title,
+          "authors" => row.original_authors
         }
       }
     }

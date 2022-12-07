@@ -17,8 +17,10 @@
     "baseUrl": ".",
     "paths": {
       "app": ["pages/_app"]
-    }
+    },
+    "downlevelIteration": true
   },
+
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
   "exclude": ["node_modules"]
 }
