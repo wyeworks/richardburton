@@ -63,8 +63,12 @@ const Errors: FC = () => {
                 animate={{ scale: 1, opacity: 1 }}
                 exit={{ scale: 0.9, opacity: 0 }}
                 transition={{ duration: 0.1 }}
+                aria-modal="true"
+                aria-describedby="snackbar-message"
+                aria-label="Error"
               >
-                <span>⚠️</span> <span>{message}</span>
+                <span role="presentation">⚠️</span>{" "}
+                <span id={`snackbar-message-${key}`}>{message}</span>
               </motion.div>
             )
         )}
