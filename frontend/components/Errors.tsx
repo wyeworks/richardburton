@@ -50,7 +50,7 @@ const Errors: FC = () => {
     });
 
   return (
-    <section className="fixed z-50 flex flex-col-reverse items-center space-y-2 space-y-reverse -translate-x-1/2 left-1/2 top-10">
+    <section className="fixed z-50 flex flex-col items-center space-y-2 -translate-x-1/2 left-1/2 top-10">
       <AnimatePresence>
         {snackbars.map(
           ({ key, message }) =>
