@@ -7,17 +7,25 @@ import uploadedPublicationsAtom from "recoil/uploadedPublicationsAtom";
 import Button from "components/Button";
 import { API } from "app";
 import Router from "next/router";
+import Errors, { useNotifyError } from "components/Errors";
+import axios from "axios";
 
 const NewPublications: NextPage = () => {
   const uploadedPublications = useRecoilValue(uploadedPublicationsAtom);
 
+  const notifyError = useNotifyError();
+
   const handleSubmit = async () => {
     if (uploadedPublications) {
-      await API.post(
-        "publications/bulk",
-        fromFlatPublications(uploadedPublications)
-      );
-      Router.push("/");
+      try {
+        await API.post(
+          "publications/bulk",
+          fromFlatPublications(uploadedPublications)
+        );
+        Router.push("/");
+      } catch (error) {
+        if (axios.isAxiosError(error)) notifyError(error.message);
+      }
     }
   };
 
@@ -35,6 +43,7 @@ const NewPublications: NextPage = () => {
             A database about Brazilian literature in translation
           </span>
         </header>
+        <Errors />
         <main className="flex flex-col p-4 overflow-hidden gap-y-8">
           <h1 className="my-4 text-4xl text-center ">
             {uploadedPublications?.length} publications about to be inserted...
