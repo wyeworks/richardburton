@@ -1,3 +1,4 @@
+import { motion, AnimatePresence } from "framer-motion";
 import { FC, useEffect } from "react";
 import { atom, useRecoilState, useSetRecoilState } from "recoil";
 
@@ -26,14 +27,20 @@ const Errors: FC = () => {
 
   return (
     <section className="fixed z-50 flex flex-col items-center space-y-2 -translate-x-1/2 left-1/2 top-10">
-      {errors.map((message, index) => (
-        <div
-          key={index}
-          className="px-3 py-2 space-x-2 bg-white rounded shadow-md  w-96 error"
-        >
-          <span>⚠️</span> <span>{message}</span>
-        </div>
-      ))}
+      <AnimatePresence>
+        {errors.map((message, index) => (
+          <motion.div
+            key={index}
+            className="px-3 py-2 space-x-2 bg-white rounded shadow-md w-96 error"
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.9, opacity: 0 }}
+            transition={{ duration: 0.1 }}
+          >
+            <span>⚠️</span> <span>{message}</span>
+          </motion.div>
+        ))}
+      </AnimatePresence>
     </section>
   );
 };
