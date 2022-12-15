@@ -1,27 +1,26 @@
 import type { NextPage } from "next";
-import { fromFlatPublications, PUBLICATION_ATTRIBUTES } from "types";
+import { PUBLICATION_ATTRIBUTES, toFlatPublications } from "types";
 import PublicationIndex from "components/PublicationIndex";
 import Head from "next/head";
 import { useRecoilValue } from "recoil";
-import uploadedPublicationsAtom from "recoil/uploadedPublicationsAtom";
+
 import Button from "components/Button";
 import { API } from "app";
 import Router from "next/router";
 import Errors, { useNotifyError } from "components/Errors";
 import axios from "axios";
+import { publicationsAtom } from "components/PublicationUpload";
 
 const NewPublications: NextPage = () => {
-  const uploadedPublications = useRecoilValue(uploadedPublicationsAtom);
+  const publications = useRecoilValue(publicationsAtom);
 
   const notifyError = useNotifyError();
 
   const handleSubmit = async () => {
-    if (uploadedPublications) {
+    if (publications) {
       try {
-        await API.post(
-          "publications/bulk",
-          fromFlatPublications(uploadedPublications)
-        );
+        await API.post("publications/bulk", publications);
+
         Router.push("/");
       } catch (error) {
         if (axios.isAxiosError(error)) notifyError(error.message);
@@ -46,14 +45,14 @@ const NewPublications: NextPage = () => {
         <Errors />
         <main className="flex flex-col p-4 overflow-hidden gap-y-8">
           <h1 className="my-4 text-4xl text-center ">
-            {uploadedPublications?.length} publications about to be inserted...
+            {publications?.length} publications about to be inserted...
           </h1>
 
-          {uploadedPublications ? (
+          {publications ? (
             <section className="flex space-x-8 overflow-hidden 2xl:justify-center">
               <div className="overflow-scroll">
                 <PublicationIndex
-                  entries={uploadedPublications}
+                  entries={toFlatPublications(publications)}
                   columns={new Set(PUBLICATION_ATTRIBUTES)}
                 />
               </div>
