@@ -5,11 +5,19 @@ defmodule RichardBurtonWeb.Router do
     plug(:accepts, ["json"])
   end
 
+  pipeline :bulk do
+    plug(:accepts, ["multipart/form-data"])
+  end
+
   scope "/api", RichardBurtonWeb do
     pipe_through(:api)
 
     resources("/publications", PublicationController, only: [:index])
-    post("/publications/bulk", PublicationController, :create_all)
+
+    scope "/publications/bulk" do
+      pipe_through(:bulk)
+      post("/", PublicationController, :create_all)
+    end
   end
 
   # Enables LiveDashboard only for development

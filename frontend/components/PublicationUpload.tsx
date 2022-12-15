@@ -1,45 +1,33 @@
-import { ChangeEventHandler, FC } from "react";
+import { ChangeEventHandler, FC, useEffect } from "react";
 import UploadIcon from "assets/upload.svg";
-import { useSetRecoilState } from "recoil";
-import uploadedPublicationsAtom from "recoil/uploadedPublicationsAtom";
 import Router from "next/router";
+import { API } from "app";
+import { atom, useResetRecoilState, useSetRecoilState } from "recoil";
+import { Publication } from "types";
+
+const publicationsAtom = atom<Publication[] | undefined>({
+  key: "publications",
+  default: undefined,
+});
 
 const PublicationUpload: FC = () => {
-  const setUploadedPublications = useSetRecoilState(uploadedPublicationsAtom);
+  const resetPublications = useResetRecoilState(publicationsAtom);
+  const setPublications = useSetRecoilState(publicationsAtom);
 
   const handleChange: ChangeEventHandler<HTMLInputElement> = async (event) => {
     if (event.target.files) {
       const [file] = event.target.files;
 
-      setUploadedPublications(
-        (await file.text())
-          .split("\n")
-          .filter((string) => string.trim().length > 0)
-          .map((row) => row.split(";"))
-          .map(
-            ([
-              originalAuthors,
-              year,
-              country,
-              originalTitle,
-              title,
-              authors,
-              publisher,
-            ]) => ({
-              originalAuthors,
-              year: parseInt(year),
-              country,
-              originalTitle,
-              title,
-              authors,
-              publisher,
-            })
-          )
-      );
+      const data = new FormData();
+      data.append("csv", file);
+      const { data: parsed } = await API.post("publications/bulk", data);
+      setPublications(parsed);
 
       Router.push("publications/new");
     }
   };
+
+  useEffect(() => resetPublications());
 
   return (
     <label className="flex flex-col items-center justify-center h-40 rounded-lg shadow-sm cursor-pointer hover:bg-gray-200">
@@ -56,3 +44,4 @@ const PublicationUpload: FC = () => {
 };
 
 export default PublicationUpload;
+export { publicationsAtom };
