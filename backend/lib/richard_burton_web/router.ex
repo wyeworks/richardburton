@@ -6,7 +6,7 @@ defmodule RichardBurtonWeb.Router do
   end
 
   pipeline :bulk do
-    plug(:accepts, ["multipart/form-data"])
+    plug(:accepts, ["text/csv"])
   end
 
   scope "/api", RichardBurtonWeb do
