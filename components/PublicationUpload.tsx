@@ -20,7 +20,7 @@ const PublicationUpload: FC = () => {
 
       const data = new FormData();
       data.append("csv", file);
-      const { data: parsed } = await API.post("publications/bulk", data);
+      const { data: parsed } = await API.post("publications/parse", data);
       setPublications(parsed);
 
       Router.push("publications/new");
