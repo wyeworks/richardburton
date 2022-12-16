@@ -136,7 +136,11 @@ defmodule RichardBurton.Publication do
       )
       |> Enum.map(&nest/1)
     rescue
-      _ -> Kernel.reraise("Could not parse publication", __STACKTRACE__)
+      e in CSV.RowLengthError ->
+        Kernel.reraise(e, __STACKTRACE__)
+
+      _ ->
+        Kernel.reraise("Could not parse publication", __STACKTRACE__)
     end
   end
 
