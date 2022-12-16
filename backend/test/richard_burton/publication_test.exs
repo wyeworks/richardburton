@@ -157,4 +157,38 @@ defmodule RichardBurton.PublicationTest do
       assert [] == Publication.all()
     end
   end
+
+  describe "from_csv!/1" do
+    test "when the provided csv file is valid, returns a list of publication-like maps" do
+      assert [
+               %{
+                 "title" => "Iraçéma the Honey-Lips: A Legend of Brazil",
+                 "year" => 1886,
+                 "country" => "GB",
+                 "publisher" => "Bickers & Son",
+                 "translated_book" => %{
+                   "authors" => "Isabel Burton",
+                   "original_book" => %{"authors" => "José de Alencar", "title" => "Iracema"}
+                 }
+               },
+               %{
+                 "title" => "Ubirajara: A Legend of the Tupy Indians",
+                 "year" => 1922,
+                 "country" => "GB",
+                 "publisher" => "Ronald Massey",
+                 "translated_book" => %{
+                   "authors" => "J. T. W. Sadler",
+                   "original_book" => %{"authors" => "José de Alencar", "title" => "Ubirajara"}
+                 }
+               }
+             ] = Publication.from_csv!("test/fixtures/data_valid.csv")
+    end
+
+    test "when the provided csv has an incorrect format, raise an error" do
+      assert_raise RuntimeError, fn ->
+        Publication.from_csv!("test/fixtures/data_invalid_incorrect_format.csv")
+      end
+    end
+    end
+  end
 end

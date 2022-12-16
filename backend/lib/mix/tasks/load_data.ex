@@ -11,7 +11,7 @@ defmodule Mix.Tasks.Rb.LoadData do
 
     File.cwd!()
     |> Path.join('data.csv')
-    |> Publication.from_csv()
+    |> Publication.from_csv!()
     |> Enum.map(&Publication.insert/1)
   end
 end

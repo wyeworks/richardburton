@@ -26,7 +26,7 @@ defmodule RichardBurtonWeb.PublicationController do
   end
 
   def create_all(conn, %{"csv" => %Plug.Upload{path: path}}) do
-    publications = Publication.from_csv(path)
+    publications = Publication.from_csv!(path)
 
     conn |> put_status(:ok) |> json(publications)
   end
