@@ -118,22 +118,26 @@ defmodule RichardBurton.Publication do
     end
   end
 
-  def from_csv(path) do
-    path
-    |> File.stream!()
-    |> CSV.decode!(
-      separator: ?;,
-      headers: [
-        :original_authors,
-        :year,
-        :country,
-        :original_title,
-        :title,
-        :authors,
-        :publisher
-      ]
-    )
-    |> Enum.map(&nest/1)
+  def from_csv!(path) do
+    try do
+      path
+      |> File.stream!()
+      |> CSV.decode!(
+        separator: ?;,
+        headers: [
+          :original_authors,
+          :year,
+          :country,
+          :original_title,
+          :title,
+          :authors,
+          :publisher
+        ]
+      )
+      |> Enum.map(&nest/1)
+    rescue
+      _ -> Kernel.reraise("Could not parse publication", __STACKTRACE__)
+    end
   end
 
   defp nest(%{
