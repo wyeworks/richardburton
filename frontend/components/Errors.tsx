@@ -1,4 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
+import { useRouter } from "next/router";
 import { FC, useEffect } from "react";
 import {
   atom,
@@ -21,6 +22,7 @@ const MAX_SNACKBARS = 3;
 const Errors: FC = () => {
   const [errors, setErrors] = useRecoilState(errorsAtom);
   const resetErrors = useResetRecoilState(errorsAtom);
+  const router = useRouter();
 
   useEffect(() => {
     if (errors.length > 0) {
@@ -32,7 +34,7 @@ const Errors: FC = () => {
     }
   }, [errors]);
 
-  useEffect(() => resetErrors, []);
+  useEffect(() => resetErrors, [router]);
 
   const shownErrorCount =
     errors.length === MAX_SNACKBARS
@@ -58,7 +60,7 @@ const Errors: FC = () => {
               <motion.div
                 layout
                 key={key}
-                className="px-3 py-2 space-x-2 bg-white rounded shadow-md w-96"
+                className="flex px-3 py-2 space-x-4 bg-white rounded shadow-md w-96"
                 initial={{ scale: 0.9, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 exit={{ scale: 0.9, opacity: 0 }}
@@ -67,8 +69,8 @@ const Errors: FC = () => {
                 aria-describedby="snackbar-message"
                 aria-label="Error"
               >
-                <span role="presentation">⚠️</span>{" "}
-                <span id={`snackbar-message-${key}`}>{message}</span>
+                <div role="presentation">⚠️</div>
+                <div id={`snackbar-message-${key}`}>{message}</div>
               </motion.div>
             )
         )}
