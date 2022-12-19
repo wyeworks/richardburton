@@ -3,6 +3,7 @@ defmodule RichardBurtonWeb.PublicationControllerTest do
   Tests for the Publication controller
   """
   use RichardBurtonWeb.ConnCase
+  import Routes, only: [publication_path: 2]
 
   @valid_attrs %{
     "title" => "Manuel de Moraes: A Chronicle of the Seventeenth Century",
@@ -19,8 +20,6 @@ defmodule RichardBurtonWeb.PublicationControllerTest do
   }
 
   describe "POST /publications/bulk" do
-    import Routes, only: [publication_path: 2]
-
     test "on success, returns 201 and the created publications", meta do
       publications = [
         @valid_attrs,
@@ -65,6 +64,36 @@ defmodule RichardBurtonWeb.PublicationControllerTest do
       expected_response = %{"attrs" => invalid_attrs, "errors" => %{"year" => "required"}}
 
       assert expected_response == json_response(conn, 400)
+    end
+  end
+
+  describe "POST /publications/parse" do
+    test "on success, returns 200 and the parsed publications", meta do
+      upload = %Plug.Upload{path: "test/fixtures/data_valid.csv", filename: "data.csv"}
+      conn = post(meta.conn, publication_path(meta.conn, :parse), %{"csv" => upload})
+
+      assert [
+               %{
+                 "title" => "Iraçéma the Honey-Lips: A Legend of Brazil",
+                 "year" => 1886,
+                 "country" => "GB",
+                 "publisher" => "Bickers & Son",
+                 "translated_book" => %{
+                   "authors" => "Isabel Burton",
+                   "original_book" => %{"authors" => "José de Alencar", "title" => "Iracema"}
+                 }
+               },
+               %{
+                 "title" => "Ubirajara: A Legend of the Tupy Indians",
+                 "year" => 1922,
+                 "country" => "GB",
+                 "publisher" => "Ronald Massey",
+                 "translated_book" => %{
+                   "authors" => "J. T. W. Sadler",
+                   "original_book" => %{"authors" => "José de Alencar", "title" => "Ubirajara"}
+                 }
+               }
+             ] == json_response(conn, 200)
     end
   end
 end
