@@ -7,9 +7,10 @@ import { useRecoilValue } from "recoil";
 import Button from "components/Button";
 import { API } from "app";
 import Router from "next/router";
-import Errors, { useNotifyError } from "components/Errors";
+import { useNotifyError } from "components/Errors";
 import axios from "axios";
 import { publicationsAtom } from "components/PublicationUpload";
+import Link from "next/link";
 
 const NewPublications: NextPage = () => {
   const publications = useRecoilValue(publicationsAtom);
@@ -35,14 +36,15 @@ const NewPublications: NextPage = () => {
       </Head>
       <div className="flex flex-col h-full">
         <header className="py-2 text-center text-white bg-indigo-600">
-          <span className="inline px-4 py-1 text-xl font-medium border-r">
-            Richard Burton Platform
-          </span>
+          <Link href="/">
+            <a className="inline px-4 py-1 text-xl font-medium border-r">
+              Richard Burton Platform
+            </a>
+          </Link>
           <span className="inline px-4 text-lg">
             A database about Brazilian literature in translation
           </span>
         </header>
-        <Errors />
         <main className="flex flex-col p-4 overflow-hidden gap-y-8">
           <h1 className="my-4 text-4xl text-center ">
             {publications?.length} publications about to be inserted...

@@ -5,6 +5,7 @@ import { FC } from "react";
 import axios from "axios";
 import axiosCaseConverter from "axios-case-converter";
 import { RecoilRoot } from "recoil";
+import Errors from "components/Errors";
 
 const queryClient = new QueryClient();
 const API = axiosCaseConverter(
@@ -17,6 +18,7 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
   return (
     <QueryClientProvider client={queryClient}>
       <RecoilRoot>
+        <Errors />
         <Component {...pageProps} />
       </RecoilRoot>
     </QueryClientProvider>
