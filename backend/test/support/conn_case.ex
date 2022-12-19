@@ -35,4 +35,8 @@ defmodule RichardBurtonWeb.ConnCase do
     RichardBurton.DataCase.setup_sandbox(tags)
     {:ok, conn: Phoenix.ConnTest.build_conn()}
   end
+
+  def uploaded_file_fixture(path) do
+    %Plug.Upload{path: path, filename: "file"}
+  end
 end
