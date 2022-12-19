@@ -69,8 +69,10 @@ defmodule RichardBurtonWeb.PublicationControllerTest do
 
   describe "POST /publications/parse" do
     test "on success, returns 200 and the parsed publications", meta do
-      upload = %Plug.Upload{path: "test/fixtures/data_valid.csv", filename: "data.csv"}
-      conn = post(meta.conn, publication_path(meta.conn, :parse), %{"csv" => upload})
+      conn =
+        post(meta.conn, publication_path(meta.conn, :parse), %{
+          "csv" => uploaded_file_fixture("test/fixtures/data_valid.csv")
+        })
 
       assert [
                %{
@@ -94,6 +96,33 @@ defmodule RichardBurtonWeb.PublicationControllerTest do
                  }
                }
              ] == json_response(conn, 200)
+    end
+
+    test "on invalid format, returns 400 with invalid_format code", meta do
+      conn =
+        post(meta.conn, publication_path(meta.conn, :parse), %{
+          "csv" => uploaded_file_fixture("test/fixtures/data_invalid_format.csv")
+        })
+
+      assert "invalid_format" = json_response(conn, 400)
+    end
+
+    test "on invalid separator, returns 400 with incorrect_row_length code", meta do
+      conn =
+        post(meta.conn, publication_path(meta.conn, :parse), %{
+          "csv" => uploaded_file_fixture("test/fixtures/data_invalid_separator.csv")
+        })
+
+      assert "incorrect_row_length" = json_response(conn, 400)
+    end
+
+    test "on incomplete data, returns 400 with incorrect_row_length code", meta do
+      conn =
+        post(meta.conn, publication_path(meta.conn, :parse), %{
+          "csv" => uploaded_file_fixture("test/fixtures/data_invalid_incomplete.csv")
+        })
+
+      assert "incorrect_row_length" = json_response(conn, 400)
     end
   end
 end

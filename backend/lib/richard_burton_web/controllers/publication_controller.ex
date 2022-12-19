@@ -26,8 +26,15 @@ defmodule RichardBurtonWeb.PublicationController do
   end
 
   def parse(conn, %{"csv" => %Plug.Upload{path: path}}) do
-    publications = Publication.from_csv!(path)
+    try do
+      publications = Publication.from_csv!(path)
+      conn |> put_status(:ok) |> json(publications)
+    rescue
+      CSV.RowLengthError ->
+        conn |> put_status(:bad_request) |> json(:incorrect_row_length)
 
-    conn |> put_status(:ok) |> json(publications)
+      _ ->
+        conn |> put_status(:bad_request) |> json(:invalid_format)
+    end
   end
 end
