@@ -19,6 +19,85 @@ defmodule RichardBurtonWeb.PublicationControllerTest do
     }
   }
 
+  @valid_attrs_from_csv_with_errors [
+    %{
+      "publication" => %{
+        "title" => "Iraçéma the Honey-Lips: A Legend of Brazil",
+        "year" => 1886,
+        "country" => "GB",
+        "publisher" => "Bickers & Son",
+        "translated_book" => %{
+          "authors" => "Isabel Burton",
+          "original_book" => %{"authors" => "José de Alencar", "title" => "Iracema"}
+        }
+      },
+      "errors" => nil
+    },
+    %{
+      "publication" => %{
+        "title" => "Ubirajara: A Legend of the Tupy Indians",
+        "year" => 1922,
+        "country" => "GB",
+        "publisher" => "Ronald Massey",
+        "translated_book" => %{
+          "authors" => "J. T. W. Sadler",
+          "original_book" => %{"authors" => "José de Alencar", "title" => "Ubirajara"}
+        }
+      },
+      "errors" => nil
+    }
+  ]
+
+  @invalid_attrs_from_csv_with_errors [
+    %{
+      "publication" => %{
+        "title" => "",
+        "year" => 1886,
+        "country" => "GB",
+        "publisher" => "Bickers & Son",
+        "translated_book" => %{
+          "authors" => "",
+          "original_book" => %{
+            "authors" => "José de Alencar",
+            "title" => "Iracema"
+          }
+        }
+      },
+      "errors" => %{
+        "title" => "required",
+        "translated_book" => %{
+          "authors" => "required"
+        }
+      }
+    },
+    %{
+      "publication" => %{
+        "title" => "Ubirajara: A Legend of the Tupy Indians",
+        "year" => nil,
+        "country" => "",
+        "publisher" => "",
+        "translated_book" => %{
+          "authors" => "J. T. W. Sadler",
+          "original_book" => %{
+            "authors" => "",
+            "title" => ""
+          }
+        }
+      },
+      "errors" => %{
+        "year" => "required",
+        "country" => "required",
+        "publisher" => "required",
+        "translated_book" => %{
+          "original_book" => %{
+            "authors" => "required",
+            "title" => "required"
+          }
+        }
+      }
+    }
+  ]
+
   describe "POST /publications/bulk" do
     test "on success, returns 201 and the created publications", meta do
       publications = [
@@ -68,35 +147,26 @@ defmodule RichardBurtonWeb.PublicationControllerTest do
   end
 
   describe "POST /publications/validate when sending valid csv and valid publications" do
-    test "on success, returns 200 and a list of tuples with parsed publications and nil errors",
+    test "returns 200 and a list of maps with parsed publications and nil errors",
          meta do
       conn =
         post(meta.conn, publication_path(meta.conn, :validate), %{
-          "csv" => uploaded_file_fixture("test/fixtures/data_valid.csv")
+          "csv" => uploaded_file_fixture("test/fixtures/data_valid_valid_attrs.csv")
         })
 
-      assert [
-               %{
-                 "title" => "Iraçéma the Honey-Lips: A Legend of Brazil",
-                 "year" => 1886,
-                 "country" => "GB",
-                 "publisher" => "Bickers & Son",
-                 "translated_book" => %{
-                   "authors" => "Isabel Burton",
-                   "original_book" => %{"authors" => "José de Alencar", "title" => "Iracema"}
-                 }
-               },
-               %{
-                 "title" => "Ubirajara: A Legend of the Tupy Indians",
-                 "year" => 1922,
-                 "country" => "GB",
-                 "publisher" => "Ronald Massey",
-                 "translated_book" => %{
-                   "authors" => "J. T. W. Sadler",
-                   "original_book" => %{"authors" => "José de Alencar", "title" => "Ubirajara"}
-                 }
-               }
-             ] == json_response(conn, 200)
+      assert @valid_attrs_from_csv_with_errors == json_response(conn, 200)
+    end
+  end
+
+  describe "POST /publications/validate when sending valid csv and invalid publications" do
+    test "returns 200 and a list of maps with parsed publications and their corresponding errors",
+         meta do
+      conn =
+        post(meta.conn, publication_path(meta.conn, :validate), %{
+          "csv" => uploaded_file_fixture("test/fixtures/data_valid_invalid_attrs.csv")
+        })
+
+      assert @invalid_attrs_from_csv_with_errors == json_response(conn, 200)
     end
   end
 
