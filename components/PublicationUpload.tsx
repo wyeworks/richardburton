@@ -32,7 +32,7 @@ const PublicationUpload: FC = () => {
       data.append("csv", file);
 
       try {
-        const { data: parsed } = await API.post("publications/parse", data);
+        const { data: parsed } = await API.post("publications/validate", data);
         setPublications(parsed);
 
         Router.push("publications/new");
