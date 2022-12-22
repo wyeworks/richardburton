@@ -67,10 +67,10 @@ defmodule RichardBurtonWeb.PublicationControllerTest do
     end
   end
 
-  describe "POST /publications/parse" do
+  describe "POST /publications/validate" do
     test "on success, returns 200 and the parsed publications", meta do
       conn =
-        post(meta.conn, publication_path(meta.conn, :parse), %{
+        post(meta.conn, publication_path(meta.conn, :validate), %{
           "csv" => uploaded_file_fixture("test/fixtures/data_valid.csv")
         })
 
@@ -100,7 +100,7 @@ defmodule RichardBurtonWeb.PublicationControllerTest do
 
     test "on invalid format, returns 400 with invalid_format code", meta do
       conn =
-        post(meta.conn, publication_path(meta.conn, :parse), %{
+        post(meta.conn, publication_path(meta.conn, :validate), %{
           "csv" => uploaded_file_fixture("test/fixtures/data_invalid_format.csv")
         })
 
@@ -109,7 +109,7 @@ defmodule RichardBurtonWeb.PublicationControllerTest do
 
     test "on invalid separator, returns 400 with incorrect_row_length code", meta do
       conn =
-        post(meta.conn, publication_path(meta.conn, :parse), %{
+        post(meta.conn, publication_path(meta.conn, :validate), %{
           "csv" => uploaded_file_fixture("test/fixtures/data_invalid_separator.csv")
         })
 
@@ -118,7 +118,7 @@ defmodule RichardBurtonWeb.PublicationControllerTest do
 
     test "on incomplete data, returns 400 with incorrect_row_length code", meta do
       conn =
-        post(meta.conn, publication_path(meta.conn, :parse), %{
+        post(meta.conn, publication_path(meta.conn, :validate), %{
           "csv" => uploaded_file_fixture("test/fixtures/data_invalid_incomplete.csv")
         })
 
