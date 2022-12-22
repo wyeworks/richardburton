@@ -67,8 +67,9 @@ defmodule RichardBurtonWeb.PublicationControllerTest do
     end
   end
 
-  describe "POST /publications/validate" do
-    test "on success, returns 200 and the parsed publications", meta do
+  describe "POST /publications/validate when sending valid csv and valid publications" do
+    test "on success, returns 200 and a list of tuples with parsed publications and nil errors",
+         meta do
       conn =
         post(meta.conn, publication_path(meta.conn, :validate), %{
           "csv" => uploaded_file_fixture("test/fixtures/data_valid.csv")
@@ -97,7 +98,9 @@ defmodule RichardBurtonWeb.PublicationControllerTest do
                }
              ] == json_response(conn, 200)
     end
+  end
 
+  describe "POST /publications/validate when sending invalid csv" do
     test "on invalid format, returns 400 with invalid_format code", meta do
       conn =
         post(meta.conn, publication_path(meta.conn, :validate), %{
