@@ -19,6 +19,10 @@ const COUNTRIES: Record<string, string> = {
   NZ: "New Zealand",
 };
 
+const ERROR_MESSAGES: Record<string, string> = {
+  conflict: "A publication with this data already exists",
+};
+
 type Props = {
   entries: FlatPublicationEntry[];
   columns: Set<FlatPublicationKey>;
@@ -32,7 +36,8 @@ type RowProps = {
 
 const Row: FC<RowProps> = ({ attributes, publication, errors }) => {
   const hasErrors = Boolean(errors);
-  const errorString = (hasErrors && isString(errors) && errors) || "";
+  const errorString =
+    (hasErrors && isString(errors) && (ERROR_MESSAGES[errors] || errors)) || "";
 
   return (
     <Tooltip
@@ -41,17 +46,20 @@ const Row: FC<RowProps> = ({ attributes, publication, errors }) => {
       content={
         <div
           className={classNames(
-            "px-4 py-1 text-white bg-red-500 rounded shadow-md",
+            "flex items-center pl-2 pr-3 py-1.5 space-x-1 text-white bg-red-500 rounded shadow-md",
             { hidden: !errorString }
           )}
         >
-          {errorString}
+          <span role="presentation" className="text-xl">
+            ❕
+          </span>
+          <span>{errorString}</span>
         </div>
       }
     >
       <tr
         key={JSON.stringify(publication)}
-        className={classNames("group", {
+        className={classNames("group cursor-pointer", {
           "hover:bg-indigo-100": !hasErrors,
           "hover:bg-red-100": hasErrors,
         })}
