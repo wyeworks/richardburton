@@ -1,18 +1,16 @@
 import type { NextPage } from "next";
 import PublicationIndex from "components/PublicationIndex";
 import Head from "next/head";
-import { useRecoilValue } from "recoil";
 import Button from "components/Button";
 import { API } from "app";
 import Router from "next/router";
 import { useNotifyError } from "components/Errors";
 import axios from "axios";
-import { publicationsAtom } from "components/PublicationUpload";
 import Link from "next/link";
 import { Publication } from "modules/publications";
 
 const NewPublications: NextPage = () => {
-  const publications = useRecoilValue(publicationsAtom);
+  const publications = Publication.STORE.useValue();
 
   const notifyError = useNotifyError();
 
