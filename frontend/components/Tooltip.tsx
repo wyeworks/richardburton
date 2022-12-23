@@ -128,7 +128,7 @@ const Tooltip: FC<Props> = ({ children, content, ...options }) => {
               left: state.x ?? 0,
               visibility: state.x == null ? "hidden" : "visible",
             }}
-            {...state.getFloatingProps()}
+            {...state.getFloatingProps({ className: "z-50" })}
           >
             {content}
           </div>
