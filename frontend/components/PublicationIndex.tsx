@@ -31,17 +31,20 @@ type RowProps = {
 const Row: FC<RowProps> = ({ attributes, publication, errors }) => {
   const hasErrors = Boolean(errors);
 
-  const className = {
-    "hover:bg-indigo-100": !hasErrors,
-    "hover:bg-red-100": hasErrors,
-  };
-
   return (
     <tr
       key={JSON.stringify(publication)}
-      className={classNames("group", className)}
+      className={classNames("group", {
+        "hover:bg-indigo-100": !hasErrors,
+        "hover:bg-red-100": hasErrors,
+      })}
     >
-      <td className={classNames("sticky left-0 px-2 bg-gray-100", className)}>
+      <td
+        className={classNames("sticky left-0 px-2 bg-gray-100", {
+          "group-hover:bg-indigo-100": !hasErrors,
+          "group-hover:bg-red-100": hasErrors,
+        })}
+      >
         {hasErrors && "❗️"}
       </td>
       {attributes.map((key) => (
