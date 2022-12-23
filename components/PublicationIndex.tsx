@@ -1,10 +1,9 @@
-import { FC } from "react";
 import {
   FlatPublication,
   FlatPublicationKey,
-  PUBLICATION_ATTRIBUTES,
-  PUBLICATION_ATTRIBUTE_LABELS,
-} from "types";
+  Publication,
+} from "modules/publications";
+import { FC } from "react";
 
 const COUNTRIES: Record<string, string> = {
   BR: "Brazil",
@@ -21,7 +20,7 @@ type Props = {
 };
 
 const PublicationIndex: FC<Props> = ({ entries, columns }) => {
-  const attributes = PUBLICATION_ATTRIBUTES.filter((attribute) =>
+  const attributes = Publication.ATTRIBUTES.filter((attribute) =>
     columns.has(attribute)
   );
 
@@ -31,7 +30,7 @@ const PublicationIndex: FC<Props> = ({ entries, columns }) => {
         <tr>
           {attributes.map((key) => (
             <th key={key} className="sticky top-0 py-2 bg-gray-100">
-              {PUBLICATION_ATTRIBUTE_LABELS[key]}
+              {Publication.ATTRIBUTE_LABELS[key]}
             </th>
           ))}
         </tr>

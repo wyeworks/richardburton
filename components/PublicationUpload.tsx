@@ -3,9 +3,9 @@ import UploadIcon from "assets/upload.svg";
 import Router from "next/router";
 import { API } from "app";
 import { atom, useResetRecoilState, useSetRecoilState } from "recoil";
-import { Publication } from "types";
 import { useNotifyError } from "./Errors";
 import axios from "axios";
+import { Publication } from "modules/publications";
 
 const ERROR_MESSAGES: Record<string, string> = {
   incorrect_row_length: "Expected a different number of columns in csv",

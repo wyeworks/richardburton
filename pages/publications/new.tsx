@@ -1,9 +1,7 @@
 import type { NextPage } from "next";
-import { PUBLICATION_ATTRIBUTES, toFlatPublications } from "types";
 import PublicationIndex from "components/PublicationIndex";
 import Head from "next/head";
 import { useRecoilValue } from "recoil";
-
 import Button from "components/Button";
 import { API } from "app";
 import Router from "next/router";
@@ -11,6 +9,7 @@ import { useNotifyError } from "components/Errors";
 import axios from "axios";
 import { publicationsAtom } from "components/PublicationUpload";
 import Link from "next/link";
+import { Publication } from "modules/publications";
 
 const NewPublications: NextPage = () => {
   const publications = useRecoilValue(publicationsAtom);
@@ -54,8 +53,8 @@ const NewPublications: NextPage = () => {
             <section className="flex space-x-8 overflow-hidden 2xl:justify-center">
               <div className="overflow-scroll">
                 <PublicationIndex
-                  entries={toFlatPublications(publications)}
-                  columns={new Set(PUBLICATION_ATTRIBUTES)}
+                  entries={Publication.flatten(publications)}
+                  columns={new Set(Publication.ATTRIBUTES)}
                 />
               </div>
               <aside>
