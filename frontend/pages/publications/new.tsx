@@ -26,6 +26,9 @@ const NewPublications: NextPage = () => {
     }
   };
 
+  const invalidPublicationCount =
+    publications?.filter(({ errors }) => Boolean(errors)).length || 0;
+
   return (
     <>
       <Head>
@@ -43,9 +46,16 @@ const NewPublications: NextPage = () => {
           </span>
         </header>
         <main className="flex flex-col p-4 overflow-hidden gap-y-8">
-          <h1 className="my-4 text-4xl text-center ">
-            {publications?.length} publications about to be inserted...
-          </h1>
+          <header className="my-4 text-center">
+            <h1 className="text-4xl">
+              {publications?.length} publications about to be inserted...
+            </h1>
+            {invalidPublicationCount > 0 && (
+              <label className="text-lg text-red-500">
+                {invalidPublicationCount} of those have errors
+              </label>
+            )}
+          </header>
 
           {publications ? (
             <section className="flex space-x-8 overflow-hidden 2xl:justify-center">
