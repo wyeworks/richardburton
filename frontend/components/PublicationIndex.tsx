@@ -1,8 +1,10 @@
 import classNames from "classnames";
 import {
+  FlatPublication,
   FlatPublicationEntry,
   FlatPublicationKey,
   Publication,
+  PublicationError,
 } from "modules/publications";
 import { FC } from "react";
 
@@ -18,6 +20,37 @@ const COUNTRIES: Record<string, string> = {
 type Props = {
   entries: FlatPublicationEntry[];
   columns: Set<FlatPublicationKey>;
+};
+
+type RowProps = {
+  attributes: FlatPublicationKey[];
+  publication: FlatPublication;
+  errors: PublicationError;
+};
+
+const Row: FC<RowProps> = ({ attributes, publication, errors }) => {
+  const hasErrors = Boolean(errors);
+
+  const className = {
+    "hover:bg-indigo-100": !hasErrors,
+    "hover:bg-red-100": hasErrors,
+  };
+
+  return (
+    <tr
+      key={JSON.stringify(publication)}
+      className={classNames("group", className)}
+    >
+      <td className={classNames("sticky left-0 px-2 bg-gray-100", className)}>
+        {hasErrors && "❗️"}
+      </td>
+      {attributes.map((key) => (
+        <td key={key} className="max-w-xs px-2 py-1 truncate justify">
+          {key === "country" ? COUNTRIES[publication[key]] : publication[key]}
+        </td>
+      ))}
+    </tr>
+  );
 };
 
 const PublicationIndex: FC<Props> = ({ entries, columns }) => {
@@ -38,37 +71,9 @@ const PublicationIndex: FC<Props> = ({ entries, columns }) => {
         </tr>
       </thead>
       <tbody>
-        {entries.map(({ publication, errors }) => {
-          const hasErrors = Boolean(errors);
-
-          const className = {
-            "hover:bg-indigo-100": !hasErrors,
-            "hover:bg-red-100": hasErrors,
-          };
-
-          return (
-            <tr
-              key={JSON.stringify(publication)}
-              className={classNames("group", className)}
-            >
-              <td
-                className={classNames(
-                  "sticky left-0 px-2 bg-gray-100",
-                  className
-                )}
-              >
-                {hasErrors && "❗️"}
-              </td>
-              {attributes.map((key) => (
-                <td key={key} className="max-w-xs px-2 py-1 truncate justify">
-                  {key === "country"
-                    ? COUNTRIES[publication[key]]
-                    : publication[key]}
-                </td>
-              ))}
-            </tr>
-          );
-        })}
+        {entries.map((entry) => (
+          <Row attributes={attributes} {...entry} />
+        ))}
       </tbody>
     </table>
   );
