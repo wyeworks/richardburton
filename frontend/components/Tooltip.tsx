@@ -22,6 +22,7 @@ type TooltipOptions = {
   placement?: Placement;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
+  followCursor?: true | "x" | "y";
 };
 
 function useTooltip(options: TooltipOptions = {}) {
@@ -71,6 +72,10 @@ type Props = {
 } & TooltipOptions;
 
 const Tooltip: FC<Props> = ({ children, content, ...options }) => {
+  const { followCursor = false } = options;
+  const followCursorX = [true, "x"].includes(followCursor);
+  const followCursorY = [true, "y"].includes(followCursor);
+
   const state = useTooltip(options);
 
   const childrenRef = (children as any).ref;
@@ -85,6 +90,30 @@ const Tooltip: FC<Props> = ({ children, content, ...options }) => {
         children,
         state.getReferenceProps({
           ref,
+          onMouseMove({ clientX, clientY, target: eventTarget }) {
+            if (followCursor) {
+              const target = eventTarget as HTMLElement;
+              const { width, height, x, left, right, y, top, bottom } =
+                target.getBoundingClientRect();
+
+              const horizontalProperties = followCursorX
+                ? { width: 0, x: clientX, left: clientX, right: clientX }
+                : { width, x, left, right };
+
+              const verticalProperties = followCursorY
+                ? { height: 0, y: clientY, top: clientY, bottom: clientY }
+                : { height, y, top, bottom };
+
+              ref({
+                getBoundingClientRect() {
+                  return {
+                    ...horizontalProperties,
+                    ...verticalProperties,
+                  };
+                },
+              });
+            }
+          },
           ...children.props,
           "data-state": state.open ? "open" : "closed",
         })
