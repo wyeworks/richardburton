@@ -2,7 +2,6 @@ import { ChangeEventHandler, FC, useEffect, useRef, useState } from "react";
 import UploadIcon from "assets/upload.svg";
 import Router from "next/router";
 import { API } from "app";
-import { atom, useResetRecoilState, useSetRecoilState } from "recoil";
 import { useNotifyError } from "./Errors";
 import axios from "axios";
 import { Publication } from "modules/publications";
@@ -12,14 +11,9 @@ const ERROR_MESSAGES: Record<string, string> = {
   invalid_format: "Could not parse publications from the provided file",
 };
 
-const publicationsAtom = atom<Publication[] | undefined>({
-  key: "publications",
-  default: undefined,
-});
-
 const PublicationUpload: FC = () => {
-  const resetPublications = useResetRecoilState(publicationsAtom);
-  const setPublications = useSetRecoilState(publicationsAtom);
+  const resetPublications = Publication.STORE.useReset();
+  const setPublications = Publication.STORE.useSet();
   const notifyError = useNotifyError();
 
   const [key, setKey] = useState(1);
@@ -67,4 +61,3 @@ const PublicationUpload: FC = () => {
 };
 
 export default PublicationUpload;
-export { publicationsAtom };

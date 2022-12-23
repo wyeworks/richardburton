@@ -1,3 +1,12 @@
+import {
+  atom,
+  Resetter,
+  SetterOrUpdater,
+  useRecoilValue,
+  useResetRecoilState,
+  useSetRecoilState,
+} from "recoil";
+
 type OriginalBook = {
   title: string;
   authors: string;
@@ -53,9 +62,21 @@ function flatten(p: Publication | Publication[]) {
   }
 }
 
+const ATOM = atom<Publication[] | undefined>({
+  key: "publications",
+  default: undefined,
+});
+
 interface PublicationModule {
   ATTRIBUTES: FlatPublicationKey[];
   ATTRIBUTE_LABELS: Record<FlatPublicationKey, string>;
+
+  STORE: {
+    useValue(): Publication[] | undefined;
+    useSet(): SetterOrUpdater<Publication[] | undefined>;
+    useReset(): Resetter;
+  };
+
   flatten(publication: Publication): FlatPublication;
   flatten(publications: Publication[]): FlatPublication[];
 }
@@ -78,6 +99,17 @@ const Publication: PublicationModule = {
     publisher: "Publisher",
     title: "Title",
     year: "Year",
+  },
+  STORE: {
+    useValue() {
+      return useRecoilValue(ATOM);
+    },
+    useSet() {
+      return useSetRecoilState(ATOM);
+    },
+    useReset() {
+      return useResetRecoilState(ATOM);
+    },
   },
   flatten,
 };
