@@ -31,9 +31,11 @@ type FlatPublication = Omit<Publication, "translatedBook"> & {
   authors: TranslatedBook["authors"];
 };
 
+type PublicationError = null | unknown;
+
 type FlatPublicationEntry = {
   publication: FlatPublication;
-  errors: null | unknown;
+  errors: PublicationError;
 };
 
 type FlatPublicationKey = keyof FlatPublication;
@@ -121,5 +123,10 @@ const Publication: PublicationModule = {
   flatten,
 };
 
-export type { FlatPublication, FlatPublicationKey, FlatPublicationEntry };
+export type {
+  FlatPublication,
+  FlatPublicationKey,
+  FlatPublicationEntry,
+  PublicationError,
+};
 export { Publication };

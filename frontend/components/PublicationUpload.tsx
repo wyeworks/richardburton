@@ -4,7 +4,7 @@ import Router from "next/router";
 import { API } from "app";
 import { useNotifyError } from "./Errors";
 import axios from "axios";
-import { Publication } from "modules/publications";
+import { Publication, PublicationError } from "modules/publications";
 
 const ERROR_MESSAGES: Record<string, string> = {
   incorrect_row_length: "Expected a different number of columns in csv",
@@ -29,7 +29,10 @@ const PublicationUpload: FC = () => {
         const { data: parsed } = await API.post("publications/validate", data);
         setPublications(
           parsed.map(
-            (entry: { publication: Publication; errors: null | unknown }) => ({
+            (entry: {
+              publication: Publication;
+              errors: PublicationError;
+            }) => ({
               publication: Publication.flatten(entry.publication),
               errors: entry.errors,
             })
