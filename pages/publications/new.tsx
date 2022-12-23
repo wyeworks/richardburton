@@ -51,7 +51,7 @@ const NewPublications: NextPage = () => {
             <section className="flex space-x-8 overflow-hidden 2xl:justify-center">
               <div className="overflow-scroll">
                 <PublicationIndex
-                  entries={Publication.flatten(publications)}
+                  entries={publications}
                   columns={new Set(Publication.ATTRIBUTES)}
                 />
               </div>

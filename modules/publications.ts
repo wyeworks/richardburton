@@ -31,6 +31,11 @@ type FlatPublication = Omit<Publication, "translatedBook"> & {
   authors: TranslatedBook["authors"];
 };
 
+type FlatPublicationEntry = {
+  publication: FlatPublication;
+  errors: null | unknown;
+};
+
 type FlatPublicationKey = keyof FlatPublication;
 
 function flatten(publication: Publication): FlatPublication;
@@ -62,7 +67,9 @@ function flatten(p: Publication | Publication[]) {
   }
 }
 
-const ATOM = atom<Publication[] | undefined>({
+type StoredPublication = FlatPublicationEntry[] | undefined;
+
+const ATOM = atom<StoredPublication>({
   key: "publications",
   default: undefined,
 });
@@ -72,8 +79,8 @@ interface PublicationModule {
   ATTRIBUTE_LABELS: Record<FlatPublicationKey, string>;
 
   STORE: {
-    useValue(): Publication[] | undefined;
-    useSet(): SetterOrUpdater<Publication[] | undefined>;
+    useValue(): StoredPublication;
+    useSet(): SetterOrUpdater<StoredPublication>;
     useReset(): Resetter;
   };
 
@@ -114,5 +121,5 @@ const Publication: PublicationModule = {
   flatten,
 };
 
-export type { FlatPublication, FlatPublicationKey };
+export type { FlatPublication, FlatPublicationKey, FlatPublicationEntry };
 export { Publication };
