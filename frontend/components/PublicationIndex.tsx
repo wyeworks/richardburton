@@ -1,3 +1,4 @@
+import classNames from "classnames";
 import {
   FlatPublicationEntry,
   FlatPublicationKey,
@@ -26,25 +27,48 @@ const PublicationIndex: FC<Props> = ({ entries, columns }) => {
 
   return (
     <table>
-      <tbody>
+      <thead className="sticky top-0 z-10 bg-gray-100">
         <tr>
+          <th />
           {attributes.map((key) => (
-            <th key={key} className="sticky top-0 py-2 bg-gray-100">
+            <th className="px-2 py-1" key={key}>
               {Publication.ATTRIBUTE_LABELS[key]}
             </th>
           ))}
         </tr>
-        {entries.map(({ publication }) => (
-          <tr key={JSON.stringify(publication)} className="hover:bg-indigo-100">
-            {attributes.map((key) => (
-              <td key={key} className="max-w-xs px-2 py-1 truncate justify">
-                {key === "country"
-                  ? COUNTRIES[publication[key]]
-                  : publication[key]}
+      </thead>
+      <tbody>
+        {entries.map(({ publication, errors }) => {
+          const hasErrors = Boolean(errors);
+
+          const className = {
+            "hover:bg-indigo-100": !hasErrors,
+            "hover:bg-red-100": hasErrors,
+          };
+
+          return (
+            <tr
+              key={JSON.stringify(publication)}
+              className={classNames("group", className)}
+            >
+              <td
+                className={classNames(
+                  "sticky left-0 px-2 bg-gray-100",
+                  className
+                )}
+              >
+                {hasErrors && "❗️"}
               </td>
-            ))}
-          </tr>
-        ))}
+              {attributes.map((key) => (
+                <td key={key} className="max-w-xs px-2 py-1 truncate justify">
+                  {key === "country"
+                    ? COUNTRIES[publication[key]]
+                    : publication[key]}
+                </td>
+              ))}
+            </tr>
+          );
+        })}
       </tbody>
     </table>
   );
