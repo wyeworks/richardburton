@@ -6,6 +6,7 @@ import {
   useResetRecoilState,
   useSetRecoilState,
 } from "recoil";
+import { isString } from "lodash";
 
 type OriginalBook = {
   title: string;
@@ -76,6 +77,9 @@ const ATOM = atom<StoredPublication>({
   default: undefined,
 });
 
+const ERROR_MESSAGES: Record<string, string> = {
+  conflict: "A publication with this data already exists",
+};
 interface PublicationModule {
   ATTRIBUTES: FlatPublicationKey[];
   ATTRIBUTE_LABELS: Record<FlatPublicationKey, string>;
@@ -88,6 +92,8 @@ interface PublicationModule {
 
   flatten(publication: Publication): FlatPublication;
   flatten(publications: Publication[]): FlatPublication[];
+
+  describe(error: PublicationError): string;
 }
 
 const Publication: PublicationModule = {
@@ -121,6 +127,15 @@ const Publication: PublicationModule = {
     },
   },
   flatten,
+
+  describe(error) {
+    if (!error) {
+      return "";
+    } else if (isString(error)) {
+      return ERROR_MESSAGES[error] || error;
+    }
+    return "Unknown error";
+  },
 };
 
 export type {
