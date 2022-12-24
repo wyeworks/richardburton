@@ -139,3 +139,4 @@ const Tooltip: FC<Props> = ({ children, content, ...options }) => {
 };
 
 export default Tooltip;
+export type { Props as TooltipProps };
