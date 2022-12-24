@@ -4,7 +4,7 @@ import {
   FlatPublicationEntry,
   FlatPublicationKey,
   Publication,
-  PublicationError,
+  FlatPublicationError,
 } from "modules/publications";
 import {
   createContext,
@@ -13,7 +13,6 @@ import {
   useContext,
   useMemo,
 } from "react";
-import { isString } from "lodash";
 import ErrorTooltip from "./ErrorTooltip";
 
 const COUNTRIES: Record<string, string> = {
@@ -33,12 +32,12 @@ type Props = {
 type RowProps = {
   attributes: FlatPublicationKey[];
   publication: FlatPublication;
-  errors: PublicationError;
+  errors: FlatPublicationError;
 };
 
 type RowContext = {
   publication: FlatPublication;
-  errors: PublicationError;
+  errors: FlatPublicationError;
   hasErrors: boolean;
 };
 const RowContext = createContext<RowContext | null>(null);

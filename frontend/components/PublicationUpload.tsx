@@ -27,6 +27,7 @@ const PublicationUpload: FC = () => {
 
       try {
         const { data: parsed } = await API.post("publications/validate", data);
+
         setPublications(
           parsed.map(
             (entry: {
@@ -34,7 +35,7 @@ const PublicationUpload: FC = () => {
               errors: PublicationError;
             }) => ({
               publication: Publication.flatten(entry.publication),
-              errors: entry.errors,
+              errors: Publication.flatten(entry.errors),
             })
           )
         );
