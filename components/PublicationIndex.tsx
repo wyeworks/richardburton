@@ -9,6 +9,7 @@ import {
 import { FC } from "react";
 import { isString } from "lodash";
 import Tooltip from "./Tooltip";
+import ErrorTooltip from "./ErrorTooltip";
 
 const COUNTRIES: Record<string, string> = {
   BR: "Brazil",
@@ -40,25 +41,13 @@ const Row: FC<RowProps> = ({ attributes, publication, errors }) => {
     (hasErrors && isString(errors) && (ERROR_MESSAGES[errors] || errors)) || "";
 
   return (
-    <Tooltip
+    <ErrorTooltip
+      message={errorString}
+      hidden={!Boolean(errorString)}
       followCursor="x"
       placement="top-start"
-      content={
-        <div
-          className={classNames(
-            "flex items-center pl-2 pr-3 py-1.5 space-x-1 text-white bg-red-500 rounded shadow-md",
-            { hidden: !errorString }
-          )}
-        >
-          <span role="presentation" className="text-xl">
-            ❕
-          </span>
-          <span>{errorString}</span>
-        </div>
-      }
     >
       <tr
-        key={JSON.stringify(publication)}
         className={classNames("group cursor-pointer", {
           "hover:bg-indigo-100": !hasErrors,
           "hover:bg-red-100": hasErrors,
@@ -78,7 +67,7 @@ const Row: FC<RowProps> = ({ attributes, publication, errors }) => {
           </td>
         ))}
       </tr>
-    </Tooltip>
+    </ErrorTooltip>
   );
 };
 
