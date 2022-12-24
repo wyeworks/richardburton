@@ -132,6 +132,7 @@ const ATOM = atom<StoredPublication>({
 
 const ERROR_MESSAGES: Record<string, string> = {
   conflict: "A publication with this data already exists",
+  required: "This field is required and cannot be blank",
 };
 interface PublicationModule {
   ATTRIBUTES: FlatPublicationKey[];

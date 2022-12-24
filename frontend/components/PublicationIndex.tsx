@@ -83,17 +83,19 @@ const DataColumn: FC<{ attribute: FlatPublicationKey }> = ({ attribute }) => {
 
   return (
     <Column>
-      <div
-        className={classNames(
-          "px-2 py-1 text-ellipsis overflow-clip",
-          errorString &&
-            "border rounded border-dotted border-red-300 hover:bg-red-300 hover:text-white "
-        )}
-      >
-        {attribute === "country"
-          ? COUNTRIES[row.publication[attribute]]
-          : row.publication[attribute]}
-      </div>
+      <ErrorTooltip message={errorString} hidden={!Boolean(errorString)}>
+        <div
+          className={classNames(
+            "px-2 py-1 text-ellipsis overflow-clip",
+            errorString &&
+              "border rounded border-dotted border-red-300 hover:bg-red-300 hover:text-white "
+          )}
+        >
+          {attribute === "country"
+            ? COUNTRIES[row.publication[attribute]]
+            : row.publication[attribute]}
+        </div>
+      </ErrorTooltip>
     </Column>
   );
 };
