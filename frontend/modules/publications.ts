@@ -46,18 +46,7 @@ type PublicationError = null | Partial<{
   };
 }>;
 
-type FlatPublicationError =
-  | null
-  | string
-  | Partial<{
-      title: string;
-      country: string;
-      year: string;
-      publisher: string;
-      authors: string;
-      originalTitle: string;
-      originalAuthors: string;
-    }>;
+type FlatPublicationError = null | string | Record<FlatPublicationKey, string>;
 
 type FlatPublicationEntry = {
   publication: FlatPublication;
@@ -157,7 +146,7 @@ interface PublicationModule {
   flatten(publication: Publication): FlatPublication;
   flatten(publications: PublicationError): FlatPublicationError;
 
-  describe(error: FlatPublicationError): string;
+  describe(error: FlatPublicationError, scope?: FlatPublicationKey): string;
 }
 
 const Publication: PublicationModule = {
@@ -191,14 +180,22 @@ const Publication: PublicationModule = {
     },
   },
   flatten,
-
-  describe(error) {
+  describe(error, scope) {
     if (!error) {
       return "";
-    } else if (isString(error)) {
-      return ERROR_MESSAGES[error] || error;
+    } else if (!scope) {
+      if (isString(error)) {
+        return ERROR_MESSAGES[error] || error;
+      } else {
+        return "";
+      }
+    } else {
+      if (isString(error)) {
+        return "";
+      } else {
+        return ERROR_MESSAGES[error[scope]] || error[scope];
+      }
     }
-    return "Unknown error";
   },
 };
 
