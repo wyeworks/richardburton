@@ -54,7 +54,7 @@ const PublicationUpload: FC = () => {
     }
   };
 
-  useEffect(() => resetPublications(), []);
+  useEffect(() => resetPublications(), [resetPublications]);
 
   return (
     <label className="flex flex-col items-center justify-center h-40 rounded-lg shadow-sm cursor-pointer hover:bg-gray-200">
