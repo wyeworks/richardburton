@@ -32,9 +32,9 @@ const Errors: FC = () => {
       );
       return () => clearTimeout(timeout);
     }
-  }, [errors]);
+  }, [errors, setErrors]);
 
-  useEffect(() => resetErrors, [router]);
+  useEffect(() => resetErrors, [router, resetErrors]);
 
   const shownErrorCount =
     errors.length === MAX_SNACKBARS
