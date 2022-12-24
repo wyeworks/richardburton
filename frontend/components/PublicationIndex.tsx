@@ -6,9 +6,14 @@ import {
   Publication,
   PublicationError,
 } from "modules/publications";
-import { FC } from "react";
+import {
+  createContext,
+  FC,
+  PropsWithChildren,
+  useContext,
+  useMemo,
+} from "react";
 import { isString } from "lodash";
-import Tooltip from "./Tooltip";
 import ErrorTooltip from "./ErrorTooltip";
 
 const COUNTRIES: Record<string, string> = {
@@ -35,10 +40,69 @@ type RowProps = {
   errors: PublicationError;
 };
 
+type RowContext = {
+  publication: FlatPublication;
+  errors: PublicationError;
+  hasErrors: boolean;
+};
+const RowContext = createContext<RowContext | null>(null);
+
+function useRow(): RowContext {
+  const context = useContext(RowContext);
+  if (!context) throw "RowContext provider not found";
+  return context;
+}
+
+const Column: FC<PropsWithChildren & { className?: string }> = ({
+  className,
+  children,
+}) => {
+  const row = useRow();
+
+  return (
+    <td
+      className={classNames(
+        className,
+        "max-w-xs px-2 py-1 truncate justify",
+        row.hasErrors ? "group-hover:bg-red-100" : "group-hover:bg-indigo-100"
+      )}
+    >
+      {children}
+    </td>
+  );
+};
+
+const SignalColumn: FC = () => {
+  const row = useRow();
+
+  return (
+    <Column className="sticky left-0 px-2 bg-gray-100">
+      {row.hasErrors && "❗️"}
+    </Column>
+  );
+};
+
+const DataColumn: FC<{ attribute: FlatPublicationKey }> = ({ attribute }) => {
+  const row = useRow();
+
+  return (
+    <Column>
+      {attribute === "country"
+        ? COUNTRIES[row.publication[attribute]]
+        : row.publication[attribute]}
+    </Column>
+  );
+};
+
 const Row: FC<RowProps> = ({ attributes, publication, errors }) => {
   const hasErrors = Boolean(errors);
   const errorString =
     (hasErrors && isString(errors) && (ERROR_MESSAGES[errors] || errors)) || "";
+
+  const context = useMemo(
+    () => ({ publication, errors, hasErrors }),
+    [publication, errors, hasErrors]
+  );
 
   return (
     <ErrorTooltip
@@ -47,25 +111,13 @@ const Row: FC<RowProps> = ({ attributes, publication, errors }) => {
       followCursor="x"
       placement="top-start"
     >
-      <tr
-        className={classNames("group cursor-pointer", {
-          "hover:bg-indigo-100": !hasErrors,
-          "hover:bg-red-100": hasErrors,
-        })}
-      >
-        <td
-          className={classNames("sticky left-0 px-2 bg-gray-100", {
-            "group-hover:bg-indigo-100": !hasErrors,
-            "group-hover:bg-red-100": hasErrors,
-          })}
-        >
-          {hasErrors && "❗️"}
-        </td>
-        {attributes.map((key) => (
-          <td key={key} className="max-w-xs px-2 py-1 truncate justify">
-            {key === "country" ? COUNTRIES[publication[key]] : publication[key]}
-          </td>
-        ))}
+      <tr className="cursor-pointer group">
+        <RowContext.Provider value={context}>
+          <SignalColumn />
+          {attributes.map((attribute) => (
+            <DataColumn key={attribute} attribute={attribute} />
+          ))}
+        </RowContext.Provider>
       </tr>
     </ErrorTooltip>
   );
@@ -90,7 +142,7 @@ const PublicationIndex: FC<Props> = ({ entries, columns }) => {
       </thead>
       <tbody>
         {entries.map((entry) => (
-          <Row attributes={attributes} {...entry} />
+          <Row key={JSON.stringify(entry)} attributes={attributes} {...entry} />
         ))}
       </tbody>
     </table>
