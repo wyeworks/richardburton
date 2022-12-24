@@ -25,10 +25,6 @@ const COUNTRIES: Record<string, string> = {
   NZ: "New Zealand",
 };
 
-const ERROR_MESSAGES: Record<string, string> = {
-  conflict: "A publication with this data already exists",
-};
-
 type Props = {
   entries: FlatPublicationEntry[];
   columns: Set<FlatPublicationKey>;
@@ -96,8 +92,7 @@ const DataColumn: FC<{ attribute: FlatPublicationKey }> = ({ attribute }) => {
 
 const Row: FC<RowProps> = ({ attributes, publication, errors }) => {
   const hasErrors = Boolean(errors);
-  const errorString =
-    (hasErrors && isString(errors) && (ERROR_MESSAGES[errors] || errors)) || "";
+  const errorString = Publication.describe(errors);
 
   const context = useMemo(
     () => ({ publication, errors, hasErrors }),
