@@ -71,7 +71,7 @@ const SignalColumn: FC = () => {
   const row = useRow();
 
   return (
-    <Column className="sticky left-0 px-2 bg-gray-100">
+    <Column className="sticky left-0 px-2 text-xl bg-gray-100">
       {row.hasErrors && "❗️"}
     </Column>
   );
@@ -79,12 +79,21 @@ const SignalColumn: FC = () => {
 
 const DataColumn: FC<{ attribute: FlatPublicationKey }> = ({ attribute }) => {
   const row = useRow();
+  const errorString = Publication.describe(row.errors, attribute);
 
   return (
     <Column>
-      {attribute === "country"
-        ? COUNTRIES[row.publication[attribute]]
-        : row.publication[attribute]}
+      <div
+        className={classNames(
+          "px-2 py-1 text-ellipsis overflow-clip",
+          errorString &&
+            "border rounded border-dotted border-red-300 hover:bg-red-300 hover:text-white "
+        )}
+      >
+        {attribute === "country"
+          ? COUNTRIES[row.publication[attribute]]
+          : row.publication[attribute]}
+      </div>
     </Column>
   );
 };
@@ -105,7 +114,12 @@ const Row: FC<RowProps> = ({ attributes, publication, errors }) => {
       followCursor="x"
       placement="top-start"
     >
-      <tr className="cursor-pointer group">
+      <tr
+        className={classNames(
+          "cursor-pointer group",
+          hasErrors ? "hover:bg-red-100" : "hover:bg-indigo-100"
+        )}
+      >
         <RowContext.Provider value={context}>
           <SignalColumn />
           {attributes.map((attribute) => (
