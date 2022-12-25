@@ -86,7 +86,7 @@ const DataColumn: FC<{ attribute: FlatPublicationKey }> = ({ attribute }) => {
       <ErrorTooltip message={errorString} hidden={!Boolean(errorString)}>
         <div
           className={classNames(
-            "px-2 py-1 text-ellipsis overflow-clip",
+            "px-2 py-1 truncate",
             errorString &&
               "border rounded border-dotted border-red-300 hover:bg-red-300 hover:text-white "
           )}
