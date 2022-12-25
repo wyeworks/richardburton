@@ -29,15 +29,15 @@ defmodule RichardBurton.PublicationCodec do
     end
   end
 
-  defp nest(%{
-         "title" => title,
-         "year" => year,
-         "country" => country,
-         "publisher" => publisher,
-         "authors" => authors,
-         "original_title" => original_title,
-         "original_authors" => original_authors
-       }) do
+  def nest(%{
+        "title" => title,
+        "year" => year,
+        "country" => country,
+        "publisher" => publisher,
+        "authors" => authors,
+        "original_title" => original_title,
+        "original_authors" => original_authors
+      }) do
     %{
       "title" => title,
       "year" => year,
@@ -51,6 +51,10 @@ defmodule RichardBurton.PublicationCodec do
         }
       }
     }
+  end
+
+  def nest(flat_publications) when is_list(flat_publications) do
+    Enum.map(flat_publications, &flatten/1)
   end
 
   def flatten(%{
