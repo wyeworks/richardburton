@@ -4,7 +4,8 @@ defmodule RichardBurtonWeb.PublicationController do
   alias RichardBurton.Publication
 
   def index(conn, _params) do
-    json(conn, Publication.all())
+    publications = Publication.all()
+    json(conn, Publication.flatten(publications))
   end
 
   def create_all(conn, %{"_json" => entries}) do

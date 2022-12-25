@@ -8,28 +8,14 @@ import {
 } from "recoil";
 import { isString, isNumber } from "lodash";
 
-type OriginalBook = {
-  title: string;
-  authors: string;
-};
-
-type TranslatedBook = {
-  authors: string;
-  originalBook: OriginalBook;
-};
-
 type Publication = {
   title: string;
   country: string;
   year: number;
   publisher: string;
-  translatedBook: TranslatedBook;
-};
-
-type FlatPublication = Omit<Publication, "translatedBook"> & {
-  originalTitle: OriginalBook["title"];
-  originalAuthors: OriginalBook["authors"];
-  authors: TranslatedBook["authors"];
+  authors: string;
+  originalTitle: string;
+  originalAuthors: string;
 };
 
 type PublicationError = null | Partial<{
@@ -46,84 +32,42 @@ type PublicationError = null | Partial<{
   };
 }>;
 
-type FlatPublicationError = null | string | Record<FlatPublicationKey, string>;
+type FlatPublicationError = null | string | Record<PublicationKey, string>;
 
-type FlatPublicationEntry = {
-  publication: FlatPublication;
+type PublicationEntry = {
+  publication: Publication;
   errors: FlatPublicationError;
 };
 
-type FlatPublicationKey = keyof FlatPublication;
+type PublicationKey = keyof Publication;
 
-function isPublication(p: Publication | PublicationError): p is Publication {
-  return (
-    !!p &&
-    !isString(p) &&
-    isString(p.title) &&
-    isString(p.country) &&
-    isString(p.publisher) &&
-    isString(p.country) &&
-    isNumber(p.year) &&
-    !!p.translatedBook &&
-    isString(p.translatedBook.authors) &&
-    !!p.translatedBook.originalBook &&
-    isString(p.translatedBook.originalBook.title) &&
-    isString(p.translatedBook.originalBook.authors)
-  );
-}
+function flatten(error: PublicationError): FlatPublicationError {
+  if (error === null || isString(error)) return error;
 
-function flatten(publication: Publication): FlatPublication;
-function flatten(error: PublicationError): FlatPublicationError;
-function flatten(p: Publication | PublicationError) {
-  if (isPublication(p)) {
-    const {
-      title,
-      year,
-      country,
-      publisher,
-      translatedBook: {
-        authors,
-        originalBook: { authors: originalAuthors, title: originalTitle },
-      },
-    } = p;
+  let authors, originalTitle, originalAuthors;
 
-    return {
-      originalTitle,
-      originalAuthors,
-      authors,
-      title,
-      year,
-      country,
-      publisher,
-    };
-  } else {
-    if (p === null || isString(p)) return p;
+  if (error.translatedBook) {
+    authors = error.translatedBook.authors;
 
-    let authors, originalTitle, originalAuthors;
-
-    if (p.translatedBook) {
-      authors = p.translatedBook.authors;
-
-      if (p.translatedBook.originalBook) {
-        originalTitle = p.translatedBook.originalBook.title;
-        originalAuthors = p.translatedBook.originalBook.authors;
-      }
+    if (error.translatedBook.originalBook) {
+      originalTitle = error.translatedBook.originalBook.title;
+      originalAuthors = error.translatedBook.originalBook.authors;
     }
-    const { title, year, country, publisher } = p;
-
-    return {
-      originalTitle,
-      originalAuthors,
-      authors,
-      title,
-      year,
-      country,
-      publisher,
-    } as FlatPublicationError;
   }
+  const { title, year, country, publisher } = error;
+
+  return {
+    originalTitle,
+    originalAuthors,
+    authors,
+    title,
+    year,
+    country,
+    publisher,
+  } as FlatPublicationError;
 }
 
-type StoredPublication = FlatPublicationEntry[] | undefined;
+type StoredPublication = PublicationEntry[] | undefined;
 
 const ATOM = atom<StoredPublication>({
   key: "publications",
@@ -135,8 +79,8 @@ const ERROR_MESSAGES: Record<string, string> = {
   required: "This field is required and cannot be blank",
 };
 interface PublicationModule {
-  ATTRIBUTES: FlatPublicationKey[];
-  ATTRIBUTE_LABELS: Record<FlatPublicationKey, string>;
+  ATTRIBUTES: PublicationKey[];
+  ATTRIBUTE_LABELS: Record<PublicationKey, string>;
 
   STORE: {
     useValue(): StoredPublication;
@@ -144,10 +88,9 @@ interface PublicationModule {
     useReset(): Resetter;
   };
 
-  flatten(publication: Publication): FlatPublication;
   flatten(publications: PublicationError): FlatPublicationError;
 
-  describe(error: FlatPublicationError, scope?: FlatPublicationKey): string;
+  describe(error: FlatPublicationError, scope?: PublicationKey): string;
 }
 
 const Publication: PublicationModule = {
@@ -201,9 +144,8 @@ const Publication: PublicationModule = {
 };
 
 export type {
-  FlatPublication,
-  FlatPublicationKey,
-  FlatPublicationEntry,
+  PublicationKey,
+  PublicationEntry,
   FlatPublicationError,
   PublicationError,
 };
