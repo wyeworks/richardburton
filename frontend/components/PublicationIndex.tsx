@@ -1,9 +1,8 @@
 import classNames from "classnames";
 import {
-  FlatPublication,
-  FlatPublicationEntry,
-  FlatPublicationKey,
   Publication,
+  PublicationEntry,
+  PublicationKey,
   FlatPublicationError,
 } from "modules/publications";
 import {
@@ -25,18 +24,18 @@ const COUNTRIES: Record<string, string> = {
 };
 
 type Props = {
-  entries: FlatPublicationEntry[];
-  columns: Set<FlatPublicationKey>;
+  entries: PublicationEntry[];
+  columns: Set<PublicationKey>;
 };
 
 type RowProps = {
-  attributes: FlatPublicationKey[];
-  publication: FlatPublication;
+  attributes: PublicationKey[];
+  publication: Publication;
   errors: FlatPublicationError;
 };
 
 type RowContext = {
-  publication: FlatPublication;
+  publication: Publication;
   errors: FlatPublicationError;
   hasErrors: boolean;
 };
@@ -77,7 +76,7 @@ const SignalColumn: FC = () => {
   );
 };
 
-const DataColumn: FC<{ attribute: FlatPublicationKey }> = ({ attribute }) => {
+const DataColumn: FC<{ attribute: PublicationKey }> = ({ attribute }) => {
   const row = useRow();
   const errorString = Publication.describe(row.errors, attribute);
 

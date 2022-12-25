@@ -7,6 +7,8 @@ defmodule RichardBurton.Publication do
 
   alias RichardBurton.Repo
   alias RichardBurton.TranslatedBook
+  alias RichardBurton.OriginalBook
+  alias __MODULE__
 
   @derive {Jason.Encoder, only: [:country, :publisher, :title, :year, :translated_book]}
   schema "publications" do
@@ -172,5 +174,33 @@ defmodule RichardBurton.Publication do
         }
       }
     }
+  end
+
+  def flatten(%Publication{
+        title: title,
+        year: year,
+        country: country,
+        publisher: publisher,
+        translated_book: %TranslatedBook{
+          authors: authors,
+          original_book: %OriginalBook{
+            title: original_title,
+            authors: original_authors
+          }
+        }
+      }) do
+    %{
+      "title" => title,
+      "year" => year,
+      "country" => country,
+      "publisher" => publisher,
+      "authors" => authors,
+      "original_title" => original_title,
+      "original_authors" => original_authors
+    }
+  end
+
+  def flatten(publications) when is_list(publications) do
+    Enum.map(publications, &flatten/1)
   end
 end
