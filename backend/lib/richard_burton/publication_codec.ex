@@ -31,19 +31,13 @@ defmodule RichardBurton.PublicationCodec do
 
   defp nest(%{
          "title" => title,
-         "year" => year_string,
+         "year" => year,
          "country" => country,
          "publisher" => publisher,
          "authors" => authors,
          "original_title" => original_title,
          "original_authors" => original_authors
        }) do
-    year =
-      case Integer.parse(year_string) do
-        {year, _} -> year
-        :error -> nil
-      end
-
     %{
       "title" => title,
       "year" => year,
