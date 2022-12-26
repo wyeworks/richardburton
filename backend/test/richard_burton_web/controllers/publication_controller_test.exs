@@ -5,61 +5,78 @@ defmodule RichardBurtonWeb.PublicationControllerTest do
   use RichardBurtonWeb.ConnCase
   import Routes, only: [publication_path: 2]
 
-  @valid_attrs %{
-    "title" => "Manuel de Moraes: A Chronicle of the Seventeenth Century",
-    "country" => "GB",
-    "year" => 1886,
-    "publisher" => "Bickers & Son",
-    "authors" => "Richard Burton and Isabel Burton",
-    "original_authors" => "J. M. Pereira da Silva",
-    "original_title" => "Manuel de Moraes: crônica do século XVII"
-  }
-
   describe "POST /publications/bulk" do
+    @valid_input_1 %{
+      "title" => "Manuel de Moraes: A Chronicle of the Seventeenth Century",
+      "country" => "GB",
+      "year" => 1886,
+      "publisher" => "Bickers & Son",
+      "authors" => "Richard Burton and Isabel Burton",
+      "original_authors" => "J. M. Pereira da Silva",
+      "original_title" => "Manuel de Moraes: crônica do século XVII"
+    }
+
+    @valid_input_2 %{
+      "title" => "Iraçéma the Honey-Lips: A Legend of Brazil",
+      "year" => 1886,
+      "country" => "GB",
+      "publisher" => "Bickers & Son",
+      "authors" => "Isabel Burton",
+      "original_authors" => "José de Alencar",
+      "original_title" => "Iracema"
+    }
+
+    @invalid_input %{
+      "title" => "",
+      "year" => "1886",
+      "country" => "GB",
+      "publisher" => "Bickers & Son",
+      "authors" => "",
+      "original_authors" => "José de Alencar",
+      "original_title" => "Iracema"
+    }
+
+    @invalid_input_errors %{
+      "title" => "required",
+      "translated_book" => %{
+        "authors" => "required"
+      }
+    }
+
     test "on success, returns 201 and the created publications", meta do
-      publications = [
-        @valid_attrs,
-        Map.put(@valid_attrs, "year", 1887),
-        Map.put(@valid_attrs, "year", 1888),
-        Map.put(@valid_attrs, "year", 1889),
-        Map.put(@valid_attrs, "year", 1890)
-      ]
+      publications = [@valid_input_1, @valid_input_2]
 
-      conn = post(meta.conn, publication_path(meta.conn, :create_all), %{"_json" => publications})
+      input = %{"_json" => publications}
 
-      assert publications == json_response(conn, 201)
+      assert publications ==
+               meta.conn
+               |> post(publication_path(meta.conn, :create_all), input)
+               |> json_response(201)
     end
 
     test "on conflict, returns 409 and the conflictive publication", meta do
-      publications = [
-        @valid_attrs,
-        Map.put(@valid_attrs, "year", 1887),
-        Map.put(@valid_attrs, "year", 1888),
-        @valid_attrs,
-        Map.put(@valid_attrs, "year", 1890)
-      ]
+      publications = [@valid_input_1, @valid_input_2, @valid_input_2]
 
-      conn = post(meta.conn, publication_path(meta.conn, :create_all), %{"_json" => publications})
+      input = %{"_json" => publications}
 
-      assert @valid_attrs == json_response(conn, 409)
+      assert @valid_input_2 ==
+               meta.conn
+               |> post(publication_path(meta.conn, :create_all), input)
+               |> json_response(409)
     end
 
     test "on validation error, returns 409, the invalid publication and the errors", meta do
-      invalid_attrs = Map.put(@valid_attrs, "year", nil)
+      input = %{"_json" => [@valid_input_1, @invalid_input, @valid_input_2]}
 
-      publications = [
-        @valid_attrs,
-        Map.put(@valid_attrs, "year", 1887),
-        invalid_attrs,
-        Map.put(@valid_attrs, "year", 1889),
-        Map.put(@valid_attrs, "year", 1890)
-      ]
+      output = %{
+        "attrs" => @invalid_input,
+        "errors" => @invalid_input_errors
+      }
 
-      conn = post(meta.conn, publication_path(meta.conn, :create_all), %{"_json" => publications})
-
-      expected_response = %{"attrs" => invalid_attrs, "errors" => %{"year" => "required"}}
-
-      assert expected_response == json_response(conn, 400)
+      assert output ==
+               meta.conn
+               |> post(publication_path(meta.conn, :create_all), input)
+               |> json_response(400)
     end
   end
 
