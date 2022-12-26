@@ -121,7 +121,7 @@ const Row: FC<RowProps> = ({ attributes, publication, errors, editable }) => {
     >
       <tr
         className={classNames(
-          "cursor-pointer group",
+          "group",
           hasErrors ? "hover:bg-red-100" : "hover:bg-indigo-100"
         )}
       >
