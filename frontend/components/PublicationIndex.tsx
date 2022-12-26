@@ -58,7 +58,7 @@ const Column: FC<PropsWithChildren & { className?: string }> = ({
     <td
       className={classNames(
         className,
-        "max-w-xs px-2 py-1 truncate justify",
+        "max-w-cell px-2 py-1 truncate justify",
         row.hasErrors ? "group-hover:bg-red-100" : "group-hover:bg-indigo-100"
       )}
     >
