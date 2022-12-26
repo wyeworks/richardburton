@@ -21,64 +21,6 @@ defmodule RichardBurton.PublicationTest do
     }
   }
 
-  @valid_attrs_from_csv [
-    %{
-      "title" => "Iraçéma the Honey-Lips: A Legend of Brazil",
-      "year" => 1886,
-      "country" => "GB",
-      "publisher" => "Bickers & Son",
-      "translated_book" => %{
-        "authors" => "Isabel Burton",
-        "original_book" => %{
-          "authors" => "José de Alencar",
-          "title" => "Iracema"
-        }
-      }
-    },
-    %{
-      "title" => "Ubirajara: A Legend of the Tupy Indians",
-      "year" => 1922,
-      "country" => "GB",
-      "publisher" => "Ronald Massey",
-      "translated_book" => %{
-        "authors" => "J. T. W. Sadler",
-        "original_book" => %{
-          "authors" => "José de Alencar",
-          "title" => "Ubirajara"
-        }
-      }
-    }
-  ]
-
-  @invalid_attrs_from_csv [
-    %{
-      "title" => "",
-      "year" => 1886,
-      "country" => "GB",
-      "publisher" => "Bickers & Son",
-      "translated_book" => %{
-        "authors" => "",
-        "original_book" => %{
-          "authors" => "José de Alencar",
-          "title" => "Iracema"
-        }
-      }
-    },
-    %{
-      "title" => "Ubirajara: A Legend of the Tupy Indians",
-      "year" => nil,
-      "country" => "",
-      "publisher" => "",
-      "translated_book" => %{
-        "authors" => "J. T. W. Sadler",
-        "original_book" => %{
-          "authors" => "",
-          "title" => ""
-        }
-      }
-    }
-  ]
-
   @empty_attrs %{}
   @skeleton_attrs %{translated_book: %{original_book: %{}}}
 
