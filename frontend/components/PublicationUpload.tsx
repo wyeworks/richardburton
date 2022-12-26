@@ -28,19 +28,7 @@ const PublicationUpload: FC = () => {
       try {
         const { data: parsed } = await API.post("publications/validate", data);
 
-        console.log(parsed);
-
-        setPublications(
-          parsed.map(
-            (entry: {
-              publication: Publication;
-              errors: PublicationError;
-            }) => ({
-              publication: entry.publication,
-              errors: Publication.flatten(entry.errors),
-            })
-          )
-        );
+        setPublications(parsed);
 
         Router.push("publications/new");
       } catch (error) {

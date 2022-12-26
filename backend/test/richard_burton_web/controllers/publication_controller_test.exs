@@ -38,9 +38,7 @@ defmodule RichardBurtonWeb.PublicationControllerTest do
 
     @invalid_input_errors %{
       "title" => "required",
-      "translated_book" => %{
-        "authors" => "required"
-      }
+      "authors" => "required"
     }
 
     test "on success, returns 201 and the created publications", meta do
@@ -69,7 +67,7 @@ defmodule RichardBurtonWeb.PublicationControllerTest do
       input = %{"_json" => [@valid_input_1, @invalid_input, @valid_input_2]}
 
       output = %{
-        "attrs" => @invalid_input,
+        "publication" => @invalid_input,
         "errors" => @invalid_input_errors
       }
 
@@ -118,9 +116,7 @@ defmodule RichardBurtonWeb.PublicationControllerTest do
         },
         "errors" => %{
           "title" => "required",
-          "translated_book" => %{
-            "authors" => "required"
-          }
+          "authors" => "required"
         }
       },
       %{
@@ -137,12 +133,8 @@ defmodule RichardBurtonWeb.PublicationControllerTest do
           "year" => "required",
           "country" => "required",
           "publisher" => "required",
-          "translated_book" => %{
-            "original_book" => %{
-              "authors" => "required",
-              "title" => "required"
-            }
-          }
+          "original_authors" => "required",
+          "original_title" => "required"
         }
       }
     ]

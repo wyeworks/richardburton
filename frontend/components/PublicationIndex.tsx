@@ -2,8 +2,8 @@ import classNames from "classnames";
 import {
   Publication,
   PublicationEntry,
+  PublicationError,
   PublicationKey,
-  FlatPublicationError,
 } from "modules/publications";
 import {
   createContext,
@@ -31,12 +31,12 @@ type Props = {
 type RowProps = {
   attributes: PublicationKey[];
   publication: Publication;
-  errors: FlatPublicationError;
+  errors: PublicationError;
 };
 
 type RowContext = {
   publication: Publication;
-  errors: FlatPublicationError;
+  errors: PublicationError;
   hasErrors: boolean;
 };
 const RowContext = createContext<RowContext | null>(null);

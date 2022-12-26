@@ -18,54 +18,9 @@ type Publication = {
   originalAuthors: string;
 };
 
-type PublicationError = null | Partial<{
-  title: string;
-  country: string;
-  year: string;
-  publisher: string;
-  translatedBook: {
-    authors: string;
-    originalBook: {
-      title: string;
-      authors: string;
-    };
-  };
-}>;
-
-type FlatPublicationError = null | string | Record<PublicationKey, string>;
-
-type PublicationEntry = {
-  publication: Publication;
-  errors: FlatPublicationError;
-};
-
 type PublicationKey = keyof Publication;
-
-function flatten(error: PublicationError): FlatPublicationError {
-  if (error === null || isString(error)) return error;
-
-  let authors, originalTitle, originalAuthors;
-
-  if (error.translatedBook) {
-    authors = error.translatedBook.authors;
-
-    if (error.translatedBook.originalBook) {
-      originalTitle = error.translatedBook.originalBook.title;
-      originalAuthors = error.translatedBook.originalBook.authors;
-    }
-  }
-  const { title, year, country, publisher } = error;
-
-  return {
-    originalTitle,
-    originalAuthors,
-    authors,
-    title,
-    year,
-    country,
-    publisher,
-  } as FlatPublicationError;
-}
+type PublicationError = null | string | Record<PublicationKey, string>;
+type PublicationEntry = { publication: Publication; errors: PublicationError };
 
 type StoredPublication = PublicationEntry[] | undefined;
 
@@ -88,9 +43,7 @@ interface PublicationModule {
     useReset(): Resetter;
   };
 
-  flatten(publications: PublicationError): FlatPublicationError;
-
-  describe(error: FlatPublicationError, scope?: PublicationKey): string;
+  describe(error: PublicationError, scope?: PublicationKey): string;
 }
 
 const Publication: PublicationModule = {
@@ -123,7 +76,6 @@ const Publication: PublicationModule = {
       return useResetRecoilState(ATOM);
     },
   },
-  flatten,
   describe(error, scope) {
     if (!error) {
       return "";
@@ -143,10 +95,5 @@ const Publication: PublicationModule = {
   },
 };
 
-export type {
-  PublicationKey,
-  PublicationEntry,
-  FlatPublicationError,
-  PublicationError,
-};
+export type { PublicationKey, PublicationEntry, PublicationError };
 export { Publication };

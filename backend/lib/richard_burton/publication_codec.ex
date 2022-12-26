@@ -5,6 +5,20 @@ defmodule RichardBurton.PublicationCodec do
 
   alias RichardBurton.Publication
 
+  @empty_nested_attrs %{
+    "title" => "",
+    "year" => "",
+    "country" => "",
+    "publisher" => "",
+    "translated_book" => %{
+      "authors" => "",
+      "original_book" => %{
+        "title" => "",
+        "authors" => ""
+      }
+    }
+  }
+
   def from_csv!(path) do
     try do
       path
@@ -108,6 +122,26 @@ defmodule RichardBurton.PublicationCodec do
     p |> stringify_keys |> flatten
   end
 
+  def flatten(%{publication: publication, errors: nil}) do
+    %{publication: flatten(publication), errors: nil}
+  end
+
+  def flatten(%{publication: publication, errors: errors}) when is_atom(errors) do
+    %{publication: flatten(publication), errors: errors}
+  end
+
+  def flatten(%{publication: publication, errors: errors}) do
+    %{
+      publication: flatten(publication),
+      errors:
+        @empty_nested_attrs
+        |> deep_merge_maps(stringify_keys(errors))
+        |> flatten
+        |> Enum.filter(fn {_, v} -> "" != v end)
+        |> Enum.into(%{})
+    }
+  end
+
   def flatten(publications) when is_list(publications) do
     Enum.map(publications, &flatten/1)
   end
@@ -118,5 +152,17 @@ defmodule RichardBurton.PublicationCodec do
 
   defp stringify_keys(v) when not is_map(v) do
     v
+  end
+
+  defp deep_merge_maps(map1, map2) do
+    Map.merge(map1, map2, &deep_merge_resolve/3)
+  end
+
+  defp deep_merge_resolve(_, left = %{}, right = %{}) do
+    deep_merge_maps(left, right)
+  end
+
+  defp deep_merge_resolve(_, _, right) do
+    right
   end
 end
