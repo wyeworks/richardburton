@@ -6,7 +6,11 @@ module.exports = {
   ],
 
   theme: {
-    extend: {},
+    extend: {
+      maxWidth: {
+        cell: "19.5rem",
+      },
+    },
     fontFamily: {
       montserrat: ["Montserrat", "sans-serif"],
     },
