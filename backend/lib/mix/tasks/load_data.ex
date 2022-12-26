@@ -5,13 +5,14 @@ defmodule Mix.Tasks.Rb.LoadData do
   use Mix.Task
 
   alias RichardBurton.Publication
+  alias RichardBurton.PublicationCodec
 
   def run(_) do
     Mix.Task.run("app.start")
 
     File.cwd!()
     |> Path.join('data.csv')
-    |> Publication.from_csv!()
+    |> PublicationCodec.from_csv!()
     |> Enum.map(&Publication.insert/1)
   end
 end

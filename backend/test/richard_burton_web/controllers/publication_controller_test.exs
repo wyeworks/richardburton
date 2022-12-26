@@ -10,39 +10,33 @@ defmodule RichardBurtonWeb.PublicationControllerTest do
     "country" => "GB",
     "year" => 1886,
     "publisher" => "Bickers & Son",
-    "translated_book" => %{
-      "authors" => "Richard Burton and Isabel Burton",
-      "original_book" => %{
-        "authors" => "J. M. Pereira da Silva",
-        "title" => "Manuel de Moraes: crônica do século XVII"
-      }
-    }
+    "authors" => "Richard Burton and Isabel Burton",
+    "original_authors" => "J. M. Pereira da Silva",
+    "original_title" => "Manuel de Moraes: crônica do século XVII"
   }
 
   @valid_attrs_from_csv_with_errors [
     %{
       "publication" => %{
         "title" => "Iraçéma the Honey-Lips: A Legend of Brazil",
-        "year" => 1886,
+        "year" => "1886",
         "country" => "GB",
         "publisher" => "Bickers & Son",
-        "translated_book" => %{
-          "authors" => "Isabel Burton",
-          "original_book" => %{"authors" => "José de Alencar", "title" => "Iracema"}
-        }
+        "authors" => "Isabel Burton",
+        "original_authors" => "José de Alencar",
+        "original_title" => "Iracema"
       },
       "errors" => nil
     },
     %{
       "publication" => %{
         "title" => "Ubirajara: A Legend of the Tupy Indians",
-        "year" => 1922,
+        "year" => "1922",
         "country" => "GB",
         "publisher" => "Ronald Massey",
-        "translated_book" => %{
-          "authors" => "J. T. W. Sadler",
-          "original_book" => %{"authors" => "José de Alencar", "title" => "Ubirajara"}
-        }
+        "authors" => "J. T. W. Sadler",
+        "original_authors" => "José de Alencar",
+        "original_title" => "Ubirajara"
       },
       "errors" => nil
     }
@@ -52,16 +46,12 @@ defmodule RichardBurtonWeb.PublicationControllerTest do
     %{
       "publication" => %{
         "title" => "",
-        "year" => 1886,
+        "year" => "1886",
         "country" => "GB",
         "publisher" => "Bickers & Son",
-        "translated_book" => %{
-          "authors" => "",
-          "original_book" => %{
-            "authors" => "José de Alencar",
-            "title" => "Iracema"
-          }
-        }
+        "authors" => "",
+        "original_authors" => "José de Alencar",
+        "original_title" => "Iracema"
       },
       "errors" => %{
         "title" => "required",
@@ -73,16 +63,12 @@ defmodule RichardBurtonWeb.PublicationControllerTest do
     %{
       "publication" => %{
         "title" => "Ubirajara: A Legend of the Tupy Indians",
-        "year" => nil,
+        "year" => "",
         "country" => "",
         "publisher" => "",
-        "translated_book" => %{
-          "authors" => "J. T. W. Sadler",
-          "original_book" => %{
-            "authors" => "",
-            "title" => ""
-          }
-        }
+        "authors" => "J. T. W. Sadler",
+        "original_authors" => "",
+        "original_title" => ""
       },
       "errors" => %{
         "year" => "required",
