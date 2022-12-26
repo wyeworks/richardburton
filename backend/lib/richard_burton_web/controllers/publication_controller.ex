@@ -2,17 +2,16 @@ defmodule RichardBurtonWeb.PublicationController do
   use RichardBurtonWeb, :controller
 
   alias RichardBurton.Publication
-  alias RichardBurton.PublicationCodec
 
   def index(conn, _params) do
-    flat_publications = PublicationCodec.flatten(Publication.all())
+    flat_publications = Publication.Codec.flatten(Publication.all())
     json(conn, flat_publications)
   end
 
   def create_all(conn, %{"_json" => entries}) do
     {status, response_body} =
       entries
-      |> PublicationCodec.nest()
+      |> Publication.Codec.nest()
       |> Publication.insert_all()
       |> case do
         {:ok, publications} ->
@@ -25,12 +24,12 @@ defmodule RichardBurtonWeb.PublicationController do
           {:bad_request, %{publication: publication, errors: errors}}
       end
 
-    conn |> put_status(status) |> json(PublicationCodec.flatten(response_body))
+    conn |> put_status(status) |> json(Publication.Codec.flatten(response_body))
   end
 
   def validate(conn, %{"csv" => %Plug.Upload{path: path}}) do
     try do
-      publications = PublicationCodec.from_csv!(path)
+      publications = Publication.Codec.from_csv!(path)
 
       result =
         publications
@@ -45,7 +44,7 @@ defmodule RichardBurtonWeb.PublicationController do
               %{publication: publication, errors: errors}
           end
         end)
-        |> PublicationCodec.flatten()
+        |> Publication.Codec.flatten()
 
       conn
       |> put_status(:ok)

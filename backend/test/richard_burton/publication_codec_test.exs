@@ -1,11 +1,10 @@
-defmodule RichardBurton.PublicationCodecTest do
+defmodule RichardBurton.Publication.CodecTest do
   @moduledoc """
-  Tests for the PublicationCodec module
+  Tests for the Publication.Codec module
   """
 
   use RichardBurton.DataCase
 
-  alias RichardBurton.PublicationCodec
   alias RichardBurton.Publication
   alias RichardBurton.TranslatedBook
   alias RichardBurton.OriginalBook
@@ -67,24 +66,24 @@ defmodule RichardBurton.PublicationCodecTest do
     ]
 
     test "when the provided csv file is valid, returns a list of publication-like maps" do
-      assert @output == PublicationCodec.from_csv!("test/fixtures/data_valid_mixed.csv")
+      assert @output == Publication.Codec.from_csv!("test/fixtures/data_valid_mixed.csv")
     end
   end
 
   describe "from_csv!/1 when the provided csv is invalid" do
     test "because it has an incorrect format, raise an error" do
       input = "test/fixtures/data_invalid_format.csv"
-      assert_raise RuntimeError, fn -> PublicationCodec.from_csv!(input) end
+      assert_raise RuntimeError, fn -> Publication.Codec.from_csv!(input) end
     end
 
     test "because it has an invalid separator, raise an error" do
       input = "test/fixtures/data_invalid_separator.csv"
-      assert_raise CSV.RowLengthError, fn -> PublicationCodec.from_csv!(input) end
+      assert_raise CSV.RowLengthError, fn -> Publication.Codec.from_csv!(input) end
     end
 
     test "because it is incomplete, raise an error" do
       input = "test/fixtures/data_invalid_incomplete.csv"
-      assert_raise CSV.RowLengthError, fn -> PublicationCodec.from_csv!(input) end
+      assert_raise CSV.RowLengthError, fn -> Publication.Codec.from_csv!(input) end
     end
   end
 
@@ -114,7 +113,7 @@ defmodule RichardBurton.PublicationCodecTest do
         }
       }
 
-      assert @output == PublicationCodec.flatten(input)
+      assert @output == Publication.Codec.flatten(input)
     end
 
     test "on a nested publication-like with atom keys, returns the flattened representation with string keys" do
@@ -132,7 +131,7 @@ defmodule RichardBurton.PublicationCodecTest do
         }
       }
 
-      assert @output == PublicationCodec.flatten(input)
+      assert @output == Publication.Codec.flatten(input)
     end
 
     test "on a Publication struct, returns the flattened representation with string keys" do
@@ -150,7 +149,7 @@ defmodule RichardBurton.PublicationCodecTest do
         }
       }
 
-      assert @output == PublicationCodec.flatten(input)
+      assert @output == Publication.Codec.flatten(input)
     end
 
     test "on a list, returns the flattened representation of its items, with string keys" do
@@ -196,7 +195,7 @@ defmodule RichardBurton.PublicationCodecTest do
         }
       ]
 
-      assert [@output, @output, @output] == PublicationCodec.flatten(input)
+      assert [@output, @output, @output] == Publication.Codec.flatten(input)
     end
   end
 
@@ -272,7 +271,7 @@ defmodule RichardBurton.PublicationCodecTest do
         }
       ]
 
-      assert output == PublicationCodec.flatten(input)
+      assert output == Publication.Codec.flatten(input)
     end
   end
 end
