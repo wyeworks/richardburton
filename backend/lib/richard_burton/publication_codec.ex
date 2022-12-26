@@ -3,6 +3,8 @@ defmodule RichardBurton.PublicationCodec do
   Serialization and deserialization utilities for publications
   """
 
+  alias RichardBurton.Publication
+
   def from_csv!(path) do
     try do
       path
@@ -81,7 +83,39 @@ defmodule RichardBurton.PublicationCodec do
     }
   end
 
+  def flatten(p = %Publication{}) do
+    p
+    |> Publication.to_map()
+    |> flatten
+  end
+
+  def flatten(
+        p = %{
+          title: _title,
+          year: _year,
+          country: _country,
+          publisher: _publisher,
+          translated_book: %{
+            authors: _authors,
+            original_book: %{
+              title: _original_title,
+              authors: _original_authors
+            }
+          }
+        }
+      ) do
+    p |> stringify_keys |> flatten
+  end
+
   def flatten(publications) when is_list(publications) do
     Enum.map(publications, &flatten/1)
+  end
+
+  defp stringify_keys(map) when is_map(map) do
+    Map.new(map, fn {k, v} -> {Atom.to_string(k), stringify_keys(v)} end)
+  end
+
+  defp stringify_keys(v) when not is_map(v) do
+    v
   end
 end
