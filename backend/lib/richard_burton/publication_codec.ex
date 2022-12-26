@@ -21,7 +21,8 @@ defmodule RichardBurton.PublicationCodec do
           "publisher"
         ]
       )
-      |> Enum.map(&nest/1)
+      |> Enum.into([])
+      |> nest
     rescue
       e in CSV.RowLengthError ->
         Kernel.reraise(e, __STACKTRACE__)
@@ -56,7 +57,7 @@ defmodule RichardBurton.PublicationCodec do
   end
 
   def nest(flat_publications) when is_list(flat_publications) do
-    Enum.map(flat_publications, &flatten/1)
+    Enum.map(flat_publications, &nest/1)
   end
 
   def flatten(%{
