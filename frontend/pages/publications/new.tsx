@@ -8,6 +8,12 @@ import { useNotifyError } from "components/Errors";
 import axios from "axios";
 import Link from "next/link";
 import { Publication } from "modules/publications";
+import {
+  getSelection,
+  useClearSelection,
+  useSelectionSize,
+} from "react-selection-manager";
+import { useState } from "react";
 
 const NewPublications: NextPage = () => {
   const entries = Publication.STORE.useValue();
@@ -28,8 +34,15 @@ const NewPublications: NextPage = () => {
     }
   };
 
-  const invalidPublicationCount =
-    entries?.filter(({ errors }) => Boolean(errors)).length || 0;
+  const [deletedIds, setDeletedIds] = useState(new Set());
+  const selectionSize = useSelectionSize();
+  const clearSelection = useClearSelection();
+
+  const actualEntries = entries?.filter(({ id }) => !deletedIds.has(id));
+  const actualEntriesWithErrors = actualEntries?.filter(({ errors }) => errors);
+  const actualEntriesWithErrorsCount = actualEntriesWithErrors?.length || 0;
+
+  console.log({ deletedIds, actualEntries });
 
   return (
     <>
@@ -51,26 +64,51 @@ const NewPublications: NextPage = () => {
         <main className="flex flex-col p-4 overflow-hidden gap-y-8">
           <header className="my-4 text-center">
             <h1 className="text-4xl">
-              {entries?.length} publications about to be inserted...
+              {actualEntries?.length} publications about to be inserted...
             </h1>
-            {invalidPublicationCount > 0 && (
+            {actualEntriesWithErrorsCount > 0 && (
               <label className="text-lg text-red-500">
-                {invalidPublicationCount} of those have errors
+                {actualEntriesWithErrorsCount} of those have errors
               </label>
             )}
           </header>
 
-          {entries ? (
+          {actualEntries ? (
             <section className="flex space-x-8 overflow-hidden 2xl:justify-center">
               <div className="overflow-scroll">
                 <PublicationIndex
-                  entries={entries}
+                  entries={actualEntries}
                   columns={new Set(Publication.ATTRIBUTES)}
                   editable
                 />
               </div>
-              <aside>
+              <aside className="flex flex-col space-y-2">
                 <Button label="Submit" onClick={handleSubmit} />
+
+                {deletedIds.size > 0 && (
+                  <Button
+                    label="Reset publications"
+                    onClick={() => {
+                      setDeletedIds(new Set());
+                      clearSelection();
+                    }}
+                  />
+                )}
+                {selectionSize > 0 && (
+                  <Button
+                    label={`Delete ${selectionSize}`}
+                    onClick={() => {
+                      const selectedIds = getSelection();
+
+                      if (selectedIds) {
+                        setDeletedIds(
+                          (current) => new Set([...current, ...selectedIds])
+                        );
+                        clearSelection();
+                      }
+                    }}
+                  />
+                )}
               </aside>
             </section>
           ) : (

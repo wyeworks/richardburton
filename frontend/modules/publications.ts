@@ -6,7 +6,7 @@ import {
   useResetRecoilState,
   useSetRecoilState,
 } from "recoil";
-import { isString, isNumber } from "lodash";
+import { isString } from "lodash";
 
 type Publication = {
   title: string;
@@ -20,11 +20,15 @@ type Publication = {
 
 type PublicationKey = keyof Publication;
 type PublicationError = null | string | Record<PublicationKey, string>;
-type PublicationEntry = { publication: Publication; errors: PublicationError };
+type PublicationEntry = {
+  id: number;
+  publication: Publication;
+  errors: PublicationError;
+};
 
-type StoredPublication = PublicationEntry[] | undefined;
+type StoredPublications = PublicationEntry[] | undefined;
 
-const ATOM = atom<StoredPublication>({
+const ATOM = atom<StoredPublications>({
   key: "publications",
   default: undefined,
 });
@@ -39,8 +43,8 @@ interface PublicationModule {
   ATTRIBUTE_LABELS: Record<PublicationKey, string>;
 
   STORE: {
-    useValue(): StoredPublication;
-    useSet(): SetterOrUpdater<StoredPublication>;
+    useValue(): StoredPublications;
+    useSet(): SetterOrUpdater<StoredPublications>;
     useReset(): Resetter;
   };
 
