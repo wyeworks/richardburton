@@ -8,11 +8,18 @@ import {
 import {
   createContext,
   FC,
+  MouseEvent,
+  MouseEventHandler,
   PropsWithChildren,
   useContext,
   useMemo,
 } from "react";
 import ErrorTooltip from "./ErrorTooltip";
+import {
+  useIsSelected,
+  useIsSelectionEmpty,
+  useSelectionEvent,
+} from "react-selection-manager";
 
 const COUNTRIES: Record<string, string> = {
   BR: "Brazil",
@@ -30,13 +37,16 @@ type Props = {
 };
 
 type RowProps = {
+  id: number;
   attributes: PublicationKey[];
   publication: Publication;
   errors: PublicationError;
   editable: boolean;
+  onClick?: MouseEventHandler;
 };
 
 type RowContext = {
+  id: number;
   publication: Publication;
   errors: PublicationError;
   hasErrors: boolean;
@@ -55,12 +65,15 @@ const Column: FC<PropsWithChildren & { className?: string }> = ({
 }) => {
   const row = useRow();
 
+  const selected = useIsSelected(row.id);
+
   return (
     <td
       className={classNames(
         className,
         "max-w-cell px-2 py-1 truncate justify",
-        row.hasErrors ? "group-hover:bg-red-100" : "group-hover:bg-indigo-100"
+        row.hasErrors ? "group-hover:bg-red-100" : "group-hover:bg-indigo-100",
+        { "bg-amber-100": selected }
       )}
     >
       {children}
@@ -103,13 +116,20 @@ const DataColumn: FC<{ attribute: PublicationKey }> = ({ attribute }) => {
   );
 };
 
-const Row: FC<RowProps> = ({ attributes, publication, errors, editable }) => {
+const Row: FC<RowProps> = ({
+  id,
+  attributes,
+  publication,
+  errors,
+  editable,
+  onClick,
+}) => {
   const hasErrors = Boolean(errors);
   const errorString = Publication.describe(errors);
 
   const context = useMemo(
-    () => ({ publication, errors, hasErrors }),
-    [publication, errors, hasErrors]
+    () => ({ id, publication, errors, hasErrors }),
+    [id, publication, errors, hasErrors]
   );
 
   return (
@@ -121,9 +141,11 @@ const Row: FC<RowProps> = ({ attributes, publication, errors, editable }) => {
     >
       <tr
         className={classNames(
-          "group",
-          hasErrors ? "hover:bg-red-100" : "hover:bg-indigo-100"
+          "relative group",
+          hasErrors ? "hover:bg-red-100" : "hover:bg-indigo-100",
+          { "cursor-pointer": Boolean(onClick) }
         )}
+        onClick={onClick}
       >
         <RowContext.Provider value={context}>
           {editable && <SignalColumn />}
@@ -145,8 +167,25 @@ const PublicationIndex: FC<Props> = ({
     columns.has(attribute)
   );
 
+  const onSelect = useSelectionEvent();
+
+  const toggleSelection = (id: number) => (event: MouseEvent) =>
+    onSelect({
+      id,
+      type: "publication",
+      shiftKey: event.shiftKey,
+      metaKey: event.metaKey,
+      orderedIds: entries.map(({ id }) => id),
+    });
+
+  const isSelectionEmpty = useIsSelectionEmpty();
+
   return (
-    <table className="overflow-auto">
+    <table
+      className={classNames("overflow-auto", {
+        "select-none": !isSelectionEmpty,
+      })}
+    >
       <thead className="sticky top-0 z-10 bg-gray-100">
         <tr>
           {editable && <th />}
@@ -163,6 +202,7 @@ const PublicationIndex: FC<Props> = ({
             key={JSON.stringify(entry)}
             attributes={attributes}
             editable={editable}
+            onClick={editable ? toggleSelection(entry.id) : undefined}
             {...entry}
           />
         ))}
