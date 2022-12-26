@@ -88,7 +88,7 @@ defmodule RichardBurton.PublicationCodecTest do
     end
   end
 
-  describe "flatten/1" do
+  describe "flatten/1 on publications" do
     @output %{
       "title" => "Iraçéma the Honey-Lips: A Legend of Brazil",
       "year" => "1886",
@@ -151,6 +151,128 @@ defmodule RichardBurton.PublicationCodecTest do
       }
 
       assert @output == PublicationCodec.flatten(input)
+    end
+
+    test "on a list, returns the flattened representation of its items, with string keys" do
+      input = [
+        %{
+          "title" => "Iraçéma the Honey-Lips: A Legend of Brazil",
+          "year" => "1886",
+          "country" => "GB",
+          "publisher" => "Bickers & Son",
+          "translated_book" => %{
+            "authors" => "Isabel Burton",
+            "original_book" => %{
+              "authors" => "José de Alencar",
+              "title" => "Iracema"
+            }
+          }
+        },
+        %{
+          title: "Iraçéma the Honey-Lips: A Legend of Brazil",
+          year: "1886",
+          country: "GB",
+          publisher: "Bickers & Son",
+          translated_book: %{
+            authors: "Isabel Burton",
+            original_book: %{
+              authors: "José de Alencar",
+              title: "Iracema"
+            }
+          }
+        },
+        %Publication{
+          title: "Iraçéma the Honey-Lips: A Legend of Brazil",
+          year: "1886",
+          country: "GB",
+          publisher: "Bickers & Son",
+          translated_book: %TranslatedBook{
+            authors: "Isabel Burton",
+            original_book: %OriginalBook{
+              authors: "José de Alencar",
+              title: "Iracema"
+            }
+          }
+        }
+      ]
+
+      assert [@output, @output, @output] == PublicationCodec.flatten(input)
+    end
+  end
+
+  describe "flatten/1 on publication-error maps" do
+    @output_publication %{
+      "title" => "Ubirajara: A Legend of the Tupy Indians",
+      "year" => "",
+      "country" => "",
+      "publisher" => "",
+      "authors" => "J. T. W. Sadler",
+      "original_authors" => "",
+      "original_title" => ""
+    }
+
+    test "on a list, returns the flattened representation of its items, with string keys" do
+      input_publication = %{
+        "title" => "Ubirajara: A Legend of the Tupy Indians",
+        "year" => "",
+        "country" => "",
+        "publisher" => "",
+        "translated_book" => %{
+          "authors" => "J. T. W. Sadler",
+          "original_book" => %{
+            "authors" => "",
+            "title" => ""
+          }
+        }
+      }
+
+      input = [
+        %{
+          publication: input_publication,
+          errors: %{
+            year: "required",
+            country: "required",
+            publisher: "required",
+            translated_book: %{
+              original_book: %{
+                authors: "required",
+                title: "required"
+              }
+            }
+          }
+        },
+        %{
+          publication: input_publication,
+          errors: nil
+        },
+        %{
+          publication: input_publication,
+          errors: :conflict
+        }
+      ]
+
+      output = [
+        %{
+          publication: @output_publication,
+          errors: %{
+            "year" => "required",
+            "country" => "required",
+            "publisher" => "required",
+            "original_authors" => "required",
+            "original_title" => "required"
+          }
+        },
+        %{
+          publication: @output_publication,
+          errors: nil
+        },
+        %{
+          publication: @output_publication,
+          errors: :conflict
+        }
+      ]
+
+      assert output == PublicationCodec.flatten(input)
     end
   end
 end

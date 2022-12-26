@@ -16,26 +16,26 @@ defmodule RichardBurtonWeb.PublicationController do
       |> Publication.insert_all()
       |> case do
         {:ok, publications} ->
-          {:created, PublicationCodec.flatten(publications)}
+          {:created, publications}
 
-        {:error, {attrs, :conflict}} ->
-          {:conflict, PublicationCodec.flatten(attrs)}
+        {:error, {publication, :conflict}} ->
+          {:conflict, publication}
 
-        {:error, {attrs, errors}} ->
-          {:bad_request, %{attrs: PublicationCodec.flatten(attrs), errors: errors}}
+        {:error, {publication, errors}} ->
+          {:bad_request, %{publication: publication, errors: errors}}
       end
 
-    conn |> put_status(status) |> json(response_body)
+    conn |> put_status(status) |> json(PublicationCodec.flatten(response_body))
   end
 
   def validate(conn, %{"csv" => %Plug.Upload{path: path}}) do
     try do
       publications = PublicationCodec.from_csv!(path)
 
-      publications_with_errors =
+      result =
         publications
         |> Enum.map(&Publication.validate/1)
-        |> Enum.zip(PublicationCodec.flatten(publications))
+        |> Enum.zip(publications)
         |> Enum.map(fn tuple ->
           case tuple do
             {{:ok}, publication} ->
@@ -45,10 +45,11 @@ defmodule RichardBurtonWeb.PublicationController do
               %{publication: publication, errors: errors}
           end
         end)
+        |> PublicationCodec.flatten()
 
       conn
       |> put_status(:ok)
-      |> json(publications_with_errors)
+      |> json(result)
     rescue
       CSV.RowLengthError ->
         conn |> put_status(:bad_request) |> json(:incorrect_row_length)
