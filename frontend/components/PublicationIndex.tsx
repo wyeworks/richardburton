@@ -26,12 +26,14 @@ const COUNTRIES: Record<string, string> = {
 type Props = {
   entries: PublicationEntry[];
   columns: Set<PublicationKey>;
+  editable?: boolean;
 };
 
 type RowProps = {
   attributes: PublicationKey[];
   publication: Publication;
   errors: PublicationError;
+  editable: boolean;
 };
 
 type RowContext = {
@@ -101,7 +103,7 @@ const DataColumn: FC<{ attribute: PublicationKey }> = ({ attribute }) => {
   );
 };
 
-const Row: FC<RowProps> = ({ attributes, publication, errors }) => {
+const Row: FC<RowProps> = ({ attributes, publication, errors, editable }) => {
   const hasErrors = Boolean(errors);
   const errorString = Publication.describe(errors);
 
@@ -124,7 +126,7 @@ const Row: FC<RowProps> = ({ attributes, publication, errors }) => {
         )}
       >
         <RowContext.Provider value={context}>
-          <SignalColumn />
+          {editable && <SignalColumn />}
           {attributes.map((attribute) => (
             <DataColumn key={attribute} attribute={attribute} />
           ))}
@@ -134,7 +136,11 @@ const Row: FC<RowProps> = ({ attributes, publication, errors }) => {
   );
 };
 
-const PublicationIndex: FC<Props> = ({ entries, columns }) => {
+const PublicationIndex: FC<Props> = ({
+  entries,
+  columns,
+  editable = false,
+}) => {
   const attributes = Publication.ATTRIBUTES.filter((attribute) =>
     columns.has(attribute)
   );
@@ -143,7 +149,7 @@ const PublicationIndex: FC<Props> = ({ entries, columns }) => {
     <table className="overflow-auto">
       <thead className="sticky top-0 z-10 bg-gray-100">
         <tr>
-          <th />
+          {editable && <th />}
           {attributes.map((key) => (
             <th className="px-2 py-4" key={key}>
               {Publication.ATTRIBUTE_LABELS[key]}
@@ -153,7 +159,12 @@ const PublicationIndex: FC<Props> = ({ entries, columns }) => {
       </thead>
       <tbody>
         {entries.map((entry) => (
-          <Row key={JSON.stringify(entry)} attributes={attributes} {...entry} />
+          <Row
+            key={JSON.stringify(entry)}
+            attributes={attributes}
+            editable={editable}
+            {...entry}
+          />
         ))}
       </tbody>
     </table>

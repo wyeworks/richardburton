@@ -4,7 +4,8 @@ import Router from "next/router";
 import { API } from "app";
 import { useNotifyError } from "./Errors";
 import axios from "axios";
-import { Publication, PublicationError } from "modules/publications";
+import { Publication, PublicationEntry } from "modules/publications";
+import hash from "object-hash";
 
 const ERROR_MESSAGES: Record<string, string> = {
   incorrect_row_length: "Expected a different number of columns in csv",
@@ -26,9 +27,18 @@ const PublicationUpload: FC = () => {
       data.append("csv", file);
 
       try {
-        const { data: parsed } = await API.post("publications/validate", data);
+        const { data: parsed } = await API.post<Omit<PublicationEntry, "id">[]>(
+          "publications/validate",
+          data
+        );
 
-        setPublications(parsed);
+        setPublications(
+          parsed.map(({ publication, errors }) => ({
+            id: hash(publication),
+            publication,
+            errors,
+          }))
+        );
 
         Router.push("publications/new");
       } catch (error) {
