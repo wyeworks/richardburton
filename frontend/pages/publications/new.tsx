@@ -66,6 +66,7 @@ const NewPublications: NextPage = () => {
                 <PublicationIndex
                   entries={entries}
                   columns={new Set(Publication.ATTRIBUTES)}
+                  editable
                 />
               </div>
               <aside>
