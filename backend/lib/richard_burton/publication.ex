@@ -8,7 +8,9 @@ defmodule RichardBurton.Publication do
   alias RichardBurton.Repo
   alias RichardBurton.TranslatedBook
 
-  @derive {Jason.Encoder, only: [:country, :publisher, :title, :year, :translated_book]}
+  @external_attributes [:country, :publisher, :title, :year, :translated_book]
+
+  @derive {Jason.Encoder, only: @external_attributes}
   schema "publications" do
     field(:country, :string)
     field(:publisher, :string)
@@ -116,5 +118,13 @@ defmodule RichardBurton.Publication do
       {:error, errors} ->
         Repo.rollback({attrs, errors})
     end
+  end
+
+  def to_map(publication) do
+    translated_book = TranslatedBook.to_map(publication.translated_book)
+
+    publication
+    |> Map.take(@external_attributes)
+    |> Map.put(:translated_book, translated_book)
   end
 end

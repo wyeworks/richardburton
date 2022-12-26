@@ -8,7 +8,9 @@ defmodule RichardBurton.OriginalBook do
   alias RichardBurton.Repo
   alias RichardBurton.TranslatedBook
 
-  @derive {Jason.Encoder, only: [:authors, :title]}
+  @external_attributes [:authors, :title]
+
+  @derive {Jason.Encoder, only: @external_attributes}
   schema "original_books" do
     field(:authors, :string)
     field(:title, :string)
@@ -30,5 +32,9 @@ defmodule RichardBurton.OriginalBook do
     %__MODULE__{}
     |> changeset(attrs)
     |> Repo.maybe_insert!([:authors, :title])
+  end
+
+  def to_map(original_book) do
+    Map.take(original_book, @external_attributes)
   end
 end
