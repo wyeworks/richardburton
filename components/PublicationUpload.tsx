@@ -5,7 +5,6 @@ import { API } from "app";
 import { useNotifyError } from "./Errors";
 import axios from "axios";
 import { Publication, PublicationEntry } from "modules/publications";
-import hash from "object-hash";
 
 const ERROR_MESSAGES: Record<string, string> = {
   incorrect_row_length: "Expected a different number of columns in csv",
@@ -33,8 +32,8 @@ const PublicationUpload: FC = () => {
         );
 
         setPublications(
-          parsed.map(({ publication, errors }) => ({
-            id: hash(publication),
+          parsed.map(({ publication, errors }, index) => ({
+            id: index,
             publication,
             errors,
           }))
