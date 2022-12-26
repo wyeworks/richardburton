@@ -1,4 +1,4 @@
-defmodule RichardBurton.PublicationCodec do
+defmodule RichardBurton.Publication.Codec do
   @moduledoc """
   Serialization and deserialization utilities for publications
   """
