@@ -28,18 +28,18 @@ const NewPublications: NextPage = () => {
             </label>
           )}
         </header>
-        <main className="flex justify-center p-4 space-x-8 overflow-hidden">
-          <div className="flex justify-center overflow-scroll grow">
+        <div className="flex justify-center p-4 space-x-8 overflow-hidden">
+          <main className="flex justify-center overflow-scroll grow">
             <PublicationIndex
               entries={entries}
               attributes={Publication.ATTRIBUTES}
               editable
             />
-          </div>
+          </main>
           <aside>
             <PublicationToolbar edit />
           </aside>
-        </main>
+        </div>
       </div>
     </>
   );
