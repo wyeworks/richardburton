@@ -64,6 +64,8 @@ const ERROR_MESSAGES: Record<string, string> = {
   conflict: "A publication with this data already exists",
   required: "This field is required and cannot be blank",
   integer: "This field should be an integer",
+  incorrect_row_length: "Expected a different number of columns in csv",
+  invalid_format: "Could not parse publications from the provided file",
 };
 interface PublicationModule {
   ATTRIBUTES: PublicationKey[];

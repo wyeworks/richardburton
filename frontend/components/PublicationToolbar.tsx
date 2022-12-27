@@ -1,18 +1,23 @@
-import { FC } from "react";
+import { ChangeEvent, FC, useEffect, useState } from "react";
 import { API } from "app";
-import { Publication, PublicationKey } from "modules/publications";
 import { useRecoilCallback } from "recoil";
 import { useNotifyError } from "./Errors";
+import { range } from "lodash";
 import axios from "axios";
 import Button from "./Button";
 import Router from "next/router";
+import Toggle from "./Toggle";
+import UploadIcon from "assets/upload.svg";
+import {
+  Publication,
+  PublicationEntry,
+  PublicationKey,
+} from "modules/publications";
 import {
   getSelection,
   useClearSelection,
   useSelectionSize,
 } from "react-selection-manager";
-import PublicationUpload from "./PublicationUpload";
-import Toggle from "./Toggle";
 
 const ToolbarHeading: FC<{ label: string }> = ({ label }) => (
   <h3 className="flex items-center mb-4 space-x-2 text-sm">
@@ -96,6 +101,71 @@ const PublicationFilter: FC = () => {
         <AttributeToggle key={key} attribute={key} />
       ))}
     </div>
+  );
+};
+
+const PublicationUpload: FC = () => {
+  const notifyError = useNotifyError();
+  const setPublications = Publication.STORE.useSetAll();
+  const resetPublications = Publication.STORE.useResetAll();
+
+  const [key, setKey] = useState(1);
+
+  const handleChange = useRecoilCallback(
+    () => async (event: ChangeEvent<HTMLInputElement>) => {
+      if (event.target.files) {
+        const [file] = event.target.files;
+
+        const data = new FormData();
+        data.append("csv", file);
+
+        try {
+          const { data: parsed } = await API.post<
+            Omit<PublicationEntry, "id">[]
+          >("publications/validate", data);
+
+          const ids = range(0, parsed.length);
+
+          setPublications(
+            ids,
+            parsed.map(({ publication, errors }, index) => ({
+              id: ids[index],
+              publication,
+              errors,
+            }))
+          );
+
+          Router.push("publications/new");
+        } catch (error) {
+          event.target.files = null;
+          setKey((key) => -key);
+          if (axios.isAxiosError(error)) {
+            const { response, message } = error;
+            const descriptiveError =
+              response && Publication.describe(response.data as string);
+
+            notifyError(descriptiveError || message);
+          }
+        }
+      }
+    },
+    []
+  );
+
+  useEffect(() => resetPublications(), [resetPublications]);
+
+  return (
+    <label className="flex flex-col items-center justify-center text-sm rounded-lg shadow cursor-pointer aspect-square hover:bg-gray-200">
+      Upload .csv
+      <UploadIcon className="w-8 h-8 text-indigo-800" />
+      <input
+        key={key}
+        type="file"
+        id="upload-csv"
+        className="hidden"
+        onChange={handleChange}
+      />
+    </label>
   );
 };
 
