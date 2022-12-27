@@ -137,8 +137,9 @@ const Row: FC<RowProps> = ({
     <ErrorTooltip
       message={errorString}
       hidden={!Boolean(errorString)}
-      followCursor="x"
       placement="top-start"
+      portalRoot="main"
+      absoluteCenter
     >
       <tr
         className={classNames(
