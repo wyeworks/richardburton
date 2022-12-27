@@ -1,5 +1,6 @@
 import { FC } from "react";
 import Link from "next/link";
+import c from "classnames";
 
 type Props = { compact?: boolean };
 
@@ -7,20 +8,32 @@ const HEADING_TEXT = "Richard Burton Platform";
 const SUBHEADING_TEXT = " A database about Brazilian literature in translation";
 
 const Header: FC<Props> = ({ compact }) => {
-  return compact ? (
-    <header className="py-2 text-center text-white bg-indigo-600">
-      <h1>
-        <Link href="/" className="px-4 py-1 text-xl font-medium border-r ">
-          {HEADING_TEXT}
-        </Link>
-        <span className="px-4 text-lg">{SUBHEADING_TEXT}</span>
-      </h1>
-    </header>
-  ) : (
-    <header className="my-4 text-center">
-      <h1 className="text-5xl">
-        <Link href="/">{HEADING_TEXT}</Link>
-        <div className="text-2xl tracking-wide">{SUBHEADING_TEXT}</div>
+  const large = !compact;
+
+  return (
+    <header
+      className={c({
+        "py-2 text-center text-white bg-indigo-600": compact,
+        "my-4 text-center": large,
+      })}
+    >
+      <h1 className={c({ "my-4 text-center": large })}>
+        <div
+          className={c({
+            "px-4 py-1 text-xl font-medium border-r inline": compact,
+            "text-5xl": large,
+          })}
+        >
+          <Link href="/">{HEADING_TEXT}</Link>
+        </div>
+        <div
+          className={c({
+            "px-4 text-lg inline": compact,
+            "text-2xl tracking-wide": large,
+          })}
+        >
+          {SUBHEADING_TEXT}
+        </div>
       </h1>
     </header>
   );
