@@ -5,6 +5,7 @@ import Head from "next/head";
 import Link from "next/link";
 
 import PublicationToolbar from "components/PublicationToolbar";
+import Header from "components/Header";
 
 const NewPublications: NextPage = () => {
   const entries = Publication.STORE.useAll();
@@ -17,17 +18,7 @@ const NewPublications: NextPage = () => {
         <title>New Publications</title>
       </Head>
       <div className="flex flex-col h-full">
-        <header className="py-2 text-center text-white bg-indigo-600">
-          <Link
-            href="/"
-            className="inline px-4 py-1 text-xl font-medium border-r"
-          >
-            Richard Burton Platform
-          </Link>
-          <span className="inline px-4 text-lg">
-            A database about Brazilian literature in translation
-          </span>
-        </header>
+        <Header compact />
         <main className="flex flex-col p-4 overflow-hidden gap-y-8">
           <header className="my-4 text-center">
             <h1 className="text-4xl">
