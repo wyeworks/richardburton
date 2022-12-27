@@ -1,10 +1,12 @@
-import { ChangeEventHandler, FC, useEffect, useRef, useState } from "react";
+import { ChangeEvent, FC, useEffect, useState } from "react";
 import UploadIcon from "assets/upload.svg";
 import Router from "next/router";
 import { API } from "app";
 import { useNotifyError } from "./Errors";
 import axios from "axios";
 import { Publication, PublicationEntry } from "modules/publications";
+import { useRecoilCallback } from "recoil";
+import { range } from "lodash";
 
 const ERROR_MESSAGES: Record<string, string> = {
   incorrect_row_length: "Expected a different number of columns in csv",
@@ -12,46 +14,52 @@ const ERROR_MESSAGES: Record<string, string> = {
 };
 
 const PublicationUpload: FC = () => {
-  const resetPublications = Publication.STORE.useReset();
-  const setPublications = Publication.STORE.useSet();
   const notifyError = useNotifyError();
+  const setPublications = Publication.STORE.useSetAll();
+  const resetPublications = Publication.STORE.useResetAll();
 
   const [key, setKey] = useState(1);
 
-  const handleChange: ChangeEventHandler<HTMLInputElement> = async (event) => {
-    if (event.target.files) {
-      const [file] = event.target.files;
+  const handleChange = useRecoilCallback(
+    ({ snapshot, set }) =>
+      async (event: ChangeEvent<HTMLInputElement>) => {
+        if (event.target.files) {
+          const [file] = event.target.files;
 
-      const data = new FormData();
-      data.append("csv", file);
+          const data = new FormData();
+          data.append("csv", file);
 
-      try {
-        const { data: parsed } = await API.post<Omit<PublicationEntry, "id">[]>(
-          "publications/validate",
-          data
-        );
+          try {
+            const { data: parsed } = await API.post<
+              Omit<PublicationEntry, "id">[]
+            >("publications/validate", data);
 
-        setPublications(
-          parsed.map(({ publication, errors }, index) => ({
-            id: index,
-            publication,
-            errors,
-          }))
-        );
+            const ids = range(0, parsed.length);
 
-        Router.push("publications/new");
-      } catch (error) {
-        event.target.files = null;
-        setKey((key) => -key);
-        if (axios.isAxiosError(error)) {
-          const { response, message } = error;
-          notifyError(
-            (response && ERROR_MESSAGES[response.data as string]) || message
-          );
+            setPublications(
+              ids,
+              parsed.map(({ publication, errors }, index) => ({
+                id: ids[index],
+                publication,
+                errors,
+              }))
+            );
+
+            Router.push("publications/new");
+          } catch (error) {
+            event.target.files = null;
+            setKey((key) => -key);
+            if (axios.isAxiosError(error)) {
+              const { response, message } = error;
+              notifyError(
+                (response && ERROR_MESSAGES[response.data as string]) || message
+              );
+            }
+          }
         }
-      }
-    }
-  };
+      },
+    []
+  );
 
   useEffect(() => resetPublications(), [resetPublications]);
 

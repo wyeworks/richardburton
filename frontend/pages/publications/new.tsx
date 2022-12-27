@@ -14,25 +14,32 @@ import {
   useSelectionSize,
 } from "react-selection-manager";
 import { useState } from "react";
+import { useRecoilCallback } from "recoil";
 
 const NewPublications: NextPage = () => {
-  const entries = Publication.STORE.useValue();
+  const ids = Publication.STORE.useIds();
 
   const notifyError = useNotifyError();
 
-  const handleSubmit = async () => {
-    if (entries) {
-      try {
-        const publications = entries.map(({ publication }) => publication);
+  const handleSubmit = useRecoilCallback(
+    ({ snapshot }) =>
+      async () => {
+        try {
+          const publications = Publication.STORE.from(snapshot)
+            .getAll()
+            .map(({ publication }) => publication);
 
-        await API.post("publications/bulk", publications);
+          await API.post("publications/bulk", publications);
 
-        Router.push("/");
-      } catch (error) {
-        if (axios.isAxiosError(error)) notifyError(error.message);
-      }
-    }
-  };
+          Router.push("/");
+        } catch (error) {
+          if (axios.isAxiosError(error)) notifyError(error.message);
+        }
+      },
+    []
+  );
+
+  const entries = Publication.STORE.useAll();
 
   const [deletedIds, setDeletedIds] = useState(new Set());
   const selectionSize = useSelectionSize();
@@ -41,8 +48,6 @@ const NewPublications: NextPage = () => {
   const actualEntries = entries?.filter(({ id }) => !deletedIds.has(id));
   const actualEntriesWithErrors = actualEntries?.filter(({ errors }) => errors);
   const actualEntriesWithErrorsCount = actualEntriesWithErrors?.length || 0;
-
-  console.log({ deletedIds, actualEntries });
 
   return (
     <>
