@@ -41,25 +41,28 @@ const PublicationEdit: FC = () => {
     clearSelection();
   };
 
+  const isSelectionEmpty = selectionSize === 0;
+  const isDeletionSetEmpty = deletedIds.length === 0;
+
   return (
     <section className="flex flex-col grow">
       <section className="flex flex-col grow">
         <ToolbarHeading label="Edit" />
-        {selectionSize > 0 && (
+        {!isSelectionEmpty && (
           <Button
             type="outline"
             label={`Delete ${selectionSize}`}
             onClick={deleteSelected}
           />
         )}
-        {selectionSize === 0 && deletedIds.length === 0 && (
+        {isSelectionEmpty && isDeletionSetEmpty && (
           <p className="self-center mx-3 my-auto text-sm text-center text-gray-400">
             Select publications by clicking on them to start editing
           </p>
         )}
       </section>
       <footer>
-        {deletedIds.length > 0 && (
+        {!isDeletionSetEmpty && (
           <Button type="outline" label="Reset" onClick={reset} />
         )}
       </footer>
