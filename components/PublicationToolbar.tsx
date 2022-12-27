@@ -20,7 +20,7 @@ import {
 } from "react-selection-manager";
 
 const ToolbarHeading: FC<{ label: string }> = ({ label }) => (
-  <h3 className="flex items-center mb-4 space-x-2 text-sm">
+  <h3 className="flex items-center space-x-2 text-sm">
     <span className="border-b grow h-fit" />
     <span className="text-gray-500">{label}</span>
     <span className="border-b grow h-fit" />
@@ -53,7 +53,7 @@ const PublicationEdit: FC = () => {
 
   return (
     <section className="flex flex-col grow">
-      <section className="flex flex-col grow">
+      <div className="flex flex-col space-y-2 grow">
         <ToolbarHeading label="Edit" />
         {!isSelectionEmpty && (
           <Button
@@ -63,16 +63,19 @@ const PublicationEdit: FC = () => {
           />
         )}
         {isSelectionEmpty && isDeletionSetEmpty && (
-          <p className="self-center mx-3 my-auto text-sm text-center text-gray-400">
-            Select publications by clicking on them to start editing
-          </p>
+          <div className="flex items-center justify-center grow">
+            <p className="self-center m-3 text-sm text-center text-gray-400">
+              Select publications by clicking on them to start editing
+            </p>
+          </div>
         )}
-      </section>
-      <footer>
-        {!isDeletionSetEmpty && (
+      </div>
+
+      {!isDeletionSetEmpty && (
+        <footer className="mt-auto">
           <Button type="outline" label="Reset" onClick={reset} />
-        )}
-      </footer>
+        </footer>
+      )}
     </section>
   );
 };
@@ -95,12 +98,12 @@ const AttributeToggle: FC<{ attribute: PublicationKey }> = ({ attribute }) => {
 
 const PublicationFilter: FC = () => {
   return (
-    <div className="space-y-2">
+    <section className="space-y-2">
       <ToolbarHeading label="Filter" />
       {Publication.ATTRIBUTES.map((key) => (
         <AttributeToggle key={key} attribute={key} />
       ))}
-    </div>
+    </section>
   );
 };
 
@@ -201,8 +204,8 @@ const PublicationToolbar: FC<Props> = ({
   );
 
   return (
-    <section className="w-48 p-2 space-y-2">
-      <div className="p-2 space-y-2 rounded shadow">
+    <section className="flex flex-col w-48 p-2 space-y-2 min-h-1/2">
+      <div className="flex flex-col p-2 space-y-2 rounded shadow grow">
         {filter && <PublicationFilter />}
         {edit && <PublicationEdit />}
         {edit && <Button label="Submit" onClick={handleSubmit} />}
