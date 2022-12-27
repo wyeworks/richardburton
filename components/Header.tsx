@@ -14,13 +14,13 @@ const Header: FC<Props> = ({ compact, children }) => {
     <header>
       <h1
         className={c({
-          "py-2 text-center text-white bg-indigo-600": compact,
+          "py-1 text-center text-white bg-indigo-600": compact,
           "my-4 text-center": large,
         })}
       >
         <div
           className={c({
-            "px-4 py-1 text-xl font-medium border-r inline": compact,
+            "px-4 py-1 text-lg font-medium border-r inline": compact,
             "text-5xl": large,
           })}
         >
@@ -28,7 +28,7 @@ const Header: FC<Props> = ({ compact, children }) => {
         </div>
         <div
           className={c({
-            "px-4 text-lg inline": compact,
+            "px-4 text-base inline": compact,
             "text-2xl tracking-wide": large,
           })}
         >
