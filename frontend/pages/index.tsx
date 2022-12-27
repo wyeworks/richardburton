@@ -29,8 +29,8 @@ const Home: NextPage = () => {
       </Head>
       <div className="flex flex-col h-full">
         <Header />
-        <main className="flex justify-center p-4 space-x-8 overflow-hidden">
-          <div className="overflow-scroll grow">
+        <div className="flex justify-center p-4 space-x-8 overflow-hidden">
+          <main className="flex overflow-scroll grow">
             {publications ? (
               <PublicationIndex
                 entries={publications.map((publication, index) => ({
@@ -43,11 +43,11 @@ const Home: NextPage = () => {
             ) : (
               "loading..."
             )}
-          </div>
+          </main>
           <aside>
             <PublicationToolbar filter upload />
           </aside>
-        </main>
+        </div>
       </div>
     </>
   );
