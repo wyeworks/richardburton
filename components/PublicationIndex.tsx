@@ -33,7 +33,7 @@ const COUNTRIES: Record<string, string> = {
 
 type Props = {
   entries: PublicationEntry[];
-  columns: Set<PublicationKey>;
+  attributes: PublicationKey[];
   editable?: boolean;
 };
 
@@ -161,13 +161,9 @@ const Row: FC<RowProps> = ({
 
 const PublicationIndex: FC<Props> = ({
   entries,
-  columns,
+  attributes,
   editable = false,
 }) => {
-  const attributes = Publication.ATTRIBUTES.filter((attribute) =>
-    columns.has(attribute)
-  );
-
   const onSelect = useSelectionEvent();
 
   const toggleSelection = (id: number) => (event: MouseEvent) =>

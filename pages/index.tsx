@@ -1,19 +1,28 @@
-import type { NextPage } from "next";
+import { NextPage } from "next";
 import { useQuery } from "react-query";
 import { API } from "app";
 import PublicationIndex from "components/PublicationIndex";
 import Toggle from "components/Toggle";
 import Head from "next/head";
-import { useState } from "react";
 import PublicationUpload from "components/PublicationUpload";
-import { PublicationKey, Publication } from "modules/publications";
+import { Publication, PublicationKey } from "modules/publications";
+import { FC } from "react";
 
-const DEFAULT_COLUMNS: PublicationKey[] = [
-  "originalTitle",
-  "title",
-  "authors",
-  "year",
-];
+const AttributeToggle: FC<{ attribute: PublicationKey }> = ({ attribute }) => {
+  const { useIsVisible, useSetVisible } = Publication.STORE.ATTRIBUTES;
+
+  const isActive = useIsVisible(attribute);
+  const setVisible = useSetVisible();
+
+  return (
+    <Toggle
+      key={attribute}
+      label={Publication.ATTRIBUTE_LABELS[attribute]}
+      startsChecked={isActive}
+      onChange={() => setVisible(attribute, !isActive)}
+    />
+  );
+};
 
 const Home: NextPage = () => {
   const { data: publications } = useQuery<Publication[]>(
@@ -28,7 +37,7 @@ const Home: NextPage = () => {
     }
   );
 
-  const [columns, setColumns] = useState(new Set(DEFAULT_COLUMNS));
+  const visibleAttributes = Publication.STORE.ATTRIBUTES.useAllVisible();
 
   return (
     <>
@@ -46,25 +55,9 @@ const Home: NextPage = () => {
         <main className="w-full overflow-scroll">
           <aside className="absolute right-0 p-2 space-y-6">
             <div className="space-y-2">
-              {Publication.ATTRIBUTES.map((attribute) => {
-                const isActive = columns.has(attribute);
-                const newColumns = new Set(columns);
-
-                if (isActive) {
-                  newColumns.delete(attribute);
-                } else {
-                  newColumns.add(attribute);
-                }
-
-                return (
-                  <Toggle
-                    key={attribute}
-                    label={Publication.ATTRIBUTE_LABELS[attribute]}
-                    startsChecked={isActive}
-                    onChange={() => setColumns(newColumns)}
-                  />
-                );
-              })}
+              {Publication.ATTRIBUTES.map((key) => (
+                <AttributeToggle key={key} attribute={key} />
+              ))}
             </div>
             <PublicationUpload />
           </aside>
@@ -75,7 +68,7 @@ const Home: NextPage = () => {
                 publication,
                 errors: null,
               }))}
-              columns={columns}
+              attributes={visibleAttributes}
             />
           ) : (
             "loading..."
