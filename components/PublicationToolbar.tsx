@@ -1,6 +1,6 @@
 import { FC } from "react";
 import { API } from "app";
-import { Publication } from "modules/publications";
+import { Publication, PublicationKey } from "modules/publications";
 import { useRecoilCallback } from "recoil";
 import { useNotifyError } from "./Errors";
 import axios from "axios";
@@ -11,6 +11,8 @@ import {
   useClearSelection,
   useSelectionSize,
 } from "react-selection-manager";
+import PublicationUpload from "./PublicationUpload";
+import Toggle from "./Toggle";
 
 const ToolbarHeading: FC<{ label: string }> = ({ label }) => (
   <h3 className="flex items-center mb-4 space-x-2 text-sm">
@@ -70,7 +72,44 @@ const PublicationEdit: FC = () => {
   );
 };
 
-const PublicationToolbar: FC = () => {
+const AttributeToggle: FC<{ attribute: PublicationKey }> = ({ attribute }) => {
+  const { useIsVisible, useSetVisible } = Publication.STORE.ATTRIBUTES;
+
+  const isActive = useIsVisible(attribute);
+  const setVisible = useSetVisible();
+
+  return (
+    <Toggle
+      key={attribute}
+      label={Publication.ATTRIBUTE_LABELS[attribute]}
+      startsChecked={isActive}
+      onChange={() => setVisible(attribute, !isActive)}
+    />
+  );
+};
+
+const PublicationFilter: FC = () => {
+  return (
+    <div className="space-y-2">
+      <ToolbarHeading label="Filter" />
+      {Publication.ATTRIBUTES.map((key) => (
+        <AttributeToggle key={key} attribute={key} />
+      ))}
+    </div>
+  );
+};
+
+type Props = {
+  filter?: boolean;
+  edit?: boolean;
+  upload?: boolean;
+};
+
+const PublicationToolbar: FC<Props> = ({
+  filter = false,
+  edit = false,
+  upload = false,
+}) => {
   const notifyError = useNotifyError();
 
   const handleSubmit = useRecoilCallback(
@@ -92,10 +131,14 @@ const PublicationToolbar: FC = () => {
   );
 
   return (
-    <aside className="flex flex-col justify-between p-2 space-y-2 rounded shadow w-60 h-1/2">
-      <PublicationEdit />
-      <Button label="Submit" onClick={handleSubmit} />
-    </aside>
+    <section className="w-48 p-2 space-y-2">
+      <div className="p-2 space-y-2 rounded shadow">
+        {filter && <PublicationFilter />}
+        {edit && <PublicationEdit />}
+        {edit && <Button label="Submit" onClick={handleSubmit} />}
+      </div>
+      {upload && <PublicationUpload />}
+    </section>
   );
 };
 

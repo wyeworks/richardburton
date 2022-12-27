@@ -64,7 +64,7 @@ const PublicationUpload: FC = () => {
   useEffect(() => resetPublications(), [resetPublications]);
 
   return (
-    <label className="flex flex-col items-center justify-center w-40 h-40 text-sm rounded-lg shadow-sm cursor-pointer hover:bg-gray-200">
+    <label className="flex flex-col items-center justify-center text-sm rounded-lg shadow cursor-pointer aspect-square hover:bg-gray-200">
       Upload .csv
       <UploadIcon className="w-8 h-8 text-indigo-800" />
       <input
