@@ -8,5 +8,5 @@
 }
 
 #__next {
-  @apply h-screen;
+  @apply h-screen text-gray-700;
 }

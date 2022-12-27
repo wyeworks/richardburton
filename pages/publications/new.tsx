@@ -74,7 +74,7 @@ const NewPublications: NextPage = () => {
           </header>
 
           {actualEntries ? (
-            <section className="flex space-x-8 overflow-hidden 2xl:justify-center">
+            <section className="flex p-1 space-x-8 overflow-hidden 2xl:justify-center">
               <div className="overflow-scroll">
                 <PublicationIndex
                   entries={actualEntries}
@@ -82,33 +82,52 @@ const NewPublications: NextPage = () => {
                   editable
                 />
               </div>
-              <aside className="flex flex-col space-y-2">
+              <aside className="flex flex-col justify-between p-2 space-y-2 rounded shadow w-60 h-1/2">
+                <section className="flex flex-col grow">
+                  <section className="flex flex-col grow">
+                    <h3 className="flex items-center mb-4 space-x-2 text-sm">
+                      <span className="border-b grow h-fit" />
+                      <span className="text-gray-500">Edit</span>
+                      <span className="border-b grow h-fit" />
+                    </h3>
+
+                    {selectionSize > 0 && (
+                      <Button
+                        type="outline"
+                        label={`Delete ${selectionSize}`}
+                        onClick={() => {
+                          const selectedIds = getSelection();
+
+                          if (selectedIds) {
+                            setDeletedIds(
+                              (current) => new Set([...current, ...selectedIds])
+                            );
+                            clearSelection();
+                          }
+                        }}
+                      />
+                    )}
+                    {selectionSize === 0 && deletedIds.size === 0 && (
+                      <p className="self-center mx-3 my-auto text-sm text-center text-gray-400">
+                        Select publications by clicking on them to start editing
+                      </p>
+                    )}
+                  </section>
+                  <footer>
+                    {deletedIds.size > 0 && (
+                      <Button
+                        type="outline"
+                        label="Reset"
+                        onClick={() => {
+                          setDeletedIds(new Set());
+                          clearSelection();
+                        }}
+                      />
+                    )}
+                  </footer>
+                </section>
+
                 <Button label="Submit" onClick={handleSubmit} />
-
-                {deletedIds.size > 0 && (
-                  <Button
-                    label="Reset publications"
-                    onClick={() => {
-                      setDeletedIds(new Set());
-                      clearSelection();
-                    }}
-                  />
-                )}
-                {selectionSize > 0 && (
-                  <Button
-                    label={`Delete ${selectionSize}`}
-                    onClick={() => {
-                      const selectedIds = getSelection();
-
-                      if (selectedIds) {
-                        setDeletedIds(
-                          (current) => new Set([...current, ...selectedIds])
-                        );
-                        clearSelection();
-                      }
-                    }}
-                  />
-                )}
               </aside>
             </section>
           ) : (
