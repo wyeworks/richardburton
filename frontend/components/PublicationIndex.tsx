@@ -3,6 +3,7 @@ import {
   Publication,
   PublicationEntry,
   PublicationError,
+  PublicationId,
   PublicationKey,
 } from "modules/publications";
 import {
@@ -37,7 +38,7 @@ type Props = {
 };
 
 type RowProps = {
-  id: number;
+  id: PublicationId;
   attributes: PublicationKey[];
   publication: Publication;
   errors: PublicationError;
@@ -46,7 +47,7 @@ type RowProps = {
 };
 
 type RowContext = {
-  id: number;
+  id: PublicationId;
   publication: Publication;
   errors: PublicationError;
   hasErrors: boolean;

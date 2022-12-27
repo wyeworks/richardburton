@@ -1,7 +1,11 @@
 import {
   atom,
+  atomFamily,
   Resetter,
   SetterOrUpdater,
+  Snapshot,
+  useRecoilCallback,
+  useRecoilSnapshot,
   useRecoilValue,
   useResetRecoilState,
   useSetRecoilState,
@@ -25,10 +29,14 @@ type PublicationEntry = {
   publication: Publication;
   errors: PublicationError;
 };
+type PublicationId = PublicationEntry["id"];
 
-type StoredPublications = PublicationEntry[] | undefined;
+const PUBLICATION_IDS = atom<PublicationId[]>({
+  key: "publication-ids",
+  default: [],
+});
 
-const ATOM = atom<StoredPublications>({
+const PUBLICATIONS = atomFamily<PublicationEntry, PublicationId>({
   key: "publications",
   default: undefined,
 });
@@ -43,9 +51,18 @@ interface PublicationModule {
   ATTRIBUTE_LABELS: Record<PublicationKey, string>;
 
   STORE: {
-    useValue(): StoredPublications;
-    useSet(): SetterOrUpdater<StoredPublications>;
-    useReset(): Resetter;
+    useIds(): PublicationId[];
+    useValue(id: PublicationId): PublicationEntry;
+    useAll(): PublicationEntry[];
+    useSet(id: PublicationId): SetterOrUpdater<PublicationEntry>;
+    useSetAll(): (ids: PublicationId[], entries: PublicationEntry[]) => void;
+    useResetAll(): Resetter;
+
+    from: (snapshot: Snapshot) => {
+      getIds(): PublicationId[];
+      getAll(): PublicationEntry[];
+      getValue(id: PublicationId): PublicationEntry;
+    };
   };
 
   describe(error: PublicationError, scope?: PublicationKey): string;
@@ -71,15 +88,53 @@ const Publication: PublicationModule = {
     year: "Year",
   },
   STORE: {
-    useValue() {
-      return useRecoilValue(ATOM);
+    useIds() {
+      return useRecoilValue(PUBLICATION_IDS);
     },
-    useSet() {
-      return useSetRecoilState(ATOM);
+    useValue(id: PublicationId) {
+      return useRecoilValue(PUBLICATIONS(id));
     },
-    useReset() {
-      return useResetRecoilState(ATOM);
+    useAll() {
+      const snapshot = useRecoilSnapshot();
+      return this.from(snapshot).getAll();
     },
+    useSet(id: PublicationId) {
+      return useSetRecoilState(PUBLICATIONS(id));
+    },
+    useSetAll() {
+      return useRecoilCallback(
+        ({ set }) =>
+          (ids, entries) => {
+            set(PUBLICATION_IDS, ids);
+            ids.forEach((id, index) => set(PUBLICATIONS(id), entries[index]));
+          },
+        []
+      );
+    },
+    useResetAll() {
+      return useRecoilCallback(
+        ({ reset, snapshot }) =>
+          () => {
+            const ids = snapshot.getLoadable(PUBLICATION_IDS).valueOrThrow();
+            ids.forEach((id) => reset(PUBLICATIONS(id)));
+            reset(PUBLICATION_IDS);
+          },
+        []
+      );
+    },
+
+    from: (snapshot) => ({
+      getIds() {
+        return snapshot.getLoadable(PUBLICATION_IDS).valueOrThrow();
+      },
+      getValue(id) {
+        return snapshot.getLoadable(PUBLICATIONS(id)).valueOrThrow();
+      },
+      getAll() {
+        const { getIds, getValue } = Publication.STORE.from(snapshot);
+        return getIds().map(getValue);
+      },
+    }),
   },
   describe(error, scope) {
     if (!error) {
@@ -100,5 +155,10 @@ const Publication: PublicationModule = {
   },
 };
 
-export type { PublicationKey, PublicationEntry, PublicationError };
+export type {
+  PublicationKey,
+  PublicationEntry,
+  PublicationError,
+  PublicationId,
+};
 export { Publication };
