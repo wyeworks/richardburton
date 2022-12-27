@@ -7,7 +7,6 @@ import {
   useRecoilCallback,
   useRecoilSnapshot,
   useRecoilValue,
-  useResetRecoilState,
   useSetRecoilState,
 } from "recoil";
 import { isString } from "lodash";
@@ -41,6 +40,11 @@ const PUBLICATIONS = atomFamily<PublicationEntry, PublicationId>({
   default: undefined,
 });
 
+const DELETED_PUBLICATIONS = atomFamily<boolean, PublicationId>({
+  key: "deleted-publications",
+  default: false,
+});
+
 const ERROR_MESSAGES: Record<string, string> = {
   conflict: "A publication with this data already exists",
   required: "This field is required and cannot be blank",
@@ -52,16 +56,20 @@ interface PublicationModule {
 
   STORE: {
     useIds(): PublicationId[];
+    useDeletedIds(): PublicationId[];
     useValue(id: PublicationId): PublicationEntry;
     useAll(): PublicationEntry[];
     useSet(id: PublicationId): SetterOrUpdater<PublicationEntry>;
     useSetAll(): (ids: PublicationId[], entries: PublicationEntry[]) => void;
+    useSetDeleted(): (ids: PublicationId[], isDeleted?: boolean) => void;
     useResetAll(): Resetter;
 
     from: (snapshot: Snapshot) => {
       getIds(): PublicationId[];
+      getDeletedIds(): PublicationId[];
       getAll(): PublicationEntry[];
       getValue(id: PublicationId): PublicationEntry;
+      isDeleted(id: PublicationId): boolean;
     };
   };
 
@@ -91,6 +99,10 @@ const Publication: PublicationModule = {
     useIds() {
       return useRecoilValue(PUBLICATION_IDS);
     },
+    useDeletedIds() {
+      const snapshot = useRecoilSnapshot();
+      return this.from(snapshot).getDeletedIds();
+    },
     useValue(id: PublicationId) {
       return useRecoilValue(PUBLICATIONS(id));
     },
@@ -111,12 +123,24 @@ const Publication: PublicationModule = {
         []
       );
     },
+    useSetDeleted() {
+      return useRecoilCallback(
+        ({ set }) =>
+          (ids, isDeleted = true) => {
+            ids.forEach((id) => set(DELETED_PUBLICATIONS(id), isDeleted));
+          },
+        []
+      );
+    },
     useResetAll() {
       return useRecoilCallback(
         ({ reset, snapshot }) =>
           () => {
             const ids = snapshot.getLoadable(PUBLICATION_IDS).valueOrThrow();
-            ids.forEach((id) => reset(PUBLICATIONS(id)));
+            ids.forEach((id) => {
+              reset(PUBLICATIONS(id));
+              reset(DELETED_PUBLICATIONS(id));
+            });
             reset(PUBLICATION_IDS);
           },
         []
@@ -127,12 +151,23 @@ const Publication: PublicationModule = {
       getIds() {
         return snapshot.getLoadable(PUBLICATION_IDS).valueOrThrow();
       },
+      getDeletedIds() {
+        const { getIds, isDeleted } = Publication.STORE.from(snapshot);
+        return getIds().filter(isDeleted);
+      },
       getValue(id) {
         return snapshot.getLoadable(PUBLICATIONS(id)).valueOrThrow();
       },
       getAll() {
-        const { getIds, getValue } = Publication.STORE.from(snapshot);
-        return getIds().map(getValue);
+        const { getIds, getValue, isDeleted } =
+          Publication.STORE.from(snapshot);
+
+        return getIds()
+          .filter((id) => !isDeleted(id))
+          .map(getValue);
+      },
+      isDeleted(id) {
+        return snapshot.getLoadable(DELETED_PUBLICATIONS(id)).valueOrThrow();
       },
     }),
   },

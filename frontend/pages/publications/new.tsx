@@ -13,12 +13,9 @@ import {
   useClearSelection,
   useSelectionSize,
 } from "react-selection-manager";
-import { useState } from "react";
 import { useRecoilCallback } from "recoil";
 
 const NewPublications: NextPage = () => {
-  const ids = Publication.STORE.useIds();
-
   const notifyError = useNotifyError();
 
   const handleSubmit = useRecoilCallback(
@@ -40,14 +37,28 @@ const NewPublications: NextPage = () => {
   );
 
   const entries = Publication.STORE.useAll();
+  const entriesWithErrors = entries?.filter(({ errors }) => errors);
+  const entriesWithErrorsCount = entriesWithErrors?.length || 0;
 
-  const [deletedIds, setDeletedIds] = useState(new Set());
+  const deletedIds = Publication.STORE.useDeletedIds();
+
   const selectionSize = useSelectionSize();
   const clearSelection = useClearSelection();
 
-  const actualEntries = entries?.filter(({ id }) => !deletedIds.has(id));
-  const actualEntriesWithErrors = actualEntries?.filter(({ errors }) => errors);
-  const actualEntriesWithErrorsCount = actualEntriesWithErrors?.length || 0;
+  const setDeleted = Publication.STORE.useSetDeleted();
+
+  const deleteSelected = () => {
+    const selectedIds = [...getSelection()] as number[];
+    if (selectedIds.length > 0) {
+      setDeleted(selectedIds);
+      clearSelection();
+    }
+  };
+
+  const reset = () => {
+    setDeleted(deletedIds, false);
+    clearSelection();
+  };
 
   return (
     <>
@@ -69,20 +80,20 @@ const NewPublications: NextPage = () => {
         <main className="flex flex-col p-4 overflow-hidden gap-y-8">
           <header className="my-4 text-center">
             <h1 className="text-4xl">
-              {actualEntries?.length} publications about to be inserted...
+              {entries?.length} publications about to be inserted...
             </h1>
-            {actualEntriesWithErrorsCount > 0 && (
+            {entriesWithErrorsCount > 0 && (
               <label className="text-lg text-red-500">
-                {actualEntriesWithErrorsCount} of those have errors
+                {entriesWithErrorsCount} of those have errors
               </label>
             )}
           </header>
 
-          {actualEntries ? (
+          {entries ? (
             <section className="flex p-1 space-x-8 overflow-hidden 2xl:justify-center">
               <div className="overflow-scroll">
                 <PublicationIndex
-                  entries={actualEntries}
+                  entries={entries}
                   columns={new Set(Publication.ATTRIBUTES)}
                   editable
                 />
@@ -100,34 +111,18 @@ const NewPublications: NextPage = () => {
                       <Button
                         type="outline"
                         label={`Delete ${selectionSize}`}
-                        onClick={() => {
-                          const selectedIds = getSelection();
-
-                          if (selectedIds) {
-                            setDeletedIds(
-                              (current) => new Set([...current, ...selectedIds])
-                            );
-                            clearSelection();
-                          }
-                        }}
+                        onClick={deleteSelected}
                       />
                     )}
-                    {selectionSize === 0 && deletedIds.size === 0 && (
+                    {selectionSize === 0 && deletedIds.length === 0 && (
                       <p className="self-center mx-3 my-auto text-sm text-center text-gray-400">
                         Select publications by clicking on them to start editing
                       </p>
                     )}
                   </section>
                   <footer>
-                    {deletedIds.size > 0 && (
-                      <Button
-                        type="outline"
-                        label="Reset"
-                        onClick={() => {
-                          setDeletedIds(new Set());
-                          clearSelection();
-                        }}
-                      />
+                    {deletedIds.length > 0 && (
+                      <Button type="outline" label="Reset" onClick={reset} />
                     )}
                   </footer>
                 </section>
