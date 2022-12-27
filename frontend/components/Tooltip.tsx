@@ -24,6 +24,7 @@ type TooltipOptions = {
   placement?: Placement;
   onOpenChange?: (open: boolean) => void;
   portalRoot?: "main";
+  boundary?: "main";
   absoluteCenter?: boolean;
 };
 
@@ -35,6 +36,11 @@ function useTooltip(options: TooltipOptions = {}) {
     onOpenChange: setControlledOpen,
   } = options;
 
+  const boundary =
+    options.boundary === "main"
+      ? document.getElementsByTagName("main")[0]
+      : undefined;
+
   const [uncontrolledOpen, setUncontrolledOpen] = useState(initialOpen);
 
   const open = controlledOpen ?? uncontrolledOpen;
@@ -45,7 +51,7 @@ function useTooltip(options: TooltipOptions = {}) {
     open,
     onOpenChange: setOpen,
     whileElementsMounted: autoUpdate,
-    middleware: [offset(5), flip(), shift()],
+    middleware: [offset(5), flip({ boundary }), shift({ boundary })],
   });
 
   const context = data.context;
