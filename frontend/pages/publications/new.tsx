@@ -45,7 +45,7 @@ const NewPublications: NextPage = () => {
               <div className="overflow-scroll">
                 <PublicationIndex
                   entries={entries}
-                  columns={new Set(Publication.ATTRIBUTES)}
+                  attributes={Publication.ATTRIBUTES}
                   editable
                 />
               </div>

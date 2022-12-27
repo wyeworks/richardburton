@@ -45,6 +45,21 @@ const DELETED_PUBLICATIONS = atomFamily<boolean, PublicationId>({
   default: false,
 });
 
+const DEFAULT_ATTRIBUTE_VISIBILITY: Record<PublicationKey, boolean> = {
+  title: true,
+  country: false,
+  year: true,
+  publisher: false,
+  authors: true,
+  originalTitle: true,
+  originalAuthors: false,
+};
+
+const VISIBLE_ATTRIBUTES = atomFamily<boolean, PublicationKey>({
+  key: "visible-attributes",
+  default: (key) => DEFAULT_ATTRIBUTE_VISIBILITY[key],
+});
+
 const ERROR_MESSAGES: Record<string, string> = {
   conflict: "A publication with this data already exists",
   required: "This field is required and cannot be blank",
@@ -70,6 +85,17 @@ interface PublicationModule {
       getAll(): PublicationEntry[];
       getValue(id: PublicationId): PublicationEntry;
       isDeleted(id: PublicationId): boolean;
+    };
+
+    ATTRIBUTES: {
+      useAllVisible(): PublicationKey[];
+      useSetVisible(): (key: PublicationKey, isVisible?: boolean) => void;
+      useIsVisible(key: PublicationKey): boolean;
+
+      from: (snapshot: Snapshot) => {
+        getAllVisible(): PublicationKey[];
+        isVisible(key: PublicationKey): boolean;
+      };
     };
   };
 
@@ -170,6 +196,30 @@ const Publication: PublicationModule = {
         return snapshot.getLoadable(DELETED_PUBLICATIONS(id)).valueOrThrow();
       },
     }),
+
+    ATTRIBUTES: {
+      useAllVisible() {
+        const snapshot = useRecoilSnapshot();
+        return this.from(snapshot).getAllVisible();
+      },
+      useIsVisible(key) {
+        return useRecoilValue(VISIBLE_ATTRIBUTES(key));
+      },
+      useSetVisible() {
+        return useRecoilCallback(({ set }) => (key, isVisible = true) => {
+          set(VISIBLE_ATTRIBUTES(key), isVisible);
+        });
+      },
+
+      from: (snapshot) => ({
+        getAllVisible() {
+          return Publication.ATTRIBUTES.filter(this.isVisible);
+        },
+        isVisible(key) {
+          return snapshot.getLoadable(VISIBLE_ATTRIBUTES(key)).valueOrThrow();
+        },
+      }),
+    },
   },
   describe(error, scope) {
     if (!error) {
