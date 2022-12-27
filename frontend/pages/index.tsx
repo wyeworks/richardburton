@@ -4,8 +4,8 @@ import { API } from "app";
 import { Publication } from "modules/publications";
 import PublicationIndex from "components/PublicationIndex";
 import PublicationToolbar from "components/PublicationToolbar";
-import Head from "next/head";
 import Header from "components/Header";
+import Layout from "components/Layout";
 
 const Home: NextPage = () => {
   const { data: publications } = useQuery<Publication[]>(
@@ -23,33 +23,25 @@ const Home: NextPage = () => {
   const visibleAttributes = Publication.STORE.ATTRIBUTES.useAllVisible();
 
   return (
-    <>
-      <Head>
-        <title>Richard Burton</title>
-      </Head>
-      <div className="flex flex-col h-full">
-        <Header />
-        <div className="flex justify-center p-4 space-x-8 overflow-hidden">
-          <main className="flex overflow-scroll grow">
-            {publications ? (
-              <PublicationIndex
-                entries={publications.map((publication, index) => ({
-                  id: index,
-                  publication,
-                  errors: null,
-                }))}
-                attributes={visibleAttributes}
-              />
-            ) : (
-              "loading..."
-            )}
-          </main>
-          <aside>
-            <PublicationToolbar filter upload />
-          </aside>
-        </div>
-      </div>
-    </>
+    <Layout
+      title="Richard Burton"
+      header={<Header />}
+      sidebar={<PublicationToolbar filter upload />}
+      content={
+        publications ? (
+          <PublicationIndex
+            entries={publications.map((publication, index) => ({
+              id: index,
+              publication,
+              errors: null,
+            }))}
+            attributes={visibleAttributes}
+          />
+        ) : (
+          "loading..."
+        )
+      }
+    />
   );
 };
 
