@@ -5,6 +5,7 @@ import { Publication } from "modules/publications";
 import PublicationIndex from "components/PublicationIndex";
 import PublicationToolbar from "components/PublicationToolbar";
 import Head from "next/head";
+import Header from "components/Header";
 
 const Home: NextPage = () => {
   const { data: publications } = useQuery<Publication[]>(
@@ -27,12 +28,7 @@ const Home: NextPage = () => {
         <title>Richard Burton</title>
       </Head>
       <div className="flex flex-col h-full">
-        <header className="my-4 text-center">
-          <h1 className="text-5xl">Richard Burton Platform</h1>
-          <h2 className="text-2xl">
-            A database about Brazilian literature in translation
-          </h2>
-        </header>
+        <Header />
         <main className="flex justify-center p-4 space-x-8 overflow-hidden">
           <div className="overflow-scroll grow">
             {publications ? (
