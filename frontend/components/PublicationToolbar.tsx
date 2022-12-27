@@ -12,8 +12,7 @@ import {
   useSelectionSize,
 } from "react-selection-manager";
 
-const PublicationToolbar: FC = () => {
-  const notifyError = useNotifyError();
+const PublicationEdit: FC = () => {
   const deletedIds = Publication.STORE.useDeletedIds();
 
   const selectionSize = useSelectionSize();
@@ -30,10 +29,43 @@ const PublicationToolbar: FC = () => {
   };
 
   const reset = () => {
-    const selectedIds = [...getSelection()] as number[];
-    setDeleted(selectedIds, false);
+    setDeleted(deletedIds, false);
     clearSelection();
   };
+
+  return (
+    <section className="flex flex-col grow">
+      <section className="flex flex-col grow">
+        <h3 className="flex items-center mb-4 space-x-2 text-sm">
+          <span className="border-b grow h-fit" />
+          <span className="text-gray-500">Edit</span>
+          <span className="border-b grow h-fit" />
+        </h3>
+
+        {selectionSize > 0 && (
+          <Button
+            type="outline"
+            label={`Delete ${selectionSize}`}
+            onClick={deleteSelected}
+          />
+        )}
+        {selectionSize === 0 && deletedIds.length === 0 && (
+          <p className="self-center mx-3 my-auto text-sm text-center text-gray-400">
+            Select publications by clicking on them to start editing
+          </p>
+        )}
+      </section>
+      <footer>
+        {deletedIds.length > 0 && (
+          <Button type="outline" label="Reset" onClick={reset} />
+        )}
+      </footer>
+    </section>
+  );
+};
+
+const PublicationToolbar: FC = () => {
+  const notifyError = useNotifyError();
 
   const handleSubmit = useRecoilCallback(
     ({ snapshot }) =>
@@ -55,34 +87,7 @@ const PublicationToolbar: FC = () => {
 
   return (
     <aside className="flex flex-col justify-between p-2 space-y-2 rounded shadow w-60 h-1/2">
-      <section className="flex flex-col grow">
-        <section className="flex flex-col grow">
-          <h3 className="flex items-center mb-4 space-x-2 text-sm">
-            <span className="border-b grow h-fit" />
-            <span className="text-gray-500">Edit</span>
-            <span className="border-b grow h-fit" />
-          </h3>
-
-          {selectionSize > 0 && (
-            <Button
-              type="outline"
-              label={`Delete ${selectionSize}`}
-              onClick={deleteSelected}
-            />
-          )}
-          {selectionSize === 0 && deletedIds.length === 0 && (
-            <p className="self-center mx-3 my-auto text-sm text-center text-gray-400">
-              Select publications by clicking on them to start editing
-            </p>
-          )}
-        </section>
-        <footer>
-          {deletedIds.length > 0 && (
-            <Button type="outline" label="Reset" onClick={reset} />
-          )}
-        </footer>
-      </section>
-
+      <PublicationEdit />
       <Button label="Submit" onClick={handleSubmit} />
     </aside>
   );
