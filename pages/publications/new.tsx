@@ -18,34 +18,27 @@ const NewPublications: NextPage = () => {
       </Head>
       <div className="flex flex-col h-full">
         <Header compact />
-        <main className="flex flex-col p-4 overflow-hidden gap-y-8">
-          <header className="my-4 text-center">
-            <h1 className="text-4xl">
-              {entries?.length} publications about to be inserted...
-            </h1>
-            {entriesWithErrorsCount > 0 && (
-              <label className="text-lg text-red-500">
-                {entriesWithErrorsCount} of those have errors
-              </label>
-            )}
-          </header>
-
-          {entries ? (
-            <section className="flex p-1 space-x-8 overflow-hidden 2xl:justify-center">
-              <div className="overflow-scroll">
-                <PublicationIndex
-                  entries={entries}
-                  attributes={Publication.ATTRIBUTES}
-                  editable
-                />
-              </div>
-              <aside>
-                <PublicationToolbar edit />
-              </aside>
-            </section>
-          ) : (
-            "loading..."
+        <header className="my-4 text-center">
+          <h1 className="text-4xl">
+            {entries?.length} publications about to be inserted...
+          </h1>
+          {entriesWithErrorsCount > 0 && (
+            <label className="text-lg text-red-500">
+              {entriesWithErrorsCount} of those have errors
+            </label>
           )}
+        </header>
+        <main className="flex justify-center p-4 space-x-8 overflow-hidden">
+          <div className="flex justify-center overflow-scroll grow">
+            <PublicationIndex
+              entries={entries}
+              attributes={Publication.ATTRIBUTES}
+              editable
+            />
+          </div>
+          <aside>
+            <PublicationToolbar edit />
+          </aside>
         </main>
       </div>
     </>
