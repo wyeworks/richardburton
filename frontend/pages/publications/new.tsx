@@ -2,7 +2,6 @@ import { NextPage } from "next";
 import { Publication } from "modules/publications";
 import PublicationIndex from "components/PublicationIndex";
 import Head from "next/head";
-import Link from "next/link";
 
 import PublicationToolbar from "components/PublicationToolbar";
 import Header from "components/Header";
