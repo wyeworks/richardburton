@@ -32,7 +32,7 @@ const Button: FC<Props> = ({
       )}
       onClick={onClick}
     >
-      {Icon && <Icon className="w-6 h-6 mr-2 text-white" />}
+      {Icon && <Icon className="w-4 h-4 mr-2 text-white" />}
       {label}
     </button>
   );

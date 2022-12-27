@@ -49,7 +49,9 @@ const NewPublications: NextPage = () => {
                   editable
                 />
               </div>
-              <PublicationToolbar />
+              <aside>
+                <PublicationToolbar edit />
+              </aside>
             </section>
           ) : (
             "loading..."
