@@ -12,6 +12,14 @@ import {
   useSelectionSize,
 } from "react-selection-manager";
 
+const ToolbarHeading: FC<{ label: string }> = ({ label }) => (
+  <h3 className="flex items-center mb-4 space-x-2 text-sm">
+    <span className="border-b grow h-fit" />
+    <span className="text-gray-500">{label}</span>
+    <span className="border-b grow h-fit" />
+  </h3>
+);
+
 const PublicationEdit: FC = () => {
   const deletedIds = Publication.STORE.useDeletedIds();
 
@@ -36,12 +44,7 @@ const PublicationEdit: FC = () => {
   return (
     <section className="flex flex-col grow">
       <section className="flex flex-col grow">
-        <h3 className="flex items-center mb-4 space-x-2 text-sm">
-          <span className="border-b grow h-fit" />
-          <span className="text-gray-500">Edit</span>
-          <span className="border-b grow h-fit" />
-        </h3>
-
+        <ToolbarHeading label="Edit" />
         {selectionSize > 0 && (
           <Button
             type="outline"
