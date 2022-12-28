@@ -58,7 +58,7 @@ defmodule RichardBurton.Repo do
   end
 
   def get_errors({key, %Ecto.Changeset{} = changeset}) do
-    Map.put(%{}, key, get_errors(changeset))
+    %{key => get_errors(changeset)}
   end
 
   def get_errors(_unknown) do
