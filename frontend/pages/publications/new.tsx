@@ -8,9 +8,9 @@ import Layout from "components/Layout";
 import { useEffect } from "react";
 
 const NewPublications: NextPage = () => {
-  const entries = Publication.STORE.useAll();
-  const entriesWithErrors = entries?.filter(({ errors }) => errors);
-  const entriesWithErrorsCount = entriesWithErrors?.length || 0;
+  const publicationCount = Publication.STORE.useCount();
+  const validPublicationCount = Publication.STORE.useValidCount();
+  const invalidPublicationCount = publicationCount - validPublicationCount;
 
   const setVisible = Publication.STORE.ATTRIBUTES.useSetVisible();
 
@@ -24,10 +24,10 @@ const NewPublications: NextPage = () => {
       header={
         <Header compact>
           <h2 className="my-4 text-4xl text-center">
-            <div>{entries?.length} publications about to be inserted...</div>
-            {entriesWithErrorsCount > 0 && (
+            <div>{publicationCount} publications about to be inserted...</div>
+            {invalidPublicationCount > 0 && (
               <div className="text-lg text-red-500">
-                {entriesWithErrorsCount} of those have errors
+                {invalidPublicationCount} of those have errors
               </div>
             )}
           </h2>

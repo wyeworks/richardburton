@@ -137,7 +137,7 @@ type Props = {
 };
 
 const PublicationIndex: FC<Props> = ({ editable = false }) => {
-  const ids = Publication.STORE.useIds();
+  const ids = Publication.STORE.useVisibleIds();
 
   const onSelect = useSelectionEvent();
 
