@@ -27,19 +27,13 @@ defmodule RichardBurtonWeb.PublicationController do
 
   def validate(conn, %{"csv" => %Plug.Upload{path: path}}) do
     try do
-      publications = Publication.from_csv!(path)
-
       publications_with_errors =
-        publications
-        |> Enum.map(&Publication.validate/1)
-        |> Enum.zip(publications)
-        |> Enum.map(fn tuple ->
-          case tuple do
-            {{:ok}, publication} ->
-              %{publication: publication, errors: nil}
-
-            {{:error, errors}, publication} ->
-              %{publication: publication, errors: errors}
+        path
+        |> Publication.from_csv!()
+        |> Enum.map(fn p ->
+          case(Publication.validate(p)) do
+            {:ok} -> %{publication: p, errors: nil}
+            {:error, errors} -> %{publication: p, errors: errors}
           end
         end)
 
