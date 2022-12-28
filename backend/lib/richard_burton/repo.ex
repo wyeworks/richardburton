@@ -72,4 +72,7 @@ defmodule RichardBurton.Repo do
 
   defp parse_error({key, {_message, [constraint: name, constraint_name: _]}}),
     do: {key, name}
+
+  defp parse_error({key, {_message, [type: type, validation: :cast]}}),
+    do: {key, type}
 end

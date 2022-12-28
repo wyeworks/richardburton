@@ -9,81 +9,127 @@ defmodule RichardBurton.Publication.CodecTest do
   alias RichardBurton.TranslatedBook
   alias RichardBurton.OriginalBook
 
-  describe "from_csv!/1 when the provided csv is valid" do
-    @output [
-      %{
-        "title" => "Iraçéma the Honey-Lips: A Legend of Brazil",
-        "year" => "1886",
-        "country" => "GB",
-        "publisher" => "Bickers & Son",
-        "translated_book" => %{
-          "authors" => "Isabel Burton",
-          "original_book" => %{
-            "authors" => "José de Alencar",
-            "title" => "Iracema"
-          }
-        }
-      },
-      %{
-        "title" => "Ubirajara: A Legend of the Tupy Indians",
-        "year" => "1922",
-        "country" => "US",
-        "publisher" => "Ronald Massey",
-        "translated_book" => %{
-          "authors" => "J. T. W. Sadler",
-          "original_book" => %{
-            "authors" => "José de Alencar",
-            "title" => "Ubirajara"
-          }
-        }
-      },
-      %{
-        "title" => "",
-        "year" => "1886",
-        "country" => "GB",
-        "publisher" => "Bickers & Son",
-        "translated_book" => %{
-          "authors" => "",
-          "original_book" => %{
-            "authors" => "José de Alencar",
-            "title" => "Iracema"
-          }
-        }
-      },
-      %{
-        "title" => "Ubirajara: A Legend of the Tupy Indians",
-        "year" => "",
-        "country" => "",
-        "publisher" => "",
-        "translated_book" => %{
-          "authors" => "J. T. W. Sadler",
-          "original_book" => %{
-            "authors" => "",
-            "title" => ""
-          }
-        }
-      }
-    ]
+  describe "from_csv/1 when the provided csv is correct" do
+    test "returns a list of publication-like maps" do
+      input = "test/fixtures/data_correct_with_errors.csv"
 
-    test "when the provided csv file is valid, returns a list of publication-like maps" do
-      assert @output == Publication.Codec.from_csv!("test/fixtures/data_valid_mixed.csv")
+      publications = [
+        %{
+          "title" => "Iraçéma the Honey-Lips: A Legend of Brazil",
+          "year" => "1886",
+          "country" => "GB",
+          "publisher" => "Bickers & Son",
+          "translated_book" => %{
+            "authors" => "Isabel Burton",
+            "original_book" => %{
+              "authors" => "José de Alencar",
+              "title" => "Iracema"
+            }
+          }
+        },
+        %{
+          "title" => "Ubirajara: A Legend of the Tupy Indians",
+          "year" => "1922",
+          "country" => "US",
+          "publisher" => "Ronald Massey",
+          "translated_book" => %{
+            "authors" => "J. T. W. Sadler",
+            "original_book" => %{
+              "authors" => "José de Alencar",
+              "title" => "Ubirajara"
+            }
+          }
+        },
+        %{
+          "title" => "",
+          "year" => "AAAA",
+          "country" => "GB",
+          "publisher" => "Bickers & Son",
+          "translated_book" => %{
+            "authors" => "",
+            "original_book" => %{
+              "authors" => "José de Alencar",
+              "title" => "Iracema"
+            }
+          }
+        },
+        %{
+          "title" => "Ubirajara: A Legend of the Tupy Indians",
+          "year" => "",
+          "country" => "",
+          "publisher" => "",
+          "translated_book" => %{
+            "authors" => "J. T. W. Sadler",
+            "original_book" => %{
+              "authors" => "",
+              "title" => ""
+            }
+          }
+        }
+      ]
+
+      assert {:ok, publications} == Publication.Codec.from_csv(input)
     end
   end
 
-  describe "from_csv!/1 when the provided csv is invalid" do
-    test "because it has an incorrect format, raise an error" do
-      input = "test/fixtures/data_invalid_format.csv"
-      assert_raise RuntimeError, fn -> Publication.Codec.from_csv!(input) end
+  describe "from_csv/1 when the provided csv is incorrect" do
+    test "because it has malformed separators, does its best effort" do
+      input = "test/fixtures/data_incorrect_malformed_separators.csv"
+
+      output = [
+        %{
+          "title" => "Iraçéma the Honey-Lips: A Legend of Brazil",
+          "year" => "1886",
+          "country" => "GB",
+          "publisher" => "",
+          "translated_book" => %{
+            "authors" => "Isabel Burton",
+            "original_book" => %{
+              "authors" => "José de Alencar",
+              "title" => "Iracema"
+            }
+          }
+        },
+        %{
+          "title" => "J. T. W. Sadler",
+          "year" => "GB",
+          "country" => "Ubirajara",
+          "publisher" => "",
+          "translated_book" => %{
+            "authors" => "Ronald Massey",
+            "original_book" => %{
+              "authors" => "",
+              "title" => "Ubirajara: A Legend of the Tupy Indians"
+            }
+          }
+        },
+        %{
+          "title" => "",
+          "year" => "",
+          "country" => "",
+          "publisher" => "",
+          "translated_book" => %{
+            "authors" => "",
+            "original_book" => %{
+              "authors" =>
+                "José de Alencar,1886,GB,Iracema,Iraçéma the Honey-Lips: A Legend of Brazil,Isabel Burton,Bickers & Son",
+              "title" => ""
+            }
+          }
+        }
+      ]
+
+      assert {:ok, output} == Publication.Codec.from_csv(input)
     end
 
-    test "because it has an invalid separator, raise an error" do
-      input = "test/fixtures/data_invalid_separator.csv"
-      assert_raise CSV.RowLengthError, fn -> Publication.Codec.from_csv!(input) end
+    test "because it does not exist, return file_not_found error" do
+      input = "test/fixtures/blablabla.csv"
+      assert {:error, :file_not_found} == Publication.Codec.from_csv(input)
     end
 
-    test "because it is incomplete, raise an error" do
-      input = "test/fixtures/data_invalid_incomplete.csv"
-      assert_raise CSV.RowLengthError, fn -> Publication.Codec.from_csv!(input) end
+    test "because it has a invalid escape sequence, return invalid_escape_sequence error" do
+      input = "test/fixtures/data_incorrect_escape_sequence.csv"
+      assert {:error, :invalid_escape_sequence} == Publication.Codec.from_csv(input)
     end
   end
 

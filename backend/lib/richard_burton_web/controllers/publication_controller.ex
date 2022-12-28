@@ -28,33 +28,29 @@ defmodule RichardBurtonWeb.PublicationController do
   end
 
   def validate(conn, %{"csv" => %Plug.Upload{path: path}}) do
-    try do
-      publications = Publication.Codec.from_csv!(path)
+    case Publication.Codec.from_csv(path) do
+      {:ok, publications} ->
+        result =
+          publications
+          |> Enum.map(&Publication.validate/1)
+          |> Enum.zip(publications)
+          |> Enum.map(fn tuple ->
+            case tuple do
+              {{:ok}, publication} ->
+                %{publication: publication, errors: nil}
 
-      result =
-        publications
-        |> Enum.map(&Publication.validate/1)
-        |> Enum.zip(publications)
-        |> Enum.map(fn tuple ->
-          case tuple do
-            {{:ok}, publication} ->
-              %{publication: publication, errors: nil}
+              {{:error, errors}, publication} ->
+                %{publication: publication, errors: errors}
+            end
+          end)
+          |> Publication.Codec.flatten()
 
-            {{:error, errors}, publication} ->
-              %{publication: publication, errors: errors}
-          end
-        end)
-        |> Publication.Codec.flatten()
+        conn
+        |> put_status(:ok)
+        |> json(result)
 
-      conn
-      |> put_status(:ok)
-      |> json(result)
-    rescue
-      CSV.RowLengthError ->
-        conn |> put_status(:bad_request) |> json(:incorrect_row_length)
-
-      _ ->
-        conn |> put_status(:bad_request) |> json(:invalid_format)
+      {:error, reason} ->
+        conn |> put_status(:bad_request) |> json(reason)
     end
   end
 end

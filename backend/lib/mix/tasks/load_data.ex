@@ -11,7 +11,10 @@ defmodule Mix.Tasks.Rb.LoadData do
 
     File.cwd!()
     |> Path.join('data.csv')
-    |> Publication.Codec.from_csv!()
-    |> Enum.map(&Publication.insert/1)
+    |> Publication.Codec.from_csv()
+    |> case do
+      {:ok, publications} -> Enum.map(publications, &Publication.insert/1)
+      {:error, error} -> IO.puts("Operation failed with error #{error}")
+    end
   end
 end
