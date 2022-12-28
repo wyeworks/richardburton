@@ -88,10 +88,9 @@ const AttributeToggle: FC<{ attribute: PublicationKey }> = ({ attribute }) => {
 
   return (
     <Toggle
-      key={attribute}
       label={Publication.ATTRIBUTE_LABELS[attribute]}
-      startsChecked={isActive}
-      onChange={() => setVisible([attribute], !isActive)}
+      checked={isActive}
+      onClick={() => setVisible([attribute], !isActive)}
     />
   );
 };
