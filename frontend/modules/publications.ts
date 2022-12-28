@@ -3,6 +3,7 @@ import {
   atomFamily,
   Resetter,
   selector,
+  selectorFamily,
   SetterOrUpdater,
   Snapshot,
   useRecoilCallback,
@@ -61,6 +62,15 @@ const DELETED_PUBLICATIONS_LIST = selector<PublicationId[]>({
   },
 });
 
+const VALID_PUBLICATIONS = selectorFamily<boolean, PublicationId>({
+  key: "valid-publications",
+  get(id) {
+    return function ({ get }) {
+      return !Boolean(get(PUBLICATIONS(id)).errors);
+    };
+  },
+});
+
 const DEFAULT_ATTRIBUTE_VISIBILITY: Record<PublicationKey, boolean> = {
   title: true,
   country: false,
@@ -80,6 +90,34 @@ const VISIBLE_ATTRIBUTES_LIST = selector<PublicationKey[]>({
   key: "visible-attributes-as-list",
   get({ get }) {
     return Publication.ATTRIBUTES.filter((key) => get(VISIBLE_ATTRIBUTES(key)));
+  },
+});
+
+type CompositeAttributeId = `${PublicationId}.${PublicationKey}`;
+
+const PUBLICATION_ATTRIBUTE = selectorFamily<
+  string | number,
+  CompositeAttributeId
+>({
+  key: "publication-attribute",
+  get(compositeId) {
+    return function ({ get }) {
+      const [id, key] = compositeId.split(".") as [string, PublicationKey];
+      return get(PUBLICATIONS(parseInt(id))).publication[key];
+    };
+  },
+});
+
+const PUBLICATION_ATTRIBUTE_ERROR = selectorFamily<
+  string,
+  CompositeAttributeId
+>({
+  key: "publication-error",
+  get(compositeId) {
+    return function ({ get }) {
+      const [id, key] = compositeId.split(".") as [string, PublicationKey];
+      return Publication.describe(get(PUBLICATIONS(parseInt(id))).errors, key);
+    };
   },
 });
 
@@ -103,6 +141,7 @@ interface PublicationModule {
     useSetAll(): (ids: PublicationId[], entries: PublicationEntry[]) => void;
     useSetDeleted(): (ids: PublicationId[], isDeleted?: boolean) => void;
     useResetAll(): Resetter;
+    useIsValid(id: PublicationId): boolean;
 
     from: (snapshot: Snapshot) => {
       getIds(): PublicationId[];
@@ -117,6 +156,11 @@ interface PublicationModule {
       useSetVisible(): (keys: PublicationKey[], isVisible?: boolean) => void;
       useIsVisible(key: PublicationKey): boolean;
       useResetAll(): Resetter;
+      useValue<K extends PublicationKey>(
+        id: PublicationId,
+        key: K
+      ): Publication[K];
+      useError(id: PublicationId, key: PublicationKey): string;
 
       from: (snapshot: Snapshot) => {
         getAllVisible(): PublicationKey[];
@@ -196,6 +240,9 @@ const Publication: PublicationModule = {
         []
       );
     },
+    useIsValid(id) {
+      return useRecoilValue(VALID_PUBLICATIONS(id));
+    },
 
     from: (snapshot) => ({
       getIds() {
@@ -243,6 +290,17 @@ const Publication: PublicationModule = {
             },
           []
         );
+      },
+      useValue<K extends PublicationKey>(id: PublicationId, key: K) {
+        const compositeId: CompositeAttributeId = `${id}.${key}`;
+
+        return useRecoilValue(
+          PUBLICATION_ATTRIBUTE(compositeId)
+        ) as Publication[K];
+      },
+      useError(id, key) {
+        const compositeId: CompositeAttributeId = `${id}.${key}`;
+        return useRecoilValue(PUBLICATION_ATTRIBUTE_ERROR(compositeId));
       },
 
       from: (snapshot) => ({
