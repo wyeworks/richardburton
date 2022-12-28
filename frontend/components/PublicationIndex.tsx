@@ -31,12 +31,6 @@ const COUNTRIES: Record<string, string> = {
   NZ: "New Zealand",
 };
 
-type Props = {
-  entries: PublicationEntry[];
-  attributes: PublicationKey[];
-  editable?: boolean;
-};
-
 type RowProps = {
   id: PublicationId;
   attributes: PublicationKey[];
@@ -159,11 +153,14 @@ const Row: FC<RowProps> = ({
   );
 };
 
-const PublicationIndex: FC<Props> = ({
-  entries,
-  attributes,
-  editable = false,
-}) => {
+type Props = {
+  editable?: boolean;
+};
+
+const PublicationIndex: FC<Props> = ({ editable = false }) => {
+  const entries = Publication.STORE.useAll();
+  const attributes = Publication.STORE.ATTRIBUTES.useAllVisible();
+
   const onSelect = useSelectionEvent();
 
   const toggleSelection = (id: number) => (event: MouseEvent) =>

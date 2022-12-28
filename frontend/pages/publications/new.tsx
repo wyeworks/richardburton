@@ -5,11 +5,18 @@ import PublicationIndex from "components/PublicationIndex";
 import PublicationToolbar from "components/PublicationToolbar";
 import Header from "components/Header";
 import Layout from "components/Layout";
+import { useLayoutEffect } from "react";
 
 const NewPublications: NextPage = () => {
   const entries = Publication.STORE.useAll();
   const entriesWithErrors = entries?.filter(({ errors }) => errors);
   const entriesWithErrorsCount = entriesWithErrors?.length || 0;
+
+  const setVisible = Publication.STORE.ATTRIBUTES.useSetVisible();
+
+  useLayoutEffect(() => {
+    setVisible(Publication.ATTRIBUTES);
+  }, [setVisible]);
 
   return (
     <Layout
@@ -27,13 +34,7 @@ const NewPublications: NextPage = () => {
         </Header>
       }
       sidebar={<PublicationToolbar edit />}
-      content={
-        <PublicationIndex
-          entries={entries}
-          attributes={Publication.ATTRIBUTES}
-          editable
-        />
-      }
+      content={<PublicationIndex editable />}
     />
   );
 };
