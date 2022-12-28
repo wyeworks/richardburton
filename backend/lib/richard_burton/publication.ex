@@ -7,9 +7,9 @@ defmodule RichardBurton.Publication do
 
   alias RichardBurton.Repo
   alias RichardBurton.TranslatedBook
+  alias __MODULE__
 
-  @derive {Jason.Encoder,
-           only: [:country, :publisher, :title, :year, :translated_book]}
+  @derive {Jason.Encoder, only: [:country, :publisher, :title, :year, :translated_book]}
   schema "publications" do
     field(:country, :string)
     field(:publisher, :string)
@@ -59,16 +59,61 @@ defmodule RichardBurton.Publication do
   end
 
   def all do
-    __MODULE__
+    Publication
     |> Repo.all()
     |> Repo.preload(translated_book: [:original_book])
   end
 
   def insert(attrs) do
-    %__MODULE__{} |> changeset(attrs) |> Repo.insert()
+    %Publication{}
+    |> changeset(attrs)
+    |> Repo.insert()
+    |> case do
+      {:ok, publication} ->
+        {:ok, publication}
+
+      {:error, changeset} ->
+        {:error, get_errors(changeset)}
+    end
   end
 
-  def insert_all(entries) do
-    Repo.transaction(fn -> Enum.map(entries, &insert/1) end)
+  def validate(attrs) do
+    changeset = changeset(%Publication{}, attrs)
+
+    if changeset.valid? do
+      unique_key = [:title, :country, :year, :publisher]
+      unique_key_values = Repo.get_unique_key_values(unique_key, changeset)
+
+      if Repo.exists?(Publication, Enum.zip(unique_key, unique_key_values)) do
+        {:error, :conflict}
+      else
+        {:ok, attrs}
+      end
+    else
+      {:error, get_errors(changeset)}
+    end
+  end
+
+  defp get_errors(changeset) do
+    case Repo.get_errors(changeset) do
+      %{title: :unique} -> :conflict
+      error_map -> error_map
+    end
+  end
+
+  def insert_all(attrs_list) do
+    Repo.transaction(fn ->
+      Enum.map(attrs_list, &insert_or_rollback/1)
+    end)
+  end
+
+  defp insert_or_rollback(attrs) do
+    case insert(attrs) do
+      {:ok, publication} ->
+        publication
+
+      {:error, errors} ->
+        Repo.rollback({attrs, errors})
+    end
   end
 end

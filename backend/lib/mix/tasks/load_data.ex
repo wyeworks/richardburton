@@ -25,7 +25,7 @@ defmodule Mix.Tasks.Rb.LoadData do
       ]
     )
     |> Enum.map(&deserialize/1)
-    |> Publication.insert_all()
+    |> Enum.map(&Publication.insert/1)
   end
 
   defp deserialize(row) do
