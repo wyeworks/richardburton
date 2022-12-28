@@ -92,7 +92,7 @@ defmodule RichardBurton.PublicationTest do
     import Publication, only: [validate: 1]
 
     test "when validating valid publications, returns {:ok, publication}" do
-      assert({:ok} = validate(@valid_attrs))
+      assert({:ok, @valid_attrs} = validate(@valid_attrs))
     end
 
     test "when validating a duplicate publication, returns {:error, :conflict}" do
