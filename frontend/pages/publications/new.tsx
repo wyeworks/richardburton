@@ -5,7 +5,7 @@ import PublicationIndex from "components/PublicationIndex";
 import PublicationToolbar from "components/PublicationToolbar";
 import Header from "components/Header";
 import Layout from "components/Layout";
-import { useLayoutEffect } from "react";
+import { useEffect } from "react";
 
 const NewPublications: NextPage = () => {
   const entries = Publication.STORE.useAll();
@@ -14,7 +14,7 @@ const NewPublications: NextPage = () => {
 
   const setVisible = Publication.STORE.ATTRIBUTES.useSetVisible();
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     setVisible(Publication.ATTRIBUTES);
   }, [setVisible]);
 

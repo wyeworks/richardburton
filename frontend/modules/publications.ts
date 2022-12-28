@@ -116,6 +116,7 @@ interface PublicationModule {
       useAllVisible(): PublicationKey[];
       useSetVisible(): (keys: PublicationKey[], isVisible?: boolean) => void;
       useIsVisible(key: PublicationKey): boolean;
+      useResetAll(): Resetter;
 
       from: (snapshot: Snapshot) => {
         getAllVisible(): PublicationKey[];
@@ -231,6 +232,17 @@ const Publication: PublicationModule = {
         return useRecoilCallback(({ set }) => (keys, isVisible = true) => {
           keys.map((key) => set(VISIBLE_ATTRIBUTES(key), isVisible));
         });
+      },
+      useResetAll() {
+        return useRecoilCallback(
+          ({ reset }) =>
+            () => {
+              Publication.ATTRIBUTES.forEach((key) => {
+                reset(VISIBLE_ATTRIBUTES(key));
+              });
+            },
+          []
+        );
       },
 
       from: (snapshot) => ({

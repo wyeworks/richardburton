@@ -33,7 +33,6 @@ const COUNTRIES: Record<string, string> = {
 
 type RowProps = {
   id: PublicationId;
-  attributes: PublicationKey[];
   publication: Publication;
   errors: PublicationError;
   editable: boolean;
@@ -91,7 +90,9 @@ const DataColumn: FC<{ attribute: PublicationKey }> = ({ attribute }) => {
 
   const errorString = Publication.describe(row.errors, attribute);
 
-  return (
+  const isVisible = Publication.STORE.ATTRIBUTES.useIsVisible(attribute);
+
+  return isVisible ? (
     <Column>
       <ErrorTooltip message={errorString} hidden={!Boolean(errorString)}>
         <div
@@ -108,17 +109,10 @@ const DataColumn: FC<{ attribute: PublicationKey }> = ({ attribute }) => {
         </div>
       </ErrorTooltip>
     </Column>
-  );
+  ) : null;
 };
 
-const Row: FC<RowProps> = ({
-  id,
-  attributes,
-  publication,
-  errors,
-  editable,
-  onClick,
-}) => {
+const Row: FC<RowProps> = ({ id, publication, errors, editable, onClick }) => {
   const hasErrors = Boolean(errors);
   const errorString = Publication.describe(errors);
 
@@ -144,7 +138,7 @@ const Row: FC<RowProps> = ({
       >
         <RowContext.Provider value={context}>
           {editable && <SignalColumn />}
-          {attributes.map((attribute) => (
+          {Publication.ATTRIBUTES.map((attribute) => (
             <DataColumn key={attribute} attribute={attribute} />
           ))}
         </RowContext.Provider>
@@ -153,13 +147,20 @@ const Row: FC<RowProps> = ({
   );
 };
 
+const ColumnHeader: FC<{ attribute: PublicationKey }> = ({ attribute }) => {
+  const isVisible = Publication.STORE.ATTRIBUTES.useIsVisible(attribute);
+
+  return isVisible ? (
+    <th className="px-2 py-4">{Publication.ATTRIBUTE_LABELS[attribute]}</th>
+  ) : null;
+};
+
 type Props = {
   editable?: boolean;
 };
 
 const PublicationIndex: FC<Props> = ({ editable = false }) => {
   const entries = Publication.STORE.useAll();
-  const attributes = Publication.STORE.ATTRIBUTES.useAllVisible();
 
   const onSelect = useSelectionEvent();
 
@@ -183,10 +184,8 @@ const PublicationIndex: FC<Props> = ({ editable = false }) => {
       <thead className="sticky top-0 z-10 bg-gray-100">
         <tr>
           {editable && <th />}
-          {attributes.map((key) => (
-            <th className="px-2 py-4" key={key}>
-              {Publication.ATTRIBUTE_LABELS[key]}
-            </th>
+          {Publication.ATTRIBUTES.map((key) => (
+            <ColumnHeader key={key} attribute={key} />
           ))}
         </tr>
       </thead>
@@ -194,7 +193,6 @@ const PublicationIndex: FC<Props> = ({ editable = false }) => {
         {entries.map((entry) => (
           <Row
             key={JSON.stringify(entry)}
-            attributes={attributes}
             editable={editable}
             onClick={editable ? toggleSelection(entry.id) : undefined}
             {...entry}
