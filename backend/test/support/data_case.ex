@@ -70,8 +70,7 @@ defmodule RichardBurton.DataCase do
         {:ok, _} = entity_fixture(valid_attrs)
         {:error, changeset} = entity_fixture(valid_attrs)
 
-        expected_errors =
-          Map.put(%{}, unique_constraint_name, ["has already been taken"])
+        expected_errors = Map.put(%{}, unique_constraint_name, ["has already been taken"])
 
         refute changeset.valid?, "Changeset is valid"
         assert expected_errors == errors_on(changeset)
