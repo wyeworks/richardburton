@@ -31,7 +31,7 @@ defmodule RichardBurtonWeb.PublicationController do
         path
         |> Publication.from_csv!()
         |> Enum.map(fn p ->
-          case(Publication.validate(p)) do
+          case Publication.validate(p) do
             {:ok} -> %{publication: p, errors: nil}
             {:error, errors} -> %{publication: p, errors: errors}
           end
