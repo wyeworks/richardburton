@@ -78,7 +78,7 @@ defmodule RichardBurtonWeb.PublicationControllerTest do
     end
   end
 
-  describe "POST /publications/validate when sending valid csv" do
+  describe "POST /publications/validate when sending correct csv" do
     @output [
       %{
         "publication" => %{
@@ -107,7 +107,7 @@ defmodule RichardBurtonWeb.PublicationControllerTest do
       %{
         "publication" => %{
           "title" => "",
-          "year" => "1886",
+          "year" => "AAAA",
           "country" => "GB",
           "publisher" => "Bickers & Son",
           "authors" => "",
@@ -115,6 +115,7 @@ defmodule RichardBurtonWeb.PublicationControllerTest do
           "original_title" => "Iracema"
         },
         "errors" => %{
+          "year" => "integer",
           "title" => "required",
           "authors" => "required"
         }
@@ -141,7 +142,7 @@ defmodule RichardBurtonWeb.PublicationControllerTest do
 
     test "returns 200 and a list of maps with parsed publications and their corresponding errors",
          meta do
-      input = uploaded_csv_fixture("test/fixtures/data_valid_mixed.csv")
+      input = uploaded_csv_fixture("test/fixtures/data_correct_with_errors.csv")
 
       assert @output ==
                meta.conn
@@ -150,38 +151,16 @@ defmodule RichardBurtonWeb.PublicationControllerTest do
     end
   end
 
-  describe "POST /publications/validate when sending invalid csv" do
-    test "on invalid format, returns 400 with invalid_format code", meta do
-      input = uploaded_csv_fixture("test/fixtures/data_invalid_format.csv")
+  describe "POST /publications/validate when sending incorrect csv" do
+    test "on invalid escape sequence, returns 400 with invalid_escape_sequence code", meta do
+      input = uploaded_csv_fixture("test/fixtures/data_incorrect_escape_sequence.csv")
 
       response =
         meta.conn
         |> post(publication_path(meta.conn, :validate), input)
         |> json_response(400)
 
-      assert "invalid_format" = response
-    end
-
-    test "on invalid separator, returns 400 with incorrect_row_length code", meta do
-      input = uploaded_csv_fixture("test/fixtures/data_invalid_separator.csv")
-
-      response =
-        meta.conn
-        |> post(publication_path(meta.conn, :validate), input)
-        |> json_response(400)
-
-      assert "incorrect_row_length" = response
-    end
-
-    test "on incomplete data, returns 400 with incorrect_row_length code", meta do
-      input = uploaded_csv_fixture("test/fixtures/data_invalid_incomplete.csv")
-
-      response =
-        meta.conn
-        |> post(publication_path(meta.conn, :validate), input)
-        |> json_response(400)
-
-      assert "incorrect_row_length" = response
+      assert "invalid_escape_sequence" = response
     end
   end
 end

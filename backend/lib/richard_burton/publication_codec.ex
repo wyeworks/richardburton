@@ -19,30 +19,46 @@ defmodule RichardBurton.Publication.Codec do
     }
   }
 
-  def from_csv!(path) do
-    try do
-      path
-      |> File.stream!()
-      |> CSV.decode!(
-        separator: ?;,
-        headers: [
-          "original_authors",
-          "year",
-          "country",
-          "original_title",
-          "title",
-          "authors",
-          "publisher"
-        ]
-      )
-      |> Enum.into([])
-      |> nest
-    rescue
-      e in CSV.RowLengthError ->
-        Kernel.reraise(e, __STACKTRACE__)
+  @empty_flat_attrs %{
+    "title" => "",
+    "year" => "",
+    "country" => "",
+    "publisher" => "",
+    "authors" => "",
+    "original_title" => "",
+    "original_authors" => ""
+  }
 
-      _ ->
-        Kernel.reraise("Could not parse publication", __STACKTRACE__)
+  def from_csv(path) do
+    try do
+      publications =
+        path
+        |> File.stream!()
+        |> CSV.decode!(
+          separator: ?;,
+          headers: [
+            "original_authors",
+            "year",
+            "country",
+            "original_title",
+            "title",
+            "authors",
+            "publisher"
+          ]
+        )
+        |> Enum.map(&deep_merge_maps(@empty_flat_attrs, &1))
+        |> nest
+
+      {:ok, publications}
+    rescue
+      _ in CSV.EscapeSequenceError ->
+        {:error, :invalid_escape_sequence}
+
+      _ in CSV.StrayEscapeCharacterError ->
+        {:error, :stray_escape_character}
+
+      _ in File.Error ->
+        {:error, :file_not_found}
     end
   end
 
