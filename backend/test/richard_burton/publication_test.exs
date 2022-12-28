@@ -8,15 +8,15 @@ defmodule RichardBurton.PublicationTest do
   alias RichardBurton.Publication
 
   @valid_attrs %{
-    title: "Manuel de Moraes: A Chronicle of the Seventeenth Century",
-    country: "GB",
-    year: 1886,
-    publisher: "Bickers & Son",
-    translated_book: %{
-      authors: "Richard Burton and Isabel Burton",
-      original_book: %{
-        authors: "J. M. Pereira da Silva",
-        title: "Manuel de Moraes: crônica do século XVII"
+    "title" => "Manuel de Moraes: A Chronicle of the Seventeenth Century",
+    "country" => "GB",
+    "year" => 1886,
+    "publisher" => "Bickers & Son",
+    "translated_book" => %{
+      "authors" => "Richard Burton and Isabel Burton",
+      "original_book" => %{
+        "authors" => "J. M. Pereira da Silva",
+        "title" => "Manuel de Moraes: crônica do século XVII"
       }
     }
   }
@@ -49,19 +49,19 @@ defmodule RichardBurton.PublicationTest do
 
   describe "changeset/2" do
     test "when valid attributes are provided, is valid", do: test_valid_attrs()
-    test "when :title is blank, is invalid", do: test_not_blank(:title)
-    test "when :title is nil, is invalid", do: test_not_nil(:title)
-    test "when :country is blank, is invalid", do: test_not_blank(:country)
-    test "when :country is nil, is invalid", do: test_not_nil(:country)
-    test "when :publisher is blank, is invalid", do: test_not_blank(:publisher)
-    test "when :publisher is nil, is invalid", do: test_not_nil(:publisher)
-    test "when :year is nil, is invalid", do: test_not_nil(:year)
+    test "when title is blank, is invalid", do: test_not_blank("title")
+    test "when title is nil, is invalid", do: test_not_nil("title")
+    test "when country is blank, is invalid", do: test_not_blank("country")
+    test "when country is nil, is invalid", do: test_not_nil("country")
+    test "when publisher is blank, is invalid", do: test_not_blank("publisher")
+    test "when publisher is nil, is invalid", do: test_not_nil("publisher")
+    test "when year is nil, is invalid", do: test_not_nil("year")
 
-    test "when :translated_book is empty, is invalid",
-      do: test_invalid_attr_value(:translated_book, %{})
+    test "when translated_book is empty, is invalid",
+      do: test_invalid_attr_value("translated_book", %{})
 
-    test "when :translated_book is nil, is invalid",
-      do: test_not_nil(:translated_book)
+    test "when translated_book is nil, is invalid",
+      do: test_not_nil("translated_book")
 
     test "when a publication with the provided attributes exists, is invalid",
       do: test_unique_constraint(:title)
@@ -92,7 +92,7 @@ defmodule RichardBurton.PublicationTest do
     import Publication, only: [validate: 1]
 
     test "when validating valid publications, returns {:ok, publication}" do
-      assert({:ok} = validate(@valid_attrs))
+      assert({:ok, @valid_attrs} = validate(@valid_attrs))
     end
 
     test "when validating a duplicate publication, returns {:error, :conflict}" do

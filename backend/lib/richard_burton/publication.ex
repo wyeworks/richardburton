@@ -7,6 +7,7 @@ defmodule RichardBurton.Publication do
 
   alias RichardBurton.Repo
   alias RichardBurton.TranslatedBook
+  alias __MODULE__
 
   @derive {Jason.Encoder, only: [:country, :publisher, :title, :year, :translated_book]}
   schema "publications" do
@@ -38,8 +39,7 @@ defmodule RichardBurton.Publication do
     # Check if translated_book is valid
     if result.valid? do
       # Insert or fetch the valid translated_book
-      translated_book_attrs = get_translated_book_attrs_from_changeset(result)
-      translated_book = TranslatedBook.maybe_insert!(translated_book_attrs)
+      translated_book = TranslatedBook.maybe_insert!(attrs["translated_book"])
 
       # Compute complete changeset with the complete translated_book associated
       result
@@ -51,20 +51,14 @@ defmodule RichardBurton.Publication do
     end
   end
 
-  defp get_translated_book_attrs_from_changeset(changeset) do
-    translated_book_changes = changeset.changes.translated_book.changes
-    original_book = Map.from_struct(translated_book_changes.original_book.data)
-    Map.merge(translated_book_changes, %{original_book: original_book})
-  end
-
   def all do
-    __MODULE__
+    Publication
     |> Repo.all()
     |> Repo.preload(translated_book: [:original_book])
   end
 
   def insert(attrs) do
-    %__MODULE__{}
+    %Publication{}
     |> changeset(attrs)
     |> Repo.insert()
     |> case do
@@ -77,17 +71,16 @@ defmodule RichardBurton.Publication do
   end
 
   def validate(attrs) do
-    changeset = changeset(%__MODULE__{}, attrs)
+    changeset = changeset(%Publication{}, attrs)
 
     if changeset.valid? do
       unique_key = [:title, :country, :year, :publisher]
       unique_key_values = Repo.get_unique_key_values(unique_key, changeset)
 
-      __MODULE__
-      |> Repo.get_by(Enum.zip(unique_key, unique_key_values))
-      |> case do
-        nil -> {:ok}
-        _publication -> {:error, :conflict}
+      if Repo.exists?(Publication, Enum.zip(unique_key, unique_key_values)) do
+        {:error, :conflict}
+      else
+        {:ok, attrs}
       end
     else
       {:error, get_errors(changeset)}
@@ -95,8 +88,7 @@ defmodule RichardBurton.Publication do
   end
 
   defp get_errors(changeset) do
-    Repo.get_errors(changeset)
-    |> case do
+    case Repo.get_errors(changeset) do
       %{title: :unique} -> :conflict
       error_map -> error_map
     end
