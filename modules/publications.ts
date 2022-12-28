@@ -2,10 +2,10 @@ import {
   atom,
   atomFamily,
   Resetter,
+  selector,
   SetterOrUpdater,
   Snapshot,
   useRecoilCallback,
-  useRecoilSnapshot,
   useRecoilValue,
   useSetRecoilState,
 } from "recoil";
@@ -40,9 +40,25 @@ const PUBLICATIONS = atomFamily<PublicationEntry, PublicationId>({
   default: undefined,
 });
 
+const PUBLICATIONS_LIST = selector<PublicationEntry[]>({
+  key: "publications-as-list",
+  get({ get }) {
+    return get(PUBLICATION_IDS)
+      .filter((id) => !get(DELETED_PUBLICATIONS(id)))
+      .map((id) => get(PUBLICATIONS(id)));
+  },
+});
+
 const DELETED_PUBLICATIONS = atomFamily<boolean, PublicationId>({
   key: "deleted-publications",
   default: false,
+});
+
+const DELETED_PUBLICATIONS_LIST = selector<PublicationId[]>({
+  key: "deleted-publications-as-list",
+  get({ get }) {
+    return get(PUBLICATION_IDS).filter((id) => get(DELETED_PUBLICATIONS(id)));
+  },
 });
 
 const DEFAULT_ATTRIBUTE_VISIBILITY: Record<PublicationKey, boolean> = {
@@ -58,6 +74,13 @@ const DEFAULT_ATTRIBUTE_VISIBILITY: Record<PublicationKey, boolean> = {
 const VISIBLE_ATTRIBUTES = atomFamily<boolean, PublicationKey>({
   key: "visible-attributes",
   default: (key) => DEFAULT_ATTRIBUTE_VISIBILITY[key],
+});
+
+const VISIBLE_ATTRIBUTES_LIST = selector<PublicationKey[]>({
+  key: "visible-attributes-as-list",
+  get({ get }) {
+    return Publication.ATTRIBUTES.filter((key) => get(VISIBLE_ATTRIBUTES(key)));
+  },
 });
 
 const ERROR_MESSAGES: Record<string, string> = {
@@ -128,15 +151,13 @@ const Publication: PublicationModule = {
       return useRecoilValue(PUBLICATION_IDS);
     },
     useDeletedIds() {
-      const snapshot = useRecoilSnapshot();
-      return this.from(snapshot).getDeletedIds();
+      return useRecoilValue(DELETED_PUBLICATIONS_LIST);
     },
     useValue(id: PublicationId) {
       return useRecoilValue(PUBLICATIONS(id));
     },
     useAll() {
-      const snapshot = useRecoilSnapshot();
-      return this.from(snapshot).getAll();
+      return useRecoilValue(PUBLICATIONS_LIST);
     },
     useSet(id: PublicationId) {
       return useSetRecoilState(PUBLICATIONS(id));
@@ -201,8 +222,7 @@ const Publication: PublicationModule = {
 
     ATTRIBUTES: {
       useAllVisible() {
-        const snapshot = useRecoilSnapshot();
-        return this.from(snapshot).getAllVisible();
+        return useRecoilValue(VISIBLE_ATTRIBUTES_LIST);
       },
       useIsVisible(key) {
         return useRecoilValue(VISIBLE_ATTRIBUTES(key));
