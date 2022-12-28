@@ -38,17 +38,12 @@ const Home: NextPage = () => {
       });
   }, [notifyError, setPublications]);
 
-  const entries = Publication.STORE.useAll();
-  const visibleAttributes = Publication.STORE.ATTRIBUTES.useAllVisible();
-
   return (
     <Layout
       title="Richard Burton"
       header={<Header />}
       sidebar={<PublicationToolbar filter upload />}
-      content={
-        <PublicationIndex entries={entries} attributes={visibleAttributes} />
-      }
+      content={<PublicationIndex />}
     />
   );
 };

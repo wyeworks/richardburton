@@ -114,7 +114,7 @@ interface PublicationModule {
 
     ATTRIBUTES: {
       useAllVisible(): PublicationKey[];
-      useSetVisible(): (key: PublicationKey, isVisible?: boolean) => void;
+      useSetVisible(): (keys: PublicationKey[], isVisible?: boolean) => void;
       useIsVisible(key: PublicationKey): boolean;
 
       from: (snapshot: Snapshot) => {
@@ -228,8 +228,8 @@ const Publication: PublicationModule = {
         return useRecoilValue(VISIBLE_ATTRIBUTES(key));
       },
       useSetVisible() {
-        return useRecoilCallback(({ set }) => (key, isVisible = true) => {
-          set(VISIBLE_ATTRIBUTES(key), isVisible);
+        return useRecoilCallback(({ set }) => (keys, isVisible = true) => {
+          keys.map((key) => set(VISIBLE_ATTRIBUTES(key), isVisible));
         });
       },
 
