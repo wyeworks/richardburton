@@ -5,11 +5,22 @@ defmodule RichardBurtonWeb.Router do
     plug(:accepts, ["json"])
   end
 
+  pipeline :parse do
+    plug(:accepts, ["text/csv"])
+  end
+
   scope "/api", RichardBurtonWeb do
     pipe_through(:api)
 
-    resources("/publications", PublicationController, only: [:index])
-    post("/publications/bulk", PublicationController, :create_all)
+    scope "/publications" do
+      resources("/", PublicationController, only: [:index])
+      post("/bulk", PublicationController, :create_all)
+
+      scope "/parse" do
+        pipe_through(:parse)
+        post("/", PublicationController, :parse)
+      end
+    end
   end
 
   # Enables LiveDashboard only for development
