@@ -8,7 +8,7 @@ import Layout from "components/Layout";
 import { useEffect } from "react";
 
 const NewPublications: NextPage = () => {
-  const publicationCount = Publication.STORE.useCount();
+  const publicationCount = Publication.STORE.useVisibleCount();
   const validPublicationCount = Publication.STORE.useValidCount();
   const invalidPublicationCount = publicationCount - validPublicationCount;
 
