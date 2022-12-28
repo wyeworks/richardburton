@@ -87,7 +87,7 @@ defmodule RichardBurton.Publication do
       if Repo.exists?(Publication, Enum.zip(unique_key, unique_key_values)) do
         {:error, :conflict}
       else
-        {:ok}
+        {:ok, attrs}
       end
     else
       {:error, get_errors(changeset)}
