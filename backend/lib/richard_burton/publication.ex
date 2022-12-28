@@ -7,6 +7,7 @@ defmodule RichardBurton.Publication do
 
   alias RichardBurton.Repo
   alias RichardBurton.TranslatedBook
+  alias __MODULE__
 
   @derive {Jason.Encoder, only: [:country, :publisher, :title, :year, :translated_book]}
   schema "publications" do
@@ -58,13 +59,13 @@ defmodule RichardBurton.Publication do
   end
 
   def all do
-    __MODULE__
+    Publication
     |> Repo.all()
     |> Repo.preload(translated_book: [:original_book])
   end
 
   def insert(attrs) do
-    %__MODULE__{}
+    %Publication{}
     |> changeset(attrs)
     |> Repo.insert()
     |> case do
@@ -77,13 +78,13 @@ defmodule RichardBurton.Publication do
   end
 
   def validate(attrs) do
-    changeset = changeset(%__MODULE__{}, attrs)
+    changeset = changeset(%Publication{}, attrs)
 
     if changeset.valid? do
       unique_key = [:title, :country, :year, :publisher]
       unique_key_values = Repo.get_unique_key_values(unique_key, changeset)
 
-      if Repo.exists?(__MODULE__, Enum.zip(unique_key, unique_key_values)) do
+      if Repo.exists?(Publication, Enum.zip(unique_key, unique_key_values)) do
         {:error, :conflict}
       else
         {:ok}
