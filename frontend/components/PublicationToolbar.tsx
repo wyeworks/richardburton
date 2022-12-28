@@ -96,6 +96,10 @@ const AttributeToggle: FC<{ attribute: PublicationKey }> = ({ attribute }) => {
 };
 
 const PublicationFilter: FC = () => {
+  const resetVisibleAttributes = Publication.STORE.ATTRIBUTES.useResetAll();
+
+  useEffect(() => resetVisibleAttributes(), [resetVisibleAttributes]);
+
   return (
     <section className="space-y-2">
       <ToolbarHeading label="Filter" />
