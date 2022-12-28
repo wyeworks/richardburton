@@ -21,9 +21,12 @@ const COUNTRIES: Record<string, string> = {
   NZ: "New Zealand",
 };
 
-const Column: FC<
-  PropsWithChildren & { className?: string; publicationId: PublicationId }
-> = ({ className, children, publicationId }) => {
+type ColumnProps = PropsWithChildren & {
+  className?: string;
+  publicationId: PublicationId;
+};
+
+const Column: FC<ColumnProps> = ({ className, children, publicationId }) => {
   const isSelected = useIsSelected(publicationId);
   const isValid = Publication.STORE.useIsValid(publicationId);
 
@@ -41,9 +44,11 @@ const Column: FC<
   );
 };
 
-const SignalColumn: FC<{ publicationId: PublicationId }> = ({
-  publicationId,
-}) => {
+type SignalColumnProps = {
+  publicationId: PublicationId;
+};
+
+const SignalColumn: FC<SignalColumnProps> = ({ publicationId }) => {
   const isValid = Publication.STORE.useIsValid(publicationId);
 
   return (
@@ -56,11 +61,17 @@ const SignalColumn: FC<{ publicationId: PublicationId }> = ({
   );
 };
 
-const DataColumn: FC<{
+type DataColumnProps = {
   attribute: PublicationKey;
   publicationId: PublicationId;
   editable: boolean;
-}> = ({ attribute, publicationId, editable }) => {
+};
+
+const DataColumn: FC<DataColumnProps> = ({
+  attribute,
+  publicationId,
+  editable,
+}) => {
   const { useIsVisible, useValue, useError } = Publication.STORE.ATTRIBUTES;
 
   const value = useValue(publicationId, attribute);
