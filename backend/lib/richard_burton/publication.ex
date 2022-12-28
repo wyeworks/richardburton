@@ -95,8 +95,7 @@ defmodule RichardBurton.Publication do
   end
 
   defp get_errors(changeset) do
-    Repo.get_errors(changeset)
-    |> case do
+    case Repo.get_errors(changeset) do
       %{title: :unique} -> :conflict
       error_map -> error_map
     end
