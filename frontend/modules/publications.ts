@@ -4,11 +4,9 @@ import {
   Resetter,
   selector,
   selectorFamily,
-  SetterOrUpdater,
   Snapshot,
   useRecoilCallback,
   useRecoilValue,
-  useSetRecoilState,
 } from "recoil";
 import { isString } from "lodash";
 
@@ -41,15 +39,6 @@ const PUBLICATIONS = atomFamily<PublicationEntry, PublicationId>({
   default: undefined,
 });
 
-const PUBLICATIONS_LIST = selector<PublicationEntry[]>({
-  key: "publications-as-list",
-  get({ get }) {
-    return get(PUBLICATION_IDS)
-      .filter((id) => !get(DELETED_PUBLICATIONS(id)))
-      .map((id) => get(PUBLICATIONS(id)));
-  },
-});
-
 const PUBLICATION_ERROR = selectorFamily<string, PublicationId>({
   key: "publication-error",
   get(id) {
@@ -71,8 +60,8 @@ const DELETED_PUBLICATIONS = atomFamily<boolean, PublicationId>({
   default: false,
 });
 
-const DELETED_PUBLICATIONS_LIST = selector<PublicationId[]>({
-  key: "deleted-publications-as-list",
+const DELETED_PUBLICATIONS_IDS = selector<PublicationId[]>({
+  key: "deleted-publications-ids",
   get({ get }) {
     return get(PUBLICATION_IDS).filter((id) => get(DELETED_PUBLICATIONS(id)));
   },
@@ -81,7 +70,7 @@ const DELETED_PUBLICATIONS_LIST = selector<PublicationId[]>({
 const DELETED_PUBLICATION_COUNT = selector<number>({
   key: "deleted-publication-count",
   get({ get }) {
-    return get(DELETED_PUBLICATIONS_LIST).length;
+    return get(DELETED_PUBLICATIONS_IDS).length;
   },
 });
 
@@ -101,7 +90,7 @@ const VALID_PUBLICATIONS = selectorFamily<boolean, PublicationId>({
   },
 });
 
-const VALID_PUBLICATIONS_LIST = selector<number[]>({
+const VALID_PUBLICATIONS_IDS = selector<number[]>({
   key: "valid-publication-as-list",
   get({ get }) {
     return get(PUBLICATION_IDS)
@@ -113,7 +102,7 @@ const VALID_PUBLICATIONS_LIST = selector<number[]>({
 const VALID_PUBLICATION_COUNT = selector<number>({
   key: "valid-publication-count",
   get({ get }) {
-    return get(VALID_PUBLICATIONS_LIST).length;
+    return get(VALID_PUBLICATIONS_IDS).length;
   },
 });
 
@@ -130,13 +119,6 @@ const DEFAULT_ATTRIBUTE_VISIBILITY: Record<PublicationKey, boolean> = {
 const VISIBLE_ATTRIBUTES = atomFamily<boolean, PublicationKey>({
   key: "visible-attributes",
   default: (key) => DEFAULT_ATTRIBUTE_VISIBILITY[key],
-});
-
-const VISIBLE_ATTRIBUTES_LIST = selector<PublicationKey[]>({
-  key: "visible-attributes-as-list",
-  get({ get }) {
-    return Publication.ATTRIBUTES.filter((key) => get(VISIBLE_ATTRIBUTES(key)));
-  },
 });
 
 type CompositeAttributeId = `${PublicationId}.${PublicationKey}`;
@@ -179,13 +161,9 @@ interface PublicationModule {
   ATTRIBUTE_LABELS: Record<PublicationKey, string>;
 
   STORE: {
-    useIds(): PublicationId[];
     useVisibleIds(): PublicationId[];
-    useDeletedIds(): PublicationId[];
     useValue(id: PublicationId): PublicationEntry;
     useError(id: PublicationId): string;
-    useAll(): PublicationEntry[];
-    useSet(id: PublicationId): SetterOrUpdater<PublicationEntry>;
     useSetAll(): (ids: PublicationId[], entries: PublicationEntry[]) => void;
     useSetDeleted(): (ids: PublicationId[], isDeleted?: boolean) => void;
     useResetAll(): Resetter;
@@ -197,15 +175,13 @@ interface PublicationModule {
     useDeletedCount(): number;
 
     from: (snapshot: Snapshot) => {
-      getIds(): PublicationId[];
-      getDeletedIds(): PublicationId[];
-      getAll(): PublicationEntry[];
+      getVisibleIds(): PublicationId[];
+      getAllVisible(): PublicationEntry[];
       getValue(id: PublicationId): PublicationEntry;
       isDeleted(id: PublicationId): boolean;
     };
 
     ATTRIBUTES: {
-      useAllVisible(): PublicationKey[];
       useSetVisible(): (keys: PublicationKey[], isVisible?: boolean) => void;
       useIsVisible(key: PublicationKey): boolean;
       useResetAll(): Resetter;
@@ -214,11 +190,6 @@ interface PublicationModule {
         key: K
       ): Publication[K];
       useError(id: PublicationId, key: PublicationKey): string;
-
-      from: (snapshot: Snapshot) => {
-        getAllVisible(): PublicationKey[];
-        isVisible(key: PublicationKey): boolean;
-      };
     };
   };
 
@@ -245,26 +216,14 @@ const Publication: PublicationModule = {
     year: "Year",
   },
   STORE: {
-    useIds() {
-      return useRecoilValue(PUBLICATION_IDS);
-    },
     useVisibleIds() {
       return useRecoilValue(VISIBLE_PUBLICATION_IDS);
-    },
-    useDeletedIds() {
-      return useRecoilValue(DELETED_PUBLICATIONS_LIST);
     },
     useValue(id) {
       return useRecoilValue(PUBLICATIONS(id));
     },
     useError(id) {
       return useRecoilValue(PUBLICATION_ERROR(id));
-    },
-    useAll() {
-      return useRecoilValue(PUBLICATIONS_LIST);
-    },
-    useSet(id) {
-      return useSetRecoilState(PUBLICATIONS(id));
     },
     useSetAll() {
       return useRecoilCallback(
@@ -304,7 +263,7 @@ const Publication: PublicationModule = {
         ({ reset, snapshot }) =>
           () => {
             snapshot
-              .getLoadable(DELETED_PUBLICATIONS_LIST)
+              .getLoadable(DELETED_PUBLICATIONS_IDS)
               .valueOrThrow()
               .forEach((id) => {
                 reset(DELETED_PUBLICATIONS(id));
@@ -330,23 +289,15 @@ const Publication: PublicationModule = {
     },
 
     from: (snapshot) => ({
-      getIds() {
-        return snapshot.getLoadable(PUBLICATION_IDS).valueOrThrow();
-      },
-      getDeletedIds() {
-        const { getIds, isDeleted } = Publication.STORE.from(snapshot);
-        return getIds().filter(isDeleted);
+      getVisibleIds() {
+        return snapshot.getLoadable(VISIBLE_PUBLICATION_IDS).valueOrThrow();
       },
       getValue(id) {
         return snapshot.getLoadable(PUBLICATIONS(id)).valueOrThrow();
       },
-      getAll() {
-        const { getIds, getValue, isDeleted } =
-          Publication.STORE.from(snapshot);
-
-        return getIds()
-          .filter((id) => !isDeleted(id))
-          .map(getValue);
+      getAllVisible() {
+        const { getVisibleIds, getValue } = Publication.STORE.from(snapshot);
+        return getVisibleIds().map(getValue);
       },
       isDeleted(id) {
         return snapshot.getLoadable(DELETED_PUBLICATIONS(id)).valueOrThrow();
@@ -354,9 +305,6 @@ const Publication: PublicationModule = {
     }),
 
     ATTRIBUTES: {
-      useAllVisible() {
-        return useRecoilValue(VISIBLE_ATTRIBUTES_LIST);
-      },
       useIsVisible(key) {
         return useRecoilValue(VISIBLE_ATTRIBUTES(key));
       },
@@ -387,15 +335,6 @@ const Publication: PublicationModule = {
         const compositeId: CompositeAttributeId = `${id}.${key}`;
         return useRecoilValue(PUBLICATION_ATTRIBUTE_ERROR(compositeId));
       },
-
-      from: (snapshot) => ({
-        getAllVisible() {
-          return Publication.ATTRIBUTES.filter(this.isVisible);
-        },
-        isVisible(key) {
-          return snapshot.getLoadable(VISIBLE_ATTRIBUTES(key)).valueOrThrow();
-        },
-      }),
     },
   },
   describe(error, scope) {

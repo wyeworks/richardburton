@@ -196,7 +196,7 @@ const PublicationToolbar: FC<Props> = ({
       async () => {
         try {
           const publications = Publication.STORE.from(snapshot)
-            .getAll()
+            .getAllVisible()
             .map(({ publication }) => publication);
 
           await API.post("publications/bulk", publications);
