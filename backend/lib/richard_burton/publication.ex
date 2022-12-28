@@ -116,4 +116,56 @@ defmodule RichardBurton.Publication do
         Repo.rollback({attrs, errors})
     end
   end
+
+  def from_csv!(path) do
+    try do
+      path
+      |> File.stream!()
+      |> CSV.decode!(
+        separator: ?;,
+        headers: [
+          :original_authors,
+          :year,
+          :country,
+          :original_title,
+          :title,
+          :authors,
+          :publisher
+        ]
+      )
+      |> Enum.map(&nest/1)
+    rescue
+      e in CSV.RowLengthError ->
+        Kernel.reraise(e, __STACKTRACE__)
+
+      _ ->
+        Kernel.reraise("Could not parse publication", __STACKTRACE__)
+    end
+  end
+
+  defp nest(%{
+         title: title,
+         country: country,
+         publisher: publisher,
+         authors: authors,
+         year: year_string,
+         original_title: original_title,
+         original_authors: original_authors
+       }) do
+    {year, _} = Integer.parse(year_string)
+
+    %{
+      "title" => title,
+      "year" => year,
+      "country" => country,
+      "publisher" => publisher,
+      "translated_book" => %{
+        "authors" => authors,
+        "original_book" => %{
+          "title" => original_title,
+          "authors" => original_authors
+        }
+      }
+    }
+  end
 end
