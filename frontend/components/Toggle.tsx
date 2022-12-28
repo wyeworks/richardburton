@@ -1,24 +1,20 @@
-import { FC, useState } from "react";
-import classNames from "classnames";
+import { FC } from "react";
 import CheckIcon from "assets/check.svg";
 import Button from "./Button";
 
-type Props = { label: string; startsChecked: boolean; onChange: () => void };
+type Props = {
+  label: string;
+  checked: boolean;
+  onClick: () => void;
+};
 
-const Toggle: FC<Props> = ({ label, startsChecked, onChange }) => {
-  const [isChecked, setIsChecked] = useState(startsChecked);
-
-  const handleClick = () => {
-    setIsChecked((isChecked) => !isChecked);
-    onChange();
-  };
-
+const Toggle: FC<Props> = ({ label, checked, onClick }) => {
   return (
     <Button
-      type={isChecked ? "primary" : "outline"}
-      Icon={isChecked ? CheckIcon : undefined}
+      type={checked ? "primary" : "outline"}
+      Icon={checked ? CheckIcon : undefined}
       label={label}
-      onClick={handleClick}
+      onClick={onClick}
       alignment="left"
     />
   );
