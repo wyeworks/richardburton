@@ -22,14 +22,6 @@ const COUNTRIES: Record<string, string> = {
   NZ: "New Zealand",
 };
 
-type RowProps = {
-  id: PublicationId;
-  publication: Publication;
-  errors: PublicationError;
-  editable: boolean;
-  onClick?: MouseEventHandler;
-};
-
 const Column: FC<
   PropsWithChildren & { className?: string; publicationId: PublicationId }
 > = ({ className, children, publicationId }) => {
@@ -92,31 +84,39 @@ const DataColumn: FC<{
   ) : null;
 };
 
-const Row: FC<RowProps> = ({ id, publication, editable, errors, onClick }) => {
-  const hasErrors = Publication.STORE.useIsValid(id);
-  const errorString = Publication.describe(errors);
+type RowProps = {
+  editable: boolean;
+  publicationId: PublicationId;
+  onClick?: MouseEventHandler;
+};
+
+const Row: FC<RowProps> = ({ publicationId, editable, onClick }) => {
+  const { useIsValid, useError } = Publication.STORE;
+
+  const isValid = useIsValid(publicationId);
+  const error = useError(publicationId);
 
   return (
     <ErrorTooltip
-      message={errorString}
-      hidden={!Boolean(errorString)}
+      message={error}
+      hidden={!Boolean(error)}
       followCursor="x"
       placement="top-start"
     >
       <tr
         className={classNames(
           "relative group",
-          hasErrors ? "hover:bg-red-100" : "hover:bg-indigo-100",
+          isValid ? "hover:bg-indigo-100" : "hover:bg-red-100",
           { "cursor-pointer": Boolean(onClick) }
         )}
         onClick={onClick}
       >
-        {editable && <SignalColumn publicationId={id} />}
+        {editable && <SignalColumn publicationId={publicationId} />}
         {Publication.ATTRIBUTES.map((attribute) => (
           <DataColumn
             key={attribute}
             attribute={attribute}
-            publicationId={id}
+            publicationId={publicationId}
           />
         ))}
       </tr>
@@ -137,7 +137,7 @@ type Props = {
 };
 
 const PublicationIndex: FC<Props> = ({ editable = false }) => {
-  const entries = Publication.STORE.useAll();
+  const ids = Publication.STORE.useIds();
 
   const onSelect = useSelectionEvent();
 
@@ -147,7 +147,7 @@ const PublicationIndex: FC<Props> = ({ editable = false }) => {
       type: "publication",
       shiftKey: event.shiftKey,
       metaKey: event.metaKey,
-      orderedIds: entries.map(({ id }) => id),
+      orderedIds: ids,
     });
 
   const isSelectionEmpty = useIsSelectionEmpty();
@@ -167,12 +167,12 @@ const PublicationIndex: FC<Props> = ({ editable = false }) => {
         </tr>
       </thead>
       <tbody>
-        {entries.map((entry) => (
+        {ids.map((id) => (
           <Row
-            key={JSON.stringify(entry)}
+            key={id}
+            publicationId={id}
             editable={editable}
-            onClick={editable ? toggleSelection(entry.id) : undefined}
-            {...entry}
+            onClick={editable ? toggleSelection(id) : undefined}
           />
         ))}
       </tbody>
