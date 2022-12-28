@@ -1,7 +1,6 @@
 import classNames from "classnames";
 import {
   Publication,
-  PublicationError,
   PublicationId,
   PublicationKey,
 } from "modules/publications";
@@ -60,7 +59,8 @@ const SignalColumn: FC<{ publicationId: PublicationId }> = ({
 const DataColumn: FC<{
   attribute: PublicationKey;
   publicationId: PublicationId;
-}> = ({ attribute, publicationId }) => {
+  editable: boolean;
+}> = ({ attribute, publicationId, editable }) => {
   const { useIsVisible, useValue, useError } = Publication.STORE.ATTRIBUTES;
 
   const value = useValue(publicationId, attribute);
@@ -69,7 +69,11 @@ const DataColumn: FC<{
 
   return isVisible ? (
     <Column publicationId={publicationId}>
-      <ErrorTooltip message={error} hidden={!Boolean(error)}>
+      <ErrorTooltip
+        message={error}
+        hidden={!Boolean(error)}
+        disabled={!editable}
+      >
         <div
           className={classNames(
             "px-2 py-1 truncate",
@@ -102,6 +106,7 @@ const Row: FC<RowProps> = ({ publicationId, editable, onClick }) => {
       hidden={!Boolean(error)}
       followCursor="x"
       placement="top-start"
+      disabled={!editable}
     >
       <tr
         className={classNames(
@@ -117,6 +122,7 @@ const Row: FC<RowProps> = ({ publicationId, editable, onClick }) => {
             key={attribute}
             attribute={attribute}
             publicationId={publicationId}
+            editable={editable}
           />
         ))}
       </tr>
