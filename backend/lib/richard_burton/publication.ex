@@ -83,11 +83,10 @@ defmodule RichardBurton.Publication do
       unique_key = [:title, :country, :year, :publisher]
       unique_key_values = Repo.get_unique_key_values(unique_key, changeset)
 
-      __MODULE__
-      |> Repo.get_by(Enum.zip(unique_key, unique_key_values))
-      |> case do
-        nil -> {:ok}
-        _publication -> {:error, :conflict}
+      if Repo.exists?(__MODULE__, Enum.zip(unique_key, unique_key_values)) do
+        {:error, :conflict}
+      else
+        {:ok}
       end
     else
       {:error, get_errors(changeset)}
