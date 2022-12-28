@@ -50,6 +50,15 @@ const PUBLICATIONS_LIST = selector<PublicationEntry[]>({
   },
 });
 
+const PUBLICATION_ERROR = selectorFamily<string, PublicationId>({
+  key: "publication-error",
+  get(id) {
+    return function ({ get }) {
+      return Publication.describe(get(PUBLICATIONS(id)).errors);
+    };
+  },
+});
+
 const DELETED_PUBLICATIONS = atomFamily<boolean, PublicationId>({
   key: "deleted-publications",
   default: false,
@@ -136,6 +145,7 @@ interface PublicationModule {
     useIds(): PublicationId[];
     useDeletedIds(): PublicationId[];
     useValue(id: PublicationId): PublicationEntry;
+    useError(id: PublicationId): string;
     useAll(): PublicationEntry[];
     useSet(id: PublicationId): SetterOrUpdater<PublicationEntry>;
     useSetAll(): (ids: PublicationId[], entries: PublicationEntry[]) => void;
@@ -198,13 +208,16 @@ const Publication: PublicationModule = {
     useDeletedIds() {
       return useRecoilValue(DELETED_PUBLICATIONS_LIST);
     },
-    useValue(id: PublicationId) {
+    useValue(id) {
       return useRecoilValue(PUBLICATIONS(id));
+    },
+    useError(id) {
+      return useRecoilValue(PUBLICATION_ERROR(id));
     },
     useAll() {
       return useRecoilValue(PUBLICATIONS_LIST);
     },
-    useSet(id: PublicationId) {
+    useSet(id) {
       return useSetRecoilState(PUBLICATIONS(id));
     },
     useSetAll() {
