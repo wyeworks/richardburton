@@ -59,6 +59,13 @@ const PUBLICATION_ERROR = selectorFamily<string, PublicationId>({
   },
 });
 
+const PUBLICATION_COUNT = selector<number>({
+  key: "publication-count",
+  get({ get }) {
+    return get(PUBLICATION_IDS).length;
+  },
+});
+
 const DELETED_PUBLICATIONS = atomFamily<boolean, PublicationId>({
   key: "deleted-publications",
   default: false,
@@ -71,12 +78,42 @@ const DELETED_PUBLICATIONS_LIST = selector<PublicationId[]>({
   },
 });
 
+const DELETED_PUBLICATION_COUNT = selector<number>({
+  key: "deleted-publication-count",
+  get({ get }) {
+    return get(DELETED_PUBLICATIONS_LIST).length;
+  },
+});
+
+const VISIBLE_PUBLICATION_IDS = selector<PublicationId[]>({
+  key: "visible-publications-as-list",
+  get({ get }) {
+    return get(PUBLICATION_IDS).filter((id) => !get(DELETED_PUBLICATIONS(id)));
+  },
+});
+
 const VALID_PUBLICATIONS = selectorFamily<boolean, PublicationId>({
   key: "valid-publications",
   get(id) {
     return function ({ get }) {
       return !Boolean(get(PUBLICATIONS(id)).errors);
     };
+  },
+});
+
+const VALID_PUBLICATIONS_LIST = selector<number[]>({
+  key: "valid-publication-as-list",
+  get({ get }) {
+    return get(PUBLICATION_IDS)
+      .filter((id) => !get(DELETED_PUBLICATIONS(id)))
+      .filter((id) => get(VALID_PUBLICATIONS(id)));
+  },
+});
+
+const VALID_PUBLICATION_COUNT = selector<number>({
+  key: "valid-publication-count",
+  get({ get }) {
+    return get(VALID_PUBLICATIONS_LIST).length;
   },
 });
 
@@ -143,6 +180,7 @@ interface PublicationModule {
 
   STORE: {
     useIds(): PublicationId[];
+    useVisibleIds(): PublicationId[];
     useDeletedIds(): PublicationId[];
     useValue(id: PublicationId): PublicationEntry;
     useError(id: PublicationId): string;
@@ -151,7 +189,12 @@ interface PublicationModule {
     useSetAll(): (ids: PublicationId[], entries: PublicationEntry[]) => void;
     useSetDeleted(): (ids: PublicationId[], isDeleted?: boolean) => void;
     useResetAll(): Resetter;
+    useResetDeleted(): Resetter;
     useIsValid(id: PublicationId): boolean;
+
+    useCount(): number;
+    useValidCount(): number;
+    useDeletedCount(): number;
 
     from: (snapshot: Snapshot) => {
       getIds(): PublicationId[];
@@ -205,6 +248,9 @@ const Publication: PublicationModule = {
     useIds() {
       return useRecoilValue(PUBLICATION_IDS);
     },
+    useVisibleIds() {
+      return useRecoilValue(VISIBLE_PUBLICATION_IDS);
+    },
     useDeletedIds() {
       return useRecoilValue(DELETED_PUBLICATIONS_LIST);
     },
@@ -253,8 +299,34 @@ const Publication: PublicationModule = {
         []
       );
     },
+    useResetDeleted() {
+      return useRecoilCallback(
+        ({ reset, snapshot }) =>
+          () => {
+            snapshot
+              .getLoadable(DELETED_PUBLICATIONS_LIST)
+              .valueOrThrow()
+              .forEach((id) => {
+                reset(DELETED_PUBLICATIONS(id));
+              });
+          },
+        []
+      );
+    },
     useIsValid(id) {
       return useRecoilValue(VALID_PUBLICATIONS(id));
+    },
+
+    useCount() {
+      return useRecoilValue(PUBLICATION_COUNT);
+    },
+
+    useDeletedCount() {
+      return useRecoilValue(DELETED_PUBLICATION_COUNT);
+    },
+
+    useValidCount() {
+      return useRecoilValue(VALID_PUBLICATION_COUNT);
     },
 
     from: (snapshot) => ({
