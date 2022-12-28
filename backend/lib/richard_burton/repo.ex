@@ -52,7 +52,7 @@ defmodule RichardBurton.Repo do
         |> Enum.map(&get_errors/1)
         |> Enum.reduce(%{}, &Map.merge/2)
       )
-      |> Enum.filter(fn {_, value} -> value != nil end)
+      |> Enum.reject(fn {_, value} -> is_nil(value) end)
       |> Enum.into(%{})
     end
   end
