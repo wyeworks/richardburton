@@ -153,7 +153,7 @@ defmodule RichardBurton.Publication.Codec do
         @empty_nested_attrs
         |> deep_merge_maps(stringify_keys(errors))
         |> flatten
-        |> Enum.filter(fn {_, v} -> "" != v end)
+        |> Enum.reject(&is_value_blank/1)
         |> Enum.into(%{})
     }
   end
@@ -180,5 +180,9 @@ defmodule RichardBurton.Publication.Codec do
 
   defp deep_merge_resolve(_, _, right) do
     right
+  end
+
+  defp is_value_blank({_, v}) do
+    v == ""
   end
 end
