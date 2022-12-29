@@ -17,11 +17,9 @@ const Home: NextPage = () => {
   useEffect(() => {
     API.get<Publication[]>("publications")
       .then(({ data }) => {
-        const ids = range(0, data.length);
         setPublications(
-          ids,
           data.map((publication, index) => ({
-            id: ids[index],
+            id: index,
             publication,
             errors: null,
           }))

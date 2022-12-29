@@ -27,23 +27,28 @@ type PublicationEntry = {
   publication: Publication;
   errors: PublicationError;
 };
-type PublicationId = PublicationEntry["id"];
+type PublicationId = number;
 
 const PUBLICATION_IDS = atom<PublicationId[]>({
   key: "publication-ids",
   default: [],
 });
 
-const PUBLICATIONS = atomFamily<PublicationEntry, PublicationId>({
+const PUBLICATIONS = atomFamily<Publication, PublicationId>({
   key: "publications",
   default: undefined,
+});
+
+const PUBLICATION_ERRORS = atomFamily<PublicationError, PublicationId>({
+  key: "publication-error",
+  default: null,
 });
 
 const PUBLICATION_ERROR_DESCRIPTION = selectorFamily<string, PublicationId>({
   key: "publication-error-description",
   get(id) {
     return function ({ get }) {
-      return Publication.describe(get(PUBLICATIONS(id)).errors);
+      return Publication.describe(get(PUBLICATION_ERRORS(id)));
     };
   },
 });
@@ -87,7 +92,7 @@ const IS_PUBLICATION_VALID = selectorFamily<boolean, PublicationId>({
   key: "is-publication-valid",
   get(id) {
     return function ({ get }) {
-      return !Boolean(get(PUBLICATIONS(id)).errors);
+      return !Boolean(get(PUBLICATION_ERRORS(id)));
     };
   },
 });
@@ -133,7 +138,7 @@ const PUBLICATION_ATTRIBUTE = selectorFamily<
   get(compositeId) {
     return function ({ get }) {
       const [id, key] = compositeId.split(".") as [string, PublicationKey];
-      return get(PUBLICATIONS(parseInt(id))).publication[key];
+      return get(PUBLICATIONS(parseInt(id)))[key];
     };
   },
 });
@@ -146,7 +151,7 @@ const PUBLICATION_ATTRIBUTE_ERROR_DESCRIPTION = selectorFamily<
   get(compositeId) {
     return function ({ get }) {
       const [id, key] = compositeId.split(".") as [string, PublicationKey];
-      return Publication.describe(get(PUBLICATIONS(parseInt(id))).errors, key);
+      return Publication.describe(get(PUBLICATION_ERRORS(parseInt(id))), key);
     };
   },
 });
@@ -164,9 +169,10 @@ interface PublicationModule {
 
   STORE: {
     useVisibleIds(): PublicationId[];
-    useValue(id: PublicationId): PublicationEntry;
+    useValue(id: PublicationId): Publication;
+    useError(id: PublicationId): PublicationError;
     useErrorDescription(id: PublicationId): string;
-    useSetAll(): (ids: PublicationId[], entries: PublicationEntry[]) => void;
+    useSetAll(): (entries: PublicationEntry[]) => void;
     useSetDeleted(): (ids: PublicationId[], isDeleted?: boolean) => void;
     useResetAll(): Resetter;
     useResetDeleted(): Resetter;
@@ -178,8 +184,8 @@ interface PublicationModule {
 
     from: (snapshot: Snapshot) => {
       getVisibleIds(): PublicationId[];
-      getAllVisible(): PublicationEntry[];
-      getValue(id: PublicationId): PublicationEntry;
+      getAllVisible(): Publication[];
+      getValue(id: PublicationId): Publication;
       isDeleted(id: PublicationId): boolean;
     };
 
@@ -224,15 +230,23 @@ const Publication: PublicationModule = {
     useValue(id) {
       return useRecoilValue(PUBLICATIONS(id));
     },
+    useError(id) {
+      return useRecoilValue(PUBLICATION_ERRORS(id));
+    },
     useErrorDescription(id) {
       return useRecoilValue(PUBLICATION_ERROR_DESCRIPTION(id));
     },
     useSetAll() {
       return useRecoilCallback(
         ({ set }) =>
-          (ids, entries) => {
+          (entries) => {
+            const ids = entries.map(({ id }) => id);
             set(PUBLICATION_IDS, ids);
-            ids.forEach((id, index) => set(PUBLICATIONS(id), entries[index]));
+
+            entries.forEach(({ id, publication, errors }) => {
+              set(PUBLICATIONS(id), publication);
+              set(PUBLICATION_ERRORS(id), errors);
+            });
           },
         []
       );
