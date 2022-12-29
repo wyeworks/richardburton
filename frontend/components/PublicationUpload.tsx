@@ -27,6 +27,7 @@ const PublicationUpload: FC = () => {
 
       try {
         const { data: parsed } = await API.post("publications/validate", data);
+
         setPublications(
           parsed.map(
             (entry: {
@@ -34,7 +35,7 @@ const PublicationUpload: FC = () => {
               errors: PublicationError;
             }) => ({
               publication: Publication.flatten(entry.publication),
-              errors: entry.errors,
+              errors: Publication.flatten(entry.errors),
             })
           )
         );
@@ -53,7 +54,7 @@ const PublicationUpload: FC = () => {
     }
   };
 
-  useEffect(() => resetPublications(), []);
+  useEffect(() => resetPublications(), [resetPublications]);
 
   return (
     <label className="flex flex-col items-center justify-center h-40 rounded-lg shadow-sm cursor-pointer hover:bg-gray-200">
