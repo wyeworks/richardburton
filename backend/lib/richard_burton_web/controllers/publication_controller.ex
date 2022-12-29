@@ -32,12 +32,7 @@ defmodule RichardBurtonWeb.PublicationController do
       {:ok, publications} ->
         result =
           publications
-          |> Enum.map(fn p ->
-            case Publication.validate(p) do
-              {:ok, ^p} -> %{publication: p, errors: nil}
-              {:error, errors} -> %{publication: p, errors: errors}
-            end
-          end)
+          |> Enum.map(&validate_publication/1)
           |> Publication.Codec.flatten()
 
         conn
@@ -46,6 +41,13 @@ defmodule RichardBurtonWeb.PublicationController do
 
       {:error, reason} ->
         conn |> put_status(:bad_request) |> json(reason)
+    end
+  end
+
+  defp validate_publication(p) do
+    case Publication.validate(p) do
+      {:ok, ^p} -> %{publication: p, errors: nil}
+      {:error, errors} -> %{publication: p, errors: errors}
     end
   end
 end
