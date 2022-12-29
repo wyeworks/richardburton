@@ -150,6 +150,8 @@ defmodule RichardBurton.PublicationTest do
     import Publication, only: [validate: 1]
 
     test "when validating valid publications, returns {:ok, publication}" do
+      # Insert a dummy publication to make sure the test passes on a non-empty database
+      {:ok, _publication} = entity_fixture(Map.put(@valid_attrs, :title, "New title"))
       assert({:ok, @valid_attrs} = validate(@valid_attrs))
     end
 
