@@ -32,7 +32,7 @@ defmodule RichardBurtonWeb.PublicationController do
         |> Publication.from_csv!()
         |> Enum.map(fn p ->
           case Publication.validate(p) do
-            {:ok} -> %{publication: p, errors: nil}
+            {:ok, ^p} -> %{publication: p, errors: nil}
             {:error, errors} -> %{publication: p, errors: errors}
           end
         end)
@@ -44,7 +44,8 @@ defmodule RichardBurtonWeb.PublicationController do
       CSV.RowLengthError ->
         conn |> put_status(:bad_request) |> json(:incorrect_row_length)
 
-      _ ->
+      e ->
+        IO.inspect(e)
         conn |> put_status(:bad_request) |> json(:invalid_format)
     end
   end
