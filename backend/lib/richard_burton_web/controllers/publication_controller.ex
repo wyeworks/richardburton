@@ -44,8 +44,7 @@ defmodule RichardBurtonWeb.PublicationController do
       CSV.RowLengthError ->
         conn |> put_status(:bad_request) |> json(:incorrect_row_length)
 
-      e ->
-        IO.inspect(e)
+      _ ->
         conn |> put_status(:bad_request) |> json(:invalid_format)
     end
   end
