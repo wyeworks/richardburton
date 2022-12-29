@@ -5,7 +5,7 @@ defmodule RichardBurtonWeb.Router do
     plug(:accepts, ["json"])
   end
 
-  pipeline :parse do
+  pipeline :validate do
     plug(:accepts, ["text/csv"])
   end
 
@@ -16,9 +16,9 @@ defmodule RichardBurtonWeb.Router do
       resources("/", PublicationController, only: [:index])
       post("/bulk", PublicationController, :create_all)
 
-      scope "/parse" do
-        pipe_through(:parse)
-        post("/", PublicationController, :parse)
+      scope "/validate" do
+        pipe_through(:validate)
+        post("/", PublicationController, :validate)
       end
     end
   end

@@ -21,6 +21,64 @@ defmodule RichardBurton.PublicationTest do
     }
   }
 
+  @valid_attrs_from_csv [
+    %{
+      "title" => "Iraçéma the Honey-Lips: A Legend of Brazil",
+      "year" => 1886,
+      "country" => "GB",
+      "publisher" => "Bickers & Son",
+      "translated_book" => %{
+        "authors" => "Isabel Burton",
+        "original_book" => %{
+          "authors" => "José de Alencar",
+          "title" => "Iracema"
+        }
+      }
+    },
+    %{
+      "title" => "Ubirajara: A Legend of the Tupy Indians",
+      "year" => 1922,
+      "country" => "GB",
+      "publisher" => "Ronald Massey",
+      "translated_book" => %{
+        "authors" => "J. T. W. Sadler",
+        "original_book" => %{
+          "authors" => "José de Alencar",
+          "title" => "Ubirajara"
+        }
+      }
+    }
+  ]
+
+  @invalid_attrs_from_csv [
+    %{
+      "title" => "",
+      "year" => 1886,
+      "country" => "GB",
+      "publisher" => "Bickers & Son",
+      "translated_book" => %{
+        "authors" => "",
+        "original_book" => %{
+          "authors" => "José de Alencar",
+          "title" => "Iracema"
+        }
+      }
+    },
+    %{
+      "title" => "Ubirajara: A Legend of the Tupy Indians",
+      "year" => nil,
+      "country" => "",
+      "publisher" => "",
+      "translated_book" => %{
+        "authors" => "J. T. W. Sadler",
+        "original_book" => %{
+          "authors" => "",
+          "title" => ""
+        }
+      }
+    }
+  ]
+
   @empty_attrs %{}
   @skeleton_attrs %{translated_book: %{original_book: %{}}}
 
@@ -160,28 +218,11 @@ defmodule RichardBurton.PublicationTest do
 
   describe "from_csv!/1" do
     test "when the provided csv file is valid, returns a list of publication-like maps" do
-      assert [
-               %{
-                 "title" => "Iraçéma the Honey-Lips: A Legend of Brazil",
-                 "year" => 1886,
-                 "country" => "GB",
-                 "publisher" => "Bickers & Son",
-                 "translated_book" => %{
-                   "authors" => "Isabel Burton",
-                   "original_book" => %{"authors" => "José de Alencar", "title" => "Iracema"}
-                 }
-               },
-               %{
-                 "title" => "Ubirajara: A Legend of the Tupy Indians",
-                 "year" => 1922,
-                 "country" => "GB",
-                 "publisher" => "Ronald Massey",
-                 "translated_book" => %{
-                   "authors" => "J. T. W. Sadler",
-                   "original_book" => %{"authors" => "José de Alencar", "title" => "Ubirajara"}
-                 }
-               }
-             ] = Publication.from_csv!("test/fixtures/data_valid.csv")
+      assert @valid_attrs_from_csv =
+               Publication.from_csv!("test/fixtures/data_valid_valid_attrs.csv")
+
+      assert @invalid_attrs_from_csv =
+               Publication.from_csv!("test/fixtures/data_valid_invalid_attrs.csv")
     end
 
     test "when the provided csv has an incorrect format, raise an error" do
