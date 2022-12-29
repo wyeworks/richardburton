@@ -133,12 +133,9 @@ const PublicationUpload: FC = () => {
             Omit<PublicationEntry, "id">[]
           >("publications/validate", data);
 
-          const ids = range(0, parsed.length);
-
           setPublications(
-            ids,
             parsed.map(({ publication, errors }, index) => ({
-              id: ids[index],
+              id: index,
               publication,
               errors,
             }))
@@ -195,9 +192,7 @@ const PublicationToolbar: FC<Props> = ({
     ({ snapshot }) =>
       async () => {
         try {
-          const publications = Publication.STORE.from(snapshot)
-            .getAllVisible()
-            .map(({ publication }) => publication);
+          const publications = Publication.STORE.from(snapshot).getAllVisible();
 
           await API.post("publications/bulk", publications);
 
