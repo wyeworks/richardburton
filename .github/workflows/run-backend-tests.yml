@@ -1,0 +1,23 @@
+name: Run backend server's tests
+on: [push]
+jobs:
+  ExUnit:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: "backend"
+    services:
+      db:
+        image: postgres:latest
+        ports: ["5432:5432"]
+        env:
+          POSTGRES_PASSWORD: postgres
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+    steps:
+      - uses: actions/checkout@v3
+      - uses: erlef/setup-beam@v1
+        with:
+          version-type: strict
+          version-file: backend/.tool-versions
+      - run: mix deps.get
+      - run: mix test
