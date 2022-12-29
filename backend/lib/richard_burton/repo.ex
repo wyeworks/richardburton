@@ -40,7 +40,7 @@ defmodule RichardBurton.Repo do
     end)
   end
 
-  def get_errors(%Ecto.Changeset{} = changeset) do
+  def get_errors(changeset = %Ecto.Changeset{}) do
     %{valid?: valid?, errors: errors, changes: changes} = changeset
 
     unless valid? do
@@ -57,7 +57,7 @@ defmodule RichardBurton.Repo do
     end
   end
 
-  def get_errors({key, %Ecto.Changeset{} = changeset}) do
+  def get_errors({key, changeset = %Ecto.Changeset{}}) do
     %{key => get_errors(changeset)}
   end
 
