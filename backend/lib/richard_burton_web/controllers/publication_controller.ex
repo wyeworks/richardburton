@@ -32,15 +32,10 @@ defmodule RichardBurtonWeb.PublicationController do
       {:ok, publications} ->
         result =
           publications
-          |> Enum.map(&Publication.validate/1)
-          |> Enum.zip(publications)
-          |> Enum.map(fn tuple ->
-            case tuple do
-              {{:ok}, publication} ->
-                %{publication: publication, errors: nil}
-
-              {{:error, errors}, publication} ->
-                %{publication: publication, errors: errors}
+          |> Enum.map(fn p ->
+            case Publication.validate(p) do
+              {:ok, ^p} -> %{publication: p, errors: nil}
+              {:error, errors} -> %{publication: p, errors: errors}
             end
           end)
           |> Publication.Codec.flatten()
