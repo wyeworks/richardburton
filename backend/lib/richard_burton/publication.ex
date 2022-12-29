@@ -152,7 +152,11 @@ defmodule RichardBurton.Publication do
          original_title: original_title,
          original_authors: original_authors
        }) do
-    {year, _} = Integer.parse(year_string)
+    year =
+      case Integer.parse(year_string) do
+        {year, _} -> year
+        :error -> nil
+      end
 
     %{
       "title" => title,

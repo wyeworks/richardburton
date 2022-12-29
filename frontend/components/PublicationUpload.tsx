@@ -2,24 +2,18 @@ import { ChangeEventHandler, FC, useEffect, useRef, useState } from "react";
 import UploadIcon from "assets/upload.svg";
 import Router from "next/router";
 import { API } from "app";
-import { atom, useResetRecoilState, useSetRecoilState } from "recoil";
-import { Publication } from "types";
 import { useNotifyError } from "./Errors";
 import axios from "axios";
+import { Publication, PublicationError } from "modules/publications";
 
 const ERROR_MESSAGES: Record<string, string> = {
   incorrect_row_length: "Expected a different number of columns in csv",
   invalid_format: "Could not parse publications from the provided file",
 };
 
-const publicationsAtom = atom<Publication[] | undefined>({
-  key: "publications",
-  default: undefined,
-});
-
 const PublicationUpload: FC = () => {
-  const resetPublications = useResetRecoilState(publicationsAtom);
-  const setPublications = useSetRecoilState(publicationsAtom);
+  const resetPublications = Publication.STORE.useReset();
+  const setPublications = Publication.STORE.useSet();
   const notifyError = useNotifyError();
 
   const [key, setKey] = useState(1);
@@ -32,8 +26,18 @@ const PublicationUpload: FC = () => {
       data.append("csv", file);
 
       try {
-        const { data: parsed } = await API.post("publications/parse", data);
-        setPublications(parsed);
+        const { data: parsed } = await API.post("publications/validate", data);
+        setPublications(
+          parsed.map(
+            (entry: {
+              publication: Publication;
+              errors: PublicationError;
+            }) => ({
+              publication: Publication.flatten(entry.publication),
+              errors: entry.errors,
+            })
+          )
+        );
 
         Router.push("publications/new");
       } catch (error) {
@@ -67,4 +71,3 @@ const PublicationUpload: FC = () => {
 };
 
 export default PublicationUpload;
-export { publicationsAtom };

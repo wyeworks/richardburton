@@ -1,18 +1,12 @@
 import type { NextPage } from "next";
 import { useQuery } from "react-query";
 import { API } from "app";
-import {
-  FlatPublicationKey,
-  Publication,
-  PUBLICATION_ATTRIBUTES,
-  PUBLICATION_ATTRIBUTE_LABELS,
-  toFlatPublications,
-} from "types";
 import PublicationIndex from "components/PublicationIndex";
 import Toggle from "components/Toggle";
 import Head from "next/head";
 import { useState } from "react";
 import PublicationUpload from "components/PublicationUpload";
+import { FlatPublicationKey, Publication } from "modules/publications";
 
 const DEFAULT_COLUMNS: FlatPublicationKey[] = [
   "originalTitle",
@@ -52,7 +46,7 @@ const Home: NextPage = () => {
         <main className="w-full overflow-scroll">
           <aside className="absolute right-0 p-2 space-y-6">
             <div className="space-y-2">
-              {PUBLICATION_ATTRIBUTES.map((attribute) => {
+              {Publication.ATTRIBUTES.map((attribute) => {
                 const isActive = columns.has(attribute);
                 const newColumns = new Set(columns);
 
@@ -65,7 +59,7 @@ const Home: NextPage = () => {
                 return (
                   <Toggle
                     key={attribute}
-                    label={PUBLICATION_ATTRIBUTE_LABELS[attribute]}
+                    label={Publication.ATTRIBUTE_LABELS[attribute]}
                     startsChecked={isActive}
                     onChange={() => setColumns(newColumns)}
                   />
@@ -76,7 +70,10 @@ const Home: NextPage = () => {
           </aside>
           {publications ? (
             <PublicationIndex
-              entries={toFlatPublications(publications)}
+              entries={publications.map((publication) => ({
+                publication: Publication.flatten(publication),
+                errors: null,
+              }))}
               columns={columns}
             />
           ) : (

@@ -1,19 +1,16 @@
 import type { NextPage } from "next";
-import { PUBLICATION_ATTRIBUTES, toFlatPublications } from "types";
 import PublicationIndex from "components/PublicationIndex";
 import Head from "next/head";
-import { useRecoilValue } from "recoil";
-
 import Button from "components/Button";
 import { API } from "app";
 import Router from "next/router";
 import { useNotifyError } from "components/Errors";
 import axios from "axios";
-import { publicationsAtom } from "components/PublicationUpload";
 import Link from "next/link";
+import { Publication } from "modules/publications";
 
 const NewPublications: NextPage = () => {
-  const publications = useRecoilValue(publicationsAtom);
+  const publications = Publication.STORE.useValue();
 
   const notifyError = useNotifyError();
 
@@ -28,6 +25,9 @@ const NewPublications: NextPage = () => {
       }
     }
   };
+
+  const invalidPublicationCount =
+    publications?.filter(({ errors }) => Boolean(errors)).length || 0;
 
   return (
     <>
@@ -47,16 +47,23 @@ const NewPublications: NextPage = () => {
           </span>
         </header>
         <main className="flex flex-col p-4 overflow-hidden gap-y-8">
-          <h1 className="my-4 text-4xl text-center ">
-            {publications?.length} publications about to be inserted...
-          </h1>
+          <header className="my-4 text-center">
+            <h1 className="text-4xl">
+              {publications?.length} publications about to be inserted...
+            </h1>
+            {invalidPublicationCount > 0 && (
+              <label className="text-lg text-red-500">
+                {invalidPublicationCount} of those have errors
+              </label>
+            )}
+          </header>
 
           {publications ? (
             <section className="flex space-x-8 overflow-hidden 2xl:justify-center">
               <div className="overflow-scroll">
                 <PublicationIndex
-                  entries={toFlatPublications(publications)}
-                  columns={new Set(PUBLICATION_ATTRIBUTES)}
+                  entries={publications}
+                  columns={new Set(Publication.ATTRIBUTES)}
                 />
               </div>
               <aside>
