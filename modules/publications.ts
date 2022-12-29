@@ -48,15 +48,15 @@ const PUBLICATION_ERROR = selectorFamily<string, PublicationId>({
   },
 });
 
-const DELETED_PUBLICATIONS = atomFamily<boolean, PublicationId>({
-  key: "deleted-publications",
+const IS_PUBLICATION_DELETED = atomFamily<boolean, PublicationId>({
+  key: "is-publication-deleted",
   default: false,
 });
 
 const DELETED_PUBLICATIONS_IDS = selector<PublicationId[]>({
   key: "deleted-publications-ids",
   get({ get }) {
-    return get(PUBLICATION_IDS).filter((id) => get(DELETED_PUBLICATIONS(id)));
+    return get(PUBLICATION_IDS).filter((id) => get(IS_PUBLICATION_DELETED(id)));
   },
 });
 
@@ -70,7 +70,9 @@ const DELETED_PUBLICATION_COUNT = selector<number>({
 const VISIBLE_PUBLICATION_IDS = selector<PublicationId[]>({
   key: "visible-publications-ids",
   get({ get }) {
-    return get(PUBLICATION_IDS).filter((id) => !get(DELETED_PUBLICATIONS(id)));
+    return get(PUBLICATION_IDS).filter(
+      (id) => !get(IS_PUBLICATION_DELETED(id))
+    );
   },
 });
 
@@ -81,8 +83,8 @@ const VISIBLE_PUBLICATION_COUNT = selector<number>({
   },
 });
 
-const VALID_PUBLICATIONS = selectorFamily<boolean, PublicationId>({
-  key: "valid-publications",
+const IS_PUBLICATION_VALID = selectorFamily<boolean, PublicationId>({
+  key: "is-publication-valid",
   get(id) {
     return function ({ get }) {
       return !Boolean(get(PUBLICATIONS(id)).errors);
@@ -94,8 +96,8 @@ const VALID_PUBLICATIONS_IDS = selector<number[]>({
   key: "valid-publication-ids",
   get({ get }) {
     return get(PUBLICATION_IDS)
-      .filter((id) => !get(DELETED_PUBLICATIONS(id)))
-      .filter((id) => get(VALID_PUBLICATIONS(id)));
+      .filter((id) => !get(IS_PUBLICATION_DELETED(id)))
+      .filter((id) => get(IS_PUBLICATION_VALID(id)));
   },
 });
 
@@ -239,7 +241,7 @@ const Publication: PublicationModule = {
       return useRecoilCallback(
         ({ set }) =>
           (ids, isDeleted = true) => {
-            ids.forEach((id) => set(DELETED_PUBLICATIONS(id), isDeleted));
+            ids.forEach((id) => set(IS_PUBLICATION_DELETED(id), isDeleted));
           },
         []
       );
@@ -251,7 +253,7 @@ const Publication: PublicationModule = {
             const ids = snapshot.getLoadable(PUBLICATION_IDS).valueOrThrow();
             ids.forEach((id) => {
               reset(PUBLICATIONS(id));
-              reset(DELETED_PUBLICATIONS(id));
+              reset(IS_PUBLICATION_DELETED(id));
             });
             reset(PUBLICATION_IDS);
           },
@@ -266,14 +268,14 @@ const Publication: PublicationModule = {
               .getLoadable(DELETED_PUBLICATIONS_IDS)
               .valueOrThrow()
               .forEach((id) => {
-                reset(DELETED_PUBLICATIONS(id));
+                reset(IS_PUBLICATION_DELETED(id));
               });
           },
         []
       );
     },
     useIsValid(id) {
-      return useRecoilValue(VALID_PUBLICATIONS(id));
+      return useRecoilValue(IS_PUBLICATION_VALID(id));
     },
 
     useVisibleCount() {
@@ -300,7 +302,7 @@ const Publication: PublicationModule = {
         return getVisibleIds().map(getValue);
       },
       isDeleted(id) {
-        return snapshot.getLoadable(DELETED_PUBLICATIONS(id)).valueOrThrow();
+        return snapshot.getLoadable(IS_PUBLICATION_DELETED(id)).valueOrThrow();
       },
     }),
 
