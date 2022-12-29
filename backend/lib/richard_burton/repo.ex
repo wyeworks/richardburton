@@ -43,9 +43,7 @@ defmodule RichardBurton.Repo do
   def get_errors(%Ecto.Changeset{} = changeset) do
     %{valid?: valid?, errors: errors, changes: changes} = changeset
 
-    if valid? do
-      nil
-    else
+    unless valid? do
       errors
       |> Enum.map(&parse_error/1)
       |> Enum.into(%{})
@@ -54,13 +52,13 @@ defmodule RichardBurton.Repo do
         |> Enum.map(&get_errors/1)
         |> Enum.reduce(%{}, &Map.merge/2)
       )
-      |> Enum.filter(fn {_, value} -> value != nil end)
+      |> Enum.reject(fn {_, value} -> is_nil(value) end)
       |> Enum.into(%{})
     end
   end
 
   def get_errors({key, %Ecto.Changeset{} = changeset}) do
-    Map.put(%{}, key, get_errors(changeset))
+    %{key => get_errors(changeset)}
   end
 
   def get_errors(_unknown) do

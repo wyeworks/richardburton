@@ -7,6 +7,7 @@ defmodule RichardBurton.Publication do
 
   alias RichardBurton.Repo
   alias RichardBurton.TranslatedBook
+  alias __MODULE__
 
   @external_attributes [:country, :publisher, :title, :year, :translated_book]
 
@@ -60,13 +61,13 @@ defmodule RichardBurton.Publication do
   end
 
   def all do
-    __MODULE__
+    Publication
     |> Repo.all()
     |> Repo.preload(translated_book: [:original_book])
   end
 
   def insert(attrs) do
-    %__MODULE__{}
+    %Publication{}
     |> changeset(attrs)
     |> Repo.insert()
     |> case do
@@ -79,17 +80,16 @@ defmodule RichardBurton.Publication do
   end
 
   def validate(attrs) do
-    changeset = changeset(%__MODULE__{}, attrs)
+    changeset = changeset(%Publication{}, attrs)
 
     if changeset.valid? do
       unique_key = [:title, :country, :year, :publisher]
       unique_key_values = Repo.get_unique_key_values(unique_key, changeset)
 
-      __MODULE__
-      |> Repo.get_by(Enum.zip(unique_key, unique_key_values))
-      |> case do
-        nil -> {:ok}
-        _publication -> {:error, :conflict}
+      if Repo.exists?(Publication, Enum.zip(unique_key, unique_key_values)) do
+        {:error, :conflict}
+      else
+        {:ok, attrs}
       end
     else
       {:error, get_errors(changeset)}
@@ -97,8 +97,7 @@ defmodule RichardBurton.Publication do
   end
 
   defp get_errors(changeset) do
-    Repo.get_errors(changeset)
-    |> case do
+    case Repo.get_errors(changeset) do
       %{title: :unique} -> :conflict
       error_map -> error_map
     end
