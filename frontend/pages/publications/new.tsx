@@ -36,10 +36,11 @@ const NewPublications: NextPage = () => {
       </Head>
       <div className="flex flex-col h-full">
         <header className="py-2 text-center text-white bg-indigo-600">
-          <Link href="/">
-            <a className="inline px-4 py-1 text-xl font-medium border-r">
-              Richard Burton Platform
-            </a>
+          <Link
+            href="/"
+            className="inline px-4 py-1 text-xl font-medium border-r"
+          >
+            Richard Burton Platform
           </Link>
           <span className="inline px-4 text-lg">
             A database about Brazilian literature in translation
