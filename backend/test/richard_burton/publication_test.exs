@@ -78,15 +78,15 @@ defmodule RichardBurton.PublicationTest do
 
     test "when inserting a duplicate publication, returns {:error, :conflict}" do
       {:ok, _publication} = entity_fixture(@valid_attrs)
-      assert {:error, :conflict} = insert(@valid_attrs)
+      assert {:error, :conflict} == insert(@valid_attrs)
     end
 
     test "when inserting an empty publication, returns an error map with :required errors" do
-      assert({:error, @empty_attrs_error_map} == insert(@empty_attrs))
+      assert {:error, @empty_attrs_error_map} == insert(@empty_attrs)
     end
 
     test "when inserting an skeleton publication, returns a deep error map with :required errors" do
-      assert({:error, @skeleton_attrs_error_map} == insert(@skeleton_attrs))
+      assert {:error, @skeleton_attrs_error_map} == insert(@skeleton_attrs)
     end
   end
 
@@ -94,7 +94,7 @@ defmodule RichardBurton.PublicationTest do
     import Publication, only: [validate: 1]
 
     test "when validating valid publications, returns {:ok, publication}" do
-      assert({:ok, @valid_attrs} = validate(@valid_attrs))
+      assert {:ok, @valid_attrs} = validate(@valid_attrs)
     end
 
     test "when validating a duplicate publication, returns {:error, :conflict}" do
@@ -103,11 +103,11 @@ defmodule RichardBurton.PublicationTest do
     end
 
     test "when validating an empty publication, returns an error map with :required errors" do
-      assert({:error, @empty_attrs_error_map} == validate(@empty_attrs))
+      assert {:error, @empty_attrs_error_map} == validate(@empty_attrs)
     end
 
     test "when validating an skeleton publication, returns a deep error map with :required errors" do
-      assert({:error, @skeleton_attrs_error_map} == validate(@skeleton_attrs))
+      assert {:error, @skeleton_attrs_error_map} == validate(@skeleton_attrs)
     end
   end
 
