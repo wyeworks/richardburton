@@ -4,7 +4,13 @@ import {
   PublicationId,
   PublicationKey,
 } from "modules/publications";
-import { FC, MouseEvent, MouseEventHandler, PropsWithChildren } from "react";
+import {
+  FC,
+  MouseEvent,
+  MouseEventHandler,
+  PropsWithChildren,
+  useState,
+} from "react";
 import ErrorTooltip from "./ErrorTooltip";
 import {
   useIsSelected,
@@ -34,7 +40,7 @@ const Column: FC<ColumnProps> = ({ className, children, publicationId }) => {
     <td
       className={classNames(
         className,
-        "max-w-xs px-2 py-1 truncate justify",
+        "max-w-xs px-2 py-1 justify",
         isValid ? "group-hover:bg-indigo-100" : "group-hover:bg-red-100",
         { "bg-amber-100": isSelected }
       )}
@@ -67,6 +73,24 @@ type DataColumnProps = {
   editable: boolean;
 };
 
+type DataInputProps = { data: string | number };
+
+const DataInput: FC<DataInputProps> = ({ data }) => {
+  const [value, setValue] = useState(data);
+
+  return (
+    <input
+      className={classNames(
+        "px-2 py-1",
+        "bg-transparent focus:bg-white/50 focus:shadow rounded outline-none"
+      )}
+      value={value}
+      onChange={(e) => setValue(e.target.value)}
+      onBlur={() => setValue(data)}
+    />
+  );
+};
+
 const DataColumn: FC<DataColumnProps> = ({
   attribute,
   publicationId,
@@ -78,6 +102,13 @@ const DataColumn: FC<DataColumnProps> = ({
   const value = useValue(publicationId, attribute);
   const error = useErrorDescription(publicationId, attribute);
   const isVisible = useIsVisible(attribute);
+  const className = classNames(
+    "px-2 py-1 truncate",
+    error &&
+      "border rounded border-dotted border-red-300 hover:bg-red-300 hover:text-white "
+  );
+
+  const content = attribute === "country" ? COUNTRIES[value] : value;
 
   return isVisible ? (
     <Column publicationId={publicationId}>
@@ -87,15 +118,11 @@ const DataColumn: FC<DataColumnProps> = ({
         disabled={!editable}
         boundary="main"
       >
-        <div
-          className={classNames(
-            "px-2 py-1 truncate",
-            error &&
-              "border rounded border-dotted border-red-300 hover:bg-red-300 hover:text-white "
-          )}
-        >
-          {attribute === "country" ? COUNTRIES[value] : value}
-        </div>
+        {editable ? (
+          <DataInput data={content} />
+        ) : (
+          <div className={className}>{content}</div>
+        )}
       </ErrorTooltip>
     </Column>
   ) : null;
