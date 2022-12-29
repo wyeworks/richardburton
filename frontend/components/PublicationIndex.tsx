@@ -72,10 +72,11 @@ const DataColumn: FC<DataColumnProps> = ({
   publicationId,
   editable,
 }) => {
-  const { useIsVisible, useValue, useError } = Publication.STORE.ATTRIBUTES;
+  const { useIsVisible, useValue, useErrorDescription } =
+    Publication.STORE.ATTRIBUTES;
 
   const value = useValue(publicationId, attribute);
-  const error = useError(publicationId, attribute);
+  const error = useErrorDescription(publicationId, attribute);
   const isVisible = useIsVisible(attribute);
 
   return isVisible ? (
@@ -107,10 +108,10 @@ type RowProps = {
 };
 
 const Row: FC<RowProps> = ({ publicationId, editable, onClick }) => {
-  const { useIsValid, useError } = Publication.STORE;
+  const { useIsValid, useErrorDescription } = Publication.STORE;
 
   const isValid = useIsValid(publicationId);
-  const error = useError(publicationId);
+  const error = useErrorDescription(publicationId);
 
   return (
     <ErrorTooltip

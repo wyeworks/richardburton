@@ -39,8 +39,8 @@ const PUBLICATIONS = atomFamily<PublicationEntry, PublicationId>({
   default: undefined,
 });
 
-const PUBLICATION_ERROR = selectorFamily<string, PublicationId>({
-  key: "publication-error",
+const PUBLICATION_ERROR_DESCRIPTION = selectorFamily<string, PublicationId>({
+  key: "publication-error-description",
   get(id) {
     return function ({ get }) {
       return Publication.describe(get(PUBLICATIONS(id)).errors);
@@ -138,11 +138,11 @@ const PUBLICATION_ATTRIBUTE = selectorFamily<
   },
 });
 
-const PUBLICATION_ATTRIBUTE_ERROR = selectorFamily<
+const PUBLICATION_ATTRIBUTE_ERROR_DESCRIPTION = selectorFamily<
   string,
   CompositeAttributeId
 >({
-  key: "publication-error",
+  key: "publication-attribute-error-description",
   get(compositeId) {
     return function ({ get }) {
       const [id, key] = compositeId.split(".") as [string, PublicationKey];
@@ -165,7 +165,7 @@ interface PublicationModule {
   STORE: {
     useVisibleIds(): PublicationId[];
     useValue(id: PublicationId): PublicationEntry;
-    useError(id: PublicationId): string;
+    useErrorDescription(id: PublicationId): string;
     useSetAll(): (ids: PublicationId[], entries: PublicationEntry[]) => void;
     useSetDeleted(): (ids: PublicationId[], isDeleted?: boolean) => void;
     useResetAll(): Resetter;
@@ -191,7 +191,7 @@ interface PublicationModule {
         id: PublicationId,
         key: K
       ): Publication[K];
-      useError(id: PublicationId, key: PublicationKey): string;
+      useErrorDescription(id: PublicationId, key: PublicationKey): string;
     };
   };
 
@@ -224,8 +224,8 @@ const Publication: PublicationModule = {
     useValue(id) {
       return useRecoilValue(PUBLICATIONS(id));
     },
-    useError(id) {
-      return useRecoilValue(PUBLICATION_ERROR(id));
+    useErrorDescription(id) {
+      return useRecoilValue(PUBLICATION_ERROR_DESCRIPTION(id));
     },
     useSetAll() {
       return useRecoilCallback(
@@ -333,9 +333,11 @@ const Publication: PublicationModule = {
           PUBLICATION_ATTRIBUTE(compositeId)
         ) as Publication[K];
       },
-      useError(id, key) {
+      useErrorDescription(id, key) {
         const compositeId: CompositeAttributeId = `${id}.${key}`;
-        return useRecoilValue(PUBLICATION_ATTRIBUTE_ERROR(compositeId));
+        return useRecoilValue(
+          PUBLICATION_ATTRIBUTE_ERROR_DESCRIPTION(compositeId)
+        );
       },
     },
   },
