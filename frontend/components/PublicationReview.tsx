@@ -75,8 +75,8 @@ type DataInputProps = Omit<
   colId: PublicationKey;
   value: string;
   error: string;
-  onBlur: (value: string) => void;
-  onExternalChange: (value: string) => void;
+  onBlur?: (value: string) => void;
+  onExternalChange?: (value: string) => void;
 };
 
 const DataInput = forwardRef<HTMLInputElement, DataInputProps>(function (
@@ -94,7 +94,7 @@ const DataInput = forwardRef<HTMLInputElement, DataInputProps>(function (
 
   const handleBlur = () => {
     if (data !== value.current) override(rowId, colId, value.current);
-    onBlur(value.current);
+    onBlur?.(value.current);
   };
 
   const handleChange: ChangeEventHandler<HTMLInputElement> = (e) => {
@@ -145,7 +145,7 @@ const DataInputWithValidation = forwardRef<
   );
 });
 
-const Data: typeof Content = ({ rowId, colId, value, error }) => {
+const AutovalidatedData: typeof Content = ({ rowId, colId, value, error }) => {
   const content = colId === "country" ? COUNTRIES[value] : value;
 
   return (
@@ -158,6 +158,10 @@ const Data: typeof Content = ({ rowId, colId, value, error }) => {
       />
     </ErrorTooltip>
   );
+};
+
+const Data: typeof Content = ({ rowId, colId, value, error }) => {
+  return <DataInput rowId={rowId} colId={colId} value={value} error={error} />;
 };
 
 const ExtendedRow: FC<RowProps> = (props) => {
@@ -213,7 +217,7 @@ const PublicationReview: FC = () => {
       className={classNames(!isSelectionEmpty && "select-none")}
       ExtendedRow={ExtendedRow}
       ExtendedColumn={ExtendedColumn}
-      ExtendedContent={Data}
+      ExtendedContent={AutovalidatedData}
       ExtendedSignalColumn={ExtendedSignalColumn}
       ExtraRow={NewPublicationRow}
       onRowClick={toggleSelection}
