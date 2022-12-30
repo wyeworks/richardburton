@@ -1,7 +1,13 @@
-import { ChangeEvent, FC, useEffect, useState } from "react";
-import { API } from "app";
+import {
+  ChangeEvent,
+  FC,
+  MouseEvent,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 import { useRecoilCallback } from "recoil";
-import { useNotifyError } from "./Errors";
+import { useNotifyError, _ERRORS, _notify } from "./Errors";
 import axios from "axios";
 import Button from "./Button";
 import Router from "next/router";
@@ -11,6 +17,7 @@ import {
   Publication,
   PublicationEntry,
   PublicationKey,
+  ValidationResult,
 } from "modules/publications";
 import {
   getSelection,
@@ -123,49 +130,37 @@ const PublicationFilter: FC = () => {
 };
 
 const PublicationUpload: FC = () => {
-  const { useSetAll, useResetAll } = Publication.STORE;
-  const notifyError = useNotifyError();
-  const setPublications = useSetAll();
+  const { useResetAll } = Publication.STORE;
+  const { useRequest } = Publication.REMOTE;
+
   const resetPublications = useResetAll();
 
   const [key, setKey] = useState(1);
 
-  const handleChange = useRecoilCallback(
-    () => async (event: ChangeEvent<HTMLInputElement>) => {
-      if (event.target.files) {
-        const [file] = event.target.files;
+  const handleChange = useRequest(
+    ({ set }, http) =>
+      async (event: ChangeEvent<HTMLInputElement>) => {
+        if (event.target.files) {
+          const [file] = event.target.files;
+          const payload = new FormData();
+          payload.append("csv", file);
 
-        const data = new FormData();
-        data.append("csv", file);
-
-        try {
-          const { data: parsed } = await API.post<
-            Omit<PublicationEntry, "id">[]
-          >("publications/validate", data);
-
-          setPublications(
-            parsed.map(({ publication, errors }, index) => ({
-              id: index,
-              publication,
-              errors,
-            }))
-          );
-
-          Router.push("publications/new");
-        } catch (error) {
-          event.target.files = null;
-          setKey((key) => -key);
-          if (axios.isAxiosError(error)) {
-            const { response, message } = error;
-            const descriptiveError =
-              response && Publication.describe(response.data as string);
-
-            notifyError(descriptiveError || message);
+          try {
+            const { data } = await http.post<ValidationResult[]>(
+              "publications/validate",
+              payload
+            );
+            const entries = data.map((p, index) => ({ ...p, id: index }));
+            Publication.STORE.with({ set }).setPublications(entries);
+            Publication.STORE.with({ set }).setErrors(entries);
+            Router.push("publications/new");
+          } catch (error: any) {
+            event.target.files = null;
+            setKey((key) => -key);
+            throw error;
           }
         }
       }
-    },
-    []
   );
 
   useEffect(() => resetPublications(), [resetPublications]);
@@ -196,22 +191,11 @@ const PublicationToolbar: FC<Props> = ({
   edit = false,
   upload = false,
 }) => {
-  const notifyError = useNotifyError();
+  const bulk = Publication.REMOTE.useBulk();
 
-  const handleSubmit = useRecoilCallback(
-    ({ snapshot }) =>
-      async () => {
-        try {
-          const publications = Publication.STORE.from(snapshot).getAllVisible();
-
-          await API.post("publications/bulk", publications);
-
-          Router.push("/");
-        } catch (error) {
-          if (axios.isAxiosError(error)) notifyError(error.message);
-        }
-      },
-    []
+  const handleSubmit = useCallback(
+    () => bulk().then(() => Router.push("/")),
+    [bulk]
   );
 
   return (
