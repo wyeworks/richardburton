@@ -88,6 +88,14 @@ const DataInput: FC<DataInputProps> = ({
   useEffect(() => setValue(data), [data]);
 
   const override = Publication.STORE.ATTRIBUTES.useOverride();
+  const validate = Publication.REMOTE.useValidate();
+
+  const handleBlur = () => {
+    override(publicationId, attribute, value);
+    if (data !== value) {
+      validate([publicationId]);
+    }
+  };
 
   return (
     <input
@@ -99,7 +107,7 @@ const DataInput: FC<DataInputProps> = ({
       )}
       value={value}
       onChange={(e) => setValue(e.target.value)}
-      onBlur={() => override(publicationId, attribute, value)}
+      onBlur={handleBlur}
     />
   );
 };
