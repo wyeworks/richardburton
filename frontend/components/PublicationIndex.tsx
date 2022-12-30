@@ -127,7 +127,7 @@ type Props = {
   className?: string;
 };
 
-const PublicationTable: FC<Props> = ({
+const PublicationIndex: FC<Props> = ({
   ExtendedRow = Row,
   ExtendedColumn = Column,
   ExtendedContent = Content,
@@ -163,6 +163,6 @@ const PublicationTable: FC<Props> = ({
   );
 };
 
-export default PublicationTable;
+export default PublicationIndex;
 export type { RowId, RowProps };
 export { Row, Column, Content, SignalColumn };

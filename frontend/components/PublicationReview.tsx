@@ -20,14 +20,14 @@ import {
   useIsSelectionEmpty,
   useSelectionEvent,
 } from "react-selection-manager";
-import PublicationTable, {
+import PublicationIndex, {
   Column,
   Content,
   Row,
   RowId,
   RowProps,
   SignalColumn,
-} from "components/PublicationTable";
+} from "components/PublicationIndex";
 
 const COUNTRIES: Record<string, string> = {
   BR: "Brazil",
@@ -162,7 +162,7 @@ const PublicationReview: FC = () => {
     });
 
   return (
-    <PublicationTable
+    <PublicationIndex
       className={classNames(!isSelectionEmpty && "select-none")}
       ExtendedRow={ExtendedRow}
       ExtendedColumn={ExtendedColumn}
