@@ -79,43 +79,45 @@ type DataInputProps = Omit<
   onExternalChange?: (value: string) => void;
 };
 
-const DataInput = forwardRef<HTMLInputElement, DataInputProps>(function (
-  { rowId, colId, value: data, onBlur, onExternalChange, ...props },
-  ref
-) {
-  const override = Publication.STORE.ATTRIBUTES.useOverride();
+const DataInput = forwardRef<HTMLInputElement, DataInputProps>(
+  function DataInput(
+    { rowId, colId, value: data, onBlur, onExternalChange, ...props },
+    ref
+  ) {
+    const override = Publication.STORE.ATTRIBUTES.useOverride();
 
-  const [value, setValue] = useReactiveRef(data);
+    const [value, setValue] = useReactiveRef(data);
 
-  useEffect(() => {
-    if (data !== value.current) setValue(data);
-    onExternalChange?.(value.current);
-  }, [data, rowId, setValue, onExternalChange]);
+    useEffect(() => {
+      if (data !== value.current) setValue(data);
+      onExternalChange?.(value.current);
+    }, [data, rowId, value, setValue, onExternalChange]);
 
-  const handleBlur = () => {
-    if (data !== value.current) override(rowId, colId, value.current);
-    onBlur?.(value.current);
-  };
+    const handleBlur = () => {
+      if (data !== value.current) override(rowId, colId, value.current);
+      onBlur?.(value.current);
+    };
 
-  const handleChange: ChangeEventHandler<HTMLInputElement> = (e) => {
-    setValue(e.target.value);
-  };
+    const handleChange: ChangeEventHandler<HTMLInputElement> = (e) => {
+      setValue(e.target.value);
+    };
 
-  return (
-    <input
-      {...props}
-      ref={ref}
-      placeholder={Publication.ATTRIBUTE_LABELS[colId]}
-      className={classNames(
-        "px-2 py-1 rounded outline-none bg-transparent focus:bg-white/50 focus:shadow-sm placeholder:text-xs",
-        "error:focus:bg-red-400/80 error:bg-red-300/40 error:focus:text-white error:shadow-sm error:placeholder-white"
-      )}
-      value={value.current}
-      onChange={handleChange}
-      onBlur={handleBlur}
-    />
-  );
-});
+    return (
+      <input
+        {...props}
+        ref={ref}
+        placeholder={Publication.ATTRIBUTE_LABELS[colId]}
+        className={classNames(
+          "px-2 py-1 rounded outline-none bg-transparent focus:bg-white/50 focus:shadow-sm placeholder:text-xs",
+          "error:focus:bg-red-400/80 error:bg-red-300/40 error:focus:text-white error:shadow-sm error:placeholder-white"
+        )}
+        value={value.current}
+        onChange={handleChange}
+        onBlur={handleBlur}
+      />
+    );
+  }
+);
 
 const DataInputWithValidation = forwardRef<
   HTMLInputElement,
@@ -125,7 +127,7 @@ const DataInputWithValidation = forwardRef<
     value: string;
     error: string;
   }
->(function (props, ref) {
+>(function DataInputWithValidation(props, ref) {
   const validate = Publication.REMOTE.useValidate();
 
   const validateIfChanged = useCallback(
@@ -134,7 +136,7 @@ const DataInputWithValidation = forwardRef<
         validate([props.rowId]);
       }
     },
-    [validate]
+    [props.rowId, props.value, validate]
   );
 
   return (
@@ -187,7 +189,7 @@ const ExtendedRow: FC<RowProps> = (props) => {
 };
 
 const NewPublicationSignalColumn: FC<{ rowId: RowId }> = ({ rowId }) => {
-  return <SignalColumn rowId={rowId}>➕</SignalColumn>;
+  return <SignalColumn rowId={rowId}></SignalColumn>;
 };
 
 const NewPublicationRow: FC = () => {
