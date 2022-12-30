@@ -67,16 +67,20 @@ const SignalColumn: FC<SignalColumnProps> = ({ publicationId }) => {
   );
 };
 
-type DataColumnProps = {
-  attribute: PublicationKey;
+type DataInputProps = {
   publicationId: PublicationId;
-  editable: boolean;
+  attribute: PublicationKey;
+  data: string | number;
 };
 
-type DataInputProps = { data: string | number };
-
-const DataInput: FC<DataInputProps> = ({ data }) => {
+const DataInput: FC<DataInputProps> = ({
+  publicationId,
+  attribute,
+  data,
+}) => {
   const [value, setValue] = useState(data);
+
+  const override = Publication.STORE.ATTRIBUTES.useOverride();
 
   return (
     <input
@@ -86,9 +90,15 @@ const DataInput: FC<DataInputProps> = ({ data }) => {
       )}
       value={value}
       onChange={(e) => setValue(e.target.value)}
-      onBlur={() => setValue(data)}
+      onBlur={() => override(publicationId, attribute, value)}
     />
   );
+};
+
+type DataColumnProps = {
+  attribute: PublicationKey;
+  publicationId: PublicationId;
+  editable: boolean;
 };
 
 const DataColumn: FC<DataColumnProps> = ({
