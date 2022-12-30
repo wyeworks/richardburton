@@ -44,6 +44,11 @@ const PUBLICATION_ERRORS = atomFamily<PublicationError, PublicationId>({
   default: null,
 });
 
+const PUBLICATION_OVERRIDES = atomFamily<Partial<Publication>, PublicationId>({
+  key: "publication-overrides",
+  default: undefined,
+});
+
 const PUBLICATION_ERROR_DESCRIPTION = selectorFamily<string, PublicationId>({
   key: "publication-error-description",
   get(id) {
@@ -78,6 +83,18 @@ const VISIBLE_PUBLICATION_IDS = selector<PublicationId[]>({
     return get(PUBLICATION_IDS).filter(
       (id) => !get(IS_PUBLICATION_DELETED(id))
     );
+  },
+});
+
+const VISIBLE_PUBLICATIONS = selectorFamily<Publication, PublicationId>({
+  key: "visible-publications",
+  get(id) {
+    return function ({ get }) {
+      return {
+        ...get(PUBLICATIONS(id)),
+        ...(get(PUBLICATION_OVERRIDES(id)) || {}),
+      };
+    };
   },
 });
 
@@ -138,7 +155,7 @@ const PUBLICATION_ATTRIBUTE = selectorFamily<
   get(compositeId) {
     return function ({ get }) {
       const [id, key] = compositeId.split(".") as [string, PublicationKey];
-      return get(PUBLICATIONS(parseInt(id)))[key];
+      return get(VISIBLE_PUBLICATIONS(parseInt(id)))[key];
     };
   },
 });
@@ -176,6 +193,7 @@ interface PublicationModule {
     useSetDeleted(): (ids: PublicationId[], isDeleted?: boolean) => void;
     useResetAll(): Resetter;
     useResetDeleted(): Resetter;
+
     useIsValid(id: PublicationId): boolean;
 
     useVisibleCount(): number;
@@ -197,6 +215,11 @@ interface PublicationModule {
         id: PublicationId,
         key: K
       ): Publication[K];
+      useOverride(): (
+        id: PublicationId,
+        attribute: PublicationKey,
+        value: string | number
+      ) => void;
       useErrorDescription(id: PublicationId, key: PublicationKey): string;
     };
   };
@@ -228,7 +251,7 @@ const Publication: PublicationModule = {
       return useRecoilValue(VISIBLE_PUBLICATION_IDS);
     },
     useValue(id) {
-      return useRecoilValue(PUBLICATIONS(id));
+      return useRecoilValue(VISIBLE_PUBLICATIONS(id));
     },
     useError(id) {
       return useRecoilValue(PUBLICATION_ERRORS(id));
@@ -267,6 +290,7 @@ const Publication: PublicationModule = {
             const ids = snapshot.getLoadable(PUBLICATION_IDS).valueOrThrow();
             ids.forEach((id) => {
               reset(PUBLICATIONS(id));
+              reset(PUBLICATION_OVERRIDES(id));
               reset(IS_PUBLICATION_DELETED(id));
             });
             reset(PUBLICATION_IDS);
@@ -288,6 +312,7 @@ const Publication: PublicationModule = {
         []
       );
     },
+
     useIsValid(id) {
       return useRecoilValue(IS_PUBLICATION_VALID(id));
     },
@@ -295,11 +320,9 @@ const Publication: PublicationModule = {
     useVisibleCount() {
       return useRecoilValue(VISIBLE_PUBLICATION_COUNT);
     },
-
     useDeletedCount() {
       return useRecoilValue(DELETED_PUBLICATION_COUNT);
     },
-
     useValidCount() {
       return useRecoilValue(VALID_PUBLICATION_COUNT);
     },
@@ -309,7 +332,7 @@ const Publication: PublicationModule = {
         return snapshot.getLoadable(VISIBLE_PUBLICATION_IDS).valueOrThrow();
       },
       getValue(id) {
-        return snapshot.getLoadable(PUBLICATIONS(id)).valueOrThrow();
+        return snapshot.getLoadable(VISIBLE_PUBLICATIONS(id)).valueOrThrow();
       },
       getAllVisible() {
         const { getVisibleIds, getValue } = Publication.STORE.from(snapshot);
@@ -347,6 +370,19 @@ const Publication: PublicationModule = {
           PUBLICATION_ATTRIBUTE(compositeId)
         ) as Publication[K];
       },
+      useOverride() {
+        return useRecoilCallback(
+          ({ set }) =>
+            (id, attribute, value) => {
+              set(PUBLICATION_OVERRIDES(id), (current) => ({
+                ...current,
+                [attribute]: value,
+              }));
+            },
+          []
+        );
+      },
+
       useErrorDescription(id, key) {
         const compositeId: CompositeAttributeId = `${id}.${key}`;
         return useRecoilValue(
