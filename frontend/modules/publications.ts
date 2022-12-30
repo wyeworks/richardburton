@@ -1,6 +1,7 @@
 import {
   atom,
   atomFamily,
+  CallbackInterface,
   Resetter,
   selector,
   selectorFamily,
@@ -8,7 +9,10 @@ import {
   useRecoilCallback,
   useRecoilValue,
 } from "recoil";
-import { isString } from "lodash";
+import { isString, range } from "lodash";
+import { request } from "app";
+import { _ERRORS, _notify } from "components/Errors";
+import { AxiosInstance } from "axios";
 
 type Publication = {
   title: string;
@@ -20,13 +24,10 @@ type Publication = {
   originalAuthors: string;
 };
 
+type ValidationResult = { publication: Publication; errors: PublicationError };
 type PublicationKey = keyof Publication;
 type PublicationError = null | string | Record<PublicationKey, string>;
-type PublicationEntry = {
-  id: number;
-  publication: Publication;
-  errors: PublicationError;
-};
+type PublicationEntry = ValidationResult & { id: number };
 type PublicationId = number;
 
 const PUBLICATION_IDS = atom<PublicationId[]>({
@@ -202,6 +203,7 @@ interface PublicationModule {
     useResetAll(): Resetter;
     useResetDeleted(): Resetter;
     useResetOverridden(): Resetter;
+    useOverrideValue(id: PublicationId): Partial<Publication>;
 
     useIsValid(id: PublicationId): boolean;
 
@@ -215,6 +217,11 @@ interface PublicationModule {
       getAllVisible(): Publication[];
       getValue(id: PublicationId): Publication;
       isDeleted(id: PublicationId): boolean;
+    };
+
+    with: (params: Pick<CallbackInterface, "set">) => {
+      setPublications(entries: PublicationEntry[]): void;
+      setErrors(entries: PublicationEntry[]): void;
     };
 
     ATTRIBUTES: {
@@ -232,6 +239,20 @@ interface PublicationModule {
       ) => void;
       useErrorDescription(id: PublicationId, key: PublicationKey): string;
     };
+  };
+
+  REMOTE: {
+    request: typeof request;
+    useRequest<T = void, P = void>(
+      factory: (
+        params: Pick<CallbackInterface, "set" | "snapshot">,
+        http: AxiosInstance
+      ) => (args: P) => Promise<T>
+    ): (args: P) => Promise<void>;
+
+    useIndex(): () => Promise<void>;
+    useBulk(): () => Promise<void>;
+    useValidate(): (ids: PublicationId[]) => Promise<void>;
   };
 
   describe(error: PublicationError, scope?: PublicationKey): string;
@@ -337,7 +358,9 @@ const Publication: PublicationModule = {
         []
       );
     },
-
+    useOverrideValue(id) {
+      return useRecoilValue(PUBLICATION_OVERRIDES(id));
+    },
     useIsValid(id) {
       return useRecoilValue(IS_PUBLICATION_VALID(id));
     },
@@ -368,6 +391,21 @@ const Publication: PublicationModule = {
       },
       isDeleted(id) {
         return snapshot.getLoadable(IS_PUBLICATION_DELETED(id)).valueOrThrow();
+      },
+    }),
+
+    with: ({ set }) => ({
+      setPublications(entries) {
+        const ids = entries.map(({ id }) => id);
+        set(PUBLICATION_IDS, ids);
+        entries.forEach(({ id, publication }) => {
+          set(PUBLICATIONS(id), publication);
+        });
+      },
+      setErrors(entries) {
+        entries.forEach(({ id, errors }) => {
+          set(PUBLICATION_ERRORS(id), errors);
+        });
       },
     }),
 
@@ -419,6 +457,77 @@ const Publication: PublicationModule = {
       },
     },
   },
+
+  REMOTE: {
+    async request(cb) {
+      return new Promise(async (resolve, reject) => {
+        try {
+          resolve(await request(cb));
+        } catch (error: any) {
+          reject(Publication.describe(error) || error);
+        }
+      });
+    },
+
+    useRequest(factory) {
+      const { request } = Publication.REMOTE;
+      return useRecoilCallback(
+        ({ set, snapshot }) =>
+          (args) => {
+            return new Promise(async (resolve, reject) => {
+              try {
+                await request((http) => factory({ set, snapshot }, http)(args));
+                resolve();
+              } catch (error: any) {
+                set(_ERRORS, _notify(error));
+                reject(error);
+              }
+            });
+          },
+        []
+      );
+    },
+
+    useIndex() {
+      return Publication.REMOTE.useRequest(({ set }, http) => async () => {
+        const { data } = await http.get<Publication[]>("publications");
+        set(PUBLICATION_IDS, range(data.length));
+        data.forEach((publication, index) =>
+          set(PUBLICATIONS(index), publication)
+        );
+      });
+    },
+    useBulk() {
+      return Publication.REMOTE.useRequest(
+        ({ snapshot }, http) =>
+          async () =>
+            http.post<void>(
+              "publications/bulk",
+              Publication.STORE.from(snapshot).getAllVisible()
+            )
+      );
+    },
+    useValidate() {
+      return Publication.REMOTE.useRequest(
+        ({ set, snapshot }, http) =>
+          async (ids: PublicationId[]) => {
+            const publications = ids
+              .map(VISIBLE_PUBLICATIONS)
+              .map((atom) => snapshot.getLoadable(atom).valueOrThrow());
+
+            const { data } = await http.post<ValidationResult[]>(
+              "publications/validate",
+              publications
+            );
+
+            Publication.STORE.with({ set }).setErrors(
+              data.map((entry, index) => ({ ...entry, id: ids[index] }))
+            );
+          }
+      );
+    },
+  },
+
   describe(error, scope) {
     if (!error) {
       return "";
@@ -443,5 +552,6 @@ export type {
   PublicationEntry,
   PublicationError,
   PublicationId,
+  ValidationResult,
 };
 export { Publication };
