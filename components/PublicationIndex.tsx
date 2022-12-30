@@ -14,14 +14,11 @@ import {
 } from "react";
 import ErrorTooltip from "./ErrorTooltip";
 import {
-  useClearSelection,
   useIsSelected,
   useIsSelectionEmpty,
   useSelectionEvent,
 } from "react-selection-manager";
 import { isElement } from "lodash";
-
-type NativeMouseEvent = globalThis.MouseEvent;
 
 const COUNTRIES: Record<string, string> = {
   BR: "Brazil",
@@ -212,7 +209,6 @@ const PublicationIndex: FC<Props> = ({ editable = false }) => {
 
   const onSelect = useSelectionEvent();
   const isSelectionEmpty = useIsSelectionEmpty();
-  const clearSelection = useClearSelection();
 
   const toggleSelection = (id: number) => (event: MouseEvent) =>
     onSelect({
@@ -222,21 +218,6 @@ const PublicationIndex: FC<Props> = ({ editable = false }) => {
       metaKey: event.metaKey,
       orderedIds: ids,
     });
-
-  useEffect(() => {
-    const handle = (event: NativeMouseEvent) => {
-      const target = event.target as HTMLElement;
-
-      if (isElement(target) && !target.matches('[data-selectable="true"]')) {
-        clearSelection();
-      }
-    };
-
-    document.addEventListener("click", handle);
-    return () => {
-      document.removeEventListener("click", handle);
-    };
-  }, [clearSelection]);
 
   return (
     <table
