@@ -107,7 +107,7 @@ const SignalColumn: FC<{
 }> = ({ invalid = false, selected = false, selectable = false, children }) => {
   return (
     <td
-      className="sticky left-0 px-2 text-xl bg-gray-100 group-hover:bg-indigo-100 error:group-hover:bg-red-100 selected:bg-amber-100"
+      className="sticky left-0 px-2 text-xl text-center bg-gray-100 grow group-hover:bg-indigo-100 error:group-hover:bg-red-100 selected:bg-amber-100"
       data-selected={selected}
       data-selectable={selectable}
       data-error={invalid}
