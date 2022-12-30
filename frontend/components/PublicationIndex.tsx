@@ -14,10 +14,14 @@ import {
 } from "react";
 import ErrorTooltip from "./ErrorTooltip";
 import {
+  useClearSelection,
   useIsSelected,
   useIsSelectionEmpty,
   useSelectionEvent,
 } from "react-selection-manager";
+import { isElement } from "lodash";
+
+type NativeMouseEvent = globalThis.MouseEvent;
 
 const COUNTRIES: Record<string, string> = {
   BR: "Brazil",
@@ -45,6 +49,7 @@ const Column: FC<ColumnProps> = ({ className, children, publicationId }) => {
         isValid ? "group-hover:bg-indigo-100" : "group-hover:bg-red-100",
         { "bg-amber-100": isSelected }
       )}
+      data-selectable="true"
     >
       {children}
     </td>
@@ -174,6 +179,7 @@ const Row: FC<RowProps> = ({ publicationId, editable, onClick }) => {
           { "cursor-pointer": Boolean(onClick) }
         )}
         onClick={onClick}
+        data-selectable="true"
       >
         {editable && <SignalColumn publicationId={publicationId} />}
         {Publication.ATTRIBUTES.map((attribute) => (
@@ -205,6 +211,8 @@ const PublicationIndex: FC<Props> = ({ editable = false }) => {
   const ids = Publication.STORE.useVisibleIds();
 
   const onSelect = useSelectionEvent();
+  const isSelectionEmpty = useIsSelectionEmpty();
+  const clearSelection = useClearSelection();
 
   const toggleSelection = (id: number) => (event: MouseEvent) =>
     onSelect({
@@ -215,7 +223,20 @@ const PublicationIndex: FC<Props> = ({ editable = false }) => {
       orderedIds: ids,
     });
 
-  const isSelectionEmpty = useIsSelectionEmpty();
+  useEffect(() => {
+    const handle = (event: NativeMouseEvent) => {
+      const target = event.target as HTMLElement;
+
+      if (isElement(target) && !target.matches('[data-selectable="true"]')) {
+        clearSelection();
+      }
+    };
+
+    document.addEventListener("click", handle);
+    return () => {
+      document.removeEventListener("click", handle);
+    };
+  }, [clearSelection]);
 
   return (
     <table
