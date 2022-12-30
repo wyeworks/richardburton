@@ -1,10 +1,10 @@
 import "styles/globals.css";
 import type { AppProps } from "next/app";
-import { FC, useCallback } from "react";
-import axios, { Axios, AxiosInstance } from "axios";
+import { FC } from "react";
+import axios, { AxiosInstance } from "axios";
 import axiosCaseConverter from "axios-case-converter";
-import { RecoilRoot, useRecoilCallback } from "recoil";
-import Errors, { useNotifyError } from "components/Errors";
+import { RecoilRoot } from "recoil";
+import Errors from "components/Errors";
 import ClearSelection from "listeners/ClearSelection";
 
 const http = axiosCaseConverter(
