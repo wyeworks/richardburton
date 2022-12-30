@@ -2,7 +2,6 @@ import { ChangeEvent, FC, useEffect, useState } from "react";
 import { API } from "app";
 import { useRecoilCallback } from "recoil";
 import { useNotifyError } from "./Errors";
-import { range } from "lodash";
 import axios from "axios";
 import Button from "./Button";
 import Router from "next/router";
@@ -28,11 +27,19 @@ const ToolbarHeading: FC<{ label: string }> = ({ label }) => (
 );
 
 const PublicationEdit: FC = () => {
-  const { useDeletedCount, useSetDeleted, useResetDeleted } = Publication.STORE;
+  const {
+    useDeletedCount,
+    useOverriddenCount,
+    useSetDeleted,
+    useResetDeleted,
+    useResetOverridden,
+  } = Publication.STORE;
 
   const setDeleted = useSetDeleted();
   const resetDeleted = useResetDeleted();
+  const resetOverridden = useResetOverridden();
   const deletedCount = useDeletedCount();
+  const overriddenCount = useOverriddenCount();
 
   const selectionSize = useSelectionSize();
   const clearSelection = useClearSelection();
@@ -47,11 +54,14 @@ const PublicationEdit: FC = () => {
 
   const reset = () => {
     resetDeleted();
+    resetOverridden();
     clearSelection();
   };
 
   const isSelectionEmpty = selectionSize === 0;
   const isDeletionSetEmpty = deletedCount === 0;
+  const isOverrideSetEmpty = overriddenCount === 0;
+  const isResetEnabled = !isDeletionSetEmpty || !isOverrideSetEmpty;
 
   return (
     <section className="flex flex-col grow">
@@ -64,16 +74,16 @@ const PublicationEdit: FC = () => {
             onClick={deleteSelected}
           />
         )}
-        {isSelectionEmpty && isDeletionSetEmpty && (
-          <div className="flex items-center justify-center grow">
-            <p className="self-center m-3 text-sm text-center text-gray-400">
-              Select publications by clicking on them to start editing
-            </p>
-          </div>
-        )}
+
+        <div className="flex items-center justify-center grow">
+          <p className="self-center m-3.5 text-sm text-center text-gray-400">
+            Select publications to delete them, or click on the columns to start
+            editing
+          </p>
+        </div>
       </div>
 
-      {!isDeletionSetEmpty && (
+      {isResetEnabled && (
         <footer className="mt-auto">
           <Button type="outline" label="Reset" onClick={reset} />
         </footer>

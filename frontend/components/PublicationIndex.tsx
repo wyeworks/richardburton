@@ -9,6 +9,7 @@ import {
   MouseEvent,
   MouseEventHandler,
   PropsWithChildren,
+  useEffect,
   useState,
 } from "react";
 import ErrorTooltip from "./ErrorTooltip";
@@ -79,6 +80,8 @@ const DataInput: FC<DataInputProps> = ({
   data,
 }) => {
   const [value, setValue] = useState(data);
+
+  useEffect(() => setValue(data), [data]);
 
   const override = Publication.STORE.ATTRIBUTES.useOverride();
 
