@@ -2,12 +2,15 @@ import {
   atom,
   atomFamily,
   CallbackInterface,
+  MutableSnapshot,
   Resetter,
   selector,
   selectorFamily,
+  SetterOrUpdater,
   Snapshot,
   useRecoilCallback,
   useRecoilValue,
+  useSetRecoilState,
 } from "recoil";
 import { isString, range } from "lodash";
 import { request } from "app";
@@ -17,7 +20,7 @@ import { AxiosInstance } from "axios";
 type Publication = {
   title: string;
   country: string;
-  year: number;
+  year: string;
   publisher: string;
   authors: string;
   originalTitle: string;
@@ -156,10 +159,7 @@ const VISIBLE_ATTRIBUTES = atomFamily<boolean, PublicationKey>({
 
 type CompositeAttributeId = `${PublicationId}.${PublicationKey}`;
 
-const PUBLICATION_ATTRIBUTE = selectorFamily<
-  string | number,
-  CompositeAttributeId
->({
+const PUBLICATION_ATTRIBUTE = selectorFamily<string, CompositeAttributeId>({
   key: "publication-attribute",
   get(compositeId) {
     return function ({ get }) {
@@ -192,12 +192,16 @@ const ERROR_MESSAGES: Record<string, string> = {
 interface PublicationModule {
   ATTRIBUTES: PublicationKey[];
   ATTRIBUTE_LABELS: Record<PublicationKey, string>;
+  NEW_ROW_ID: PublicationId;
 
   STORE: {
+    initialize(snapshot: MutableSnapshot): void;
+
     useVisibleIds(): PublicationId[];
     useValue(id: PublicationId): Publication;
     useError(id: PublicationId): PublicationError;
     useErrorDescription(id: PublicationId): string;
+    useSet(id: PublicationId): SetterOrUpdater<Publication>;
     useSetAll(): (entries: PublicationEntry[]) => void;
     useSetDeleted(): (ids: PublicationId[], isDeleted?: boolean) => void;
     useResetAll(): Resetter;
@@ -235,7 +239,7 @@ interface PublicationModule {
       useOverride(): (
         id: PublicationId,
         attribute: PublicationKey,
-        value: string | number
+        value: string
       ) => void;
       useErrorDescription(id: PublicationId, key: PublicationKey): string;
     };
@@ -256,6 +260,7 @@ interface PublicationModule {
   };
 
   describe(error: PublicationError, scope?: PublicationKey): string;
+  empty(): Publication;
 }
 
 const Publication: PublicationModule = {
@@ -277,7 +282,12 @@ const Publication: PublicationModule = {
     title: "Title",
     year: "Year",
   },
+  NEW_ROW_ID: -1,
   STORE: {
+    initialize(snapshot) {
+      snapshot.set(PUBLICATIONS(Publication.NEW_ROW_ID), Publication.empty());
+    },
+
     useVisibleIds() {
       return useRecoilValue(VISIBLE_PUBLICATION_IDS);
     },
@@ -286,6 +296,9 @@ const Publication: PublicationModule = {
     },
     useError(id) {
       return useRecoilValue(PUBLICATION_ERRORS(id));
+    },
+    useSet(id) {
+      return useSetRecoilState(PUBLICATIONS(id));
     },
     useErrorDescription(id) {
       return useRecoilValue(PUBLICATION_ERROR_DESCRIPTION(id));
@@ -545,6 +558,18 @@ const Publication: PublicationModule = {
         return ERROR_MESSAGES[error[scope]] || error[scope];
       }
     }
+  },
+
+  empty() {
+    return {
+      authors: "",
+      country: "",
+      originalAuthors: "",
+      originalTitle: "",
+      publisher: "",
+      title: "",
+      year: "",
+    };
   },
 };
 
