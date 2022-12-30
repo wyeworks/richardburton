@@ -5,11 +5,14 @@ import {
   PublicationKey,
 } from "modules/publications";
 import {
+  ChangeEventHandler,
   FC,
   MouseEvent,
   MouseEventHandler,
   PropsWithChildren,
+  useCallback,
   useEffect,
+  useRef,
   useState,
 } from "react";
 import ErrorTooltip from "./ErrorTooltip";
@@ -83,18 +86,33 @@ const DataInput: FC<DataInputProps> = ({
   data,
   hasError,
 }) => {
-  const [value, setValue] = useState(data);
-
-  useEffect(() => setValue(data), [data]);
-
   const override = Publication.STORE.ATTRIBUTES.useOverride();
   const validate = Publication.REMOTE.useValidate();
 
+  const value = useRef<string | number>(data);
+  const [, setKey] = useState(1);
+
+  const setValue = useCallback((v: string | number) => {
+    value.current = v;
+    setKey((key) => -key);
+  }, []);
+
+  useEffect(() => {
+    if (data !== value.current) {
+      validate([publicationId]);
+      setValue(data);
+    }
+  }, [data, publicationId, validate, setValue]);
+
   const handleBlur = () => {
-    override(publicationId, attribute, value);
-    if (data !== value) {
+    if (value.current) {
+      override(publicationId, attribute, value.current);
       validate([publicationId]);
     }
+  };
+
+  const handleChange: ChangeEventHandler<HTMLInputElement> = (e) => {
+    setValue(e.target.value);
   };
 
   return (
@@ -105,8 +123,8 @@ const DataInput: FC<DataInputProps> = ({
           ? "focus:bg-red-400/80 bg-red-300/40 focus:text-white shadow-sm"
           : "focus:bg-white/50 focus:shadow-sm"
       )}
-      value={value}
-      onChange={(e) => setValue(e.target.value)}
+      value={value.current}
+      onChange={handleChange}
       onBlur={handleBlur}
     />
   );
