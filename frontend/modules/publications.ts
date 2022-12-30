@@ -322,6 +322,7 @@ const Publication: PublicationModule = {
             ids.forEach((id) => {
               reset(PUBLICATIONS(id));
               reset(PUBLICATION_OVERRIDES(id));
+              reset(PUBLICATION_ERRORS(id));
               reset(IS_PUBLICATION_DELETED(id));
             });
             reset(PUBLICATION_IDS);
