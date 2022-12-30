@@ -72,12 +72,14 @@ type DataInputProps = {
   publicationId: PublicationId;
   attribute: PublicationKey;
   data: string | number;
+  hasError: boolean;
 };
 
 const DataInput: FC<DataInputProps> = ({
   publicationId,
   attribute,
   data,
+  hasError,
 }) => {
   const [value, setValue] = useState(data);
 
@@ -88,8 +90,10 @@ const DataInput: FC<DataInputProps> = ({
   return (
     <input
       className={classNames(
-        "px-2 py-1",
-        "bg-transparent focus:bg-white/50 focus:shadow rounded outline-none"
+        "px-2 py-1 rounded outline-none bg-transparent",
+        hasError
+          ? "focus:bg-red-400/80 bg-red-300/40 focus:text-white shadow-sm"
+          : "focus:bg-white/50 focus:shadow-sm"
       )}
       value={value}
       onChange={(e) => setValue(e.target.value)}
@@ -115,11 +119,6 @@ const DataColumn: FC<DataColumnProps> = ({
   const value = useValue(publicationId, attribute);
   const error = useErrorDescription(publicationId, attribute);
   const isVisible = useIsVisible(attribute);
-  const className = classNames(
-    "px-2 py-1 truncate",
-    error &&
-      "border rounded border-dotted border-red-300 hover:bg-red-300 hover:text-white "
-  );
 
   const content = attribute === "country" ? COUNTRIES[value] : value;
 
@@ -132,9 +131,14 @@ const DataColumn: FC<DataColumnProps> = ({
         boundary="main"
       >
         {editable ? (
-          <DataInput data={content} />
+          <DataInput
+            publicationId={publicationId}
+            attribute={attribute}
+            data={content}
+            hasError={Boolean(error)}
+          />
         ) : (
-          <div className={className}>{content}</div>
+          <div className="px-2 py-1 truncate">{content}</div>
         )}
       </ErrorTooltip>
     </Column>
