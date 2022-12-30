@@ -1,6 +1,6 @@
 import { NextPage } from "next";
 import { Publication } from "modules/publications";
-import PublicationIndex from "components/PublicationIndex";
+import PublicationReview from "components/PublicationReview";
 
 import PublicationToolbar from "components/PublicationToolbar";
 import Header from "components/Header";
@@ -34,7 +34,7 @@ const NewPublications: NextPage = () => {
         </Header>
       }
       sidebar={<PublicationToolbar edit />}
-      content={<PublicationIndex editable />}
+      content={<PublicationReview />}
     />
   );
 };

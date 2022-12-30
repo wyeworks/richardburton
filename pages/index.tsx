@@ -1,6 +1,5 @@
 import { NextPage } from "next";
 import { Publication } from "modules/publications";
-import PublicationIndex from "components/PublicationIndex";
 import PublicationToolbar from "components/PublicationToolbar";
 import Header from "components/Header";
 import Layout from "components/Layout";

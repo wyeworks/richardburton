@@ -147,7 +147,7 @@ const ExtendedRow: FC<RowProps> = (props) => {
   );
 };
 
-const PublicationIndex: FC = () => {
+const PublicationReview: FC = () => {
   const ids = Publication.STORE.useVisibleIds();
   const onSelect = useSelectionEvent();
   const isSelectionEmpty = useIsSelectionEmpty();
@@ -173,4 +173,4 @@ const PublicationIndex: FC = () => {
   );
 };
 
-export default PublicationIndex;
+export default PublicationReview;
