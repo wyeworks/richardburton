@@ -4,10 +4,12 @@ import {
   PublicationId,
   PublicationKey,
 } from "modules/publications";
-import { FC, MouseEvent, ReactNode } from "react";
+import { FC, forwardRef, HTMLProps, MouseEvent, ReactNode } from "react";
 
 type RowId = PublicationId;
 type ColId = PublicationKey;
+
+type HTMLTableRowProps = HTMLProps<HTMLTableRowElement>;
 
 const ColumnHeader: FC<{ colId: ColId }> = ({ colId }) => {
   const isVisible = Publication.STORE.ATTRIBUTES.useIsVisible(colId);
@@ -61,31 +63,40 @@ const Column: FC<{
   ) : null;
 };
 
-const Row: FC<{
-  id: RowId;
+type RowProps = Omit<HTMLTableRowProps, "ref"> & {
+  rowId: RowId;
   Column: typeof Column;
   Content: typeof Content;
   SignalColumn?: typeof SignalColumn;
   onClick?: (event: MouseEvent) => void;
-}> = ({ id, Column, Content, SignalColumn, onClick }) => {
+};
+
+const Row = forwardRef<HTMLTableRowElement, RowProps>(function Row(
+  { rowId, Column, Content, SignalColumn, className, onClick, ...props },
+  ref
+) {
   const clickable = Boolean(onClick);
   return (
     <tr
-      className={classNames("relative group", clickable && "cursor-pointer")}
+      ref={ref}
+      className={classNames(className, "relative group", {
+        "cursor-pointer": clickable,
+      })}
       onClick={onClick}
+      {...props}
     >
-      {SignalColumn && <SignalColumn rowId={id} />}
+      {SignalColumn && <SignalColumn rowId={rowId} />}
       {Publication.ATTRIBUTES.map((attribute) => (
         <Column
           key={attribute}
           colId={attribute}
-          rowId={id}
+          rowId={rowId}
           Content={Content}
         />
       ))}
     </tr>
   );
-};
+});
 
 const SignalColumn: FC<{
   rowId: RowId;
@@ -107,7 +118,7 @@ const SignalColumn: FC<{
 };
 
 type Props = {
-  ExtendedRow?: typeof Row;
+  ExtendedRow?: FC<RowProps>;
   ExtendedColumn?: typeof Column;
   ExtendedContent?: typeof Content;
   ExtendedSignalColumn?: typeof SignalColumn;
@@ -140,7 +151,7 @@ const PublicationTable: FC<Props> = ({
         {ids.map((id) => (
           <ExtendedRow
             key={id}
-            id={id}
+            rowId={id}
             Column={ExtendedColumn}
             SignalColumn={ExtendedSignalColumn}
             Content={ExtendedContent}
@@ -153,5 +164,5 @@ const PublicationTable: FC<Props> = ({
 };
 
 export default PublicationTable;
-export type { RowId };
+export type { RowId, RowProps };
 export { Row, Column, Content, SignalColumn };
