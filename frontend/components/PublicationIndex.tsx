@@ -104,7 +104,7 @@ const DataInput: FC<DataInputProps> = ({
   }, [data, publicationId, validate, setValue]);
 
   const handleBlur = () => {
-    if (value.current) {
+    if (data !== value.current) {
       override(publicationId, attribute, value.current);
       validate([publicationId]);
     }
