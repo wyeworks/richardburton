@@ -21,7 +21,6 @@ import {
   useIsSelectionEmpty,
   useSelectionEvent,
 } from "react-selection-manager";
-import { isElement } from "lodash";
 
 const COUNTRIES: Record<string, string> = {
   BR: "Brazil",
