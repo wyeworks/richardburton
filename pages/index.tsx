@@ -4,7 +4,7 @@ import PublicationToolbar from "components/PublicationToolbar";
 import Header from "components/Header";
 import Layout from "components/Layout";
 import { useEffect } from "react";
-import PublicationTable from "components/PublicationTable";
+import PublicationIndex from "components/PublicationIndex";
 
 const Home: NextPage = () => {
   const index = Publication.REMOTE.useIndex();
@@ -18,7 +18,7 @@ const Home: NextPage = () => {
       title="Richard Burton"
       header={<Header />}
       sidebar={<PublicationToolbar filter upload />}
-      content={<PublicationTable />}
+      content={<PublicationIndex />}
     />
   );
 };
