@@ -6,11 +6,10 @@ import {
   Resetter,
   selector,
   selectorFamily,
-  SetterOrUpdater,
   Snapshot,
   useRecoilCallback,
   useRecoilValue,
-  useSetRecoilState,
+  useResetRecoilState,
 } from "recoil";
 import { isString, range } from "lodash";
 import { request } from "app";
@@ -201,13 +200,13 @@ interface PublicationModule {
     useValue(id: PublicationId): Publication;
     useError(id: PublicationId): PublicationError;
     useErrorDescription(id: PublicationId): string;
-    useSet(id: PublicationId): SetterOrUpdater<Publication>;
     useSetAll(): (entries: PublicationEntry[]) => void;
     useSetDeleted(): (ids: PublicationId[], isDeleted?: boolean) => void;
     useResetAll(): Resetter;
     useResetDeleted(): Resetter;
     useResetOverridden(): Resetter;
     useOverrideValue(id: PublicationId): Partial<Publication>;
+    useAddNew(): () => PublicationId;
 
     useIsValid(id: PublicationId): boolean;
 
@@ -297,8 +296,20 @@ const Publication: PublicationModule = {
     useError(id) {
       return useRecoilValue(PUBLICATION_ERRORS(id));
     },
-    useSet(id) {
-      return useSetRecoilState(PUBLICATIONS(id));
+    useAddNew() {
+      return useRecoilCallback(({ set, reset, snapshot }) => () => {
+        const ids = snapshot.getLoadable(PUBLICATION_IDS).valueOrThrow();
+        const id = ids.length;
+        const p = snapshot
+          .getLoadable(VISIBLE_PUBLICATIONS(Publication.NEW_ROW_ID))
+          .valueOrThrow();
+
+        set(PUBLICATION_IDS, [...ids, id]);
+        set(PUBLICATIONS(id), p);
+
+        reset(PUBLICATION_OVERRIDES(Publication.NEW_ROW_ID));
+        return id;
+      });
     },
     useErrorDescription(id) {
       return useRecoilValue(PUBLICATION_ERROR_DESCRIPTION(id));
@@ -375,6 +386,7 @@ const Publication: PublicationModule = {
     useOverrideValue(id) {
       return useRecoilValue(PUBLICATION_OVERRIDES(id));
     },
+
     useIsValid(id) {
       return useRecoilValue(IS_PUBLICATION_VALID(id));
     },
