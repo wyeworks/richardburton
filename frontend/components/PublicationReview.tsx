@@ -128,11 +128,14 @@ const DataInputWithValidation = forwardRef<
 >(function (props, ref) {
   const validate = Publication.REMOTE.useValidate();
 
-  const validateIfChanged = (value: string) => {
-    if (props.value !== value) {
-      validate([props.rowId]);
-    }
-  };
+  const validateIfChanged = useCallback(
+    (value: string) => {
+      if (props.value !== value) {
+        validate([props.rowId]);
+      }
+    },
+    [validate]
+  );
 
   return (
     <DataInput
