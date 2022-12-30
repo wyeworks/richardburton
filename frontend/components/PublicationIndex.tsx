@@ -8,8 +8,6 @@ import {
   ChangeEventHandler,
   FC,
   MouseEvent,
-  MouseEventHandler,
-  PropsWithChildren,
   useCallback,
   useEffect,
   useRef,
@@ -21,6 +19,13 @@ import {
   useIsSelectionEmpty,
   useSelectionEvent,
 } from "react-selection-manager";
+import PublicationTable, {
+  Column,
+  Content,
+  Row,
+  RowId,
+  SignalColumn,
+} from "components/PublicationTable";
 
 const COUNTRIES: Record<string, string> = {
   BR: "Brazil",
@@ -31,59 +36,44 @@ const COUNTRIES: Record<string, string> = {
   NZ: "New Zealand",
 };
 
-type ColumnProps = PropsWithChildren & {
-  className?: string;
-  publicationId: PublicationId;
-};
-
-const Column: FC<ColumnProps> = ({ className, children, publicationId }) => {
-  const isSelected = useIsSelected(publicationId);
-  const isValid = Publication.STORE.useIsValid(publicationId);
-
-  return (
-    <td
-      className={classNames(
-        className,
-        "max-w-xs px-2 py-1 justify",
-        isValid ? "group-hover:bg-indigo-100" : "group-hover:bg-red-100",
-        { "bg-amber-100": isSelected }
-      )}
-      data-selectable="true"
-    >
-      {children}
-    </td>
-  );
-};
-
-type SignalColumnProps = {
-  publicationId: PublicationId;
-};
-
-const SignalColumn: FC<SignalColumnProps> = ({ publicationId }) => {
-  const isValid = Publication.STORE.useIsValid(publicationId);
+const ExtendedColumn: typeof Column = (props) => {
+  const { rowId } = props;
+  const isSelected = useIsSelected(rowId);
+  const isValid = Publication.STORE.useIsValid(rowId);
 
   return (
     <Column
-      className="sticky left-0 px-2 text-xl bg-gray-100"
-      publicationId={publicationId}
-    >
-      {!isValid && "❗️"}
-    </Column>
+      {...props}
+      invalid={!isValid}
+      selected={isSelected}
+      selectable={true}
+    />
+  );
+};
+
+const ExtendedSignalColumn: FC<{ rowId: RowId }> = ({ rowId }) => {
+  const valid = Publication.STORE.useIsValid(rowId);
+  const selected = useIsSelected(rowId);
+
+  return (
+    <SignalColumn rowId={rowId} invalid={!valid} selected={selected} selectable>
+      {valid ? null : <>❗️</>}
+    </SignalColumn>
   );
 };
 
 type DataInputProps = {
-  publicationId: PublicationId;
-  attribute: PublicationKey;
-  data: string | number;
-  hasError: boolean;
+  rowId: PublicationId;
+  colId: PublicationKey;
+  value: string | number;
+  error: string;
 };
 
 const DataInput: FC<DataInputProps> = ({
-  publicationId,
-  attribute,
-  data,
-  hasError,
+  rowId,
+  colId,
+  value: data,
+  error,
 }) => {
   const override = Publication.STORE.ATTRIBUTES.useOverride();
   const validate = Publication.REMOTE.useValidate();
@@ -98,15 +88,15 @@ const DataInput: FC<DataInputProps> = ({
 
   useEffect(() => {
     if (data !== value.current) {
-      validate([publicationId]);
+      validate([rowId]);
       setValue(data);
     }
-  }, [data, publicationId, validate, setValue]);
+  }, [data, rowId, validate, setValue]);
 
   const handleBlur = () => {
     if (data !== value.current) {
-      override(publicationId, attribute, value.current);
-      validate([publicationId]);
+      override(rowId, colId, value.current);
+      validate([rowId]);
     }
   };
 
@@ -117,57 +107,32 @@ const DataInput: FC<DataInputProps> = ({
   return (
     <input
       className={classNames(
-        "px-2 py-1 rounded outline-none bg-transparent",
-        hasError
-          ? "focus:bg-red-400/80 bg-red-300/40 focus:text-white shadow-sm"
-          : "focus:bg-white/50 focus:shadow-sm"
+        "px-2 py-1 rounded outline-none bg-transparent focus:bg-white/50 focus:shadow-sm",
+        "error:focus:bg-red-400/80 error:bg-red-300/40 error:focus:text-white error:shadow-sm"
       )}
       value={value.current}
       onChange={handleChange}
       onBlur={handleBlur}
+      data-error={Boolean(error)}
     />
   );
 };
 
-type DataColumnProps = {
-  attribute: PublicationKey;
-  publicationId: PublicationId;
+const Data: typeof Content = ({ rowId, colId, value, error }) => {
+  const content = colId === "country" ? COUNTRIES[value] : value;
+
+  return (
+    <ErrorTooltip message={error} hidden={!Boolean(error)}>
+      <DataInput rowId={rowId} colId={colId} value={content} error={error} />
+    </ErrorTooltip>
+  );
 };
 
-const DataColumn: FC<DataColumnProps> = ({ attribute, publicationId }) => {
-  const { useIsVisible, useValue, useErrorDescription } =
-    Publication.STORE.ATTRIBUTES;
+const ExtendedRow: typeof Row = (props) => {
+  const { id } = props;
+  const { useErrorDescription } = Publication.STORE;
 
-  const value = useValue(publicationId, attribute);
-  const error = useErrorDescription(publicationId, attribute);
-  const isVisible = useIsVisible(attribute);
-
-  const content = attribute === "country" ? COUNTRIES[value] : value;
-
-  return isVisible ? (
-    <Column publicationId={publicationId}>
-      <ErrorTooltip message={error} hidden={!Boolean(error)} boundary="main">
-        <DataInput
-          publicationId={publicationId}
-          attribute={attribute}
-          data={content}
-          hasError={Boolean(error)}
-        />
-      </ErrorTooltip>
-    </Column>
-  ) : null;
-};
-
-type RowProps = {
-  publicationId: PublicationId;
-  onClick: MouseEventHandler;
-};
-
-const Row: FC<RowProps> = ({ publicationId, onClick }) => {
-  const { useIsValid, useErrorDescription } = Publication.STORE;
-
-  const isValid = useIsValid(publicationId);
-  const error = useErrorDescription(publicationId);
+  const error = useErrorDescription(id);
 
   return (
     <ErrorTooltip
@@ -178,39 +143,13 @@ const Row: FC<RowProps> = ({ publicationId, onClick }) => {
       portalRoot="main"
       absoluteCenter
     >
-      <tr
-        className={classNames(
-          "relative group",
-          isValid ? "hover:bg-indigo-100" : "hover:bg-red-100",
-          { "cursor-pointer": Boolean(onClick) }
-        )}
-        onClick={onClick}
-        data-selectable="true"
-      >
-        <SignalColumn publicationId={publicationId} />
-        {Publication.ATTRIBUTES.map((attribute) => (
-          <DataColumn
-            key={attribute}
-            attribute={attribute}
-            publicationId={publicationId}
-          />
-        ))}
-      </tr>
+      <Row {...props} />
     </ErrorTooltip>
   );
 };
 
-const ColumnHeader: FC<{ attribute: PublicationKey }> = ({ attribute }) => {
-  const isVisible = Publication.STORE.ATTRIBUTES.useIsVisible(attribute);
-
-  return isVisible ? (
-    <th className="px-2 py-4">{Publication.ATTRIBUTE_LABELS[attribute]}</th>
-  ) : null;
-};
-
 const PublicationIndex: FC = () => {
   const ids = Publication.STORE.useVisibleIds();
-
   const onSelect = useSelectionEvent();
   const isSelectionEmpty = useIsSelectionEmpty();
 
@@ -224,25 +163,14 @@ const PublicationIndex: FC = () => {
     });
 
   return (
-    <table
-      className={classNames("overflow-auto", {
-        "select-none": !isSelectionEmpty,
-      })}
-    >
-      <thead className="sticky top-0 z-10 bg-gray-100">
-        <tr>
-          <th />
-          {Publication.ATTRIBUTES.map((key) => (
-            <ColumnHeader key={key} attribute={key} />
-          ))}
-        </tr>
-      </thead>
-      <tbody>
-        {ids.map((id) => (
-          <Row key={id} publicationId={id} onClick={toggleSelection(id)} />
-        ))}
-      </tbody>
-    </table>
+    <PublicationTable
+      className={classNames(!isSelectionEmpty && "select-none")}
+      ExtendedRow={ExtendedRow}
+      ExtendedColumn={ExtendedColumn}
+      ExtendedContent={Data}
+      ExtendedSignalColumn={ExtendedSignalColumn}
+      onRowClick={toggleSelection}
+    />
   );
 };
 
