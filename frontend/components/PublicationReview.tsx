@@ -8,6 +8,7 @@ import {
   ChangeEventHandler,
   FC,
   forwardRef,
+  HTMLProps,
   MouseEvent,
   useCallback,
   useEffect,
@@ -21,6 +22,7 @@ import {
   useSelectionEvent,
 } from "react-selection-manager";
 import PublicationIndex, {
+  ColId,
   Column,
   Content,
   Row,
@@ -28,6 +30,7 @@ import PublicationIndex, {
   RowProps,
   SignalColumn,
 } from "components/PublicationIndex";
+import useReactiveRef from "utils/useReactiveRef";
 
 const COUNTRIES: Record<string, string> = {
   BR: "Brazil",
@@ -64,67 +67,95 @@ const ExtendedSignalColumn: FC<{ rowId: RowId }> = ({ rowId }) => {
   );
 };
 
-type DataInputProps = {
+type DataInputProps = Omit<
+  HTMLProps<HTMLInputElement>,
+  "onChange" | "onBlur"
+> & {
   rowId: PublicationId;
   colId: PublicationKey;
   value: string;
   error: string;
+  onBlur: (value: string) => void;
+  onExternalChange: (value: string) => void;
 };
 
-const DataInput = forwardRef<HTMLInputElement, DataInputProps>(
-  function DataInput({ rowId, colId, value: data, error }, ref) {
-    const override = Publication.STORE.ATTRIBUTES.useOverride();
-    const validate = Publication.REMOTE.useValidate();
+const DataInput = forwardRef<HTMLInputElement, DataInputProps>(function (
+  { rowId, colId, value: data, onBlur, onExternalChange, ...props },
+  ref
+) {
+  const override = Publication.STORE.ATTRIBUTES.useOverride();
 
-    const value = useRef<string>(data);
-    const [, setKey] = useState(1);
+  const [value, setValue] = useReactiveRef(data);
 
-    const setValue = useCallback((v: string) => {
-      value.current = v;
-      setKey((key) => -key);
-    }, []);
+  useEffect(() => {
+    if (data !== value.current) setValue(data);
+    onExternalChange?.(value.current);
+  }, [data, rowId, setValue, onExternalChange]);
 
-    useEffect(() => {
-      if (data !== value.current) {
-        validate([rowId]);
-        setValue(data);
-      }
-    }, [data, rowId, validate, setValue]);
+  const handleBlur = () => {
+    if (data !== value.current) override(rowId, colId, value.current);
+    onBlur(value.current);
+  };
 
-    const handleBlur = () => {
-      if (data !== value.current) {
-        override(rowId, colId, value.current);
-        validate([rowId]);
-      }
-    };
+  const handleChange: ChangeEventHandler<HTMLInputElement> = (e) => {
+    setValue(e.target.value);
+  };
 
-    const handleChange: ChangeEventHandler<HTMLInputElement> = (e) => {
-      setValue(e.target.value);
-    };
+  return (
+    <input
+      {...props}
+      ref={ref}
+      placeholder={Publication.ATTRIBUTE_LABELS[colId]}
+      className={classNames(
+        "px-2 py-1 rounded outline-none bg-transparent focus:bg-white/50 focus:shadow-sm placeholder:text-xs",
+        "error:focus:bg-red-400/80 error:bg-red-300/40 error:focus:text-white error:shadow-sm error:placeholder-white"
+      )}
+      value={value.current}
+      onChange={handleChange}
+      onBlur={handleBlur}
+    />
+  );
+});
 
-    return (
-      <input
-        ref={ref}
-        className={classNames(
-          "px-2 py-1 rounded outline-none bg-transparent focus:bg-white/50 focus:shadow-sm placeholder:text-xs",
-          "error:focus:bg-red-400/80 error:bg-red-300/40 error:focus:text-white error:shadow-sm error:placeholder-white"
-        )}
-        value={value.current}
-        onChange={handleChange}
-        onBlur={handleBlur}
-        data-error={Boolean(error)}
-        placeholder={Publication.ATTRIBUTE_LABELS[colId]}
-      />
-    );
+const DataInputWithValidation = forwardRef<
+  HTMLInputElement,
+  {
+    rowId: RowId;
+    colId: ColId;
+    value: string;
+    error: string;
   }
-);
+>(function (props, ref) {
+  const validate = Publication.REMOTE.useValidate();
+
+  const validateIfChanged = (value: string) => {
+    if (props.value !== value) {
+      validate([props.rowId]);
+    }
+  };
+
+  return (
+    <DataInput
+      {...props}
+      ref={ref}
+      onBlur={validateIfChanged}
+      onExternalChange={validateIfChanged}
+      data-error={Boolean(props.error)}
+    />
+  );
+});
 
 const Data: typeof Content = ({ rowId, colId, value, error }) => {
   const content = colId === "country" ? COUNTRIES[value] : value;
 
   return (
     <ErrorTooltip message={error}>
-      <DataInput rowId={rowId} colId={colId} value={content} error={error} />
+      <DataInputWithValidation
+        rowId={rowId}
+        colId={colId}
+        value={content}
+        error={error}
+      />
     </ErrorTooltip>
   );
 };

@@ -167,5 +167,5 @@ const PublicationIndex: FC<Props> = ({
 };
 
 export default PublicationIndex;
-export type { RowId, RowProps };
+export type { RowId, RowProps, ColId };
 export { Row, Column, Content, SignalColumn };
