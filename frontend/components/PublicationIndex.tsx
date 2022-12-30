@@ -7,6 +7,7 @@ import {
 import {
   ChangeEventHandler,
   FC,
+  forwardRef,
   MouseEvent,
   useCallback,
   useEffect,
@@ -24,6 +25,7 @@ import PublicationTable, {
   Content,
   Row,
   RowId,
+  RowProps,
   SignalColumn,
 } from "components/PublicationTable";
 
@@ -69,75 +71,72 @@ type DataInputProps = {
   error: string;
 };
 
-const DataInput: FC<DataInputProps> = ({
-  rowId,
-  colId,
-  value: data,
-  error,
-}) => {
-  const override = Publication.STORE.ATTRIBUTES.useOverride();
-  const validate = Publication.REMOTE.useValidate();
+const DataInput = forwardRef<HTMLInputElement, DataInputProps>(
+  function DataInput({ rowId, colId, value: data, error }, ref) {
+    const override = Publication.STORE.ATTRIBUTES.useOverride();
+    const validate = Publication.REMOTE.useValidate();
 
-  const value = useRef<string | number>(data);
-  const [, setKey] = useState(1);
+    const value = useRef<string | number>(data);
+    const [, setKey] = useState(1);
 
-  const setValue = useCallback((v: string | number) => {
-    value.current = v;
-    setKey((key) => -key);
-  }, []);
+    const setValue = useCallback((v: string | number) => {
+      value.current = v;
+      setKey((key) => -key);
+    }, []);
 
-  useEffect(() => {
-    if (data !== value.current) {
-      validate([rowId]);
-      setValue(data);
-    }
-  }, [data, rowId, validate, setValue]);
+    useEffect(() => {
+      if (data !== value.current) {
+        validate([rowId]);
+        setValue(data);
+      }
+    }, [data, rowId, validate, setValue]);
 
-  const handleBlur = () => {
-    if (data !== value.current) {
-      override(rowId, colId, value.current);
-      validate([rowId]);
-    }
-  };
+    const handleBlur = () => {
+      if (data !== value.current) {
+        override(rowId, colId, value.current);
+        validate([rowId]);
+      }
+    };
 
-  const handleChange: ChangeEventHandler<HTMLInputElement> = (e) => {
-    setValue(e.target.value);
-  };
+    const handleChange: ChangeEventHandler<HTMLInputElement> = (e) => {
+      setValue(e.target.value);
+    };
 
-  return (
-    <input
-      className={classNames(
-        "px-2 py-1 rounded outline-none bg-transparent focus:bg-white/50 focus:shadow-sm",
-        "error:focus:bg-red-400/80 error:bg-red-300/40 error:focus:text-white error:shadow-sm"
-      )}
-      value={value.current}
-      onChange={handleChange}
-      onBlur={handleBlur}
-      data-error={Boolean(error)}
-    />
-  );
-};
+    return (
+      <input
+        ref={ref}
+        className={classNames(
+          "px-2 py-1 rounded outline-none bg-transparent focus:bg-white/50 focus:shadow-sm",
+          "error:focus:bg-red-400/80 error:bg-red-300/40 error:focus:text-white error:shadow-sm"
+        )}
+        value={value.current}
+        onChange={handleChange}
+        onBlur={handleBlur}
+        data-error={Boolean(error)}
+      />
+    );
+  }
+);
 
 const Data: typeof Content = ({ rowId, colId, value, error }) => {
   const content = colId === "country" ? COUNTRIES[value] : value;
 
   return (
-    <ErrorTooltip message={error} hidden={!Boolean(error)}>
+    <ErrorTooltip message={error}>
       <DataInput rowId={rowId} colId={colId} value={content} error={error} />
     </ErrorTooltip>
   );
 };
 
-const ExtendedRow: typeof Row = (props) => {
-  const { id } = props;
+const ExtendedRow: FC<RowProps> = (props) => {
+  const { rowId } = props;
   const { useErrorDescription } = Publication.STORE;
 
-  const error = useErrorDescription(id);
+  const error = useErrorDescription(rowId);
 
   return (
     <ErrorTooltip
       message={error}
-      hidden={!Boolean(error)}
       placement="top-start"
       boundary="main"
       portalRoot="main"
