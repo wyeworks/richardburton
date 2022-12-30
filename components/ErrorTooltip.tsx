@@ -5,16 +5,9 @@ import Tooltip, { TooltipProps } from "./Tooltip";
 type Props = Omit<TooltipProps, "content"> & {
   message: string;
   hidden: boolean;
-  disabled?: boolean;
 };
 
-const ErrorTooltip: FC<Props> = ({
-  children,
-  message,
-  hidden,
-  disabled,
-  ...props
-}) => {
+const ErrorTooltip: FC<Props> = ({ children, message, hidden, ...props }) => {
   const content = (
     <div
       className={classNames(
@@ -29,9 +22,7 @@ const ErrorTooltip: FC<Props> = ({
     </div>
   );
 
-  return disabled ? (
-    <>{children}</>
-  ) : (
+  return (
     <Tooltip {...props} content={content}>
       {children}
     </Tooltip>

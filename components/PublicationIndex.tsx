@@ -132,14 +132,9 @@ const DataInput: FC<DataInputProps> = ({
 type DataColumnProps = {
   attribute: PublicationKey;
   publicationId: PublicationId;
-  editable: boolean;
 };
 
-const DataColumn: FC<DataColumnProps> = ({
-  attribute,
-  publicationId,
-  editable,
-}) => {
+const DataColumn: FC<DataColumnProps> = ({ attribute, publicationId }) => {
   const { useIsVisible, useValue, useErrorDescription } =
     Publication.STORE.ATTRIBUTES;
 
@@ -151,34 +146,24 @@ const DataColumn: FC<DataColumnProps> = ({
 
   return isVisible ? (
     <Column publicationId={publicationId}>
-      <ErrorTooltip
-        message={error}
-        hidden={!Boolean(error)}
-        disabled={!editable}
-        boundary="main"
-      >
-        {editable ? (
-          <DataInput
-            publicationId={publicationId}
-            attribute={attribute}
-            data={content}
-            hasError={Boolean(error)}
-          />
-        ) : (
-          <div className="px-2 py-1 truncate">{content}</div>
-        )}
+      <ErrorTooltip message={error} hidden={!Boolean(error)} boundary="main">
+        <DataInput
+          publicationId={publicationId}
+          attribute={attribute}
+          data={content}
+          hasError={Boolean(error)}
+        />
       </ErrorTooltip>
     </Column>
   ) : null;
 };
 
 type RowProps = {
-  editable: boolean;
   publicationId: PublicationId;
-  onClick?: MouseEventHandler;
+  onClick: MouseEventHandler;
 };
 
-const Row: FC<RowProps> = ({ publicationId, editable, onClick }) => {
+const Row: FC<RowProps> = ({ publicationId, onClick }) => {
   const { useIsValid, useErrorDescription } = Publication.STORE;
 
   const isValid = useIsValid(publicationId);
@@ -188,7 +173,6 @@ const Row: FC<RowProps> = ({ publicationId, editable, onClick }) => {
     <ErrorTooltip
       message={error}
       hidden={!Boolean(error)}
-      disabled={!editable}
       placement="top-start"
       boundary="main"
       portalRoot="main"
@@ -203,13 +187,12 @@ const Row: FC<RowProps> = ({ publicationId, editable, onClick }) => {
         onClick={onClick}
         data-selectable="true"
       >
-        {editable && <SignalColumn publicationId={publicationId} />}
+        <SignalColumn publicationId={publicationId} />
         {Publication.ATTRIBUTES.map((attribute) => (
           <DataColumn
             key={attribute}
             attribute={attribute}
             publicationId={publicationId}
-            editable={editable}
           />
         ))}
       </tr>
@@ -225,11 +208,7 @@ const ColumnHeader: FC<{ attribute: PublicationKey }> = ({ attribute }) => {
   ) : null;
 };
 
-type Props = {
-  editable?: boolean;
-};
-
-const PublicationIndex: FC<Props> = ({ editable = false }) => {
+const PublicationIndex: FC = () => {
   const ids = Publication.STORE.useVisibleIds();
 
   const onSelect = useSelectionEvent();
@@ -252,7 +231,7 @@ const PublicationIndex: FC<Props> = ({ editable = false }) => {
     >
       <thead className="sticky top-0 z-10 bg-gray-100">
         <tr>
-          {editable && <th />}
+          <th />
           {Publication.ATTRIBUTES.map((key) => (
             <ColumnHeader key={key} attribute={key} />
           ))}
@@ -260,12 +239,7 @@ const PublicationIndex: FC<Props> = ({ editable = false }) => {
       </thead>
       <tbody>
         {ids.map((id) => (
-          <Row
-            key={id}
-            publicationId={id}
-            editable={editable}
-            onClick={editable ? toggleSelection(id) : undefined}
-          />
+          <Row key={id} publicationId={id} onClick={toggleSelection(id)} />
         ))}
       </tbody>
     </table>
