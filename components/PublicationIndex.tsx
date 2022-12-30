@@ -23,7 +23,7 @@ const Content: FC<{
   rowId: RowId;
   colId: ColId;
   error: string;
-  value: string | number;
+  value: string;
 }> = ({ value }) => {
   return <div className="px-2 py-1 truncate">{value}</div>;
 };
@@ -122,6 +122,7 @@ type Props = {
   ExtendedColumn?: typeof Column;
   ExtendedContent?: typeof Content;
   ExtendedSignalColumn?: typeof SignalColumn;
+  ExtraRow?: FC;
 
   onRowClick?: (id: RowId) => (event: MouseEvent) => void;
   className?: string;
@@ -132,6 +133,7 @@ const PublicationIndex: FC<Props> = ({
   ExtendedColumn = Column,
   ExtendedContent = Content,
   ExtendedSignalColumn,
+  ExtraRow,
   onRowClick,
   className,
 }) => {
@@ -158,6 +160,7 @@ const PublicationIndex: FC<Props> = ({
             onClick={onRowClick?.(id)}
           />
         ))}
+        {ExtraRow && <ExtraRow />}
       </tbody>
     </table>
   );

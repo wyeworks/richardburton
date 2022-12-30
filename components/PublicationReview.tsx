@@ -67,7 +67,7 @@ const ExtendedSignalColumn: FC<{ rowId: RowId }> = ({ rowId }) => {
 type DataInputProps = {
   rowId: PublicationId;
   colId: PublicationKey;
-  value: string | number;
+  value: string;
   error: string;
 };
 
@@ -76,10 +76,10 @@ const DataInput = forwardRef<HTMLInputElement, DataInputProps>(
     const override = Publication.STORE.ATTRIBUTES.useOverride();
     const validate = Publication.REMOTE.useValidate();
 
-    const value = useRef<string | number>(data);
+    const value = useRef<string>(data);
     const [, setKey] = useState(1);
 
-    const setValue = useCallback((v: string | number) => {
+    const setValue = useCallback((v: string) => {
       value.current = v;
       setKey((key) => -key);
     }, []);
@@ -106,13 +106,14 @@ const DataInput = forwardRef<HTMLInputElement, DataInputProps>(
       <input
         ref={ref}
         className={classNames(
-          "px-2 py-1 rounded outline-none bg-transparent focus:bg-white/50 focus:shadow-sm",
-          "error:focus:bg-red-400/80 error:bg-red-300/40 error:focus:text-white error:shadow-sm"
+          "px-2 py-1 rounded outline-none bg-transparent focus:bg-white/50 focus:shadow-sm placeholder:text-xs",
+          "error:focus:bg-red-400/80 error:bg-red-300/40 error:focus:text-white error:shadow-sm error:placeholder-white"
         )}
         value={value.current}
         onChange={handleChange}
         onBlur={handleBlur}
         data-error={Boolean(error)}
+        placeholder={Publication.ATTRIBUTE_LABELS[colId]}
       />
     );
   }
@@ -147,6 +148,21 @@ const ExtendedRow: FC<RowProps> = (props) => {
   );
 };
 
+const NewPublicationSignalColumn: FC<{ rowId: RowId }> = ({ rowId }) => {
+  return <SignalColumn rowId={rowId}>➕</SignalColumn>;
+};
+
+const NewPublicationRow: FC = () => {
+  return (
+    <Row
+      rowId={Publication.NEW_ROW_ID}
+      Column={Column}
+      Content={Data}
+      SignalColumn={NewPublicationSignalColumn}
+    />
+  );
+};
+
 const PublicationReview: FC = () => {
   const ids = Publication.STORE.useVisibleIds();
   const onSelect = useSelectionEvent();
@@ -168,6 +184,7 @@ const PublicationReview: FC = () => {
       ExtendedColumn={ExtendedColumn}
       ExtendedContent={Data}
       ExtendedSignalColumn={ExtendedSignalColumn}
+      ExtraRow={NewPublicationRow}
       onRowClick={toggleSelection}
     />
   );
