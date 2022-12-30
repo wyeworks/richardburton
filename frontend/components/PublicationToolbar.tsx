@@ -6,9 +6,7 @@ import {
   useEffect,
   useState,
 } from "react";
-import { useRecoilCallback } from "recoil";
-import { useNotifyError, _ERRORS, _notify } from "./Errors";
-import axios from "axios";
+import { _ERRORS, _notify } from "./Errors";
 import Button from "./Button";
 import Router from "next/router";
 import Toggle from "./Toggle";
