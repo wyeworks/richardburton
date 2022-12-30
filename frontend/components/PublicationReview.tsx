@@ -12,8 +12,6 @@ import {
   MouseEvent,
   useCallback,
   useEffect,
-  useRef,
-  useState,
 } from "react";
 import ErrorTooltip from "./ErrorTooltip";
 import {
@@ -31,6 +29,7 @@ import PublicationIndex, {
   SignalColumn,
 } from "components/PublicationIndex";
 import useReactiveRef from "utils/useReactiveRef";
+import AddCircle from "assets/add-circle.svg";
 
 const COUNTRIES: Record<string, string> = {
   BR: "Brazil",
@@ -189,7 +188,24 @@ const ExtendedRow: FC<RowProps> = (props) => {
 };
 
 const NewPublicationSignalColumn: FC<{ rowId: RowId }> = ({ rowId }) => {
-  return <SignalColumn rowId={rowId}></SignalColumn>;
+  const register = Publication.STORE.useAddNew();
+  const validate = Publication.REMOTE.useValidate();
+
+  const submit = () => {
+    const id = register();
+    validate([id]);
+  };
+
+  return (
+    <SignalColumn rowId={rowId}>
+      <button
+        className="flex text-indigo-600 rounded-full w-fit h-fit hover:text-indigo-700"
+        onClick={submit}
+      >
+        <AddCircle className="w-7 h-7" />
+      </button>
+    </SignalColumn>
+  );
 };
 
 const NewPublicationRow: FC = () => {
