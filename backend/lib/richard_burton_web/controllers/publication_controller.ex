@@ -44,6 +44,18 @@ defmodule RichardBurtonWeb.PublicationController do
     end
   end
 
+  def validate(conn, %{"_json" => publications}) do
+    result =
+      publications
+      |> Publication.Codec.nest()
+      |> Enum.map(&validate_publication/1)
+      |> Publication.Codec.flatten()
+
+    conn
+    |> put_status(:ok)
+    |> json(result)
+  end
+
   defp validate_publication(p) do
     case Publication.validate(p) do
       {:ok, ^p} -> %{publication: p, errors: nil}
