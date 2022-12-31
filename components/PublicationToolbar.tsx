@@ -35,6 +35,7 @@ const PublicationEdit: FC = () => {
   const {
     useDeletedCount,
     useOverriddenCount,
+    useOverriddenIds,
     useSetDeleted,
     useResetDeleted,
     useResetOverridden,
@@ -43,6 +44,9 @@ const PublicationEdit: FC = () => {
   const setDeleted = useSetDeleted();
   const resetDeleted = useResetDeleted();
   const resetOverridden = useResetOverridden();
+  const validate = Publication.REMOTE.useValidate();
+
+  const overriddenIds = useOverriddenIds();
   const deletedCount = useDeletedCount();
   const overriddenCount = useOverriddenCount();
 
@@ -61,6 +65,7 @@ const PublicationEdit: FC = () => {
     resetDeleted();
     resetOverridden();
     clearSelection();
+    validate(overriddenIds);
   };
 
   const isSelectionEmpty = selectionSize === 0;

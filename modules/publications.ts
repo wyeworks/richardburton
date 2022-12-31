@@ -9,12 +9,12 @@ import {
   Snapshot,
   useRecoilCallback,
   useRecoilValue,
-  useResetRecoilState,
 } from "recoil";
 import { isString, range } from "lodash";
 import { request } from "app";
 import { _ERRORS, _notify } from "components/Errors";
 import { AxiosInstance } from "axios";
+import hash from "object-hash";
 
 type Publication = {
   title: string;
@@ -52,11 +52,19 @@ const PUBLICATION_OVERRIDES = atomFamily<Partial<Publication>, PublicationId>({
   default: undefined,
 });
 
+const OVERRIDDEN_PUBLICATION_IDS = selector<PublicationId[]>({
+  key: "overridden-publications-ids",
+  get({ get }) {
+    return get(VISIBLE_PUBLICATION_IDS).filter((id) =>
+      get(PUBLICATION_OVERRIDES(id))
+    );
+  },
+});
+
 const OVERRIDDEN_PUBLICATION_COUNT = selector<number>({
   key: "overriden-publication-count",
   get({ get }) {
-    return get(VISIBLE_PUBLICATION_IDS).map(PUBLICATION_OVERRIDES).filter(get)
-      .length;
+    return get(OVERRIDDEN_PUBLICATION_IDS).length;
   },
 });
 
@@ -141,6 +149,11 @@ const VALID_PUBLICATION_COUNT = selector<number>({
   },
 });
 
+const LAST_VALIDATED_VALUE = atomFamily<string, PublicationId>({
+  key: "last-validated-value",
+  default: undefined,
+});
+
 const DEFAULT_ATTRIBUTE_VISIBILITY: Record<PublicationKey, boolean> = {
   title: true,
   country: false,
@@ -205,6 +218,7 @@ interface PublicationModule {
     useResetAll(): Resetter;
     useResetDeleted(): Resetter;
     useResetOverridden(): Resetter;
+    useOverriddenIds(): PublicationId[];
     useOverrideValue(id: PublicationId): Partial<Publication>;
     useAddNew(): () => PublicationId;
 
@@ -383,6 +397,9 @@ const Publication: PublicationModule = {
         []
       );
     },
+    useOverriddenIds() {
+      return useRecoilValue(OVERRIDDEN_PUBLICATION_IDS);
+    },
     useOverrideValue(id) {
       return useRecoilValue(PUBLICATION_OVERRIDES(id));
     },
@@ -538,17 +555,38 @@ const Publication: PublicationModule = {
         ({ set, snapshot }, http) =>
           async (ids: PublicationId[]) => {
             const publications = ids
-              .map(VISIBLE_PUBLICATIONS)
-              .map((atom) => snapshot.getLoadable(atom).valueOrThrow());
+              .map((id) => ({
+                id,
+                publication: snapshot
+                  .getLoadable(VISIBLE_PUBLICATIONS(id))
+                  .valueOrThrow(),
+              }))
+              .map(({ id, publication }) => ({
+                id,
+                publication,
+                hash: hash(publication),
+              }))
+              .filter(({ id, hash }) => {
+                const lastValidatedValue = snapshot
+                  .getLoadable(LAST_VALIDATED_VALUE(id))
+                  .valueOrThrow();
+                return hash !== lastValidatedValue;
+              })
+              .map(({ id, publication, hash }) => {
+                set(LAST_VALIDATED_VALUE(id), hash);
+                return publication;
+              });
 
-            const { data } = await http.post<ValidationResult[]>(
-              "publications/validate",
-              publications
-            );
+            if (publications.length > 0) {
+              const { data } = await http.post<ValidationResult[]>(
+                "publications/validate",
+                publications
+              );
 
-            Publication.STORE.with({ set }).setErrors(
-              data.map((entry, index) => ({ ...entry, id: ids[index] }))
-            );
+              Publication.STORE.with({ set }).setErrors(
+                data.map((entry, index) => ({ ...entry, id: ids[index] }))
+              );
+            }
           }
       );
     },

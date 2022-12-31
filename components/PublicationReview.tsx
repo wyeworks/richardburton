@@ -13,6 +13,7 @@ import {
   MouseEvent,
   useCallback,
   useEffect,
+  useState,
 } from "react";
 import ErrorTooltip from "./ErrorTooltip";
 import {
@@ -68,54 +69,27 @@ const ExtendedSignalColumn: FC<{ rowId: RowId }> = ({ rowId }) => {
   );
 };
 
-type DataInputProps = Omit<
-  HTMLProps<HTMLInputElement>,
-  "onChange" | "onBlur"
-> & {
+type DataInputProps = Omit<HTMLProps<HTMLInputElement>, "onChange"> & {
   rowId: PublicationId;
   colId: PublicationKey;
   value: string;
   error: string;
-  onBlur?: (value: string) => void;
-  onExternalChange?: (value: string) => void;
 };
 
 const DataInput = forwardRef<HTMLInputElement, DataInputProps>(
-  function DataInput(
-    {
-      rowId,
-      colId,
-      value: data,
-      onBlur,
-      onKeyDown,
-      onExternalChange,
-      ...props
-    },
-    ref
-  ) {
+  function DataInput({ rowId, colId, value: data, ...props }, ref) {
     const override = Publication.STORE.ATTRIBUTES.useOverride();
-
-    const [value, setValue] = useReactiveRef(data);
+    const [value, setValue] = useState(data);
 
     useEffect(() => {
-      if (data !== value.current) setValue(data);
-      onExternalChange?.(value.current);
-    }, [data, rowId, value, setValue, onExternalChange]);
-
-    const handleBlur = () => {
-      if (data !== value.current) override(rowId, colId, value.current);
-      onBlur?.(value.current);
-    };
+      if (data !== value) {
+        setValue(data);
+      }
+    }, [data, rowId, colId, value, setValue]);
 
     const handleChange: ChangeEventHandler<HTMLInputElement> = (e) => {
       setValue(e.target.value);
-    };
-
-    const handleKeyDown: KeyboardEventHandler<HTMLInputElement> = (event) => {
-      if (data !== value.current && event.key === Key.ENTER) {
-        override(rowId, colId, value.current);
-      }
-      onKeyDown?.(event);
+      override(rowId, colId, e.target.value);
     };
 
     return (
@@ -127,10 +101,8 @@ const DataInput = forwardRef<HTMLInputElement, DataInputProps>(
           "px-2 py-1 rounded outline-none bg-transparent focus:bg-white/50 focus:shadow-sm placeholder:text-xs",
           "error:focus:bg-red-400/80 error:bg-red-300/40 error:focus:text-white error:shadow-sm error:placeholder-white"
         )}
-        value={value.current}
+        value={value}
         onChange={handleChange}
-        onBlur={handleBlur}
-        onKeyDown={handleKeyDown}
       />
     );
   }
@@ -147,22 +119,16 @@ const DataInputWithValidation = forwardRef<
 >(function DataInputWithValidation(props, ref) {
   const validate = Publication.REMOTE.useValidate();
 
-  const validateIfChanged = useCallback(
-    (value: string) => {
-      if (props.value !== value) {
-        validate([props.rowId]);
-      }
-    },
-    [props.rowId, props.value, validate]
-  );
+  const doValidate = useCallback(() => {
+    validate([props.rowId]);
+  }, [props.rowId, validate]);
 
   return (
     <DataInput
       {...props}
       ref={ref}
-      onBlur={validateIfChanged}
-      onExternalChange={validateIfChanged}
       data-error={Boolean(props.error)}
+      onBlur={doValidate}
     />
   );
 });
@@ -216,7 +182,7 @@ const SubmittingData: typeof Content = ({ rowId, colId, value, error }) => {
 
   const handleKeyDown: KeyboardEventHandler = useCallback(
     (event) => {
-      if (event.key == Key.ENTER) {
+      if (event.key === Key.ENTER) {
         submit();
       }
     },
