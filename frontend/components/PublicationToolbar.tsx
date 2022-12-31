@@ -1,11 +1,4 @@
-import {
-  ChangeEvent,
-  FC,
-  MouseEvent,
-  useCallback,
-  useEffect,
-  useState,
-} from "react";
+import { ChangeEvent, FC, useCallback, useEffect, useState } from "react";
 import { _ERRORS, _notify } from "./Errors";
 import Button from "./Button";
 import Router from "next/router";
@@ -13,7 +6,6 @@ import Toggle from "./Toggle";
 import UploadIcon from "assets/upload.svg";
 import {
   Publication,
-  PublicationEntry,
   PublicationKey,
   ValidationResult,
 } from "modules/publications";
@@ -22,6 +14,9 @@ import {
   useClearSelection,
   useSelectionSize,
 } from "react-selection-manager";
+import classNames from "classnames";
+import Link from "next/link";
+import AddIcon from "assets/add.svg";
 
 const ToolbarHeading: FC<{ label: string }> = ({ label }) => (
   <h3 className="flex items-center space-x-2 text-sm">
@@ -156,7 +151,6 @@ const PublicationUpload: FC = () => {
             const entries = data.map((p, index) => ({ ...p, id: index }));
             Publication.STORE.with({ set }).setPublications(entries);
             Publication.STORE.with({ set }).setErrors(entries);
-            Router.push("publications/new");
           } catch (error: any) {
             event.target.files = null;
             setKey((key) => -key);
@@ -169,7 +163,7 @@ const PublicationUpload: FC = () => {
   useEffect(() => resetPublications(), [resetPublications]);
 
   return (
-    <label className="flex flex-col items-center justify-center text-sm rounded-lg shadow cursor-pointer aspect-square hover:bg-gray-200">
+    <label className="flex flex-col items-center justify-center text-sm transition-colors bg-gray-100 rounded-lg shadow cursor-pointer aspect-square hover:bg-gray-200">
       Upload .csv
       <UploadIcon className="w-8 h-8 text-indigo-800" />
       <input
@@ -183,16 +177,37 @@ const PublicationUpload: FC = () => {
   );
 };
 
+const PublicationNav = () => {
+  return (
+    <nav className="flex w-full">
+      <Link
+        className="flex flex-col items-center justify-center space-y-2 text-center transition-colors bg-gray-100 rounded-lg shadow cursor-pointer grow aspect-square hover:bg-gray-200"
+        href="publications/new"
+      >
+        <div className="flex flex-col items-center text-lg text-indigo-800">
+          <AddIcon className="w-8 h-8" />
+          Add Publications
+        </div>
+        <p className="mx-6 text-xs text-center">
+          Click here to go to the new publications page and add new data
+        </p>
+      </Link>
+    </nav>
+  );
+};
+
 type Props = {
   filter?: boolean;
   edit?: boolean;
   upload?: boolean;
+  nav?: boolean;
 };
 
 const PublicationToolbar: FC<Props> = ({
   filter = false,
   edit = false,
   upload = false,
+  nav = false,
 }) => {
   const bulk = Publication.REMOTE.useBulk();
 
@@ -202,7 +217,13 @@ const PublicationToolbar: FC<Props> = ({
   );
 
   return (
-    <section className="flex flex-col w-48 p-2 space-y-2 min-h-1/2">
+    <section
+      className={classNames(
+        "flex flex-col w-48 p-2 space-y-2",
+        edit && "min-h-toolbar"
+      )}
+    >
+      {nav && <PublicationNav />}
       <div className="flex flex-col p-2 space-y-2 rounded shadow grow">
         {filter && <PublicationFilter />}
         {edit && <PublicationEdit />}
