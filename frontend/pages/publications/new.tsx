@@ -25,15 +25,16 @@ const NewPublications: NextPage = () => {
         <Header compact>
           <h2 className="my-4 text-4xl text-center">
             <div>{publicationCount} publications about to be inserted...</div>
-            {invalidPublicationCount > 0 && (
-              <div className="text-lg text-red-500">
-                {invalidPublicationCount} of those have errors
-              </div>
-            )}
+            <div className="h-4 text-lg text-red-500">
+              {invalidPublicationCount > 0 &&
+                `${invalidPublicationCount} of those ${
+                  invalidPublicationCount === 1 ? "has" : "have"
+                } errors`}
+            </div>
           </h2>
         </Header>
       }
-      sidebar={<PublicationToolbar edit upload/>}
+      sidebar={<PublicationToolbar edit upload />}
       content={<PublicationReview />}
     />
   );

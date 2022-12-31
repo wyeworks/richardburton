@@ -73,6 +73,7 @@ const PublicationEdit: FC = () => {
     <section className="flex flex-col grow">
       <div className="flex flex-col space-y-2 grow">
         <ToolbarHeading label="Edit" />
+
         {!isSelectionEmpty && (
           <Button
             type="outline"
@@ -81,17 +82,30 @@ const PublicationEdit: FC = () => {
           />
         )}
 
-        <div className="flex items-center justify-center grow">
-          <p className="self-center m-3.5 text-sm text-center text-gray-400">
-            Select publications to delete them, or click on the columns to start
-            editing
-          </p>
+        <div className="flex items-center justify-center text-sm text-gray-400 grow">
+          {isResetEnabled ? (
+            <ul>
+              <li className="h-4">
+                {deletedCount > 0 && `${deletedCount} deleted`}
+              </li>
+              <li className="h-4">
+                {overriddenCount > 0 && `${overriddenCount} updated`}
+              </li>
+            </ul>
+          ) : (
+            <p className="self-center m-3.5 text-center">
+              Select publications to delete them, or click on the columns to
+              start editing
+            </p>
+          )}
         </div>
       </div>
 
       {isResetEnabled && (
         <footer className="mt-auto">
-          <Button type="outline" label="Reset" onClick={reset} />
+          <Tooltip info message="Reset updates and deletions" placement="left">
+            <Button type="outline" label="Reset" onClick={reset} />
+          </Tooltip>
         </footer>
       )}
     </section>
@@ -183,7 +197,7 @@ const PublicationUpload: FC = () => {
   );
 };
 
-const PublicationNav = () => {
+const PublicationNav: FC = () => {
   return (
     <nav className="flex w-full">
       <Link
@@ -202,6 +216,38 @@ const PublicationNav = () => {
   );
 };
 
+const PublicationSubmit: FC = () => {
+  const bulk = Publication.REMOTE.useBulk();
+
+  const handleSubmit = useCallback(
+    () => bulk().then(() => Router.push("/")),
+    [bulk]
+  );
+
+  const publicationCount = Publication.STORE.useVisibleCount();
+  const validPublicationCount = Publication.STORE.useValidCount();
+  const invalidPublicationCount = publicationCount - validPublicationCount;
+
+  const isValidating = Publication.STORE.useIsValidating();
+
+  const isSubmitDisabled =
+    isValidating || publicationCount === 0 || invalidPublicationCount > 0;
+
+  return (
+    <Tooltip
+      info
+      message="Save the publications to the repository"
+      placement="left"
+    >
+      <Button
+        label="Submit"
+        onClick={handleSubmit}
+        disabled={isSubmitDisabled}
+      />
+    </Tooltip>
+  );
+};
+
 type Props = {
   filter?: boolean;
   edit?: boolean;
@@ -215,13 +261,6 @@ const PublicationToolbar: FC<Props> = ({
   upload = false,
   nav = false,
 }) => {
-  const bulk = Publication.REMOTE.useBulk();
-
-  const handleSubmit = useCallback(
-    () => bulk().then(() => Router.push("/")),
-    [bulk]
-  );
-
   return (
     <section
       className={classNames(
@@ -233,7 +272,7 @@ const PublicationToolbar: FC<Props> = ({
       <div className="flex flex-col p-2 space-y-2 rounded shadow grow">
         {filter && <PublicationFilter />}
         {edit && <PublicationEdit />}
-        {edit && <Button label="Submit" onClick={handleSubmit} />}
+        {edit && <PublicationSubmit />}
       </div>
       {upload && <PublicationUpload />}
     </section>
