@@ -17,6 +17,7 @@ import classNames from "classnames";
 import Link from "next/link";
 import AddIcon from "assets/add.svg";
 import Tooltip from "./Tooltip";
+import { useNotify } from "./Notifications";
 
 const ToolbarHeading: FC<{ label: string }> = ({ label }) => (
   <h3 className="flex items-center space-x-2 text-sm">
@@ -217,10 +218,21 @@ const PublicationNav: FC = () => {
 
 const PublicationSubmit: FC = () => {
   const bulk = Publication.REMOTE.useBulk();
+  const reset = Publication.STORE.useResetAll();
+  const notify = useNotify();
 
   const handleSubmit = useCallback(
-    () => bulk().then(() => Router.push("/")),
-    [bulk]
+    () =>
+      bulk().then((publications) => {
+        reset();
+        notify({
+          message: `${publications.length} ${
+            publications.length === 1 ? "publication" : "publications"
+          } inserted successfully`,
+          level: "success",
+        });
+      }),
+    [bulk, reset, notify]
   );
 
   const publicationCount = Publication.STORE.useVisibleCount();
