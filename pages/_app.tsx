@@ -39,6 +39,10 @@ function request<T = void>(
   });
 }
 
+enum Key {
+  ENTER = "Enter",
+}
+
 const App: FC<AppProps> = ({ Component, pageProps }) => {
   return (
     <RecoilRoot initializeState={Publication.STORE.initialize}>
@@ -50,4 +54,4 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
 };
 
 export default App;
-export { request };
+export { request, Key };
