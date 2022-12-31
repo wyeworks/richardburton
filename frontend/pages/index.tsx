@@ -8,10 +8,12 @@ import PublicationIndex from "components/PublicationIndex";
 
 const Home: NextPage = () => {
   const index = Publication.REMOTE.useIndex();
+  const reset = Publication.STORE.useResetAll();
 
   useEffect(() => {
+    reset();
     index();
-  }, [index]);
+  }, [reset, index]);
 
   return (
     <Layout
