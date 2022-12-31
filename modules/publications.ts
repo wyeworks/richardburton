@@ -154,6 +154,11 @@ const LAST_VALIDATED_VALUE = atomFamily<string, PublicationId>({
   default: undefined,
 });
 
+const IS_VALIDATING = atom<boolean>({
+  key: "is-validating",
+  default: false,
+});
+
 const TOTAL_PUBLICATION_COUNT = selector<number>({
   key: "total-publication-count",
   get({ get }) {
@@ -236,6 +241,8 @@ interface PublicationModule {
     useDeletedCount(): number;
     useOverriddenCount(): number;
     useTotalCount(): number;
+
+    useIsValidating(): boolean;
 
     from: (snapshot: Snapshot) => {
       getVisibleIds(): PublicationId[];
@@ -433,6 +440,10 @@ const Publication: PublicationModule = {
       return useRecoilValue(TOTAL_PUBLICATION_COUNT);
     },
 
+    useIsValidating() {
+      return useRecoilValue(IS_VALIDATING);
+    },
+
     from: (snapshot) => ({
       getVisibleIds() {
         return snapshot.getLoadable(VISIBLE_PUBLICATION_IDS).valueOrThrow();
@@ -566,6 +577,7 @@ const Publication: PublicationModule = {
       return Publication.REMOTE.useRequest(
         ({ set, snapshot }, http) =>
           async (ids: PublicationId[]) => {
+            set(IS_VALIDATING, true);
             const publications = ids
               .map((id) => ({
                 id,
@@ -599,6 +611,7 @@ const Publication: PublicationModule = {
                 data.map((entry, index) => ({ ...entry, id: ids[index] }))
               );
             }
+            set(IS_VALIDATING, false);
           }
       );
     },
