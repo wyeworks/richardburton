@@ -545,7 +545,10 @@ const Publication: PublicationModule = {
                 await request((http) => factory({ set, snapshot }, http)(args));
                 resolve();
               } catch (error: any) {
-                set(_NOTIFICATIONS, _notify(error));
+                set(
+                  _NOTIFICATIONS,
+                  _notify({ message: error, level: "warning" })
+                );
                 reject(error);
               }
             });
