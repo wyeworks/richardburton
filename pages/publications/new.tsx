@@ -33,7 +33,7 @@ const NewPublications: NextPage = () => {
           </h2>
         </Header>
       }
-      sidebar={<PublicationToolbar edit />}
+      sidebar={<PublicationToolbar edit upload/>}
       content={<PublicationReview />}
     />
   );
