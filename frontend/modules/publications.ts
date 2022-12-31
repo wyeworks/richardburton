@@ -280,10 +280,10 @@ interface PublicationModule {
         params: Pick<CallbackInterface, "set" | "snapshot">,
         http: AxiosInstance
       ) => (args: P) => Promise<T>
-    ): (args: P) => Promise<void>;
+    ): (args: P) => Promise<T>;
 
     useIndex(): () => Promise<void>;
-    useBulk(): () => Promise<void>;
+    useBulk(): () => Promise<Publication[]>;
     useValidate(): (ids: PublicationId[]) => Promise<void>;
   };
 
@@ -542,8 +542,10 @@ const Publication: PublicationModule = {
           (args) => {
             return new Promise(async (resolve, reject) => {
               try {
-                await request((http) => factory({ set, snapshot }, http)(args));
-                resolve();
+                const res = await request((http) =>
+                  factory({ set, snapshot }, http)(args)
+                );
+                resolve(res);
               } catch (error: any) {
                 set(
                   _NOTIFICATIONS,
@@ -569,11 +571,13 @@ const Publication: PublicationModule = {
     useBulk() {
       return Publication.REMOTE.useRequest(
         ({ snapshot }, http) =>
-          async () =>
-            http.post<void>(
+          async function () {
+            const { data } = await http.post<Publication[]>(
               "publications/bulk",
               Publication.STORE.from(snapshot).getAllVisible()
-            )
+            );
+            return data;
+          }
       );
     },
     useValidate() {
