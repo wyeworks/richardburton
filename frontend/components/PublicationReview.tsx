@@ -134,7 +134,7 @@ const DataInputWithValidation = forwardRef<
 });
 
 const AutovalidatedData: typeof Content = ({ rowId, colId, value, error }) => {
-  const content = colId === "country" ? COUNTRIES[value] : value;
+  const content = colId === "country" ? COUNTRIES[value] || value : value;
 
   return (
     <ErrorTooltip message={error}>
