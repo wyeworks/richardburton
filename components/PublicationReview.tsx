@@ -15,7 +15,7 @@ import {
   useEffect,
   useState,
 } from "react";
-import ErrorTooltip from "./ErrorTooltip";
+import Tooltip from "./Tooltip";
 import {
   useIsSelected,
   useIsSelectionEmpty,
@@ -30,7 +30,6 @@ import PublicationIndex, {
   RowProps,
   SignalColumn,
 } from "components/PublicationIndex";
-import useReactiveRef from "utils/useReactiveRef";
 import AddCircleIcon from "assets/add-circle.svg";
 import { Key } from "app";
 
@@ -137,14 +136,14 @@ const AutovalidatedData: typeof Content = ({ rowId, colId, value, error }) => {
   const content = colId === "country" ? COUNTRIES[value] || value : value;
 
   return (
-    <ErrorTooltip message={error}>
+    <Tooltip error message={error}>
       <DataInputWithValidation
         rowId={rowId}
         colId={colId}
         value={content}
         error={error}
       />
-    </ErrorTooltip>
+    </Tooltip>
   );
 };
 
@@ -155,7 +154,8 @@ const ExtendedRow: FC<RowProps> = (props) => {
   const error = useErrorDescription(rowId);
 
   return (
-    <ErrorTooltip
+    <Tooltip
+      error
       message={error}
       placement="top-start"
       boundary="main"
@@ -163,7 +163,7 @@ const ExtendedRow: FC<RowProps> = (props) => {
       absoluteCenter
     >
       <Row {...props} />
-    </ErrorTooltip>
+    </Tooltip>
   );
 };
 
