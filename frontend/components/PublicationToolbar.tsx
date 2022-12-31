@@ -17,6 +17,7 @@ import {
 import classNames from "classnames";
 import Link from "next/link";
 import AddIcon from "assets/add.svg";
+import Tooltip from "./Tooltip";
 
 const ToolbarHeading: FC<{ label: string }> = ({ label }) => (
   <h3 className="flex items-center space-x-2 text-sm">
@@ -128,10 +129,11 @@ const PublicationFilter: FC = () => {
 };
 
 const PublicationUpload: FC = () => {
-  const { useResetAll } = Publication.STORE;
+  const { useResetAll, useTotalCount } = Publication.STORE;
   const { useRequest } = Publication.REMOTE;
 
   const resetPublications = useResetAll();
+  const totalPublications = useTotalCount();
 
   const [key, setKey] = useState(1);
 
@@ -162,18 +164,22 @@ const PublicationUpload: FC = () => {
 
   useEffect(() => resetPublications(), [resetPublications]);
 
+  const message = totalPublications > 0 ? "Current data will be replaced!" : "";
+
   return (
-    <label className="flex flex-col items-center justify-center text-sm transition-colors bg-gray-100 rounded-lg shadow cursor-pointer aspect-square hover:bg-gray-200">
-      Upload .csv
-      <UploadIcon className="w-8 h-8 text-indigo-800" />
-      <input
-        key={key}
-        type="file"
-        id="upload-csv"
-        className="hidden"
-        onChange={handleChange}
-      />
-    </label>
+    <Tooltip warning message={message} placement="left">
+      <label className="flex flex-col items-center justify-center text-sm transition-colors bg-gray-100 rounded-lg shadow cursor-pointer aspect-square hover:bg-gray-200">
+        Upload .csv
+        <UploadIcon className="w-8 h-8 text-indigo-800" />
+        <input
+          key={key}
+          type="file"
+          id="upload-csv"
+          className="hidden"
+          onChange={handleChange}
+        />
+      </label>
+    </Tooltip>
   );
 };
 

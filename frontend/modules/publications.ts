@@ -154,6 +154,13 @@ const LAST_VALIDATED_VALUE = atomFamily<string, PublicationId>({
   default: undefined,
 });
 
+const TOTAL_PUBLICATION_COUNT = selector<number>({
+  key: "total-publication-count",
+  get({ get }) {
+    return get(PUBLICATION_IDS).length;
+  },
+});
+
 const DEFAULT_ATTRIBUTE_VISIBILITY: Record<PublicationKey, boolean> = {
   title: true,
   country: false,
@@ -228,6 +235,7 @@ interface PublicationModule {
     useValidCount(): number;
     useDeletedCount(): number;
     useOverriddenCount(): number;
+    useTotalCount(): number;
 
     from: (snapshot: Snapshot) => {
       getVisibleIds(): PublicationId[];
@@ -310,6 +318,7 @@ const Publication: PublicationModule = {
     useError(id) {
       return useRecoilValue(PUBLICATION_ERRORS(id));
     },
+
     useAddNew() {
       return useRecoilCallback(({ set, reset, snapshot }) => () => {
         const ids = snapshot.getLoadable(PUBLICATION_IDS).valueOrThrow();
@@ -419,6 +428,9 @@ const Publication: PublicationModule = {
     },
     useOverriddenCount() {
       return useRecoilValue(OVERRIDDEN_PUBLICATION_COUNT);
+    },
+    useTotalCount() {
+      return useRecoilValue(TOTAL_PUBLICATION_COUNT);
     },
 
     from: (snapshot) => ({
