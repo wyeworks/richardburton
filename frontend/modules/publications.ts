@@ -12,7 +12,7 @@ import {
 } from "recoil";
 import { isString, range } from "lodash";
 import { request } from "app";
-import { _ERRORS, _notify } from "components/Errors";
+import { _NOTIFICATIONS, _notify } from "components/Notifications";
 import { AxiosInstance } from "axios";
 import hash from "object-hash";
 
@@ -545,7 +545,7 @@ const Publication: PublicationModule = {
                 await request((http) => factory({ set, snapshot }, http)(args));
                 resolve();
               } catch (error: any) {
-                set(_ERRORS, _notify(error));
+                set(_NOTIFICATIONS, _notify(error));
                 reject(error);
               }
             });

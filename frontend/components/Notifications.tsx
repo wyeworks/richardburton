@@ -9,46 +9,47 @@ import {
 } from "recoil";
 import { v4 as uuid } from "uuid";
 
-type Error = { id: string; message: string };
+type Notification = { id: string; message: string };
 
-const ERRORS = atom<Error[]>({
-  key: "errors",
+const NOTIFICATIONS = atom<Notification[]>({
+  key: "notifications",
   default: [],
 });
 
-const ERROR_TIMEOUT_MS = 4000;
+const NOTIFICATION_TIMEOUT_MS = 4000;
 const MAX_SNACKBARS = 3;
 
-const Errors: FC = () => {
-  const [errors, setErrors] = useRecoilState(ERRORS);
-  const resetErrors = useResetRecoilState(ERRORS);
+const Notifications: FC = () => {
+  const [notifications, setNotifications] = useRecoilState(NOTIFICATIONS);
+  const resetNotifications = useResetRecoilState(NOTIFICATIONS);
   const router = useRouter();
 
   useEffect(() => {
-    if (errors.length > 0) {
+    if (notifications.length > 0) {
       const timeout = setTimeout(
-        () => setErrors(errors.slice(1)),
-        ERROR_TIMEOUT_MS
+        () => setNotifications(notifications.slice(1)),
+        NOTIFICATION_TIMEOUT_MS
       );
       return () => clearTimeout(timeout);
     }
-  }, [errors, setErrors]);
+  }, [notifications, setNotifications]);
 
-  useEffect(() => resetErrors, [router, resetErrors]);
+  useEffect(() => resetNotifications, [router, resetNotifications]);
 
-  const shownErrorCount =
-    errors.length === MAX_SNACKBARS
-      ? errors.length
-      : Math.min(MAX_SNACKBARS - 1, errors.length);
+  const shownNotificationsCount =
+    notifications.length === MAX_SNACKBARS
+      ? notifications.length
+      : Math.min(MAX_SNACKBARS - 1, notifications.length);
 
-  const stackedErrorCount = errors.length - shownErrorCount;
+  const stackedNotificationsCount =
+    notifications.length - shownNotificationsCount;
 
-  const snackbars = errors
-    .slice(0, shownErrorCount)
+  const snackbars = notifications
+    .slice(0, shownNotificationsCount)
     .map(({ message, id }) => ({ message, key: id }))
     .concat({
-      message: `${stackedErrorCount} more errors`,
-      key: "error-stack",
+      message: `${stackedNotificationsCount} more notifications`,
+      key: "notification-stack",
     });
 
   return (
@@ -56,7 +57,7 @@ const Errors: FC = () => {
       <AnimatePresence>
         {snackbars.map(
           ({ key, message }) =>
-            (key !== "error-stack" || stackedErrorCount > 0) && (
+            (key !== "error-stack" || stackedNotificationsCount > 0) && (
               <motion.div
                 layout
                 key={key}
@@ -79,22 +80,22 @@ const Errors: FC = () => {
   );
 };
 
-type ErrorNotifier = (message: Error["message"]) => void;
+type Notifier = (message: Notification["message"]) => void;
 
 const _notify =
-  (message: Error["message"]) =>
-  (current: Error[]): Error[] =>
+  (message: Notification["message"]) =>
+  (current: Notification[]): Notification[] =>
     [...current, { id: uuid(), message }];
 
-function useNotifyError(): ErrorNotifier {
+function useNotify(): Notifier {
   return useRecoilCallback(
     ({ set }) =>
       (message) => {
-        set(ERRORS, _notify(message));
+        set(NOTIFICATIONS, _notify(message));
       },
     []
   );
 }
 
-export default Errors;
-export { useNotifyError, ERRORS as _ERRORS, _notify };
+export default Notifications;
+export { useNotify, NOTIFICATIONS as _NOTIFICATIONS, _notify };

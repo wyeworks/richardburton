@@ -1,5 +1,4 @@
 import { ChangeEvent, FC, useCallback, useEffect, useState } from "react";
-import { _ERRORS, _notify } from "./Errors";
 import Button from "./Button";
 import Router from "next/router";
 import Toggle from "./Toggle";
