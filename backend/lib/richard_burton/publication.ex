@@ -6,7 +6,6 @@ defmodule RichardBurton.Publication do
   import Ecto.Changeset
 
   require Ecto.Query
-  import Ecto.Query, only: [where: 3]
 
   alias RichardBurton.Repo
   alias RichardBurton.TranslatedBook
@@ -28,30 +27,25 @@ defmodule RichardBurton.Publication do
 
   @doc false
   def changeset(publication, attrs \\ %{}) do
-    # Compute basic changeset with translated_book validation
+    # Compute basic changeset with translated book validation
     result =
       publication
       |> cast(attrs, [:title, :year, :country, :publisher])
-      |> cast_assoc(:translated_book)
-      |> validate_required([
-        :title,
-        :year,
-        :country,
-        :publisher,
-        :translated_book
-      ])
+      |> validate_required([:title, :year, :country, :publisher])
+      |> cast_assoc(:translated_book, required: true)
 
     # Check if translated_book is valid
     if result.valid? do
-      # Insert or fetch the valid translated_book
-      translated_book = TranslatedBook.maybe_insert!(attrs["translated_book"])
+      # Insert or fetch the valid translated book
+      translated_book_attrs = attrs["translated_book"]
+      translated_book = TranslatedBook.maybe_insert!(translated_book_attrs)
 
-      # Compute complete changeset with the complete translated_book associated
+      # Compute complete changeset with the complete translated book associated
       result
       |> put_assoc(:translated_book, translated_book)
       |> unique_constraint([:title, :year, :country, :publisher])
     else
-      # Return the changeset with the translated_book validation errors
+      # Return the changeset with the translated book validation errors
       result
     end
   end
@@ -59,7 +53,11 @@ defmodule RichardBurton.Publication do
   def all do
     Publication
     |> Repo.all()
-    |> Repo.preload(translated_book: [:original_book])
+    |> preload
+  end
+
+  def preload(data) do
+    Repo.preload(data, translated_book: [:authors, original_book: [:authors]])
   end
 
   def insert(attrs) do
@@ -68,7 +66,7 @@ defmodule RichardBurton.Publication do
     |> Repo.insert()
     |> case do
       {:ok, publication} ->
-        {:ok, publication}
+        {:ok, preload(publication)}
 
       {:error, changeset} ->
         {:error, get_errors(changeset)}
