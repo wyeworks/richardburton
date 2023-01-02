@@ -6,14 +6,17 @@ defmodule RichardBurton.Repo do
   def maybe_insert!(changeset, conflict_target) do
     unique_key = replace_unique_key_assocs_with_ids(conflict_target, changeset)
     unique_key_values = get_unique_key_values(conflict_target, changeset)
-    unique_key_with_values = Enum.zip(unique_key, unique_key_values)
+    unique_key_paired = Enum.zip(unique_key, unique_key_values)
 
-    insert!(
-      changeset,
-      on_conflict: [set: unique_key_with_values],
-      conflict_target: unique_key,
-      returning: true
-    )
+    %queryable{} = changeset.data
+
+    case get_by(queryable, unique_key_paired) do
+      %^queryable{} = value ->
+        value
+
+      nil ->
+        insert!(changeset)
+    end
   end
 
   defp replace_unique_key_assocs_with_ids(unique_key, changeset) do

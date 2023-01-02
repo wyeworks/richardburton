@@ -27,4 +27,11 @@ defmodule RichardBurton.Util do
     v
   end
 
+  def create_fingerprint(data) when is_binary(data) do
+    data |> sha256 |> Base.encode16()
+  end
+
+  defp sha256(data) do
+    :crypto.hash(:sha256, data)
+  end
 end
