@@ -3,6 +3,7 @@ defmodule RichardBurton.Publication.Codec do
   Serialization and deserialization utilities for publications
   """
 
+  alias RichardBurton.Util
   alias RichardBurton.Publication
 
   @empty_nested_attrs %{
@@ -46,7 +47,7 @@ defmodule RichardBurton.Publication.Codec do
             "publisher"
           ]
         )
-        |> Enum.map(&deep_merge_maps(@empty_flat_attrs, &1))
+        |> Enum.map(&Util.deep_merge_maps(@empty_flat_attrs, &1))
         |> nest
 
       {:ok, publications}
@@ -135,7 +136,7 @@ defmodule RichardBurton.Publication.Codec do
           }
         }
       ) do
-    p |> stringify_keys |> flatten
+    p |> Util.stringify_keys() |> flatten
   end
 
   def flatten(%{publication: publication, errors: nil}) do
@@ -151,38 +152,14 @@ defmodule RichardBurton.Publication.Codec do
       publication: flatten(publication),
       errors:
         @empty_nested_attrs
-        |> deep_merge_maps(stringify_keys(errors))
+        |> Util.deep_merge_maps(Util.stringify_keys(errors))
         |> flatten
-        |> Enum.reject(&is_value_blank/1)
+        |> Enum.reject(&Util.is_value_blank/1)
         |> Enum.into(%{})
     }
   end
 
   def flatten(publications) when is_list(publications) do
     Enum.map(publications, &flatten/1)
-  end
-
-  defp stringify_keys(map) when is_map(map) do
-    Map.new(map, fn {k, v} -> {Atom.to_string(k), stringify_keys(v)} end)
-  end
-
-  defp stringify_keys(v) when not is_map(v) do
-    v
-  end
-
-  defp deep_merge_maps(map1, map2) do
-    Map.merge(map1, map2, &deep_merge_resolve/3)
-  end
-
-  defp deep_merge_resolve(_, left = %{}, right = %{}) do
-    deep_merge_maps(left, right)
-  end
-
-  defp deep_merge_resolve(_, _, right) do
-    right
-  end
-
-  defp is_value_blank({_, v}) do
-    v == ""
   end
 end
