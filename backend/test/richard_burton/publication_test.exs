@@ -7,6 +7,7 @@ defmodule RichardBurton.PublicationTest do
 
   alias RichardBurton.Publication
   alias RichardBurton.Util
+  alias RichardBurton.Validation
 
   @valid_attrs %{
     "title" => "Manuel de Moraes: A Chronicle of the Seventeenth Century",
@@ -142,7 +143,7 @@ defmodule RichardBurton.PublicationTest do
       {:error, changeset} = insert(@valid_attrs)
 
       refute changeset.valid?
-      assert %{title: :unique} == Repo.get_errors(changeset)
+      assert :conflict == Validation.get_errors(changeset)
     end
   end
 
@@ -170,15 +171,15 @@ defmodule RichardBurton.PublicationTest do
   describe "validate/1" do
     import Publication, only: [validate: 1]
 
-    test "when validating valid publications, returns {:ok, publication}" do
+    test "when validating valid publications, returns :ok" do
       # Insert a dummy publication to make sure the test passes on a non-empty database
       insert(Map.put(@valid_attrs, "title", "New title"))
-      assert {:ok, @valid_attrs} = validate(@valid_attrs)
+      assert :ok == validate(@valid_attrs)
     end
 
     test "when validating a duplicate publication, returns {:error, :conflict}" do
       insert(@valid_attrs)
-      assert {:error, :conflict} = validate(@valid_attrs)
+      assert {:error, :conflict} == validate(@valid_attrs)
     end
 
     test "when validating an empty publication, returns an error map with :required errors" do

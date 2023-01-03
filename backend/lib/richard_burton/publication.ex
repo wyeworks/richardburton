@@ -7,9 +7,10 @@ defmodule RichardBurton.Publication do
 
   require Ecto.Query
 
+  alias RichardBurton.Publication
   alias RichardBurton.Repo
   alias RichardBurton.TranslatedBook
-  alias __MODULE__
+  alias RichardBurton.Validation
 
   @external_attributes [:country, :publisher, :title, :year, :translated_book]
 
@@ -69,35 +70,12 @@ defmodule RichardBurton.Publication do
         {:ok, preload(publication)}
 
       {:error, changeset} ->
-        {:error, get_errors(changeset)}
+        {:error, Validation.get_errors(changeset)}
     end
   end
 
   def validate(attrs) do
-    changeset = changeset(%Publication{}, attrs)
-
-    if changeset.valid? do
-      unique_key = [:title, :country, :year, :publisher]
-      unique_key_values = Repo.get_unique_key_values(unique_key, changeset)
-      unique_key_paired = Enum.zip(unique_key, unique_key_values)
-
-      entity_exists? = Publication |> where([], ^unique_key_paired) |> Repo.exists?()
-
-      if entity_exists? do
-        {:error, :conflict}
-      else
-        {:ok, attrs}
-      end
-    else
-      {:error, get_errors(changeset)}
-    end
-  end
-
-  defp get_errors(changeset) do
-    case Repo.get_errors(changeset) do
-      %{title: :unique} -> :conflict
-      error_map -> error_map
-    end
+    Validation.validate(Publication, attrs)
   end
 
   def insert_all(attrs_list) do
