@@ -6,6 +6,7 @@ defmodule RichardBurton.AuthorTest do
   use RichardBurton.DataCase
 
   alias RichardBurton.Author
+  alias RichardBurton.Validation
 
   @valid_attrs %{"name" => "J. M. Pereira da Silva"}
 
@@ -39,7 +40,7 @@ defmodule RichardBurton.AuthorTest do
       {:error, changeset} = insert(@valid_attrs)
 
       refute changeset.valid?
-      assert %{name: :unique} == Repo.get_errors(changeset)
+      assert :conflict == Validation.get_errors(changeset)
     end
   end
 

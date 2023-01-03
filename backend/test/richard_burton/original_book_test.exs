@@ -7,6 +7,7 @@ defmodule RichardBurton.OriginalBookTest do
 
   alias RichardBurton.Util
   alias RichardBurton.OriginalBook
+  alias RichardBurton.Validation
 
   @valid_attrs %{
     "title" => "Manuel de Moraes: crônica do século XVII",
@@ -74,7 +75,7 @@ defmodule RichardBurton.OriginalBookTest do
       {:error, changeset} = insert(@valid_attrs)
 
       refute changeset.valid?
-      assert %{authors_fingerprint: :unique} == Repo.get_errors(changeset)
+      assert :conflict == Validation.get_errors(changeset)
     end
   end
 

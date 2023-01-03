@@ -7,6 +7,7 @@ defmodule RichardBurton.TranslatedBookTest do
 
   alias RichardBurton.TranslatedBook
   alias RichardBurton.Util
+  alias RichardBurton.Validation
 
   @valid_attrs %{
     "authors" => [
@@ -88,7 +89,7 @@ defmodule RichardBurton.TranslatedBookTest do
       {:error, changeset} = insert(@valid_attrs)
 
       refute changeset.valid?
-      assert %{authors_fingerprint: :unique} == Repo.get_errors(changeset)
+      assert :conflict == Validation.get_errors(changeset)
     end
   end
 

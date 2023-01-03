@@ -42,38 +42,4 @@ defmodule RichardBurton.Repo do
       end
     end)
   end
-
-  def get_errors(changeset = %Ecto.Changeset{}) do
-    %{valid?: valid?, errors: errors, changes: changes} = changeset
-
-    unless valid? do
-      errors
-      |> Enum.map(&parse_error/1)
-      |> Enum.into(%{})
-      |> Map.merge(
-        changes
-        |> Enum.map(&get_errors/1)
-        |> Enum.reduce(%{}, &Map.merge/2)
-      )
-      |> Enum.reject(fn {_, value} -> is_nil(value) end)
-      |> Enum.into(%{})
-    end
-  end
-
-  def get_errors({key, changeset = %Ecto.Changeset{}}) do
-    %{key => get_errors(changeset)}
-  end
-
-  def get_errors(_unknown) do
-    %{}
-  end
-
-  defp parse_error({key, {_message, [validation: name]}}),
-    do: {key, name}
-
-  defp parse_error({key, {_message, [constraint: name, constraint_name: _]}}),
-    do: {key, name}
-
-  defp parse_error({key, {_message, [type: type, validation: :cast]}}),
-    do: {key, type}
 end
