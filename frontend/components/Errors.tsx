@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/router";
-import { FC, useEffect } from "react";
+import { FC, useCallback, useEffect } from "react";
 import {
   atom,
   useRecoilState,
@@ -81,8 +81,11 @@ const Errors: FC = () => {
 
 const useNotifyError = () => {
   const setErrors = useSetRecoilState(errorsAtom);
-  return (message: Error["message"]) =>
-    setErrors((current) => [...current, { id: uuid(), message }]);
+  return useCallback(
+    (message: Error["message"]) =>
+      setErrors((current) => [...current, { id: uuid(), message }]),
+    [setErrors]
+  );
 };
 
 export default Errors;
