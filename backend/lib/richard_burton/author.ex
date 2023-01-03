@@ -43,6 +43,10 @@ defmodule RichardBurton.Author do
     Map.take(author, @external_attributes)
   end
 
+  def to_map(author) when is_map(author) do
+    author
+  end
+
   def all do
     Repo.all(Author)
   end
