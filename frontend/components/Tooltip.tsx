@@ -14,15 +14,18 @@ import {
 } from "@floating-ui/react";
 import type { Placement } from "@floating-ui/react";
 import { cloneElement, FC, ReactElement, useMemo, useState } from "react";
+import classNames from "classnames";
 
 // Adapted from https://floating-ui.com/docs/tooltip
 
 type TooltipOptions = {
   initialOpen?: boolean;
-  placement?: Placement;
   open?: boolean;
+  placement?: Placement;
   onOpenChange?: (open: boolean) => void;
-  followCursor?: true | "x" | "y";
+  portalRoot?: "main";
+  boundary?: "main";
+  absoluteCenter?: boolean;
 };
 
 function useTooltip(options: TooltipOptions = {}) {
@@ -32,6 +35,11 @@ function useTooltip(options: TooltipOptions = {}) {
     open: controlledOpen,
     onOpenChange: setControlledOpen,
   } = options;
+
+  const boundary =
+    options.boundary === "main"
+      ? document.getElementsByTagName("main")[0]
+      : undefined;
 
   const [uncontrolledOpen, setUncontrolledOpen] = useState(initialOpen);
 
@@ -43,7 +51,7 @@ function useTooltip(options: TooltipOptions = {}) {
     open,
     onOpenChange: setOpen,
     whileElementsMounted: autoUpdate,
-    middleware: [offset(5), flip(), shift()],
+    middleware: [offset(5), flip({ boundary }), shift({ boundary })],
   });
 
   const context = data.context;
@@ -71,11 +79,13 @@ type Props = {
   content: ReactElement;
 } & TooltipOptions;
 
-const Tooltip: FC<Props> = ({ children, content, ...options }) => {
-  const { followCursor = false } = options;
-  const followCursorX = [true, "x"].includes(followCursor);
-  const followCursorY = [true, "y"].includes(followCursor);
-
+const Tooltip: FC<Props> = ({
+  children,
+  content,
+  portalRoot,
+  absoluteCenter,
+  ...options
+}) => {
   const state = useTooltip(options);
 
   const childrenRef = (children as any).ref;
@@ -90,45 +100,31 @@ const Tooltip: FC<Props> = ({ children, content, ...options }) => {
         children,
         state.getReferenceProps({
           ref,
-          onMouseMove({ clientX, clientY, target: eventTarget }) {
-            if (followCursor) {
-              const target = eventTarget as HTMLElement;
-              const { width, height, x, left, right, y, top, bottom } =
-                target.getBoundingClientRect();
-
-              const horizontalProperties = followCursorX
-                ? { width: 0, x: clientX, left: clientX, right: clientX }
-                : { width, x, left, right };
-
-              const verticalProperties = followCursorY
-                ? { height: 0, y: clientY, top: clientY, bottom: clientY }
-                : { height, y, top, bottom };
-
-              ref({
-                getBoundingClientRect() {
-                  return {
-                    ...horizontalProperties,
-                    ...verticalProperties,
-                  };
-                },
-              });
-            }
-          },
           ...children.props,
           "data-state": state.open ? "open" : "closed",
         })
       )}
-      <FloatingPortal>
+      <FloatingPortal
+        root={
+          portalRoot === "main"
+            ? document.getElementsByTagName("main")[0]
+            : undefined
+        }
+      >
         {state.open && (
           <div
             ref={state.floating}
             style={{
               position: state.strategy,
               top: state.y ?? 0,
-              left: state.x ?? 0,
+              left: absoluteCenter ? undefined : state.x ?? 0,
               visibility: state.x == null ? "hidden" : "visible",
             }}
-            {...state.getFloatingProps({ className: "z-50" })}
+            {...state.getFloatingProps({
+              className: classNames("z-50", {
+                "left-1/2 -translate-x-1/2": absoluteCenter,
+              }),
+            })}
           >
             {content}
           </div>
