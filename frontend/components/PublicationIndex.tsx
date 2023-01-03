@@ -99,7 +99,11 @@ const DataColumn: FC<{ attribute: PublicationKey }> = ({ attribute }) => {
 
   return (
     <Column>
-      <ErrorTooltip message={errorString} hidden={!Boolean(errorString)}>
+      <ErrorTooltip
+        message={errorString}
+        hidden={!Boolean(errorString)}
+        boundary="main"
+      >
         <div
           className={classNames(
             "px-2 py-1 truncate",
@@ -137,8 +141,10 @@ const Row: FC<RowProps> = ({
     <ErrorTooltip
       message={errorString}
       hidden={!Boolean(errorString)}
-      followCursor="x"
       placement="top-start"
+      boundary="main"
+      portalRoot="main"
+      absoluteCenter
     >
       <tr
         className={classNames(
