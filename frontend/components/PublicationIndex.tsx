@@ -1,18 +1,16 @@
 import classNames from "classnames";
 import {
   Publication,
-  PublicationEntry,
-  PublicationError,
+  PublicationId,
   PublicationKey,
 } from "modules/publications";
-import {
-  createContext,
-  FC,
-  PropsWithChildren,
-  useContext,
-  useMemo,
-} from "react";
+import { FC, MouseEvent, MouseEventHandler, PropsWithChildren } from "react";
 import ErrorTooltip from "./ErrorTooltip";
+import {
+  useIsSelected,
+  useIsSelectionEmpty,
+  useSelectionEvent,
+} from "react-selection-manager";
 
 const COUNTRIES: Record<string, string> = {
   BR: "Brazil",
@@ -23,42 +21,22 @@ const COUNTRIES: Record<string, string> = {
   NZ: "New Zealand",
 };
 
-type Props = {
-  entries: PublicationEntry[];
-  columns: Set<PublicationKey>;
+type ColumnProps = PropsWithChildren & {
+  className?: string;
+  publicationId: PublicationId;
 };
 
-type RowProps = {
-  attributes: PublicationKey[];
-  publication: Publication;
-  errors: PublicationError;
-};
-
-type RowContext = {
-  publication: Publication;
-  errors: PublicationError;
-  hasErrors: boolean;
-};
-const RowContext = createContext<RowContext | null>(null);
-
-function useRow(): RowContext {
-  const context = useContext(RowContext);
-  if (!context) throw "RowContext provider not found";
-  return context;
-}
-
-const Column: FC<PropsWithChildren & { className?: string }> = ({
-  className,
-  children,
-}) => {
-  const row = useRow();
+const Column: FC<ColumnProps> = ({ className, children, publicationId }) => {
+  const isSelected = useIsSelected(publicationId);
+  const isValid = Publication.STORE.useIsValid(publicationId);
 
   return (
     <td
       className={classNames(
         className,
-        "max-w-cell px-2 py-1 truncate justify",
-        row.hasErrors ? "group-hover:bg-red-100" : "group-hover:bg-indigo-100"
+        "max-w-xs px-2 py-1 truncate justify",
+        isValid ? "group-hover:bg-indigo-100" : "group-hover:bg-red-100",
+        { "bg-amber-100": isSelected }
       )}
     >
       {children}
@@ -66,94 +44,156 @@ const Column: FC<PropsWithChildren & { className?: string }> = ({
   );
 };
 
-const SignalColumn: FC = () => {
-  const row = useRow();
+type SignalColumnProps = {
+  publicationId: PublicationId;
+};
+
+const SignalColumn: FC<SignalColumnProps> = ({ publicationId }) => {
+  const isValid = Publication.STORE.useIsValid(publicationId);
 
   return (
-    <Column className="sticky left-0 px-2 text-xl bg-gray-100">
-      {row.hasErrors && "❗️"}
+    <Column
+      className="sticky left-0 px-2 text-xl bg-gray-100"
+      publicationId={publicationId}
+    >
+      {!isValid && "❗️"}
     </Column>
   );
 };
 
-const DataColumn: FC<{ attribute: PublicationKey }> = ({ attribute }) => {
-  const row = useRow();
+type DataColumnProps = {
+  attribute: PublicationKey;
+  publicationId: PublicationId;
+  editable: boolean;
+};
 
-  const errorString = Publication.describe(row.errors, attribute);
+const DataColumn: FC<DataColumnProps> = ({
+  attribute,
+  publicationId,
+  editable,
+}) => {
+  const { useIsVisible, useValue, useError } = Publication.STORE.ATTRIBUTES;
 
-  return (
-    <Column>
-      <ErrorTooltip message={errorString} hidden={!Boolean(errorString)}>
+  const value = useValue(publicationId, attribute);
+  const error = useError(publicationId, attribute);
+  const isVisible = useIsVisible(attribute);
+
+  return isVisible ? (
+    <Column publicationId={publicationId}>
+      <ErrorTooltip
+        message={error}
+        hidden={!Boolean(error)}
+        disabled={!editable}
+        boundary="main"
+      >
         <div
           className={classNames(
             "px-2 py-1 truncate",
-            errorString &&
+            error &&
               "border rounded border-dotted border-red-300 hover:bg-red-300 hover:text-white "
           )}
         >
-          {attribute === "country"
-            ? COUNTRIES[row.publication[attribute]] ||
-              row.publication[attribute]
-            : row.publication[attribute]}
+          {attribute === "country" ? COUNTRIES[value] : value}
         </div>
       </ErrorTooltip>
     </Column>
-  );
+  ) : null;
 };
 
-const Row: FC<RowProps> = ({ attributes, publication, errors }) => {
-  const hasErrors = Boolean(errors);
-  const errorString = Publication.describe(errors);
+type RowProps = {
+  editable: boolean;
+  publicationId: PublicationId;
+  onClick?: MouseEventHandler;
+};
 
-  const context = useMemo(
-    () => ({ publication, errors, hasErrors }),
-    [publication, errors, hasErrors]
-  );
+const Row: FC<RowProps> = ({ publicationId, editable, onClick }) => {
+  const { useIsValid, useError } = Publication.STORE;
+
+  const isValid = useIsValid(publicationId);
+  const error = useError(publicationId);
 
   return (
     <ErrorTooltip
-      message={errorString}
-      hidden={!Boolean(errorString)}
-      followCursor="x"
+      message={error}
+      hidden={!Boolean(error)}
+      disabled={!editable}
       placement="top-start"
+      boundary="main"
+      portalRoot="main"
+      absoluteCenter
     >
       <tr
         className={classNames(
-          "cursor-pointer group",
-          hasErrors ? "hover:bg-red-100" : "hover:bg-indigo-100"
+          "relative group",
+          isValid ? "hover:bg-indigo-100" : "hover:bg-red-100",
+          { "cursor-pointer": Boolean(onClick) }
         )}
+        onClick={onClick}
       >
-        <RowContext.Provider value={context}>
-          <SignalColumn />
-          {attributes.map((attribute) => (
-            <DataColumn key={attribute} attribute={attribute} />
-          ))}
-        </RowContext.Provider>
+        {editable && <SignalColumn publicationId={publicationId} />}
+        {Publication.ATTRIBUTES.map((attribute) => (
+          <DataColumn
+            key={attribute}
+            attribute={attribute}
+            publicationId={publicationId}
+            editable={editable}
+          />
+        ))}
       </tr>
     </ErrorTooltip>
   );
 };
 
-const PublicationIndex: FC<Props> = ({ entries, columns }) => {
-  const attributes = Publication.ATTRIBUTES.filter((attribute) =>
-    columns.has(attribute)
-  );
+const ColumnHeader: FC<{ attribute: PublicationKey }> = ({ attribute }) => {
+  const isVisible = Publication.STORE.ATTRIBUTES.useIsVisible(attribute);
+
+  return isVisible ? (
+    <th className="px-2 py-4">{Publication.ATTRIBUTE_LABELS[attribute]}</th>
+  ) : null;
+};
+
+type Props = {
+  editable?: boolean;
+};
+
+const PublicationIndex: FC<Props> = ({ editable = false }) => {
+  const ids = Publication.STORE.useVisibleIds();
+
+  const onSelect = useSelectionEvent();
+
+  const toggleSelection = (id: number) => (event: MouseEvent) =>
+    onSelect({
+      id,
+      type: "publication",
+      shiftKey: event.shiftKey,
+      metaKey: event.metaKey,
+      orderedIds: ids,
+    });
+
+  const isSelectionEmpty = useIsSelectionEmpty();
 
   return (
-    <table className="overflow-auto">
+    <table
+      className={classNames("overflow-auto", {
+        "select-none": !isSelectionEmpty,
+      })}
+    >
       <thead className="sticky top-0 z-10 bg-gray-100">
         <tr>
-          <th />
-          {attributes.map((key) => (
-            <th className="px-2 py-4" key={key}>
-              {Publication.ATTRIBUTE_LABELS[key]}
-            </th>
+          {editable && <th />}
+          {Publication.ATTRIBUTES.map((key) => (
+            <ColumnHeader key={key} attribute={key} />
           ))}
         </tr>
       </thead>
       <tbody>
-        {entries.map((entry) => (
-          <Row key={JSON.stringify(entry)} attributes={attributes} {...entry} />
+        {ids.map((id) => (
+          <Row
+            key={id}
+            publicationId={id}
+            editable={editable}
+            onClick={editable ? toggleSelection(id) : undefined}
+          />
         ))}
       </tbody>
     </table>
