@@ -15,10 +15,6 @@ defmodule RichardBurton.Util do
     right
   end
 
-  def is_value_blank({_, v}) do
-    v == ""
-  end
-
   def create_fingerprint(data) when is_binary(data) do
     data |> sha256 |> Base.encode16()
   end
