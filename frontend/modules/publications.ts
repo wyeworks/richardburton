@@ -1,12 +1,15 @@
 import {
   atom,
+  atomFamily,
   Resetter,
   SetterOrUpdater,
+  Snapshot,
+  useRecoilCallback,
+  useRecoilSnapshot,
   useRecoilValue,
-  useResetRecoilState,
   useSetRecoilState,
 } from "recoil";
-import { isString, isNumber } from "lodash";
+import { isString } from "lodash";
 
 type Publication = {
   title: string;
@@ -20,13 +23,26 @@ type Publication = {
 
 type PublicationKey = keyof Publication;
 type PublicationError = null | string | Record<PublicationKey, string>;
-type PublicationEntry = { publication: Publication; errors: PublicationError };
+type PublicationEntry = {
+  id: number;
+  publication: Publication;
+  errors: PublicationError;
+};
+type PublicationId = PublicationEntry["id"];
 
-type StoredPublication = PublicationEntry[] | undefined;
+const PUBLICATION_IDS = atom<PublicationId[]>({
+  key: "publication-ids",
+  default: [],
+});
 
-const ATOM = atom<StoredPublication>({
+const PUBLICATIONS = atomFamily<PublicationEntry, PublicationId>({
   key: "publications",
   default: undefined,
+});
+
+const DELETED_PUBLICATIONS = atomFamily<boolean, PublicationId>({
+  key: "deleted-publications",
+  default: false,
 });
 
 const ERROR_MESSAGES: Record<string, string> = {
@@ -39,9 +55,22 @@ interface PublicationModule {
   ATTRIBUTE_LABELS: Record<PublicationKey, string>;
 
   STORE: {
-    useValue(): StoredPublication;
-    useSet(): SetterOrUpdater<StoredPublication>;
-    useReset(): Resetter;
+    useIds(): PublicationId[];
+    useDeletedIds(): PublicationId[];
+    useValue(id: PublicationId): PublicationEntry;
+    useAll(): PublicationEntry[];
+    useSet(id: PublicationId): SetterOrUpdater<PublicationEntry>;
+    useSetAll(): (ids: PublicationId[], entries: PublicationEntry[]) => void;
+    useSetDeleted(): (ids: PublicationId[], isDeleted?: boolean) => void;
+    useResetAll(): Resetter;
+
+    from: (snapshot: Snapshot) => {
+      getIds(): PublicationId[];
+      getDeletedIds(): PublicationId[];
+      getAll(): PublicationEntry[];
+      getValue(id: PublicationId): PublicationEntry;
+      isDeleted(id: PublicationId): boolean;
+    };
   };
 
   describe(error: PublicationError, scope?: PublicationKey): string;
@@ -67,15 +96,80 @@ const Publication: PublicationModule = {
     year: "Year",
   },
   STORE: {
-    useValue() {
-      return useRecoilValue(ATOM);
+    useIds() {
+      return useRecoilValue(PUBLICATION_IDS);
     },
-    useSet() {
-      return useSetRecoilState(ATOM);
+    useDeletedIds() {
+      const snapshot = useRecoilSnapshot();
+      return this.from(snapshot).getDeletedIds();
     },
-    useReset() {
-      return useResetRecoilState(ATOM);
+    useValue(id: PublicationId) {
+      return useRecoilValue(PUBLICATIONS(id));
     },
+    useAll() {
+      const snapshot = useRecoilSnapshot();
+      return this.from(snapshot).getAll();
+    },
+    useSet(id: PublicationId) {
+      return useSetRecoilState(PUBLICATIONS(id));
+    },
+    useSetAll() {
+      return useRecoilCallback(
+        ({ set }) =>
+          (ids, entries) => {
+            set(PUBLICATION_IDS, ids);
+            ids.forEach((id, index) => set(PUBLICATIONS(id), entries[index]));
+          },
+        []
+      );
+    },
+    useSetDeleted() {
+      return useRecoilCallback(
+        ({ set }) =>
+          (ids, isDeleted = true) => {
+            ids.forEach((id) => set(DELETED_PUBLICATIONS(id), isDeleted));
+          },
+        []
+      );
+    },
+    useResetAll() {
+      return useRecoilCallback(
+        ({ reset, snapshot }) =>
+          () => {
+            const ids = snapshot.getLoadable(PUBLICATION_IDS).valueOrThrow();
+            ids.forEach((id) => {
+              reset(PUBLICATIONS(id));
+              reset(DELETED_PUBLICATIONS(id));
+            });
+            reset(PUBLICATION_IDS);
+          },
+        []
+      );
+    },
+
+    from: (snapshot) => ({
+      getIds() {
+        return snapshot.getLoadable(PUBLICATION_IDS).valueOrThrow();
+      },
+      getDeletedIds() {
+        const { getIds, isDeleted } = Publication.STORE.from(snapshot);
+        return getIds().filter(isDeleted);
+      },
+      getValue(id) {
+        return snapshot.getLoadable(PUBLICATIONS(id)).valueOrThrow();
+      },
+      getAll() {
+        const { getIds, getValue, isDeleted } =
+          Publication.STORE.from(snapshot);
+
+        return getIds()
+          .filter((id) => !isDeleted(id))
+          .map(getValue);
+      },
+      isDeleted(id) {
+        return snapshot.getLoadable(DELETED_PUBLICATIONS(id)).valueOrThrow();
+      },
+    }),
   },
   describe(error, scope) {
     if (!error) {
@@ -96,5 +190,10 @@ const Publication: PublicationModule = {
   },
 };
 
-export type { PublicationKey, PublicationEntry, PublicationError };
+export type {
+  PublicationKey,
+  PublicationEntry,
+  PublicationError,
+  PublicationId,
+};
 export { Publication };

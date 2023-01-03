@@ -70,7 +70,8 @@ const Home: NextPage = () => {
           </aside>
           {publications ? (
             <PublicationIndex
-              entries={publications.map((publication) => ({
+              entries={publications.map((publication, index) => ({
+                id: index,
                 publication,
                 errors: null,
               }))}

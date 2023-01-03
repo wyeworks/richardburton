@@ -3,16 +3,24 @@ import {
   Publication,
   PublicationEntry,
   PublicationError,
+  PublicationId,
   PublicationKey,
 } from "modules/publications";
 import {
   createContext,
   FC,
+  MouseEvent,
+  MouseEventHandler,
   PropsWithChildren,
   useContext,
   useMemo,
 } from "react";
 import ErrorTooltip from "./ErrorTooltip";
+import {
+  useIsSelected,
+  useIsSelectionEmpty,
+  useSelectionEvent,
+} from "react-selection-manager";
 
 const COUNTRIES: Record<string, string> = {
   BR: "Brazil",
@@ -26,15 +34,20 @@ const COUNTRIES: Record<string, string> = {
 type Props = {
   entries: PublicationEntry[];
   columns: Set<PublicationKey>;
+  editable?: boolean;
 };
 
 type RowProps = {
+  id: PublicationId;
   attributes: PublicationKey[];
   publication: Publication;
   errors: PublicationError;
+  editable: boolean;
+  onClick?: MouseEventHandler;
 };
 
 type RowContext = {
+  id: PublicationId;
   publication: Publication;
   errors: PublicationError;
   hasErrors: boolean;
@@ -53,12 +66,15 @@ const Column: FC<PropsWithChildren & { className?: string }> = ({
 }) => {
   const row = useRow();
 
+  const selected = useIsSelected(row.id);
+
   return (
     <td
       className={classNames(
         className,
         "max-w-cell px-2 py-1 truncate justify",
-        row.hasErrors ? "group-hover:bg-red-100" : "group-hover:bg-indigo-100"
+        row.hasErrors ? "group-hover:bg-red-100" : "group-hover:bg-indigo-100",
+        { "bg-amber-100": selected }
       )}
     >
       {children}
@@ -101,13 +117,20 @@ const DataColumn: FC<{ attribute: PublicationKey }> = ({ attribute }) => {
   );
 };
 
-const Row: FC<RowProps> = ({ attributes, publication, errors }) => {
+const Row: FC<RowProps> = ({
+  id,
+  attributes,
+  publication,
+  errors,
+  editable,
+  onClick,
+}) => {
   const hasErrors = Boolean(errors);
   const errorString = Publication.describe(errors);
 
   const context = useMemo(
-    () => ({ publication, errors, hasErrors }),
-    [publication, errors, hasErrors]
+    () => ({ id, publication, errors, hasErrors }),
+    [id, publication, errors, hasErrors]
   );
 
   return (
@@ -119,12 +142,14 @@ const Row: FC<RowProps> = ({ attributes, publication, errors }) => {
     >
       <tr
         className={classNames(
-          "cursor-pointer group",
-          hasErrors ? "hover:bg-red-100" : "hover:bg-indigo-100"
+          "relative group",
+          hasErrors ? "hover:bg-red-100" : "hover:bg-indigo-100",
+          { "cursor-pointer": Boolean(onClick) }
         )}
+        onClick={onClick}
       >
         <RowContext.Provider value={context}>
-          <SignalColumn />
+          {editable && <SignalColumn />}
           {attributes.map((attribute) => (
             <DataColumn key={attribute} attribute={attribute} />
           ))}
@@ -134,16 +159,37 @@ const Row: FC<RowProps> = ({ attributes, publication, errors }) => {
   );
 };
 
-const PublicationIndex: FC<Props> = ({ entries, columns }) => {
+const PublicationIndex: FC<Props> = ({
+  entries,
+  columns,
+  editable = false,
+}) => {
   const attributes = Publication.ATTRIBUTES.filter((attribute) =>
     columns.has(attribute)
   );
 
+  const onSelect = useSelectionEvent();
+
+  const toggleSelection = (id: number) => (event: MouseEvent) =>
+    onSelect({
+      id,
+      type: "publication",
+      shiftKey: event.shiftKey,
+      metaKey: event.metaKey,
+      orderedIds: entries.map(({ id }) => id),
+    });
+
+  const isSelectionEmpty = useIsSelectionEmpty();
+
   return (
-    <table className="overflow-auto">
+    <table
+      className={classNames("overflow-auto", {
+        "select-none": !isSelectionEmpty,
+      })}
+    >
       <thead className="sticky top-0 z-10 bg-gray-100">
         <tr>
-          <th />
+          {editable && <th />}
           {attributes.map((key) => (
             <th className="px-2 py-4" key={key}>
               {Publication.ATTRIBUTE_LABELS[key]}
@@ -153,7 +199,13 @@ const PublicationIndex: FC<Props> = ({ entries, columns }) => {
       </thead>
       <tbody>
         {entries.map((entry) => (
-          <Row key={JSON.stringify(entry)} attributes={attributes} {...entry} />
+          <Row
+            key={JSON.stringify(entry)}
+            attributes={attributes}
+            editable={editable}
+            onClick={editable ? toggleSelection(entry.id) : undefined}
+            {...entry}
+          />
         ))}
       </tbody>
     </table>

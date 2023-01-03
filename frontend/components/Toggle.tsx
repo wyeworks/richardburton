@@ -1,6 +1,7 @@
 import { FC, useState } from "react";
 import classNames from "classnames";
 import CheckIcon from "assets/check.svg";
+import Button from "./Button";
 
 type Props = { label: string; startsChecked: boolean; onChange: () => void };
 
@@ -13,18 +14,13 @@ const Toggle: FC<Props> = ({ label, startsChecked, onChange }) => {
   };
 
   return (
-    <button
-      className={classNames(
-        "w-48 flex px-2 py-1.5 transition-colors rounded-lg font-base shadow-sm text-left",
-        isChecked
-          ? "bg-indigo-600 hover:bg-indigo-700 text-white"
-          : "bg-gray-100 hover:bg-gray-200"
-      )}
+    <Button
+      type={isChecked ? "primary" : "outline"}
+      Icon={isChecked ? CheckIcon : undefined}
+      label={label}
       onClick={handleClick}
-    >
-      {isChecked && <CheckIcon className="w-6 h-6 mr-2 text-white" />}
-      {label}
-    </button>
+      alignment="left"
+    />
   );
 };
 
