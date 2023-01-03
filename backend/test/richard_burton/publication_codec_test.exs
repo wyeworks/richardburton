@@ -205,11 +205,11 @@ defmodule RichardBurton.Publication.CodecTest do
         publisher: "Bickers & Son",
         translated_book: %{
           authors: [
-            %{"name" => "Isabel Burton"}
+            %{name: "Isabel Burton"}
           ],
           original_book: %{
             authors: [
-              %{"name" => "José de Alencar"}
+              %{name: "José de Alencar"}
             ],
             title: "Iracema"
           }
@@ -227,11 +227,11 @@ defmodule RichardBurton.Publication.CodecTest do
         publisher: "Bickers & Son",
         translated_book: %TranslatedBook{
           authors: [
-            %{"name" => "Isabel Burton"}
+            %{name: "Isabel Burton"}
           ],
           original_book: %OriginalBook{
             authors: [
-              %{"name" => "José de Alencar"}
+              %{name: "José de Alencar"}
             ],
             title: "Iracema"
           }
@@ -267,11 +267,11 @@ defmodule RichardBurton.Publication.CodecTest do
           publisher: "Bickers & Son",
           translated_book: %{
             authors: [
-              %{"name" => "Isabel Burton"}
+              %{name: "Isabel Burton"}
             ],
             original_book: %{
               authors: [
-                %{"name" => "José de Alencar"}
+                %{name: "José de Alencar"}
               ],
               title: "Iracema"
             }
@@ -284,11 +284,11 @@ defmodule RichardBurton.Publication.CodecTest do
           publisher: "Bickers & Son",
           translated_book: %TranslatedBook{
             authors: [
-              %{"name" => "Isabel Burton"}
+              %{name: "Isabel Burton"}
             ],
             original_book: %OriginalBook{
               authors: [
-                %{"name" => "José de Alencar"}
+                %{name: "José de Alencar"}
               ],
               title: "Iracema"
             }
@@ -339,7 +339,7 @@ defmodule RichardBurton.Publication.CodecTest do
             publisher: "required",
             translated_book: %{
               original_book: %{
-                authors: "required",
+                authors: [%{name: "required"}],
                 title: "required"
               }
             }

@@ -3,22 +3,9 @@ defmodule RichardBurton.Publication.Codec do
   Serialization and deserialization utilities for publications
   """
 
+  alias RichardBurton.Codec
   alias RichardBurton.Util
   alias RichardBurton.Publication
-
-  @empty_nested_attrs %{
-    "title" => "",
-    "year" => "",
-    "country" => "",
-    "publisher" => "",
-    "translated_book" => %{
-      "authors" => "",
-      "original_book" => %{
-        "title" => "",
-        "authors" => ""
-      }
-    }
-  }
 
   @empty_flat_attrs %{
     "title" => "",
@@ -91,28 +78,22 @@ defmodule RichardBurton.Publication.Codec do
     Enum.map(flat_publications, &nest/1)
   end
 
-  def flatten(%{
-        "title" => title,
-        "year" => year,
-        "country" => country,
-        "publisher" => publisher,
-        "translated_book" => %{
-          "authors" => authors,
-          "original_book" => %{
-            "title" => original_title,
-            "authors" => original_authors
+  def flatten(
+        p = %{
+          "title" => _title,
+          "year" => _year,
+          "country" => _country,
+          "publisher" => _publisher,
+          "translated_book" => %{
+            "authors" => _authors,
+            "original_book" => %{
+              "title" => _original_title,
+              "authors" => _original_authors
+            }
           }
         }
-      }) do
-    %{
-      "title" => title,
-      "year" => year,
-      "country" => country,
-      "publisher" => publisher,
-      "authors" => flatten_authors(authors),
-      "original_title" => original_title,
-      "original_authors" => flatten_authors(original_authors)
-    }
+      ) do
+    Codec.flatten(p, &(&1 |> rename_key |> flatten_value))
   end
 
   def flatten(p = %Publication{}) do
@@ -136,7 +117,7 @@ defmodule RichardBurton.Publication.Codec do
           }
         }
       ) do
-    p |> Util.stringify_keys() |> flatten
+    Codec.flatten(p, &(&1 |> rename_key |> flatten_value |> stringify_keys))
   end
 
   def flatten(%{publication: publication, errors: nil}) do
@@ -147,15 +128,10 @@ defmodule RichardBurton.Publication.Codec do
     %{publication: flatten(publication), errors: errors}
   end
 
-  def flatten(%{publication: publication, errors: errors}) do
+  def flatten(%{publication: publication, errors: errors}) when is_map(errors) do
     %{
       publication: flatten(publication),
-      errors:
-        @empty_nested_attrs
-        |> Util.deep_merge_maps(Util.stringify_keys(errors))
-        |> flatten
-        |> Enum.reject(&Util.is_value_blank/1)
-        |> Enum.into(%{})
+      errors: flatten_errors(errors)
     }
   end
 
@@ -167,12 +143,56 @@ defmodule RichardBurton.Publication.Codec do
     String.split(authors, " and ") |> Enum.map(&Map.put(%{}, "name", &1))
   end
 
-  # TO DO: Refactor so we don't have to do this. For now, it's necessary to flatten errors in authors.
-  defp flatten_authors(string) when is_binary(string) do
-    string
+  defp flatten_authors(authors) when is_list(authors) do
+    Enum.map_join(authors, " and ", &(Map.get(&1, "name") || Map.get(&1, :name)))
   end
 
-  defp flatten_authors(authors) when is_list(authors) do
-    Enum.map_join(authors, " and ", &Map.get(&1, "name"))
+  defp flatten_authors_error(authors) when is_list(authors) do
+    authors |> List.first() |> Map.get(:name)
   end
+
+  defp flatten_errors(errors) do
+    Codec.flatten(errors, &(&1 |> rename_key |> flatten_error |> stringify_keys))
+  end
+
+  defp rename_key({:translated_book_authors, v}), do: {:authors, v}
+  defp rename_key({:translated_book_original_book_title, v}), do: {:original_title, v}
+  defp rename_key({:translated_book_original_book_authors, v}), do: {:original_authors, v}
+  defp rename_key({"translated_book_authors", v}), do: {"authors", v}
+  defp rename_key({"translated_book_original_book_title", v}), do: {"original_title", v}
+  defp rename_key({"translated_book_original_book_authors", v}), do: {"original_authors", v}
+  defp rename_key({key, value}), do: {key, value}
+
+  defp flatten_value({"authors", value}),
+    do: {"authors", flatten_authors(value)}
+
+  defp flatten_value({"original_authors", value}),
+    do: {"original_authors", flatten_authors(value)}
+
+  defp flatten_value({:authors, value}),
+    do: {:authors, flatten_authors(value)}
+
+  defp flatten_value({:original_authors, value}),
+    do: {:original_authors, flatten_authors(value)}
+
+  defp flatten_value({key, value}),
+    do: {key, value}
+
+  defp flatten_error({:authors, error}),
+    do: {:authors, flatten_authors_error(error)}
+
+  defp flatten_error({:original_authors, error}),
+    do: {:original_authors, flatten_authors_error(error)}
+
+  defp flatten_error({"authors", error}),
+    do: {"authors", flatten_authors_error(error)}
+
+  defp flatten_error({"original_authors", error}),
+    do: {"original_authors", flatten_authors_error(error)}
+
+  defp flatten_error({key, error}),
+    do: {key, error}
+
+  defp stringify_keys({key, value}) when is_atom(key), do: {Atom.to_string(key), value}
+  defp stringify_keys({key, value}), do: {key, value}
 end

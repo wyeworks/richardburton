@@ -19,14 +19,6 @@ defmodule RichardBurton.Util do
     v == ""
   end
 
-  def stringify_keys(map) when is_map(map) do
-    Map.new(map, fn {k, v} -> {Atom.to_string(k), stringify_keys(v)} end)
-  end
-
-  def stringify_keys(v) when not is_map(v) do
-    v
-  end
-
   def create_fingerprint(data) when is_binary(data) do
     data |> sha256 |> Base.encode16()
   end
