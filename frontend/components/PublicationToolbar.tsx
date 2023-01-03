@@ -28,12 +28,14 @@ const ToolbarHeading: FC<{ label: string }> = ({ label }) => (
 );
 
 const PublicationEdit: FC = () => {
-  const deletedIds = Publication.STORE.useDeletedIds();
+  const { useDeletedCount, useSetDeleted, useResetDeleted } = Publication.STORE;
+
+  const setDeleted = useSetDeleted();
+  const resetDeleted = useResetDeleted();
+  const deletedCount = useDeletedCount();
 
   const selectionSize = useSelectionSize();
   const clearSelection = useClearSelection();
-
-  const setDeleted = Publication.STORE.useSetDeleted();
 
   const deleteSelected = () => {
     const selectedIds = [...getSelection()] as number[];
@@ -44,12 +46,12 @@ const PublicationEdit: FC = () => {
   };
 
   const reset = () => {
-    setDeleted(deletedIds, false);
+    resetDeleted();
     clearSelection();
   };
 
   const isSelectionEmpty = selectionSize === 0;
-  const isDeletionSetEmpty = deletedIds.length === 0;
+  const isDeletionSetEmpty = deletedCount === 0;
 
   return (
     <section className="flex flex-col grow">
@@ -88,15 +90,18 @@ const AttributeToggle: FC<{ attribute: PublicationKey }> = ({ attribute }) => {
 
   return (
     <Toggle
-      key={attribute}
       label={Publication.ATTRIBUTE_LABELS[attribute]}
-      startsChecked={isActive}
-      onChange={() => setVisible(attribute, !isActive)}
+      checked={isActive}
+      onClick={() => setVisible([attribute], !isActive)}
     />
   );
 };
 
 const PublicationFilter: FC = () => {
+  const resetVisibleAttributes = Publication.STORE.ATTRIBUTES.useResetAll();
+
+  useEffect(() => resetVisibleAttributes(), [resetVisibleAttributes]);
+
   return (
     <section className="space-y-2">
       <ToolbarHeading label="Filter" />
@@ -108,9 +113,10 @@ const PublicationFilter: FC = () => {
 };
 
 const PublicationUpload: FC = () => {
+  const { useSetAll, useResetAll } = Publication.STORE;
   const notifyError = useNotifyError();
-  const setPublications = Publication.STORE.useSetAll();
-  const resetPublications = Publication.STORE.useResetAll();
+  const setPublications = useSetAll();
+  const resetPublications = useResetAll();
 
   const [key, setKey] = useState(1);
 
@@ -190,7 +196,7 @@ const PublicationToolbar: FC<Props> = ({
       async () => {
         try {
           const publications = Publication.STORE.from(snapshot)
-            .getAll()
+            .getAllVisible()
             .map(({ publication }) => publication);
 
           await API.post("publications/bulk", publications);
