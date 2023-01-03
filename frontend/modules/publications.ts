@@ -12,7 +12,7 @@ import {
 } from "recoil";
 import { isString, range } from "lodash";
 import { request } from "app";
-import { _ERRORS, _notify } from "components/Errors";
+import { _NOTIFICATIONS, _notify } from "components/Notifications";
 import { AxiosInstance } from "axios";
 import hash from "object-hash";
 
@@ -154,6 +154,18 @@ const LAST_VALIDATED_VALUE = atomFamily<string, PublicationId>({
   default: undefined,
 });
 
+const IS_VALIDATING = atom<boolean>({
+  key: "is-validating",
+  default: false,
+});
+
+const TOTAL_PUBLICATION_COUNT = selector<number>({
+  key: "total-publication-count",
+  get({ get }) {
+    return get(PUBLICATION_IDS).length;
+  },
+});
+
 const DEFAULT_ATTRIBUTE_VISIBILITY: Record<PublicationKey, boolean> = {
   title: true,
   country: false,
@@ -228,6 +240,9 @@ interface PublicationModule {
     useValidCount(): number;
     useDeletedCount(): number;
     useOverriddenCount(): number;
+    useTotalCount(): number;
+
+    useIsValidating(): boolean;
 
     from: (snapshot: Snapshot) => {
       getVisibleIds(): PublicationId[];
@@ -265,10 +280,10 @@ interface PublicationModule {
         params: Pick<CallbackInterface, "set" | "snapshot">,
         http: AxiosInstance
       ) => (args: P) => Promise<T>
-    ): (args: P) => Promise<void>;
+    ): (args: P) => Promise<T>;
 
     useIndex(): () => Promise<void>;
-    useBulk(): () => Promise<void>;
+    useBulk(): () => Promise<Publication[]>;
     useValidate(): (ids: PublicationId[]) => Promise<void>;
   };
 
@@ -310,6 +325,7 @@ const Publication: PublicationModule = {
     useError(id) {
       return useRecoilValue(PUBLICATION_ERRORS(id));
     },
+
     useAddNew() {
       return useRecoilCallback(({ set, reset, snapshot }) => () => {
         const ids = snapshot.getLoadable(PUBLICATION_IDS).valueOrThrow();
@@ -420,6 +436,13 @@ const Publication: PublicationModule = {
     useOverriddenCount() {
       return useRecoilValue(OVERRIDDEN_PUBLICATION_COUNT);
     },
+    useTotalCount() {
+      return useRecoilValue(TOTAL_PUBLICATION_COUNT);
+    },
+
+    useIsValidating() {
+      return useRecoilValue(IS_VALIDATING);
+    },
 
     from: (snapshot) => ({
       getVisibleIds() {
@@ -519,10 +542,15 @@ const Publication: PublicationModule = {
           (args) => {
             return new Promise(async (resolve, reject) => {
               try {
-                await request((http) => factory({ set, snapshot }, http)(args));
-                resolve();
+                const res = await request((http) =>
+                  factory({ set, snapshot }, http)(args)
+                );
+                resolve(res);
               } catch (error: any) {
-                set(_ERRORS, _notify(error));
+                set(
+                  _NOTIFICATIONS,
+                  _notify({ message: error, level: "warning" })
+                );
                 reject(error);
               }
             });
@@ -543,17 +571,20 @@ const Publication: PublicationModule = {
     useBulk() {
       return Publication.REMOTE.useRequest(
         ({ snapshot }, http) =>
-          async () =>
-            http.post<void>(
+          async function () {
+            const { data } = await http.post<Publication[]>(
               "publications/bulk",
               Publication.STORE.from(snapshot).getAllVisible()
-            )
+            );
+            return data;
+          }
       );
     },
     useValidate() {
       return Publication.REMOTE.useRequest(
         ({ set, snapshot }, http) =>
           async (ids: PublicationId[]) => {
+            set(IS_VALIDATING, true);
             const publications = ids
               .map((id) => ({
                 id,
@@ -587,6 +618,7 @@ const Publication: PublicationModule = {
                 data.map((entry, index) => ({ ...entry, id: ids[index] }))
               );
             }
+            set(IS_VALIDATING, false);
           }
       );
     },

@@ -4,7 +4,7 @@ import { FC } from "react";
 import axios, { AxiosInstance } from "axios";
 import axiosCaseConverter from "axios-case-converter";
 import { RecoilRoot } from "recoil";
-import Errors from "components/Errors";
+import Notifications from "components/Notifications";
 import ClearSelection from "listeners/ClearSelection";
 import { Publication } from "modules/publications";
 
@@ -46,7 +46,7 @@ enum Key {
 const App: FC<AppProps> = ({ Component, pageProps }) => {
   return (
     <RecoilRoot initializeState={Publication.STORE.initialize}>
-      <Errors />
+      <Notifications />
       <ClearSelection />
       <Component {...pageProps} />
     </RecoilRoot>

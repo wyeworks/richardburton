@@ -23,17 +23,22 @@ const NewPublications: NextPage = () => {
       title="Richard Burton"
       header={
         <Header compact>
-          <h2 className="my-4 text-4xl text-center">
-            <div>{publicationCount} publications about to be inserted...</div>
-            {invalidPublicationCount > 0 && (
-              <div className="text-lg text-red-500">
-                {invalidPublicationCount} of those have errors
-              </div>
-            )}
+          <h2 className="my-6 text-4xl text-center">
+            <div>
+              {publicationCount > 0
+                ? `${publicationCount} publications about to be inserted...`
+                : "Add publications manually or upload a CSV file"}
+            </div>
+            <div className="h-4 text-lg text-red-500">
+              {invalidPublicationCount > 0 &&
+                `${invalidPublicationCount} of those ${
+                  invalidPublicationCount === 1 ? "has" : "have"
+                } errors`}
+            </div>
           </h2>
         </Header>
       }
-      sidebar={<PublicationToolbar edit />}
+      sidebar={<PublicationToolbar edit upload />}
       content={<PublicationReview />}
     />
   );

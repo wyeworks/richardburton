@@ -16,7 +16,7 @@ const Layout: FC<Props> = ({ title, header, content, sidebar }) => {
       </Head>
       <div className="flex flex-col h-full">
         {header}
-        <div className="flex justify-center p-4 space-x-8 overflow-hidden ">
+        <div className="flex justify-center p-4 space-x-8 overflow-hidden grow">
           <main className="relative flex overflow-hidden w-fit grow">
             <div className="flex overflow-scroll grow">{content}</div>
           </main>
