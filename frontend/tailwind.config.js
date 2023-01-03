@@ -1,3 +1,5 @@
+const plugin = require("tailwindcss/plugin");
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
@@ -18,5 +20,10 @@ module.exports = {
       montserrat: ["Montserrat", "sans-serif"],
     },
   },
-  plugins: [],
+  plugins: [
+    plugin(function ({ addVariant }) {
+      addVariant("error", '&[data-error="true"]');
+      addVariant("selected", '&[data-selected="true"]');
+    }),
+  ],
 };

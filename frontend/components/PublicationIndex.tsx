@@ -4,272 +4,168 @@ import {
   PublicationId,
   PublicationKey,
 } from "modules/publications";
-import {
-  ChangeEventHandler,
-  FC,
-  MouseEvent,
-  MouseEventHandler,
-  PropsWithChildren,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
-import ErrorTooltip from "./ErrorTooltip";
-import {
-  useIsSelected,
-  useIsSelectionEmpty,
-  useSelectionEvent,
-} from "react-selection-manager";
+import { FC, forwardRef, HTMLProps, MouseEvent, ReactNode } from "react";
 
-const COUNTRIES: Record<string, string> = {
-  BR: "Brazil",
-  GB: "Great Britain",
-  US: "United States",
-  CA: "Canada",
-  IE: "Ireland",
-  NZ: "New Zealand",
+type RowId = PublicationId;
+type ColId = PublicationKey;
+
+type HTMLTableRowProps = HTMLProps<HTMLTableRowElement>;
+
+const ColumnHeader: FC<{ colId: ColId }> = ({ colId }) => {
+  const isVisible = Publication.STORE.ATTRIBUTES.useIsVisible(colId);
+
+  return isVisible ? (
+    <th className="px-2 py-4">{Publication.ATTRIBUTE_LABELS[colId]}</th>
+  ) : null;
 };
 
-type ColumnProps = PropsWithChildren & {
-  className?: string;
-  publicationId: PublicationId;
+const Content: FC<{
+  rowId: RowId;
+  colId: ColId;
+  error: string;
+  value: string;
+}> = ({ value }) => {
+  return <div className="px-2 py-1 truncate">{value}</div>;
 };
 
-const Column: FC<ColumnProps> = ({ className, children, publicationId }) => {
-  const isSelected = useIsSelected(publicationId);
-  const isValid = Publication.STORE.useIsValid(publicationId);
+const Column: FC<{
+  rowId: RowId;
+  colId: ColId;
+  Content: typeof Content;
+  visible?: boolean;
+  invalid?: boolean;
+  selected?: boolean;
+  selectable?: boolean;
+}> = ({
+  rowId,
+  colId,
+  Content,
+  invalid = false,
+  selected = false,
+  selectable = false,
+}) => {
+  const { useIsVisible, useValue, useErrorDescription } =
+    Publication.STORE.ATTRIBUTES;
 
+  const visible = useIsVisible(colId);
+  const value = useValue(rowId, colId);
+  const error = useErrorDescription(rowId, colId);
+
+  return visible ? (
+    <td
+      className="max-w-xs px-2 py-1 justify group-hover:bg-indigo-100 error:group-hover:bg-red-100 selected:bg-amber-100"
+      data-selected={selected}
+      data-selectable={selectable}
+      data-error={invalid}
+    >
+      <Content rowId={rowId} colId={colId} value={value} error={error} />
+    </td>
+  ) : null;
+};
+
+type RowProps = Omit<HTMLTableRowProps, "ref"> & {
+  rowId: RowId;
+  Column: typeof Column;
+  Content: typeof Content;
+  SignalColumn?: typeof SignalColumn;
+  onClick?: (event: MouseEvent) => void;
+};
+
+const Row = forwardRef<HTMLTableRowElement, RowProps>(function Row(
+  { rowId, Column, Content, SignalColumn, className, onClick, ...props },
+  ref
+) {
+  const clickable = Boolean(onClick);
+  return (
+    <tr
+      ref={ref}
+      className={classNames(className, "relative group", {
+        "cursor-pointer": clickable,
+      })}
+      onClick={onClick}
+      {...props}
+    >
+      {SignalColumn && <SignalColumn rowId={rowId} />}
+      {Publication.ATTRIBUTES.map((attribute) => (
+        <Column
+          key={attribute}
+          colId={attribute}
+          rowId={rowId}
+          Content={Content}
+        />
+      ))}
+    </tr>
+  );
+});
+
+const SignalColumn: FC<{
+  rowId: RowId;
+  invalid?: boolean;
+  selected?: boolean;
+  selectable?: boolean;
+  children?: ReactNode;
+}> = ({ invalid = false, selected = false, selectable = false, children }) => {
   return (
     <td
-      className={classNames(
-        className,
-        "max-w-xs px-2 py-1 justify",
-        isValid ? "group-hover:bg-indigo-100" : "group-hover:bg-red-100",
-        { "bg-amber-100": isSelected }
-      )}
-      data-selectable="true"
+      className="sticky left-0 px-2 text-xl text-center bg-gray-100 grow group-hover:bg-indigo-100 error:group-hover:bg-red-100 selected:bg-amber-100"
+      data-selected={selected}
+      data-selectable={selectable}
+      data-error={invalid}
     >
       {children}
     </td>
   );
 };
 
-type SignalColumnProps = {
-  publicationId: PublicationId;
-};
-
-const SignalColumn: FC<SignalColumnProps> = ({ publicationId }) => {
-  const isValid = Publication.STORE.useIsValid(publicationId);
-
-  return (
-    <Column
-      className="sticky left-0 px-2 text-xl bg-gray-100"
-      publicationId={publicationId}
-    >
-      {!isValid && "❗️"}
-    </Column>
-  );
-};
-
-type DataInputProps = {
-  publicationId: PublicationId;
-  attribute: PublicationKey;
-  data: string | number;
-  hasError: boolean;
-};
-
-const DataInput: FC<DataInputProps> = ({
-  publicationId,
-  attribute,
-  data,
-  hasError,
-}) => {
-  const override = Publication.STORE.ATTRIBUTES.useOverride();
-  const validate = Publication.REMOTE.useValidate();
-
-  const value = useRef<string | number>(data);
-  const [, setKey] = useState(1);
-
-  const setValue = useCallback((v: string | number) => {
-    value.current = v;
-    setKey((key) => -key);
-  }, []);
-
-  useEffect(() => {
-    if (data !== value.current) {
-      validate([publicationId]);
-      setValue(data);
-    }
-  }, [data, publicationId, validate, setValue]);
-
-  const handleBlur = () => {
-    if (data !== value.current) {
-      override(publicationId, attribute, value.current);
-      validate([publicationId]);
-    }
-  };
-
-  const handleChange: ChangeEventHandler<HTMLInputElement> = (e) => {
-    setValue(e.target.value);
-  };
-
-  return (
-    <input
-      className={classNames(
-        "px-2 py-1 rounded outline-none bg-transparent",
-        hasError
-          ? "focus:bg-red-400/80 bg-red-300/40 focus:text-white shadow-sm"
-          : "focus:bg-white/50 focus:shadow-sm"
-      )}
-      value={value.current}
-      onChange={handleChange}
-      onBlur={handleBlur}
-    />
-  );
-};
-
-type DataColumnProps = {
-  attribute: PublicationKey;
-  publicationId: PublicationId;
-  editable: boolean;
-};
-
-const DataColumn: FC<DataColumnProps> = ({
-  attribute,
-  publicationId,
-  editable,
-}) => {
-  const { useIsVisible, useValue, useErrorDescription } =
-    Publication.STORE.ATTRIBUTES;
-
-  const value = useValue(publicationId, attribute);
-  const error = useErrorDescription(publicationId, attribute);
-  const isVisible = useIsVisible(attribute);
-
-  const content = attribute === "country" ? COUNTRIES[value] : value;
-
-  return isVisible ? (
-    <Column publicationId={publicationId}>
-      <ErrorTooltip
-        message={error}
-        hidden={!Boolean(error)}
-        disabled={!editable}
-        boundary="main"
-      >
-        {editable ? (
-          <DataInput
-            publicationId={publicationId}
-            attribute={attribute}
-            data={content}
-            hasError={Boolean(error)}
-          />
-        ) : (
-          <div className="px-2 py-1 truncate">{content}</div>
-        )}
-      </ErrorTooltip>
-    </Column>
-  ) : null;
-};
-
-type RowProps = {
-  editable: boolean;
-  publicationId: PublicationId;
-  onClick?: MouseEventHandler;
-};
-
-const Row: FC<RowProps> = ({ publicationId, editable, onClick }) => {
-  const { useIsValid, useErrorDescription } = Publication.STORE;
-
-  const isValid = useIsValid(publicationId);
-  const error = useErrorDescription(publicationId);
-
-  return (
-    <ErrorTooltip
-      message={error}
-      hidden={!Boolean(error)}
-      disabled={!editable}
-      placement="top-start"
-      boundary="main"
-      portalRoot="main"
-      absoluteCenter
-    >
-      <tr
-        className={classNames(
-          "relative group",
-          isValid ? "hover:bg-indigo-100" : "hover:bg-red-100",
-          { "cursor-pointer": Boolean(onClick) }
-        )}
-        onClick={onClick}
-        data-selectable="true"
-      >
-        {editable && <SignalColumn publicationId={publicationId} />}
-        {Publication.ATTRIBUTES.map((attribute) => (
-          <DataColumn
-            key={attribute}
-            attribute={attribute}
-            publicationId={publicationId}
-            editable={editable}
-          />
-        ))}
-      </tr>
-    </ErrorTooltip>
-  );
-};
-
-const ColumnHeader: FC<{ attribute: PublicationKey }> = ({ attribute }) => {
-  const isVisible = Publication.STORE.ATTRIBUTES.useIsVisible(attribute);
-
-  return isVisible ? (
-    <th className="px-2 py-4">{Publication.ATTRIBUTE_LABELS[attribute]}</th>
-  ) : null;
-};
-
 type Props = {
-  editable?: boolean;
+  ExtendedRow?: FC<RowProps>;
+  ExtendedColumn?: typeof Column;
+  ExtendedContent?: typeof Content;
+  ExtendedSignalColumn?: typeof SignalColumn;
+  ExtraRow?: FC;
+
+  onRowClick?: (id: RowId) => (event: MouseEvent) => void;
+  className?: string;
 };
 
-const PublicationIndex: FC<Props> = ({ editable = false }) => {
+const PublicationIndex: FC<Props> = ({
+  ExtendedRow = Row,
+  ExtendedColumn = Column,
+  ExtendedContent = Content,
+  ExtendedSignalColumn,
+  ExtraRow,
+  onRowClick,
+  className,
+}) => {
   const ids = Publication.STORE.useVisibleIds();
 
-  const onSelect = useSelectionEvent();
-  const isSelectionEmpty = useIsSelectionEmpty();
-
-  const toggleSelection = (id: number) => (event: MouseEvent) =>
-    onSelect({
-      id,
-      type: "publication",
-      shiftKey: event.shiftKey,
-      metaKey: event.metaKey,
-      orderedIds: ids,
-    });
-
   return (
-    <table
-      className={classNames("overflow-auto", {
-        "select-none": !isSelectionEmpty,
-      })}
-    >
+    <table className={classNames(className, "overflow-auto")}>
       <thead className="sticky top-0 z-10 bg-gray-100">
         <tr>
-          {editable && <th />}
+          {ExtendedSignalColumn && <th />}
           {Publication.ATTRIBUTES.map((key) => (
-            <ColumnHeader key={key} attribute={key} />
+            <ColumnHeader key={key} colId={key} />
           ))}
         </tr>
       </thead>
       <tbody>
         {ids.map((id) => (
-          <Row
+          <ExtendedRow
             key={id}
-            publicationId={id}
-            editable={editable}
-            onClick={editable ? toggleSelection(id) : undefined}
+            rowId={id}
+            Column={ExtendedColumn}
+            SignalColumn={ExtendedSignalColumn}
+            Content={ExtendedContent}
+            onClick={onRowClick?.(id)}
           />
         ))}
+        {ExtraRow && <ExtraRow />}
       </tbody>
     </table>
   );
 };
 
 export default PublicationIndex;
+export type { RowId, RowProps, ColId };
+export { Row, Column, Content, SignalColumn };
