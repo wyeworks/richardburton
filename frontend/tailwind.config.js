@@ -10,6 +10,9 @@ module.exports = {
       maxWidth: {
         cell: "19.5rem",
       },
+      minHeight: {
+        "1/2": "50%",
+      },
     },
     fontFamily: {
       montserrat: ["Montserrat", "sans-serif"],
