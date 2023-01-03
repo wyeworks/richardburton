@@ -78,10 +78,10 @@ defmodule RichardBurton.Publication.Codec do
       "country" => country,
       "publisher" => publisher,
       "translated_book" => %{
-        "authors" => authors,
+        "authors" => nest_authors(authors),
         "original_book" => %{
           "title" => original_title,
-          "authors" => original_authors
+          "authors" => nest_authors(original_authors)
         }
       }
     }
@@ -109,9 +109,9 @@ defmodule RichardBurton.Publication.Codec do
       "year" => year,
       "country" => country,
       "publisher" => publisher,
-      "authors" => authors,
+      "authors" => flatten_authors(authors),
       "original_title" => original_title,
-      "original_authors" => original_authors
+      "original_authors" => flatten_authors(original_authors)
     }
   end
 
@@ -161,5 +161,18 @@ defmodule RichardBurton.Publication.Codec do
 
   def flatten(publications) when is_list(publications) do
     Enum.map(publications, &flatten/1)
+  end
+
+  defp nest_authors(authors) do
+    String.split(authors, " and ") |> Enum.map(&Map.put(%{}, "name", &1))
+  end
+
+  # TO DO: Refactor so we don't have to do this. For now, it's necessary to flatten errors in authors.
+  defp flatten_authors(string) when is_binary(string) do
+    string
+  end
+
+  defp flatten_authors(authors) when is_list(authors) do
+    Enum.map_join(authors, " and ", &Map.get(&1, "name"))
   end
 end
