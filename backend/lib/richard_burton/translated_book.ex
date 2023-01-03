@@ -9,7 +9,9 @@ defmodule RichardBurton.TranslatedBook do
   alias RichardBurton.OriginalBook
   alias RichardBurton.Publication
 
-  @derive {Jason.Encoder, only: [:authors, :original_book]}
+  @external_attributes [:authors, :original_book]
+
+  @derive {Jason.Encoder, only: @external_attributes}
   schema "translated_books" do
     field(:authors, :string)
 
@@ -56,5 +58,13 @@ defmodule RichardBurton.TranslatedBook do
 
   def all() do
     __MODULE__ |> Repo.all() |> Repo.preload(:original_book)
+  end
+
+  def to_map(translated_book) do
+    original_book = OriginalBook.to_map(translated_book.original_book)
+
+    translated_book
+    |> Map.take(@external_attributes)
+    |> Map.put(:original_book, original_book)
   end
 end

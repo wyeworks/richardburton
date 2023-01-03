@@ -5,197 +5,162 @@ defmodule RichardBurtonWeb.PublicationControllerTest do
   use RichardBurtonWeb.ConnCase
   import Routes, only: [publication_path: 2]
 
-  @valid_attrs %{
-    "title" => "Manuel de Moraes: A Chronicle of the Seventeenth Century",
-    "country" => "GB",
-    "year" => 1886,
-    "publisher" => "Bickers & Son",
-    "translated_book" => %{
-      "authors" => "Richard Burton and Isabel Burton",
-      "original_book" => %{
-        "authors" => "J. M. Pereira da Silva",
-        "title" => "Manuel de Moraes: crônica do século XVII"
-      }
-    }
-  }
-
-  @valid_attrs_from_csv_with_errors [
-    %{
-      "publication" => %{
-        "title" => "Iraçéma the Honey-Lips: A Legend of Brazil",
-        "year" => 1886,
-        "country" => "GB",
-        "publisher" => "Bickers & Son",
-        "translated_book" => %{
-          "authors" => "Isabel Burton",
-          "original_book" => %{"authors" => "José de Alencar", "title" => "Iracema"}
-        }
-      },
-      "errors" => nil
-    },
-    %{
-      "publication" => %{
-        "title" => "Ubirajara: A Legend of the Tupy Indians",
-        "year" => 1922,
-        "country" => "GB",
-        "publisher" => "Ronald Massey",
-        "translated_book" => %{
-          "authors" => "J. T. W. Sadler",
-          "original_book" => %{"authors" => "José de Alencar", "title" => "Ubirajara"}
-        }
-      },
-      "errors" => nil
-    }
-  ]
-
-  @invalid_attrs_from_csv_with_errors [
-    %{
-      "publication" => %{
-        "title" => "",
-        "year" => 1886,
-        "country" => "GB",
-        "publisher" => "Bickers & Son",
-        "translated_book" => %{
-          "authors" => "",
-          "original_book" => %{
-            "authors" => "José de Alencar",
-            "title" => "Iracema"
-          }
-        }
-      },
-      "errors" => %{
-        "title" => "required",
-        "translated_book" => %{
-          "authors" => "required"
-        }
-      }
-    },
-    %{
-      "publication" => %{
-        "title" => "Ubirajara: A Legend of the Tupy Indians",
-        "year" => nil,
-        "country" => "",
-        "publisher" => "",
-        "translated_book" => %{
-          "authors" => "J. T. W. Sadler",
-          "original_book" => %{
-            "authors" => "",
-            "title" => ""
-          }
-        }
-      },
-      "errors" => %{
-        "year" => "required",
-        "country" => "required",
-        "publisher" => "required",
-        "translated_book" => %{
-          "original_book" => %{
-            "authors" => "required",
-            "title" => "required"
-          }
-        }
-      }
-    }
-  ]
-
   describe "POST /publications/bulk" do
+    @valid_input_1 %{
+      "title" => "Manuel de Moraes: A Chronicle of the Seventeenth Century",
+      "country" => "GB",
+      "year" => 1886,
+      "publisher" => "Bickers & Son",
+      "authors" => "Richard Burton and Isabel Burton",
+      "original_authors" => "J. M. Pereira da Silva",
+      "original_title" => "Manuel de Moraes: crônica do século XVII"
+    }
+
+    @valid_input_2 %{
+      "title" => "Iraçéma the Honey-Lips: A Legend of Brazil",
+      "year" => 1886,
+      "country" => "GB",
+      "publisher" => "Bickers & Son",
+      "authors" => "Isabel Burton",
+      "original_authors" => "José de Alencar",
+      "original_title" => "Iracema"
+    }
+
+    @invalid_input %{
+      "title" => "",
+      "year" => "1886",
+      "country" => "GB",
+      "publisher" => "Bickers & Son",
+      "authors" => "",
+      "original_authors" => "José de Alencar",
+      "original_title" => "Iracema"
+    }
+
+    @invalid_input_errors %{
+      "title" => "required",
+      "authors" => "required"
+    }
+
     test "on success, returns 201 and the created publications", meta do
-      publications = [
-        @valid_attrs,
-        Map.put(@valid_attrs, "year", 1887),
-        Map.put(@valid_attrs, "year", 1888),
-        Map.put(@valid_attrs, "year", 1889),
-        Map.put(@valid_attrs, "year", 1890)
-      ]
+      publications = [@valid_input_1, @valid_input_2]
 
-      conn = post(meta.conn, publication_path(meta.conn, :create_all), %{"_json" => publications})
+      input = %{"_json" => publications}
 
-      assert publications == json_response(conn, 201)
+      assert publications ==
+               meta.conn
+               |> post(publication_path(meta.conn, :create_all), input)
+               |> json_response(201)
     end
 
     test "on conflict, returns 409 and the conflictive publication", meta do
-      publications = [
-        @valid_attrs,
-        Map.put(@valid_attrs, "year", 1887),
-        Map.put(@valid_attrs, "year", 1888),
-        @valid_attrs,
-        Map.put(@valid_attrs, "year", 1890)
-      ]
+      publications = [@valid_input_1, @valid_input_2, @valid_input_2]
 
-      conn = post(meta.conn, publication_path(meta.conn, :create_all), %{"_json" => publications})
+      input = %{"_json" => publications}
 
-      assert @valid_attrs == json_response(conn, 409)
+      assert @valid_input_2 ==
+               meta.conn
+               |> post(publication_path(meta.conn, :create_all), input)
+               |> json_response(409)
     end
 
     test "on validation error, returns 409, the invalid publication and the errors", meta do
-      invalid_attrs = Map.put(@valid_attrs, "year", nil)
+      input = %{"_json" => [@valid_input_1, @invalid_input, @valid_input_2]}
 
-      publications = [
-        @valid_attrs,
-        Map.put(@valid_attrs, "year", 1887),
-        invalid_attrs,
-        Map.put(@valid_attrs, "year", 1889),
-        Map.put(@valid_attrs, "year", 1890)
-      ]
+      output = %{
+        "publication" => @invalid_input,
+        "errors" => @invalid_input_errors
+      }
 
-      conn = post(meta.conn, publication_path(meta.conn, :create_all), %{"_json" => publications})
-
-      expected_response = %{"attrs" => invalid_attrs, "errors" => %{"year" => "required"}}
-
-      assert expected_response == json_response(conn, 400)
+      assert output ==
+               meta.conn
+               |> post(publication_path(meta.conn, :create_all), input)
+               |> json_response(400)
     end
   end
 
-  describe "POST /publications/validate when sending valid csv and valid publications" do
-    test "returns 200 and a list of maps with parsed publications and nil errors",
-         meta do
-      conn =
-        post(meta.conn, publication_path(meta.conn, :validate), %{
-          "csv" => uploaded_file_fixture("test/fixtures/data_valid_valid_attrs.csv")
-        })
+  describe "POST /publications/validate when sending correct csv" do
+    @output [
+      %{
+        "publication" => %{
+          "title" => "Iraçéma the Honey-Lips: A Legend of Brazil",
+          "year" => "1886",
+          "country" => "GB",
+          "publisher" => "Bickers & Son",
+          "authors" => "Isabel Burton",
+          "original_authors" => "José de Alencar",
+          "original_title" => "Iracema"
+        },
+        "errors" => nil
+      },
+      %{
+        "publication" => %{
+          "title" => "Ubirajara: A Legend of the Tupy Indians",
+          "year" => "1922",
+          "country" => "US",
+          "publisher" => "Ronald Massey",
+          "authors" => "J. T. W. Sadler",
+          "original_authors" => "José de Alencar",
+          "original_title" => "Ubirajara"
+        },
+        "errors" => nil
+      },
+      %{
+        "publication" => %{
+          "title" => "",
+          "year" => "AAAA",
+          "country" => "GB",
+          "publisher" => "Bickers & Son",
+          "authors" => "",
+          "original_authors" => "José de Alencar",
+          "original_title" => "Iracema"
+        },
+        "errors" => %{
+          "year" => "integer",
+          "title" => "required",
+          "authors" => "required"
+        }
+      },
+      %{
+        "publication" => %{
+          "title" => "Ubirajara: A Legend of the Tupy Indians",
+          "year" => "",
+          "country" => "",
+          "publisher" => "",
+          "authors" => "J. T. W. Sadler",
+          "original_authors" => "",
+          "original_title" => ""
+        },
+        "errors" => %{
+          "year" => "required",
+          "country" => "required",
+          "publisher" => "required",
+          "original_authors" => "required",
+          "original_title" => "required"
+        }
+      }
+    ]
 
-      assert @valid_attrs_from_csv_with_errors == json_response(conn, 200)
-    end
-  end
-
-  describe "POST /publications/validate when sending valid csv and invalid publications" do
     test "returns 200 and a list of maps with parsed publications and their corresponding errors",
          meta do
-      conn =
-        post(meta.conn, publication_path(meta.conn, :validate), %{
-          "csv" => uploaded_file_fixture("test/fixtures/data_valid_invalid_attrs.csv")
-        })
+      input = uploaded_csv_fixture("test/fixtures/data_correct_with_errors.csv")
 
-      assert @invalid_attrs_from_csv_with_errors == json_response(conn, 200)
+      assert @output ==
+               meta.conn
+               |> post(publication_path(meta.conn, :validate), input)
+               |> json_response(200)
     end
   end
 
-  describe "POST /publications/validate when sending invalid csv" do
-    test "on invalid format, returns 400 with invalid_format code", meta do
-      conn =
-        post(meta.conn, publication_path(meta.conn, :validate), %{
-          "csv" => uploaded_file_fixture("test/fixtures/data_invalid_format.csv")
-        })
+  describe "POST /publications/validate when sending incorrect csv" do
+    test "on invalid escape sequence, returns 400 with invalid_escape_sequence code", meta do
+      input = uploaded_csv_fixture("test/fixtures/data_incorrect_escape_sequence.csv")
 
-      assert "invalid_format" = json_response(conn, 400)
-    end
+      response =
+        meta.conn
+        |> post(publication_path(meta.conn, :validate), input)
+        |> json_response(400)
 
-    test "on invalid separator, returns 400 with incorrect_row_length code", meta do
-      conn =
-        post(meta.conn, publication_path(meta.conn, :validate), %{
-          "csv" => uploaded_file_fixture("test/fixtures/data_invalid_separator.csv")
-        })
-
-      assert "incorrect_row_length" = json_response(conn, 400)
-    end
-
-    test "on incomplete data, returns 400 with incorrect_row_length code", meta do
-      conn =
-        post(meta.conn, publication_path(meta.conn, :validate), %{
-          "csv" => uploaded_file_fixture("test/fixtures/data_invalid_incomplete.csv")
-        })
-
-      assert "incorrect_row_length" = json_response(conn, 400)
+      assert "invalid_escape_sequence" = response
     end
   end
 end

@@ -1,10 +1,9 @@
 import classNames from "classnames";
 import {
-  FlatPublication,
-  FlatPublicationEntry,
-  FlatPublicationKey,
   Publication,
-  FlatPublicationError,
+  PublicationEntry,
+  PublicationError,
+  PublicationKey,
 } from "modules/publications";
 import {
   createContext,
@@ -25,19 +24,19 @@ const COUNTRIES: Record<string, string> = {
 };
 
 type Props = {
-  entries: FlatPublicationEntry[];
-  columns: Set<FlatPublicationKey>;
+  entries: PublicationEntry[];
+  columns: Set<PublicationKey>;
 };
 
 type RowProps = {
-  attributes: FlatPublicationKey[];
-  publication: FlatPublication;
-  errors: FlatPublicationError;
+  attributes: PublicationKey[];
+  publication: Publication;
+  errors: PublicationError;
 };
 
 type RowContext = {
-  publication: FlatPublication;
-  errors: FlatPublicationError;
+  publication: Publication;
+  errors: PublicationError;
   hasErrors: boolean;
 };
 const RowContext = createContext<RowContext | null>(null);
@@ -77,8 +76,9 @@ const SignalColumn: FC = () => {
   );
 };
 
-const DataColumn: FC<{ attribute: FlatPublicationKey }> = ({ attribute }) => {
+const DataColumn: FC<{ attribute: PublicationKey }> = ({ attribute }) => {
   const row = useRow();
+
   const errorString = Publication.describe(row.errors, attribute);
 
   return (
@@ -92,7 +92,8 @@ const DataColumn: FC<{ attribute: FlatPublicationKey }> = ({ attribute }) => {
           )}
         >
           {attribute === "country"
-            ? COUNTRIES[row.publication[attribute]]
+            ? COUNTRIES[row.publication[attribute]] ||
+              row.publication[attribute]
             : row.publication[attribute]}
         </div>
       </ErrorTooltip>

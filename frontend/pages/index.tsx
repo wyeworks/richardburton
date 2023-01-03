@@ -6,9 +6,9 @@ import Toggle from "components/Toggle";
 import Head from "next/head";
 import { useState } from "react";
 import PublicationUpload from "components/PublicationUpload";
-import { FlatPublicationKey, Publication } from "modules/publications";
+import { PublicationKey, Publication } from "modules/publications";
 
-const DEFAULT_COLUMNS: FlatPublicationKey[] = [
+const DEFAULT_COLUMNS: PublicationKey[] = [
   "originalTitle",
   "title",
   "authors",
@@ -71,7 +71,7 @@ const Home: NextPage = () => {
           {publications ? (
             <PublicationIndex
               entries={publications.map((publication) => ({
-                publication: Publication.flatten(publication),
+                publication,
                 errors: null,
               }))}
               columns={columns}
