@@ -8,15 +8,15 @@ defmodule RichardBurton.PublicationTest do
   alias RichardBurton.Publication
 
   @valid_attrs %{
-    title: "Manuel de Moraes: A Chronicle of the Seventeenth Century",
-    country: "GB",
-    year: 1886,
-    publisher: "Bickers & Son",
-    translated_book: %{
-      authors: "Richard Burton and Isabel Burton",
-      original_book: %{
-        authors: "J. M. Pereira da Silva",
-        title: "Manuel de Moraes: crônica do século XVII"
+    "title" => "Manuel de Moraes: A Chronicle of the Seventeenth Century",
+    "country" => "GB",
+    "year" => 1886,
+    "publisher" => "Bickers & Son",
+    "translated_book" => %{
+      "authors" => "Richard Burton and Isabel Burton",
+      "original_book" => %{
+        "authors" => "J. M. Pereira da Silva",
+        "title" => "Manuel de Moraes: crônica do século XVII"
       }
     }
   }
@@ -49,19 +49,19 @@ defmodule RichardBurton.PublicationTest do
 
   describe "changeset/2" do
     test "when valid attributes are provided, is valid", do: test_valid_attrs()
-    test "when :title is blank, is invalid", do: test_not_blank(:title)
-    test "when :title is nil, is invalid", do: test_not_nil(:title)
-    test "when :country is blank, is invalid", do: test_not_blank(:country)
-    test "when :country is nil, is invalid", do: test_not_nil(:country)
-    test "when :publisher is blank, is invalid", do: test_not_blank(:publisher)
-    test "when :publisher is nil, is invalid", do: test_not_nil(:publisher)
-    test "when :year is nil, is invalid", do: test_not_nil(:year)
+    test "when title is blank, is invalid", do: test_not_blank("title")
+    test "when title is nil, is invalid", do: test_not_nil("title")
+    test "when country is blank, is invalid", do: test_not_blank("country")
+    test "when country is nil, is invalid", do: test_not_nil("country")
+    test "when publisher is blank, is invalid", do: test_not_blank("publisher")
+    test "when publisher is nil, is invalid", do: test_not_nil("publisher")
+    test "when year is nil, is invalid", do: test_not_nil("year")
 
-    test "when :translated_book is empty, is invalid",
-      do: test_invalid_attr_value(:translated_book, %{})
+    test "when translated_book is empty, is invalid",
+      do: test_invalid_attr_value("translated_book", %{})
 
-    test "when :translated_book is nil, is invalid",
-      do: test_not_nil(:translated_book)
+    test "when translated_book is nil, is invalid",
+      do: test_not_nil("translated_book")
 
     test "when a publication with the provided attributes exists, is invalid",
       do: test_unique_constraint(:title)
@@ -71,12 +71,14 @@ defmodule RichardBurton.PublicationTest do
     import Publication, only: [insert: 1]
 
     test "when inserting valid publications, returns {:ok, publication}" do
-      assert {:ok, @valid_attrs} = insert(@valid_attrs)
+      result = insert(@valid_attrs)
+      [p] = Publication.all()
+      assert {:ok, p} == result
     end
 
     test "when inserting a duplicate publication, returns {:error, :conflict}" do
       {:ok, _publication} = entity_fixture(@valid_attrs)
-      assert {:error, :conflict} = insert(@valid_attrs)
+      assert {:error, :conflict} == insert(@valid_attrs)
     end
 
     test "when inserting an empty publication, returns an error map with :required errors" do
@@ -93,13 +95,13 @@ defmodule RichardBurton.PublicationTest do
 
     test "when validating valid publications, returns {:ok, publication}" do
       # Insert a dummy publication to make sure the test passes on a non-empty database
-      {:ok, _publication} = entity_fixture(Map.put(@valid_attrs, :title, "New title"))
-      assert {:ok, @valid_attrs} = validate(@valid_attrs)
+      {:ok, _publication} = entity_fixture(Map.put(@valid_attrs, "title", "New title"))
+      assert {:ok, @valid_attrs} == validate(@valid_attrs)
     end
 
     test "when validating a duplicate publication, returns {:error, :conflict}" do
       {:ok, _publication} = entity_fixture(@valid_attrs)
-      assert {:error, :conflict} = validate(@valid_attrs)
+      assert {:error, :conflict} == validate(@valid_attrs)
     end
 
     test "when validating an empty publication, returns an error map with :required errors" do
@@ -120,10 +122,10 @@ defmodule RichardBurton.PublicationTest do
       {:ok, publications} =
         insert_all([
           @valid_attrs,
-          Map.put(@valid_attrs, :year, 1887),
-          Map.put(@valid_attrs, :year, 1888),
-          Map.put(@valid_attrs, :year, 1889),
-          Map.put(@valid_attrs, :year, 1890)
+          Map.put(@valid_attrs, "year", 1887),
+          Map.put(@valid_attrs, "year", 1888),
+          Map.put(@valid_attrs, "year", 1889),
+          Map.put(@valid_attrs, "year", 1890)
         ])
 
       preloaded_publications = Repo.preload(publications, translated_book: [:original_book])
@@ -138,9 +140,9 @@ defmodule RichardBurton.PublicationTest do
         insert_all([
           @valid_attrs,
           @valid_attrs,
-          Map.put(@valid_attrs, :year, 1888),
-          Map.put(@valid_attrs, :year, 1889),
-          Map.put(@valid_attrs, :year, 1890)
+          Map.put(@valid_attrs, "year", 1888),
+          Map.put(@valid_attrs, "year", 1889),
+          Map.put(@valid_attrs, "year", 1890)
         ])
 
       assert {@valid_attrs, :conflict} = description
@@ -148,10 +150,10 @@ defmodule RichardBurton.PublicationTest do
       {:error, description} =
         insert_all([
           @valid_attrs,
-          Map.put(@valid_attrs, :year, 1888),
+          Map.put(@valid_attrs, "year", 1888),
           @skeleton_attrs,
-          Map.put(@valid_attrs, :year, 1889),
-          Map.put(@valid_attrs, :year, 1890)
+          Map.put(@valid_attrs, "year", 1889),
+          Map.put(@valid_attrs, "year", 1890)
         ])
 
       assert {@skeleton_attrs, @skeleton_attrs_error_map} == description
