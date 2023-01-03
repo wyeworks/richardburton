@@ -4,7 +4,17 @@ import {
   PublicationId,
   PublicationKey,
 } from "modules/publications";
-import { FC, MouseEvent, MouseEventHandler, PropsWithChildren } from "react";
+import {
+  ChangeEventHandler,
+  FC,
+  MouseEvent,
+  MouseEventHandler,
+  PropsWithChildren,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import ErrorTooltip from "./ErrorTooltip";
 import {
   useIsSelected,
@@ -34,10 +44,11 @@ const Column: FC<ColumnProps> = ({ className, children, publicationId }) => {
     <td
       className={classNames(
         className,
-        "max-w-xs px-2 py-1 truncate justify",
+        "max-w-xs px-2 py-1 justify",
         isValid ? "group-hover:bg-indigo-100" : "group-hover:bg-red-100",
         { "bg-amber-100": isSelected }
       )}
+      data-selectable="true"
     >
       {children}
     </td>
@@ -61,6 +72,63 @@ const SignalColumn: FC<SignalColumnProps> = ({ publicationId }) => {
   );
 };
 
+type DataInputProps = {
+  publicationId: PublicationId;
+  attribute: PublicationKey;
+  data: string | number;
+  hasError: boolean;
+};
+
+const DataInput: FC<DataInputProps> = ({
+  publicationId,
+  attribute,
+  data,
+  hasError,
+}) => {
+  const override = Publication.STORE.ATTRIBUTES.useOverride();
+  const validate = Publication.REMOTE.useValidate();
+
+  const value = useRef<string | number>(data);
+  const [, setKey] = useState(1);
+
+  const setValue = useCallback((v: string | number) => {
+    value.current = v;
+    setKey((key) => -key);
+  }, []);
+
+  useEffect(() => {
+    if (data !== value.current) {
+      validate([publicationId]);
+      setValue(data);
+    }
+  }, [data, publicationId, validate, setValue]);
+
+  const handleBlur = () => {
+    if (data !== value.current) {
+      override(publicationId, attribute, value.current);
+      validate([publicationId]);
+    }
+  };
+
+  const handleChange: ChangeEventHandler<HTMLInputElement> = (e) => {
+    setValue(e.target.value);
+  };
+
+  return (
+    <input
+      className={classNames(
+        "px-2 py-1 rounded outline-none bg-transparent",
+        hasError
+          ? "focus:bg-red-400/80 bg-red-300/40 focus:text-white shadow-sm"
+          : "focus:bg-white/50 focus:shadow-sm"
+      )}
+      value={value.current}
+      onChange={handleChange}
+      onBlur={handleBlur}
+    />
+  );
+};
+
 type DataColumnProps = {
   attribute: PublicationKey;
   publicationId: PublicationId;
@@ -72,11 +140,14 @@ const DataColumn: FC<DataColumnProps> = ({
   publicationId,
   editable,
 }) => {
-  const { useIsVisible, useValue, useError } = Publication.STORE.ATTRIBUTES;
+  const { useIsVisible, useValue, useErrorDescription } =
+    Publication.STORE.ATTRIBUTES;
 
   const value = useValue(publicationId, attribute);
-  const error = useError(publicationId, attribute);
+  const error = useErrorDescription(publicationId, attribute);
   const isVisible = useIsVisible(attribute);
+
+  const content = attribute === "country" ? COUNTRIES[value] : value;
 
   return isVisible ? (
     <Column publicationId={publicationId}>
@@ -86,15 +157,16 @@ const DataColumn: FC<DataColumnProps> = ({
         disabled={!editable}
         boundary="main"
       >
-        <div
-          className={classNames(
-            "px-2 py-1 truncate",
-            error &&
-              "border rounded border-dotted border-red-300 hover:bg-red-300 hover:text-white "
-          )}
-        >
-          {attribute === "country" ? COUNTRIES[value] : value}
-        </div>
+        {editable ? (
+          <DataInput
+            publicationId={publicationId}
+            attribute={attribute}
+            data={content}
+            hasError={Boolean(error)}
+          />
+        ) : (
+          <div className="px-2 py-1 truncate">{content}</div>
+        )}
       </ErrorTooltip>
     </Column>
   ) : null;
@@ -107,10 +179,10 @@ type RowProps = {
 };
 
 const Row: FC<RowProps> = ({ publicationId, editable, onClick }) => {
-  const { useIsValid, useError } = Publication.STORE;
+  const { useIsValid, useErrorDescription } = Publication.STORE;
 
   const isValid = useIsValid(publicationId);
-  const error = useError(publicationId);
+  const error = useErrorDescription(publicationId);
 
   return (
     <ErrorTooltip
@@ -129,6 +201,7 @@ const Row: FC<RowProps> = ({ publicationId, editable, onClick }) => {
           { "cursor-pointer": Boolean(onClick) }
         )}
         onClick={onClick}
+        data-selectable="true"
       >
         {editable && <SignalColumn publicationId={publicationId} />}
         {Publication.ATTRIBUTES.map((attribute) => (
@@ -160,6 +233,7 @@ const PublicationIndex: FC<Props> = ({ editable = false }) => {
   const ids = Publication.STORE.useVisibleIds();
 
   const onSelect = useSelectionEvent();
+  const isSelectionEmpty = useIsSelectionEmpty();
 
   const toggleSelection = (id: number) => (event: MouseEvent) =>
     onSelect({
@@ -169,8 +243,6 @@ const PublicationIndex: FC<Props> = ({ editable = false }) => {
       metaKey: event.metaKey,
       orderedIds: ids,
     });
-
-  const isSelectionEmpty = useIsSelectionEmpty();
 
   return (
     <table

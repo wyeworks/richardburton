@@ -78,6 +78,88 @@ defmodule RichardBurtonWeb.PublicationControllerTest do
     end
   end
 
+  describe "POST /publications/validate when sending valid json" do
+    @correct_input_1 %{
+      "title" => "Iraçéma the Honey-Lips: A Legend of Brazil",
+      "year" => "1886",
+      "country" => "GB",
+      "publisher" => "Bickers & Son",
+      "authors" => "Isabel Burton",
+      "original_authors" => "José de Alencar",
+      "original_title" => "Iracema"
+    }
+    @correct_input_2 %{
+      "title" => "Ubirajara: A Legend of the Tupy Indians",
+      "year" => "1922",
+      "country" => "US",
+      "publisher" => "Ronald Massey",
+      "authors" => "J. T. W. Sadler",
+      "original_authors" => "José de Alencar",
+      "original_title" => "Ubirajara"
+    }
+    @correct_input_3 %{
+      "title" => "",
+      "year" => "AAAA",
+      "country" => "GB",
+      "publisher" => "Bickers & Son",
+      "authors" => "",
+      "original_authors" => "José de Alencar",
+      "original_title" => "Iracema"
+    }
+    @correct_input_4 %{
+      "title" => "Ubirajara: A Legend of the Tupy Indians",
+      "year" => "",
+      "country" => "",
+      "publisher" => "",
+      "authors" => "J. T. W. Sadler",
+      "original_authors" => "",
+      "original_title" => ""
+    }
+
+    @input [
+      @correct_input_1,
+      @correct_input_2,
+      @correct_input_3,
+      @correct_input_4
+    ]
+
+    @output [
+      %{
+        "publication" => @correct_input_1,
+        "errors" => nil
+      },
+      %{
+        "publication" => @correct_input_2,
+        "errors" => nil
+      },
+      %{
+        "publication" => @correct_input_3,
+        "errors" => %{
+          "year" => "integer",
+          "title" => "required",
+          "authors" => "required"
+        }
+      },
+      %{
+        "publication" => @correct_input_4,
+        "errors" => %{
+          "year" => "required",
+          "country" => "required",
+          "publisher" => "required",
+          "original_authors" => "required",
+          "original_title" => "required"
+        }
+      }
+    ]
+
+    test "returns 200 a list of maps with the publications an their corresponding errors", meta do
+      assert @output ==
+               meta.conn
+               |> post(publication_path(meta.conn, :validate), %{"_json" => @input})
+               |> json_response(200)
+    end
+  end
+
   describe "POST /publications/validate when sending correct csv" do
     @output [
       %{

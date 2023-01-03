@@ -6,7 +6,7 @@ defmodule RichardBurtonWeb.Router do
   end
 
   pipeline :validate do
-    plug(:accepts, ["text/csv"])
+    plug(:accepts, ["json", "text/csv"])
   end
 
   scope "/api", RichardBurtonWeb do

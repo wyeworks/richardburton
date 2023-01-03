@@ -1,17 +1,17 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/router";
-import { FC, useCallback, useEffect } from "react";
+import { FC, useEffect } from "react";
 import {
   atom,
+  useRecoilCallback,
   useRecoilState,
   useResetRecoilState,
-  useSetRecoilState,
 } from "recoil";
 import { v4 as uuid } from "uuid";
 
 type Error = { id: string; message: string };
 
-const errorsAtom = atom<Error[]>({
+const ERRORS = atom<Error[]>({
   key: "errors",
   default: [],
 });
@@ -20,8 +20,8 @@ const ERROR_TIMEOUT_MS = 4000;
 const MAX_SNACKBARS = 3;
 
 const Errors: FC = () => {
-  const [errors, setErrors] = useRecoilState(errorsAtom);
-  const resetErrors = useResetRecoilState(errorsAtom);
+  const [errors, setErrors] = useRecoilState(ERRORS);
+  const resetErrors = useResetRecoilState(ERRORS);
   const router = useRouter();
 
   useEffect(() => {
@@ -79,14 +79,22 @@ const Errors: FC = () => {
   );
 };
 
-const useNotifyError = () => {
-  const setErrors = useSetRecoilState(errorsAtom);
-  return useCallback(
-    (message: Error["message"]) =>
-      setErrors((current) => [...current, { id: uuid(), message }]),
-    [setErrors]
+type ErrorNotifier = (message: Error["message"]) => void;
+
+const _notify =
+  (message: Error["message"]) =>
+  (current: Error[]): Error[] =>
+    [...current, { id: uuid(), message }];
+
+function useNotifyError(): ErrorNotifier {
+  return useRecoilCallback(
+    ({ set }) =>
+      (message) => {
+        set(ERRORS, _notify(message));
+      },
+    []
   );
-};
+}
 
 export default Errors;
-export { useNotifyError };
+export { useNotifyError, ERRORS as _ERRORS, _notify };
