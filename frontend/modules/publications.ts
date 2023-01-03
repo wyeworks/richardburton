@@ -8,122 +8,21 @@ import {
 } from "recoil";
 import { isString, isNumber } from "lodash";
 
-type OriginalBook = {
-  title: string;
-  authors: string;
-};
-
-type TranslatedBook = {
-  authors: string;
-  originalBook: OriginalBook;
-};
-
 type Publication = {
   title: string;
   country: string;
   year: number;
   publisher: string;
-  translatedBook: TranslatedBook;
+  authors: string;
+  originalTitle: string;
+  originalAuthors: string;
 };
 
-type FlatPublication = Omit<Publication, "translatedBook"> & {
-  originalTitle: OriginalBook["title"];
-  originalAuthors: OriginalBook["authors"];
-  authors: TranslatedBook["authors"];
-};
+type PublicationKey = keyof Publication;
+type PublicationError = null | string | Record<PublicationKey, string>;
+type PublicationEntry = { publication: Publication; errors: PublicationError };
 
-type PublicationError = null | Partial<{
-  title: string;
-  country: string;
-  year: string;
-  publisher: string;
-  translatedBook: {
-    authors: string;
-    originalBook: {
-      title: string;
-      authors: string;
-    };
-  };
-}>;
-
-type FlatPublicationError = null | string | Record<FlatPublicationKey, string>;
-
-type FlatPublicationEntry = {
-  publication: FlatPublication;
-  errors: FlatPublicationError;
-};
-
-type FlatPublicationKey = keyof FlatPublication;
-
-function isPublication(p: Publication | PublicationError): p is Publication {
-  return (
-    !!p &&
-    !isString(p) &&
-    isString(p.title) &&
-    isString(p.country) &&
-    isString(p.publisher) &&
-    isString(p.country) &&
-    isNumber(p.year) &&
-    !!p.translatedBook &&
-    isString(p.translatedBook.authors) &&
-    !!p.translatedBook.originalBook &&
-    isString(p.translatedBook.originalBook.title) &&
-    isString(p.translatedBook.originalBook.authors)
-  );
-}
-
-function flatten(publication: Publication): FlatPublication;
-function flatten(error: PublicationError): FlatPublicationError;
-function flatten(p: Publication | PublicationError) {
-  if (isPublication(p)) {
-    const {
-      title,
-      year,
-      country,
-      publisher,
-      translatedBook: {
-        authors,
-        originalBook: { authors: originalAuthors, title: originalTitle },
-      },
-    } = p;
-
-    return {
-      originalTitle,
-      originalAuthors,
-      authors,
-      title,
-      year,
-      country,
-      publisher,
-    };
-  } else {
-    if (p === null || isString(p)) return p;
-
-    let authors, originalTitle, originalAuthors;
-
-    if (p.translatedBook) {
-      authors = p.translatedBook.authors;
-
-      if (p.translatedBook.originalBook) {
-        originalTitle = p.translatedBook.originalBook.title;
-        originalAuthors = p.translatedBook.originalBook.authors;
-      }
-    }
-    const { title, year, country, publisher } = p;
-
-    return {
-      originalTitle,
-      originalAuthors,
-      authors,
-      title,
-      year,
-      country,
-      publisher,
-    } as FlatPublicationError;
-  }
-}
-
-type StoredPublication = FlatPublicationEntry[] | undefined;
+type StoredPublication = PublicationEntry[] | undefined;
 
 const ATOM = atom<StoredPublication>({
   key: "publications",
@@ -133,10 +32,11 @@ const ATOM = atom<StoredPublication>({
 const ERROR_MESSAGES: Record<string, string> = {
   conflict: "A publication with this data already exists",
   required: "This field is required and cannot be blank",
+  integer: "This field should be an integer",
 };
 interface PublicationModule {
-  ATTRIBUTES: FlatPublicationKey[];
-  ATTRIBUTE_LABELS: Record<FlatPublicationKey, string>;
+  ATTRIBUTES: PublicationKey[];
+  ATTRIBUTE_LABELS: Record<PublicationKey, string>;
 
   STORE: {
     useValue(): StoredPublication;
@@ -144,10 +44,7 @@ interface PublicationModule {
     useReset(): Resetter;
   };
 
-  flatten(publication: Publication): FlatPublication;
-  flatten(publications: PublicationError): FlatPublicationError;
-
-  describe(error: FlatPublicationError, scope?: FlatPublicationKey): string;
+  describe(error: PublicationError, scope?: PublicationKey): string;
 }
 
 const Publication: PublicationModule = {
@@ -180,7 +77,6 @@ const Publication: PublicationModule = {
       return useResetRecoilState(ATOM);
     },
   },
-  flatten,
   describe(error, scope) {
     if (!error) {
       return "";
@@ -200,11 +96,5 @@ const Publication: PublicationModule = {
   },
 };
 
-export type {
-  FlatPublication,
-  FlatPublicationKey,
-  FlatPublicationEntry,
-  FlatPublicationError,
-  PublicationError,
-};
+export type { PublicationKey, PublicationEntry, PublicationError };
 export { Publication };

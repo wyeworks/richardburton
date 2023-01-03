@@ -12,7 +12,9 @@ defmodule RichardBurton.Publication do
   alias RichardBurton.TranslatedBook
   alias __MODULE__
 
-  @derive {Jason.Encoder, only: [:country, :publisher, :title, :year, :translated_book]}
+  @external_attributes [:country, :publisher, :title, :year, :translated_book]
+
+  @derive {Jason.Encoder, only: @external_attributes}
   schema "publications" do
     field(:country, :string)
     field(:publisher, :string)
@@ -123,59 +125,11 @@ defmodule RichardBurton.Publication do
     end
   end
 
-  def from_csv!(path) do
-    try do
-      path
-      |> File.stream!()
-      |> CSV.decode!(
-        separator: ?;,
-        headers: [
-          :original_authors,
-          :year,
-          :country,
-          :original_title,
-          :title,
-          :authors,
-          :publisher
-        ]
-      )
-      |> Enum.map(&nest/1)
-    rescue
-      e in CSV.RowLengthError ->
-        Kernel.reraise(e, __STACKTRACE__)
+  def to_map(publication) do
+    translated_book = TranslatedBook.to_map(publication.translated_book)
 
-      _ ->
-        Kernel.reraise("Could not parse publication", __STACKTRACE__)
-    end
-  end
-
-  defp nest(%{
-         title: title,
-         country: country,
-         publisher: publisher,
-         authors: authors,
-         year: year_string,
-         original_title: original_title,
-         original_authors: original_authors
-       }) do
-    year =
-      case Integer.parse(year_string) do
-        {year, _} -> year
-        :error -> nil
-      end
-
-    %{
-      "title" => title,
-      "year" => year,
-      "country" => country,
-      "publisher" => publisher,
-      "translated_book" => %{
-        "authors" => authors,
-        "original_book" => %{
-          "title" => original_title,
-          "authors" => original_authors
-        }
-      }
-    }
+    publication
+    |> Map.take(@external_attributes)
+    |> Map.put(:translated_book, translated_book)
   end
 end

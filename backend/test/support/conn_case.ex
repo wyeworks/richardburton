@@ -39,4 +39,8 @@ defmodule RichardBurtonWeb.ConnCase do
   def uploaded_file_fixture(path) do
     %Plug.Upload{path: path, filename: "file"}
   end
+
+  def uploaded_csv_fixture(path) do
+    %{"csv" => uploaded_file_fixture(path)}
+  end
 end
