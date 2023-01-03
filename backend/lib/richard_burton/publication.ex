@@ -5,6 +5,9 @@ defmodule RichardBurton.Publication do
   use Ecto.Schema
   import Ecto.Changeset
 
+  require Ecto.Query
+  import Ecto.Query, only: [where: 3]
+
   alias RichardBurton.Repo
   alias RichardBurton.TranslatedBook
   alias __MODULE__
@@ -85,8 +88,11 @@ defmodule RichardBurton.Publication do
     if changeset.valid? do
       unique_key = [:title, :country, :year, :publisher]
       unique_key_values = Repo.get_unique_key_values(unique_key, changeset)
+      unique_key_paired = Enum.zip(unique_key, unique_key_values)
 
-      if Repo.exists?(Publication, Enum.zip(unique_key, unique_key_values)) do
+      entity_exists? = Publication |> where([], ^unique_key_paired) |> Repo.exists?()
+
+      if entity_exists? do
         {:error, :conflict}
       else
         {:ok, attrs}
