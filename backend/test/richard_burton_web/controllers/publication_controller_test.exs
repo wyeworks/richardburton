@@ -84,7 +84,7 @@ defmodule RichardBurtonWeb.PublicationControllerTest do
       "year" => "1886",
       "country" => "GB",
       "publisher" => "Bickers & Son",
-      "authors" => "Isabel Burton",
+      "authors" => "Isabel Burton and Richard Burton",
       "original_authors" => "José de Alencar",
       "original_title" => "Iracema"
     }
@@ -168,7 +168,7 @@ defmodule RichardBurtonWeb.PublicationControllerTest do
           "year" => "1886",
           "country" => "GB",
           "publisher" => "Bickers & Son",
-          "authors" => "Isabel Burton",
+          "authors" => "Isabel Burton and Richard Burton",
           "original_authors" => "José de Alencar",
           "original_title" => "Iracema"
         },
