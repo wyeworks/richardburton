@@ -32,16 +32,38 @@ This app is a repository that mantains data of English translations of brazilian
 
 # Starting the server
 
-To start your Phoenix server:
+You must have Node, NPM, Erlang, Elixir installed and a Postgres database configured as specified in [`backend/config/dev.ex`](https://github.com/wyeworks/richardburton/blob/main/backend/config/dev.exs).
 
-- Start your `postgres` database (configured as specified in `config/dev.ex`)
+We recommend using `asdf` to manage Elixir and Erlang versions, which are specified for this project in [`backend/.tool-versions`](https://github.com/wyeworks/richardburton/blob/main/backend/.tool-versions)
+
+## To start the backend server:
+
+- Start your `postgres` database
+- Navigate to the `backend` folder
 - Install dependencies with `mix deps.get`
 - Create and migrate your database with `mix ecto.setup`
 - Start Phoenix endpoint with `mix phx.server` or inside IEx with `iex -S mix phx.server`
 
 Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
 
-Ready to run in production? Please [check our deployment guides](https://hexdocs.pm/phoenix/deployment.html).
+## To start the frontend server:
+
+- Navigate to the `frontend` folder
+- Set the environment variables in your `.env` or `.env.development` file:
+- Install dependencies with `npm i`
+- Start NextJS server with `npm run dev`
+
+Now you can visit [`localhost:3000`](http://localhost:3000) from your browser.
+
+### Environment Variables
+
+|Key|Description|Recommended value for dev|
+|-|-|-|
+|`NEXT_PUBLIC_API_URL`| URL of the backend server API |`http://localhost:4000/api`|
+
+## Deployment
+
+Ready to run in production? Please check the deployment guides for [NextJS](https://nextjs.org/docs/deployment) and [Phoenix](https://hexdocs.pm/phoenix/deployment.html).
 
 # Initializing the database
 

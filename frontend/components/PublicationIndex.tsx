@@ -84,6 +84,7 @@ const DataColumn: FC<DataColumnProps> = ({
         message={error}
         hidden={!Boolean(error)}
         disabled={!editable}
+        boundary="main"
       >
         <div
           className={classNames(
@@ -115,9 +116,11 @@ const Row: FC<RowProps> = ({ publicationId, editable, onClick }) => {
     <ErrorTooltip
       message={error}
       hidden={!Boolean(error)}
-      followCursor="x"
-      placement="top-start"
       disabled={!editable}
+      placement="top-start"
+      boundary="main"
+      portalRoot="main"
+      absoluteCenter
     >
       <tr
         className={classNames(
