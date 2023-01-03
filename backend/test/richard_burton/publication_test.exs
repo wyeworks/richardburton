@@ -101,7 +101,7 @@ defmodule RichardBurton.PublicationTest do
 
     test "when validating a duplicate publication, returns {:error, :conflict}" do
       {:ok, _publication} = entity_fixture(@valid_attrs)
-      assert {:error, :conflict} = validate(@valid_attrs)
+      assert {:error, :conflict} == validate(@valid_attrs)
     end
 
     test "when validating an empty publication, returns an error map with :required errors" do
