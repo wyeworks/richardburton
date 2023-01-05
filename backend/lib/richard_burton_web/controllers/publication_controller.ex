@@ -3,6 +3,10 @@ defmodule RichardBurtonWeb.PublicationController do
 
   alias RichardBurton.Publication
 
+  def index(conn, %{"search" => query}) do
+    json(conn, Publication.Index.search(query))
+  end
+
   def index(conn, _params) do
     json(conn, Publication.Index.all())
   end
