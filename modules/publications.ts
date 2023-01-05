@@ -15,6 +15,7 @@ import { request } from "app";
 import { _NOTIFICATIONS, _notify } from "components/Notifications";
 import { AxiosInstance } from "axios";
 import hash from "object-hash";
+import useDebounce from "utils/useDebounce";
 
 type Publication = {
   title: string;
@@ -282,7 +283,7 @@ interface PublicationModule {
       ) => (args: P) => Promise<T>
     ): (args: P) => Promise<T>;
 
-    useIndex(): () => Promise<void>;
+    useIndex(): ({ search }: { search?: string }) => Promise<void>;
     useBulk(): () => Promise<Publication[]>;
     useValidate(): (ids: PublicationId[]) => Promise<void>;
   };
@@ -560,13 +561,23 @@ const Publication: PublicationModule = {
     },
 
     useIndex() {
-      return Publication.REMOTE.useRequest(({ set }, http) => async () => {
-        const { data } = await http.get<Publication[]>("publications");
-        set(PUBLICATION_IDS, range(data.length));
-        data.forEach((publication, index) =>
-          set(PUBLICATIONS(index), publication)
-        );
-      });
+      return useDebounce(
+        Publication.REMOTE.useRequest(
+          ({ set }, http) =>
+            async ({ search = undefined }) => {
+              const url = search
+                ? `publications?search=${search}`
+                : "publications";
+
+              const { data } = await http.get<Publication[]>(url);
+              set(PUBLICATION_IDS, range(data.length));
+              data.forEach((publication, index) =>
+                set(PUBLICATIONS(index), publication)
+              );
+            }
+        ),
+        350
+      );
     },
     useBulk() {
       return Publication.REMOTE.useRequest(
