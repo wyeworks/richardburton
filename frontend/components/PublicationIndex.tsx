@@ -1,4 +1,5 @@
 import classNames from "classnames";
+import { times } from "lodash";
 import {
   Publication,
   PublicationId,
@@ -164,7 +165,19 @@ const PublicationIndex: FC<Props> = ({
       </tbody>
     </table>
   ) : (
-    <>Loading...</>
+    <ul
+      className="w-full space-y-2 animate-pulse"
+      aria-label="Loading"
+      role="presentation"
+    >
+      {times(12, (index) => (
+        <li
+          key={index}
+          className="w-full h-8 bg-gray-200 rounded hover:bg-indigo-100"
+          style={{ opacity: index > 7 ? 1 - (2 * (index - 6)) / 12 : 1 }}
+        />
+      ))}
+    </ul>
   );
 };
 
