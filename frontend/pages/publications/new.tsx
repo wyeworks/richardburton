@@ -10,13 +10,13 @@ import { useEffect } from "react";
 const NewPublications: NextPage = () => {
   const publicationCount = Publication.STORE.useVisibleCount();
   const validPublicationCount = Publication.STORE.useValidCount();
+  const setAll = Publication.STORE.useSetAll();
   const invalidPublicationCount = publicationCount - validPublicationCount;
 
   const setVisible = Publication.STORE.ATTRIBUTES.useSetVisible();
 
-  useEffect(() => {
-    setVisible(Publication.ATTRIBUTES);
-  }, [setVisible]);
+  useEffect(() => setAll([]), [setAll]);
+  useEffect(() => setVisible(Publication.ATTRIBUTES), [setVisible, setAll]);
 
   return (
     <Layout
