@@ -53,7 +53,7 @@ const Column: FC<{
 
   return visible ? (
     <td
-      className="max-w-xs px-2 py-1 justify group-hover:bg-indigo-100 error:group-hover:bg-red-100 selected:bg-amber-100"
+      className="px-2 py-1 w-80 justify group-hover:bg-indigo-100 error:group-hover:bg-red-100 selected:bg-amber-100"
       data-selected={selected}
       data-selectable={selectable}
       data-error={invalid}
@@ -139,7 +139,7 @@ const PublicationIndex: FC<Props> = ({
 }) => {
   const ids = Publication.STORE.useVisibleIds();
 
-  return (
+  return ids ? (
     <table className={classNames(className, "overflow-auto h-fit")}>
       <thead className="sticky top-0 z-10 bg-gray-100">
         <tr>
@@ -163,6 +163,8 @@ const PublicationIndex: FC<Props> = ({
         {ExtraRow && <ExtraRow />}
       </tbody>
     </table>
+  ) : (
+    <>Loading...</>
   );
 };
 

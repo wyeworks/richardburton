@@ -275,7 +275,7 @@ const PublicationToolbar: FC<Props> = ({
   return (
     <section
       className={classNames(
-        "flex flex-col w-48 p-2 space-y-2",
+        "flex flex-col w-48 space-y-2",
         edit && "min-h-toolbar"
       )}
     >
