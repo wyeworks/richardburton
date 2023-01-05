@@ -140,7 +140,7 @@ const PublicationIndex: FC<Props> = ({
 }) => {
   const ids = Publication.STORE.useVisibleIds();
 
-  return ids ? (
+  return ids && (ids.length > 0 || ExtraRow) ? (
     <table className={classNames(className, "overflow-auto h-fit")}>
       <thead className="sticky top-0 z-10 bg-gray-100">
         <tr>
@@ -164,6 +164,15 @@ const PublicationIndex: FC<Props> = ({
         {ExtraRow && <ExtraRow />}
       </tbody>
     </table>
+  ) : ids ? (
+    <div className="flex items-center justify-center w-full h-full">
+      <div className="flex flex-col items-center justify-center pb-32 group">
+        <div className="h-56 m-8 border-2 border-gray-300 rounded-2xl aspect-square group-hover:border-indigo-200" />
+        <span className="text-xl text-gray-300 group-hover:text-indigo-200">
+          No results found, try another query.
+        </span>
+      </div>
+    </div>
   ) : (
     <ul
       className="w-full space-y-2 animate-pulse"
