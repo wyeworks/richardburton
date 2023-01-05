@@ -33,9 +33,9 @@ type PublicationError = null | string | Record<PublicationKey, string>;
 type PublicationEntry = ValidationResult & { id: number };
 type PublicationId = number;
 
-const PUBLICATION_IDS = atom<PublicationId[]>({
+const PUBLICATION_IDS = atom<PublicationId[] | undefined>({
   key: "publication-ids",
-  default: [],
+  default: undefined,
 });
 
 const PUBLICATIONS = atomFamily<Publication, PublicationId>({
@@ -53,10 +53,10 @@ const PUBLICATION_OVERRIDES = atomFamily<Partial<Publication>, PublicationId>({
   default: undefined,
 });
 
-const OVERRIDDEN_PUBLICATION_IDS = selector<PublicationId[]>({
+const OVERRIDDEN_PUBLICATION_IDS = selector<PublicationId[] | undefined>({
   key: "overridden-publications-ids",
   get({ get }) {
-    return get(VISIBLE_PUBLICATION_IDS).filter((id) =>
+    return get(VISIBLE_PUBLICATION_IDS)?.filter((id) =>
       get(PUBLICATION_OVERRIDES(id))
     );
   },
@@ -65,7 +65,7 @@ const OVERRIDDEN_PUBLICATION_IDS = selector<PublicationId[]>({
 const OVERRIDDEN_PUBLICATION_COUNT = selector<number>({
   key: "overriden-publication-count",
   get({ get }) {
-    return get(OVERRIDDEN_PUBLICATION_IDS).length;
+    return get(OVERRIDDEN_PUBLICATION_IDS)?.length || 0;
   },
 });
 
@@ -83,24 +83,26 @@ const IS_PUBLICATION_DELETED = atomFamily<boolean, PublicationId>({
   default: false,
 });
 
-const DELETED_PUBLICATIONS_IDS = selector<PublicationId[]>({
+const DELETED_PUBLICATIONS_IDS = selector<PublicationId[] | undefined>({
   key: "deleted-publications-ids",
   get({ get }) {
-    return get(PUBLICATION_IDS).filter((id) => get(IS_PUBLICATION_DELETED(id)));
+    return get(PUBLICATION_IDS)?.filter((id) =>
+      get(IS_PUBLICATION_DELETED(id))
+    );
   },
 });
 
 const DELETED_PUBLICATION_COUNT = selector<number>({
   key: "deleted-publication-count",
   get({ get }) {
-    return get(DELETED_PUBLICATIONS_IDS).length;
+    return get(DELETED_PUBLICATIONS_IDS)?.length || 0;
   },
 });
 
-const VISIBLE_PUBLICATION_IDS = selector<PublicationId[]>({
+const VISIBLE_PUBLICATION_IDS = selector<PublicationId[] | undefined>({
   key: "visible-publications-ids",
   get({ get }) {
-    return get(PUBLICATION_IDS).filter(
+    return get(PUBLICATION_IDS)?.filter(
       (id) => !get(IS_PUBLICATION_DELETED(id))
     );
   },
@@ -121,7 +123,7 @@ const VISIBLE_PUBLICATIONS = selectorFamily<Publication, PublicationId>({
 const VISIBLE_PUBLICATION_COUNT = selector<number>({
   key: "publication-count",
   get({ get }) {
-    return get(VISIBLE_PUBLICATION_IDS).length;
+    return get(VISIBLE_PUBLICATION_IDS)?.length || 0;
   },
 });
 
@@ -134,11 +136,11 @@ const IS_PUBLICATION_VALID = selectorFamily<boolean, PublicationId>({
   },
 });
 
-const VALID_PUBLICATIONS_IDS = selector<number[]>({
+const VALID_PUBLICATIONS_IDS = selector<PublicationId[] | undefined>({
   key: "valid-publication-ids",
   get({ get }) {
     return get(PUBLICATION_IDS)
-      .filter((id) => !get(IS_PUBLICATION_DELETED(id)))
+      ?.filter((id) => !get(IS_PUBLICATION_DELETED(id)))
       .filter((id) => get(IS_PUBLICATION_VALID(id)));
   },
 });
@@ -146,7 +148,7 @@ const VALID_PUBLICATIONS_IDS = selector<number[]>({
 const VALID_PUBLICATION_COUNT = selector<number>({
   key: "valid-publication-count",
   get({ get }) {
-    return get(VALID_PUBLICATIONS_IDS).length;
+    return get(VALID_PUBLICATIONS_IDS)?.length || 0;
   },
 });
 
@@ -163,7 +165,7 @@ const IS_VALIDATING = atom<boolean>({
 const TOTAL_PUBLICATION_COUNT = selector<number>({
   key: "total-publication-count",
   get({ get }) {
-    return get(PUBLICATION_IDS).length;
+    return get(PUBLICATION_IDS)?.length || 0;
   },
 });
 
@@ -222,7 +224,7 @@ interface PublicationModule {
   STORE: {
     initialize(snapshot: MutableSnapshot): void;
 
-    useVisibleIds(): PublicationId[];
+    useVisibleIds(): PublicationId[] | undefined;
     useValue(id: PublicationId): Publication;
     useError(id: PublicationId): PublicationError;
     useErrorDescription(id: PublicationId): string;
@@ -231,7 +233,7 @@ interface PublicationModule {
     useResetAll(): Resetter;
     useResetDeleted(): Resetter;
     useResetOverridden(): Resetter;
-    useOverriddenIds(): PublicationId[];
+    useOverriddenIds(): PublicationId[] | undefined;
     useOverrideValue(id: PublicationId): Partial<Publication>;
     useAddNew(): () => PublicationId;
 
@@ -246,8 +248,8 @@ interface PublicationModule {
     useIsValidating(): boolean;
 
     from: (snapshot: Snapshot) => {
-      getVisibleIds(): PublicationId[];
-      getAllVisible(): Publication[];
+      getVisibleIds(): PublicationId[] | undefined;
+      getAllVisible(): Publication[] | undefined;
       getValue(id: PublicationId): Publication;
       isDeleted(id: PublicationId): boolean;
     };
@@ -278,7 +280,7 @@ interface PublicationModule {
     request: typeof request;
     useRequest<T = void, P = void>(
       factory: (
-        params: Pick<CallbackInterface, "set" | "snapshot">,
+        params: Pick<CallbackInterface, "set" | "reset" | "snapshot">,
         http: AxiosInstance
       ) => (args: P) => Promise<T>
     ): (args: P) => Promise<T>;
@@ -330,6 +332,9 @@ const Publication: PublicationModule = {
     useAddNew() {
       return useRecoilCallback(({ set, reset, snapshot }) => () => {
         const ids = snapshot.getLoadable(PUBLICATION_IDS).valueOrThrow();
+
+        if (!ids) throw "Can not add new publications: entries not loaded.";
+
         const id = ids.length;
         const p = snapshot
           .getLoadable(VISIBLE_PUBLICATIONS(Publication.NEW_ROW_ID))
@@ -374,7 +379,7 @@ const Publication: PublicationModule = {
         ({ reset, snapshot }) =>
           () => {
             const ids = snapshot.getLoadable(PUBLICATION_IDS).valueOrThrow();
-            ids.forEach((id) => {
+            ids?.forEach((id) => {
               reset(PUBLICATIONS(id));
               reset(PUBLICATION_OVERRIDES(id));
               reset(PUBLICATION_ERRORS(id));
@@ -392,7 +397,7 @@ const Publication: PublicationModule = {
             snapshot
               .getLoadable(DELETED_PUBLICATIONS_IDS)
               .valueOrThrow()
-              .forEach((id) => {
+              ?.forEach((id) => {
                 reset(IS_PUBLICATION_DELETED(id));
               });
           },
@@ -407,7 +412,7 @@ const Publication: PublicationModule = {
             snapshot
               .getLoadable(PUBLICATION_IDS)
               .valueOrThrow()
-              .forEach((id) => {
+              ?.forEach((id) => {
                 reset(PUBLICATION_OVERRIDES(id));
               });
           },
@@ -454,7 +459,7 @@ const Publication: PublicationModule = {
       },
       getAllVisible() {
         const { getVisibleIds, getValue } = Publication.STORE.from(snapshot);
-        return getVisibleIds().map(getValue);
+        return getVisibleIds()?.map(getValue);
       },
       isDeleted(id) {
         return snapshot.getLoadable(IS_PUBLICATION_DELETED(id)).valueOrThrow();
@@ -481,9 +486,13 @@ const Publication: PublicationModule = {
         return useRecoilValue(VISIBLE_ATTRIBUTES(key));
       },
       useSetVisible() {
-        return useRecoilCallback(({ set }) => (keys, isVisible = true) => {
-          keys.map((key) => set(VISIBLE_ATTRIBUTES(key), isVisible));
-        });
+        return useRecoilCallback(
+          ({ set }) =>
+            (keys, isVisible = true) => {
+              keys.map((key) => set(VISIBLE_ATTRIBUTES(key), isVisible));
+            },
+          []
+        );
       },
       useResetAll() {
         return useRecoilCallback(
@@ -539,12 +548,12 @@ const Publication: PublicationModule = {
     useRequest(factory) {
       const { request } = Publication.REMOTE;
       return useRecoilCallback(
-        ({ set, snapshot }) =>
+        ({ set, reset, snapshot }) =>
           (args) => {
             return new Promise(async (resolve, reject) => {
               try {
                 const res = await request((http) =>
-                  factory({ set, snapshot }, http)(args)
+                  factory({ set, reset, snapshot }, http)(args)
                 );
                 resolve(res);
               } catch (error: any) {
@@ -581,11 +590,16 @@ const Publication: PublicationModule = {
     },
     useBulk() {
       return Publication.REMOTE.useRequest(
-        ({ snapshot }, http) =>
+        ({ reset, snapshot }, http) =>
           async function () {
+            const publications =
+              Publication.STORE.from(snapshot).getAllVisible();
+
+            reset(PUBLICATION_IDS);
+
             const { data } = await http.post<Publication[]>(
               "publications/bulk",
-              Publication.STORE.from(snapshot).getAllVisible()
+              publications
             );
             return data;
           }
