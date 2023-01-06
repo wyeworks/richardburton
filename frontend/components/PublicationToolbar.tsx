@@ -1,6 +1,5 @@
 import { ChangeEvent, FC, useCallback, useEffect, useState } from "react";
 import Button from "./Button";
-import Router from "next/router";
 import Toggle from "./Toggle";
 import UploadIcon from "assets/upload.svg";
 import {
