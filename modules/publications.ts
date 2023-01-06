@@ -184,6 +184,11 @@ const VISIBLE_ATTRIBUTES = atomFamily<boolean, PublicationKey>({
   default: (key) => DEFAULT_ATTRIBUTE_VISIBILITY[key],
 });
 
+const KEYWORDS = atom<string[] | undefined>({
+  key: "keywords",
+  default: undefined,
+});
+
 type CompositeAttributeId = `${PublicationId}.${PublicationKey}`;
 
 const PUBLICATION_ATTRIBUTE = selectorFamily<string, CompositeAttributeId>({
@@ -246,6 +251,8 @@ interface PublicationModule {
     useTotalCount(): number;
 
     useIsValidating(): boolean;
+
+    useKeywords(): string[] | undefined;
 
     from: (snapshot: Snapshot) => {
       getVisibleIds(): PublicationId[] | undefined;
@@ -450,6 +457,10 @@ const Publication: PublicationModule = {
       return useRecoilValue(IS_VALIDATING);
     },
 
+    useKeywords() {
+      return useRecoilValue(KEYWORDS);
+    },
+
     from: (snapshot) => ({
       getVisibleIds() {
         return snapshot.getLoadable(VISIBLE_PUBLICATION_IDS).valueOrThrow();
@@ -578,9 +589,14 @@ const Publication: PublicationModule = {
                 ? `publications?search=${search}`
                 : "publications";
 
-              const { data } = await http.get<Publication[]>(url);
-              set(PUBLICATION_IDS, range(data.length));
-              data.forEach((publication, index) =>
+              type Result = { entries: Publication[]; keywords?: string[] };
+
+              const { data } = await http.get<Result>(url);
+              const { entries, keywords } = data;
+
+              set(KEYWORDS, keywords);
+              set(PUBLICATION_IDS, range(entries.length));
+              entries.forEach((publication, index) =>
                 set(PUBLICATIONS(index), publication)
               );
             }
