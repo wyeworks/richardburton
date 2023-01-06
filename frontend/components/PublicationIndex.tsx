@@ -16,7 +16,7 @@ const ColumnHeader: FC<{ colId: ColId }> = ({ colId }) => {
   const isVisible = Publication.STORE.ATTRIBUTES.useIsVisible(colId);
 
   return isVisible ? (
-    <th className="px-2 py-4">{Publication.ATTRIBUTE_LABELS[colId]}</th>
+    <th className="px-2 py-4 ">{Publication.ATTRIBUTE_LABELS[colId]}</th>
   ) : null;
 };
 
@@ -54,7 +54,7 @@ const Column: FC<{
 
   return visible ? (
     <td
-      className="px-2 py-1 w-80 justify group-hover:bg-indigo-100 error:group-hover:bg-red-100 selected:bg-amber-100"
+      className="max-w-sm px-2 py-1 justify group-hover:bg-indigo-100 error:group-hover:bg-red-100 selected:bg-amber-100"
       data-selected={selected}
       data-selectable={selectable}
       data-error={invalid}
@@ -141,7 +141,7 @@ const PublicationIndex: FC<Props> = ({
   const ids = Publication.STORE.useVisibleIds();
 
   return ids && (ids.length > 0 || ExtraRow) ? (
-    <table className={classNames(className, "overflow-auto h-fit")}>
+    <table className={classNames(className, "overflow-auto h-fit table-fixed")}>
       <thead className="sticky top-0 z-10 bg-gray-100">
         <tr>
           {ExtendedSignalColumn && <th />}
