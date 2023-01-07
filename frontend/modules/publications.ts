@@ -591,6 +591,8 @@ const Publication: PublicationModule = {
 
               type Result = { entries: Publication[]; keywords?: string[] };
 
+              set(PUBLICATION_IDS, undefined);
+
               const { data } = await http.get<Result>(url);
               const { entries, keywords } = data;
 
