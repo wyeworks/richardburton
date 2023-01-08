@@ -38,7 +38,7 @@ const PublicationSearch: FC = () => {
         onChange={handleChange}
       />
       <div className="h-4 px-2 space-x-1 text-xs truncate">
-        {keywords && <span>Showing results for</span>}
+        {keywords && keywords.length > 0 && <span>Showing results for</span>}
         {keywords?.map((keyword, index) => (
           <span key={`search-keyword-${keyword}`}>
             <Link
