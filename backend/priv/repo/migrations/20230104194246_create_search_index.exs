@@ -5,43 +5,84 @@ defmodule RichardBurton.Repo.Migrations.CreateSearchIndex do
     execute(
       "--Up
       CREATE VIEW flat_publications AS
+      WITH
+      CTE_publications AS (
+        SELECT
+            publications.id AS id,
+            publications.title AS title,
+            publications.country AS country,
+            publications.year AS year,
+            publications.publisher AS publisher,
+            authors.name AS original_author,
+            translators.name AS translator,
+            original_books.title AS original_title
+        FROM
+            translated_books
+        INNER JOIN
+            publications
+            ON publications.translated_book_id = translated_books.id
+        INNER JOIN
+            original_books
+            ON original_books.id = translated_books.original_book_id
+        INNER JOIN
+            original_book_authors
+            ON original_book_authors.original_book_id = original_books.id
+        INNER JOIN
+            authors
+            ON authors.id = original_book_authors.author_id
+        INNER JOIN
+            translated_book_authors
+            ON translated_book_authors.translated_book_id = translated_books.id
+        INNER JOIN
+            authors AS translators
+            ON translators.id = translated_book_authors.author_id
+      ),
+      CTE_authors AS (
+        SELECT id, original_author
+        FROM CTE_publications
+        GROUP BY id, original_author
+      ),
+      CTE_authors_distinct AS (
+        SELECT id, string_agg(original_author, ', ' ORDER BY original_author) AS original_authors
+        FROM CTE_authors
+        GROUP BY id
+      ),
+      CTE_translators AS (
+        SELECT id, translator
+        FROM CTE_publications
+        GROUP BY id, translator
+      ),
+      CTE_translators_distinct AS (
+        SELECT id, string_agg(translator, ', ' ORDER BY translator) AS translators
+        FROM CTE_translators
+        GROUP BY id
+      )
       SELECT
-        publications.id AS id,
-        publications.title AS title,
-        publications.country AS country,
-        publications.year AS year,
-        publications.publisher AS publisher,
-        string_agg(translators.name, ',') AS authors,
-        original_books.title AS original_title,
-        string_agg(authors.name, ',') AS original_authors
+        CTE_publications.id AS id,
+        CTE_publications.title AS title,
+        CTE_publications.country AS country,
+        CTE_publications.year AS year,
+        CTE_publications.publisher AS publisher,
+        CTE_publications.original_title AS original_title,
+        CTE_authors_distinct.original_authors AS original_authors,
+        CTE_translators_distinct.translators AS authors
       FROM
-        translated_books
+        CTE_publications
       INNER JOIN
-        publications
-          ON publications.translated_book_id = translated_books.id
+        CTE_authors_distinct
+        ON CTE_publications.id = CTE_authors_distinct.id
       INNER JOIN
-        original_books
-          ON original_books.id = translated_books.original_book_id
-      INNER JOIN
-        original_book_authors
-          ON original_book_authors.original_book_id = original_books.id
-      INNER JOIN
-        authors
-          ON authors.id = original_book_authors.author_id
-      INNER JOIN
-        translated_book_authors
-          ON translated_book_authors.translated_book_id = translated_books.id
-      INNER JOIN
-        authors AS translators
-          ON translators.id = translated_book_authors.author_id
+        CTE_translators_distinct
+        ON CTE_publications.id = CTE_translators_distinct.id
       GROUP BY
-        publications.id,
-        publications.title,
-        publications.country,
-        publications.year,
-        publications.publisher,
-        translated_books.id,
-        original_books.id;
+        CTE_publications.id,
+        CTE_publications.title,
+        CTE_publications.country,
+        CTE_publications.year,
+        CTE_publications.publisher,
+        CTE_publications.original_title,
+        CTE_authors_distinct.original_authors,
+        CTE_translators_distinct.translators;
       ",
       "--Down
       DROP VIEW flat_publications;
