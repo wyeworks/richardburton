@@ -139,10 +139,13 @@ defmodule RichardBurton.Publication.CodecTest do
             ],
             "original_book" => %{
               "authors" => [
-                %{
-                  "name" =>
-                    "José de Alencar,1886,GB,Iracema,Iraçéma the Honey-Lips: A Legend of Brazil,Isabel Burton,Bickers & Son"
-                }
+                %{"name" => "José de Alencar"},
+                %{"name" => "1886"},
+                %{"name" => "GB"},
+                %{"name" => "Iracema"},
+                %{"name" => "Iraçéma the Honey-Lips: A Legend of Brazil"},
+                %{"name" => "Isabel Burton"},
+                %{"name" => "Bickers & Son"}
               ],
               "title" => ""
             }

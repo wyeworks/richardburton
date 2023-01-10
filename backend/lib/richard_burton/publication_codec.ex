@@ -140,11 +140,11 @@ defmodule RichardBurton.Publication.Codec do
   end
 
   defp nest_authors(authors) do
-    String.split(authors, " and ") |> Enum.map(&Map.put(%{}, "name", &1))
+    String.split(authors, ",") |> Enum.map(&Map.put(%{}, "name", String.trim(&1)))
   end
 
   defp flatten_authors(authors) when is_list(authors) do
-    Enum.map_join(authors, " and ", &(Map.get(&1, "name") || Map.get(&1, :name)))
+    Enum.map_join(authors, ", ", &(Map.get(&1, "name") || Map.get(&1, :name)))
   end
 
   defp flatten_authors_error(authors) when is_list(authors) do
