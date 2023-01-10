@@ -43,7 +43,7 @@ defmodule RichardBurton.Publication.IndexTest do
     end
   end
 
-  describe "search/1 with a single-word term" do
+  describe "search/1 with a single-word term present in the dataset" do
     test "retrieves publications by original author", context do
       %{publications: publications} = context
 
@@ -129,15 +129,37 @@ defmodule RichardBurton.Publication.IndexTest do
     end
 
     test "retrieves no publications and no keywords for inexistent term", context do
-      %{publications: publications} = context
-
       term = "Blablabla"
 
       assert {:ok, [], []} == Publication.Index.search(term)
     end
   end
 
-  describe "search/1 with a composite term" do
+  describe "search/1 with a single-word term not present in the dataset" do
+    test "prioritizes words that start with the term", context do
+      %{publications: publications} = context
+
+      term = "veri"
+
+      assert {:ok, result, ["verissimo"]} = Publication.Index.search(term)
+
+      assert length(result) > 0
+      assert sort(filter(publications, :original_authors, "Verissimo")) == sort(result)
+    end
+
+    test "does a fuzzy search when there's no words start with the term", context do
+      %{publications: publications} = context
+
+      term = "vera"
+
+      assert {:ok, result, ["verbo"]} = Publication.Index.search(term)
+
+      assert length(result) > 0
+      assert sort(filter(publications, :original_title, "verbo")) == sort(result)
+    end
+  end
+
+  describe "search/1 with a composite term present in the dataset" do
     test "retrieves publications matching any of the words", context do
       %{publications: publications} = context
 
