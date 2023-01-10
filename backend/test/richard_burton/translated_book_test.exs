@@ -5,7 +5,9 @@ defmodule RichardBurton.TranslatedBookTest do
 
   use RichardBurton.DataCase
 
+  alias RichardBurton.Author
   alias RichardBurton.TranslatedBook
+  alias RichardBurton.OriginalBook
   alias RichardBurton.Util
   alias RichardBurton.Validation
 
@@ -96,6 +98,14 @@ defmodule RichardBurton.TranslatedBookTest do
       authors_fingerprint2 = Ecto.Changeset.get_field(changeset2, :authors_fingerprint)
 
       refute authors_fingerprint1 == authors_fingerprint2
+    end
+
+    test "has no side effects" do
+      assert Enum.empty?(Author.all())
+      assert Enum.empty?(OriginalBook.all())
+      changeset(@valid_attrs)
+      assert Enum.empty?(OriginalBook.all())
+      assert Enum.empty?(OriginalBook.all())
     end
   end
 
