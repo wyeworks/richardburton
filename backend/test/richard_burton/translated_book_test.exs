@@ -47,10 +47,6 @@ defmodule RichardBurton.TranslatedBookTest do
     attrs |> changeset() |> Repo.insert()
   end
 
-  defp count do
-    length(TranslatedBook.all())
-  end
-
   describe "changeset/2" do
     test "when valid attributes are provided, is valid" do
       assert changeset(@valid_attrs).valid?
@@ -105,22 +101,19 @@ defmodule RichardBurton.TranslatedBookTest do
 
   describe "maybe_insert/1" do
     test "when there is no translated book with the provided authors and original book, inserts it" do
-      assert 0 == count()
-
       translated_book = TranslatedBook.maybe_insert!(@valid_attrs)
 
       assert [translated_book] == TranslatedBook.all()
-      assert 1 == count()
     end
 
     test "when there is a translated book with the provided authors and original book, returns the pre-existent one" do
       insert(@valid_attrs)
-      assert 1 == count()
+      assert [pre_existent_book] = TranslatedBook.all()
 
       translated_book = TranslatedBook.maybe_insert!(@valid_attrs) |> TranslatedBook.preload()
 
+      assert pre_existent_book.id == translated_book.id
       assert [translated_book] == TranslatedBook.all()
-      assert 1 == count()
     end
   end
 
