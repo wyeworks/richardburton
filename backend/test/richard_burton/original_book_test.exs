@@ -38,7 +38,7 @@ defmodule RichardBurton.OriginalBookTest do
   end
 
   defp count do
-    Kernel.length(OriginalBook.all())
+    length(OriginalBook.all())
   end
 
   describe "changeset/2" do
