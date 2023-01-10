@@ -5,6 +5,7 @@ defmodule RichardBurton.OriginalBookTest do
 
   use RichardBurton.DataCase
 
+  alias RichardBurton.Author
   alias RichardBurton.Util
   alias RichardBurton.OriginalBook
   alias RichardBurton.Validation
@@ -72,6 +73,12 @@ defmodule RichardBurton.OriginalBookTest do
 
       refute changeset.valid?
       assert :conflict == Validation.get_errors(changeset)
+    end
+
+    test "has no side effects" do
+      assert Enum.empty?(Author.all())
+      changeset(@valid_attrs)
+      assert Enum.empty?(Author.all())
     end
   end
 
