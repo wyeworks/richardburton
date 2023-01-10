@@ -65,7 +65,7 @@ defmodule RichardBurton.AuthorTest do
         |> Ecto.Changeset.apply_changes()
         |> Author.to_map()
 
-      assert %{name: "Richard Burton"} = result
+      assert %{name: "Richard Burton"} == result
     end
   end
 end
