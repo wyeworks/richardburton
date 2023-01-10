@@ -91,6 +91,16 @@ defmodule RichardBurton.TranslatedBookTest do
       refute changeset.valid?
       assert :conflict == Validation.get_errors(changeset)
     end
+
+    test "translated books with diferrent authors must have different authors fingerprint" do
+      changeset1 = change_valid(%{"authors" => [%{"name" => "John Gledson"}]})
+      changeset2 = change_valid(%{"authors" => [%{"name" => "Helen Caldwell"}]})
+
+      authors_fingerprint1 = Ecto.Changeset.get_field(changeset1, :authors_fingerprint)
+      authors_fingerprint2 = Ecto.Changeset.get_field(changeset2, :authors_fingerprint)
+
+      refute authors_fingerprint1 == authors_fingerprint2
+    end
   end
 
   describe "maybe_insert/1" do

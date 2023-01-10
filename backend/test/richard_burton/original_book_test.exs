@@ -98,6 +98,16 @@ defmodule RichardBurton.OriginalBookTest do
       assert [original_book] == OriginalBook.all()
       assert 1 == count()
     end
+
+    test "translated books with diferrent authors must have different authors fingerprint" do
+      changeset1 = change_valid(%{"authors" => [%{"name" => "Machado de Assis"}]})
+      changeset2 = change_valid(%{"authors" => [%{"name" => "Erico Verissimo"}]})
+
+      authors_fingerprint1 = Ecto.Changeset.get_field(changeset1, :authors_fingerprint)
+      authors_fingerprint2 = Ecto.Changeset.get_field(changeset2, :authors_fingerprint)
+
+      refute authors_fingerprint1 == authors_fingerprint2
+    end
   end
 
   describe "to_map/1" do

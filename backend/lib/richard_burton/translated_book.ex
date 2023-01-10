@@ -49,7 +49,7 @@ defmodule RichardBurton.TranslatedBook do
 
       authors_fingerprint =
         authors_attrs
-        |> Enum.map_join(&Map.get(&1, "name"))
+        |> Enum.map_join(&Map.get(&1, :name))
         |> Util.create_fingerprint()
 
       # Compute complete changeset with the complete original book and authors associated
