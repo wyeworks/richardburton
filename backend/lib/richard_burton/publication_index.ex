@@ -11,7 +11,7 @@ defmodule RichardBurton.Publication.Index do
   alias RichardBurton.Publication.Index.SearchKeyword
 
   def all do
-    {:ok, Repo.all(FlatPublication)}
+    {:ok, FlatPublication |> Repo.all() |> FlatPublication.to_map()}
   end
 
   def search_keywords(term, :prefix) do
@@ -47,17 +47,23 @@ defmodule RichardBurton.Publication.Index do
       keywords when is_list(keywords) ->
         joint_keywords = Enum.join(keywords, " OR ")
 
-        results =
-          Repo.all(
-            from(p in FlatPublication,
-              join: d in SearchDocument,
-              on: d.id == p.id,
-              where: fragment("document @@ websearch_to_tsquery(?)", ^joint_keywords),
-              order_by:
-                {:desc,
-                 fragment("ts_rank_cd(document, websearch_to_tsquery(?), 4)", ^joint_keywords)}
-            )
+        query =
+          from(p in FlatPublication,
+            join: d in SearchDocument,
+            on: d.id == p.id,
+            where: fragment("document @@ websearch_to_tsquery('simple', ?)", ^joint_keywords),
+            order_by:
+              {:desc,
+               fragment(
+                 "ts_rank_cd(document, websearch_to_tsquery('simple', ?), 4)",
+                 ^joint_keywords
+               )}
           )
+
+        results =
+          query
+          |> Repo.all()
+          |> FlatPublication.to_map()
 
         {:ok, results, keywords}
     end
