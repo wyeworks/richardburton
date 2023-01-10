@@ -48,7 +48,7 @@ defmodule RichardBurton.TranslatedBookTest do
   end
 
   defp count do
-    Kernel.length(TranslatedBook.all())
+    length(TranslatedBook.all())
   end
 
   describe "changeset/2" do

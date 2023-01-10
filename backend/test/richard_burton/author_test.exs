@@ -19,7 +19,7 @@ defmodule RichardBurton.AuthorTest do
   end
 
   defp count do
-    Kernel.length(Author.all())
+    length(Author.all())
   end
 
   describe "changeset/2" do
