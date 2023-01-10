@@ -48,7 +48,7 @@ defmodule RichardBurton.Repo.Migrations.CreateAuthors do
               inserted_at,
               updated_at)
             SELECT DISTINCT
-              unnest(string_to_array(authors, ' and ')) AS name,
+              btrim(unnest(string_to_array(authors, ','))) AS name,
               now(),
               now()
             FROM (
@@ -80,7 +80,7 @@ defmodule RichardBurton.Repo.Migrations.CreateAuthors do
             UPDATE original_books
             SET authors = (
               SELECT
-                string_agg(authors.name, ' and ')
+                string_agg(authors.name, ', ')
               FROM
                 original_book_authors,
                 authors
@@ -111,7 +111,7 @@ defmodule RichardBurton.Repo.Migrations.CreateAuthors do
             UPDATE translated_books
             SET authors = (
               SELECT
-                string_agg(authors.name, ' and ')
+                string_agg(authors.name, ', ')
               FROM
                 translated_book_authors,
                 authors
