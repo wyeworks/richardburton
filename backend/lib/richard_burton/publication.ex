@@ -48,7 +48,7 @@ defmodule RichardBurton.Publication do
   def insert(attrs) do
     %Publication{}
     |> changeset(attrs)
-    |> link_translated_book()
+    |> TranslatedBook.link()
     |> Repo.insert()
     |> case do
       {:ok, publication} ->
@@ -59,21 +59,8 @@ defmodule RichardBurton.Publication do
     end
   end
 
-  defp link_translated_book(changeset = %{valid?: true}) do
-    translated_book =
-      changeset
-      |> get_change(:translated_book)
-      |> apply_changes()
-      |> TranslatedBook.to_map()
-      |> TranslatedBook.maybe_insert!()
-
-    put_assoc(changeset, :translated_book, translated_book)
-  end
-
-  defp link_translated_book(changeset = %{valid?: false}), do: changeset
-
   def validate(attrs) do
-    Validation.validate(changeset(%Publication{}, attrs), &link_translated_book/1)
+    Validation.validate(changeset(%Publication{}, attrs), &TranslatedBook.link/1)
   end
 
   def insert_all(attrs_list) do

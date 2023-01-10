@@ -9,7 +9,6 @@ defmodule RichardBurton.OriginalBook do
   alias RichardBurton.Repo
   alias RichardBurton.OriginalBook
   alias RichardBurton.TranslatedBook
-  alias RichardBurton.Util
 
   @external_attributes [:authors, :title]
 
@@ -32,40 +31,16 @@ defmodule RichardBurton.OriginalBook do
     |> validate_required([:title])
     |> cast_assoc(:authors, required: true)
     |> validate_length(:authors, min: 1)
-    |> authors_fingerprint
+    |> Author.fingerprint()
     |> unique_constraint([:authors_fingerprint, :title])
-  end
-
-  defp authors_fingerprint(changeset) do
-    authors_fingerprint =
-      changeset
-      |> get_field(:authors)
-      |> Enum.map(&Author.to_map/1)
-      |> Enum.map_join(&Map.get(&1, :name))
-      |> Util.create_fingerprint()
-
-    put_change(changeset, :authors_fingerprint, authors_fingerprint)
   end
 
   def maybe_insert!(attrs) do
     %OriginalBook{}
     |> changeset(attrs)
-    |> link_authors
+    |> Author.link()
     |> Repo.maybe_insert!([:authors_fingerprint, :title])
   end
-
-  defp link_authors(changeset = %{valid?: true}) do
-    authors =
-      changeset
-      |> get_change(:authors)
-      |> Enum.map(&apply_changes/1)
-      |> Enum.map(&Author.to_map/1)
-      |> Enum.map(&Author.maybe_insert!/1)
-
-    put_assoc(changeset, :authors, authors)
-  end
-
-  defp link_authors(changeset = %{valid?: false}), do: changeset
 
   def to_map(original_book = %OriginalBook{}) do
     authors = Enum.map(original_book.authors, &Author.to_map/1)
@@ -82,4 +57,17 @@ defmodule RichardBurton.OriginalBook do
   def preload(data) do
     Repo.preload(data, :authors)
   end
+
+  def link(changeset = %{valid?: true}) do
+    original_book =
+      changeset
+      |> get_change(:original_book)
+      |> apply_changes()
+      |> OriginalBook.to_map()
+      |> OriginalBook.maybe_insert!()
+
+    put_assoc(changeset, :original_book, original_book)
+  end
+
+  def link(changeset = %{valid?: false}), do: changeset
 end
