@@ -37,10 +37,6 @@ defmodule RichardBurton.OriginalBookTest do
     attrs |> changeset() |> Repo.insert()
   end
 
-  defp count do
-    length(OriginalBook.all())
-  end
-
   describe "changeset/2" do
     test "when valid attributes are provided, is valid" do
       assert changeset(@valid_attrs).valid?
@@ -81,22 +77,19 @@ defmodule RichardBurton.OriginalBookTest do
 
   describe "maybe_insert/1" do
     test "when there is no original book with the provided authors and title, inserts it" do
-      assert 0 == count()
-
       original_book = OriginalBook.maybe_insert!(@valid_attrs)
 
       assert [original_book] == OriginalBook.all()
-      assert 1 == count()
     end
 
     test "when there is a original book with the provided authors and title, returns the pre-existent one" do
       insert(@valid_attrs)
-      assert 1 == count()
+      assert [pre_existent_book] = OriginalBook.all()
 
       original_book = OriginalBook.maybe_insert!(@valid_attrs) |> OriginalBook.preload()
 
+      assert pre_existent_book.id == original_book.id
       assert [original_book] == OriginalBook.all()
-      assert 1 == count()
     end
 
     test "translated books with diferrent authors must have different authors fingerprint" do

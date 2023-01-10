@@ -18,10 +18,6 @@ defmodule RichardBurton.AuthorTest do
     attrs |> changeset() |> Repo.insert()
   end
 
-  defp count do
-    length(Author.all())
-  end
-
   describe "changeset/2" do
     test "when valid attributes are provided, is valid" do
       assert changeset(@valid_attrs).valid?
@@ -46,22 +42,19 @@ defmodule RichardBurton.AuthorTest do
 
   describe "maybe_insert/1" do
     test "when there is no author with the provided name, inserts it" do
-      assert 0 == count()
-
       author = Author.maybe_insert!(@valid_attrs)
 
-      assert [^author] = Author.all()
-      assert 1 == count()
+      assert [author] == Author.all()
     end
 
     test "when there is a author with the provided name, returns the pre-existent one" do
       insert(@valid_attrs)
-      assert 1 == count()
+      assert [preexistent_author] = Author.all()
 
       author = Author.maybe_insert!(@valid_attrs)
 
-      assert [^author] = Author.all()
-      assert 1 == count()
+      assert preexistent_author.id == author.id
+      assert [author] == Author.all()
     end
   end
 
