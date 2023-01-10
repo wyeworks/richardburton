@@ -5,26 +5,25 @@ defmodule RichardBurton.Validation do
 
   alias RichardBurton.Repo
 
-  def validate(module, attrs) do
-    case validate_transaction(module, attrs) do
+  @spec validate(%{:valid? => boolean, optional(any) => any}, any) :: :ok | {:error, any}
+  def validate(changeset, link_assocs) do
+    case validate_transaction(changeset, link_assocs) do
       {:error, :ok} -> :ok
       {:error, errors} -> {:error, errors}
     end
   end
 
-  defp validate_transaction(module, attrs) do
+  defp validate_transaction(changeset = %{valid?: true}, link_assocs) do
     Repo.transaction(fn ->
-      changeset = module.changeset(Kernel.struct(module, %{}), attrs)
-
-      if changeset.valid? do
-        case Repo.insert(changeset) do
-          {:ok, _changeset} -> Repo.rollback(:ok)
-          {:error, changeset} -> Repo.rollback(get_errors(changeset))
-        end
-      else
-        Repo.rollback(get_errors(changeset))
+      case Repo.insert(link_assocs.(changeset)) do
+        {:ok, _changeset} -> Repo.rollback(:ok)
+        {:error, changeset} -> Repo.rollback(get_errors(changeset))
       end
     end)
+  end
+
+  defp validate_transaction(changeset = %{valid?: false}, _link_assocs) do
+    {:error, get_errors(changeset)}
   end
 
   def get_errors(changeset) do
@@ -43,10 +42,14 @@ defmodule RichardBurton.Validation do
 
   defp simplify_errors(node) when is_map(node) do
     if Kernel.map_size(node) == 1 do
-      node |> Map.values() |> List.first()
+      simplify_errors(node |> Map.values() |> List.first())
     else
       node
     end
+  end
+
+  defp simplify_errors(atom) when is_atom(atom) do
+    atom
   end
 
   defp coalesce_errors(node) when is_map(node) do

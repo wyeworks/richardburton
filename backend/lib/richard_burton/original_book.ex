@@ -27,41 +27,45 @@ defmodule RichardBurton.OriginalBook do
 
   @doc false
   def changeset(original_book, attrs \\ %{}) do
-    # Compute basic changeset with basic validation and authors validation
-    result =
-      original_book
-      |> cast(attrs, [:title])
-      |> validate_required([:title])
-      |> cast_assoc(:authors, required: true)
-      |> validate_length(:authors, min: 1)
+    original_book
+    |> cast(attrs, [:title])
+    |> validate_required([:title])
+    |> cast_assoc(:authors, required: true)
+    |> validate_length(:authors, min: 1)
+    |> authors_fingerprint
+    |> unique_constraint([:authors_fingerprint, :title])
+  end
 
-    # Check if authors are valid
-    if result.valid? do
-      # Insert or fetch the valid authors
-      authors_attrs = result |> get_field(:authors) |> Enum.map(&Author.to_map/1)
-      authors = Enum.map(authors_attrs, &Author.maybe_insert!/1)
+  defp authors_fingerprint(changeset) do
+    authors_fingerprint =
+      changeset
+      |> get_field(:authors)
+      |> Enum.map(&Author.to_map/1)
+      |> Enum.map_join(&Map.get(&1, :name))
+      |> Util.create_fingerprint()
 
-      authors_fingerprint =
-        authors_attrs
-        |> Enum.map_join(&Map.get(&1, :name))
-        |> Util.create_fingerprint()
-
-      # Compute complete changeset with the complete authors associated
-      result
-      |> put_change(:authors_fingerprint, authors_fingerprint)
-      |> put_assoc(:authors, authors)
-      |> unique_constraint([:authors_fingerprint, :title])
-    else
-      # Return the changeset with the author validation errors
-      result
-    end
+    put_change(changeset, :authors_fingerprint, authors_fingerprint)
   end
 
   def maybe_insert!(attrs) do
-    %__MODULE__{}
+    %OriginalBook{}
     |> changeset(attrs)
+    |> link_authors
     |> Repo.maybe_insert!([:authors_fingerprint, :title])
   end
+
+  defp link_authors(changeset = %{valid?: true}) do
+    authors =
+      changeset
+      |> get_change(:authors)
+      |> Enum.map(&apply_changes/1)
+      |> Enum.map(&Author.to_map/1)
+      |> Enum.map(&Author.maybe_insert!/1)
+
+    put_assoc(changeset, :authors, authors)
+  end
+
+  defp link_authors(changeset = %{valid?: false}), do: changeset
 
   def to_map(original_book = %OriginalBook{}) do
     authors = Enum.map(original_book.authors, &Author.to_map/1)

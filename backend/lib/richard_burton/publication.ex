@@ -28,27 +28,11 @@ defmodule RichardBurton.Publication do
 
   @doc false
   def changeset(publication, attrs \\ %{}) do
-    # Compute basic changeset with translated book validation
-    result =
-      publication
-      |> cast(attrs, [:title, :year, :country, :publisher])
-      |> validate_required([:title, :year, :country, :publisher])
-      |> cast_assoc(:translated_book, required: true)
-
-    # Check if translated_book is valid
-    if result.valid? do
-      # Insert or fetch the valid translated book
-      translated_book_attrs = attrs["translated_book"]
-      translated_book = TranslatedBook.maybe_insert!(translated_book_attrs)
-
-      # Compute complete changeset with the complete translated book associated
-      result
-      |> put_assoc(:translated_book, translated_book)
-      |> unique_constraint([:title, :year, :country, :publisher])
-    else
-      # Return the changeset with the translated book validation errors
-      result
-    end
+    publication
+    |> cast(attrs, [:title, :year, :country, :publisher])
+    |> validate_required([:title, :year, :country, :publisher])
+    |> cast_assoc(:translated_book, required: true)
+    |> unique_constraint([:title, :year, :country, :publisher])
   end
 
   def all do
@@ -64,6 +48,7 @@ defmodule RichardBurton.Publication do
   def insert(attrs) do
     %Publication{}
     |> changeset(attrs)
+    |> link_translated_book()
     |> Repo.insert()
     |> case do
       {:ok, publication} ->
@@ -74,8 +59,21 @@ defmodule RichardBurton.Publication do
     end
   end
 
+  defp link_translated_book(changeset = %{valid?: true}) do
+    translated_book =
+      changeset
+      |> get_change(:translated_book)
+      |> apply_changes()
+      |> TranslatedBook.to_map()
+      |> TranslatedBook.maybe_insert!()
+
+    put_assoc(changeset, :translated_book, translated_book)
+  end
+
+  defp link_translated_book(changeset = %{valid?: false}), do: changeset
+
   def validate(attrs) do
-    Validation.validate(Publication, attrs)
+    Validation.validate(changeset(%Publication{}, attrs), &link_translated_book/1)
   end
 
   def insert_all(attrs_list) do
