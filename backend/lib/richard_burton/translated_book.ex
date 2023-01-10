@@ -29,46 +29,59 @@ defmodule RichardBurton.TranslatedBook do
 
   @doc false
   def changeset(translated_book, attrs \\ %{}) do
-    # Compute basic changeset with original_book validation
-    result =
-      translated_book
-      |> cast(attrs, [])
-      |> cast_assoc(:authors, required: true)
-      |> cast_assoc(:original_book, required: true)
-      |> validate_length(:authors, min: 1)
+    translated_book
+    |> cast(attrs, [])
+    |> cast_assoc(:authors, required: true)
+    |> cast_assoc(:original_book, required: true)
+    |> validate_length(:authors, min: 1)
+    |> authors_fingerprint()
+    |> unique_constraint([:authors_fingerprint, :original_book_id])
+  end
 
-    # Check if original_book is valid
-    if result.valid? do
-      # Insert or fetch the valid original book
-      original_book_attrs = result |> get_field(:original_book) |> OriginalBook.to_map()
-      original_book = OriginalBook.maybe_insert!(original_book_attrs)
+  defp authors_fingerprint(changeset) do
+    authors_fingerprint =
+      changeset
+      |> get_field(:authors)
+      |> Enum.map(&Author.to_map/1)
+      |> Enum.map_join(&Map.get(&1, :name))
+      |> Util.create_fingerprint()
 
-      # Insert or fetch the valid authors
-      authors_attrs = result |> get_field(:authors) |> Enum.map(&Author.to_map/1)
-      authors = Enum.map(authors_attrs, &Author.maybe_insert!/1)
-
-      authors_fingerprint =
-        authors_attrs
-        |> Enum.map_join(&Map.get(&1, :name))
-        |> Util.create_fingerprint()
-
-      # Compute complete changeset with the complete original book and authors associated
-      result
-      |> put_change(:authors_fingerprint, authors_fingerprint)
-      |> put_assoc(:authors, authors)
-      |> put_assoc(:original_book, original_book)
-      |> unique_constraint([:authors_fingerprint, :original_book_id])
-    else
-      # Return the changeset with the original_book validation errors
-      result
-    end
+    put_change(changeset, :authors_fingerprint, authors_fingerprint)
   end
 
   def maybe_insert!(attrs) do
     %TranslatedBook{}
     |> changeset(attrs)
+    |> link_original_book
+    |> link_authors
     |> Repo.maybe_insert!([:authors_fingerprint, :original_book])
   end
+
+  defp link_original_book(changeset = %{valid?: true}) do
+    original_book =
+      changeset
+      |> get_change(:original_book)
+      |> apply_changes()
+      |> OriginalBook.to_map()
+      |> OriginalBook.maybe_insert!()
+
+    put_assoc(changeset, :original_book, original_book)
+  end
+
+  defp link_original_book(changeset = %{valid?: false}), do: changeset
+
+  defp link_authors(changeset = %{valid?: true}) do
+    authors =
+      changeset
+      |> get_change(:authors)
+      |> Enum.map(&apply_changes/1)
+      |> Enum.map(&Author.to_map/1)
+      |> Enum.map(&Author.maybe_insert!/1)
+
+    put_assoc(changeset, :authors, authors)
+  end
+
+  defp link_authors(changeset = %{valid?: false}), do: changeset
 
   def all() do
     TranslatedBook
