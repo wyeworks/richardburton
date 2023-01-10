@@ -136,4 +136,25 @@ defmodule RichardBurton.Publication.IndexTest do
       assert {:ok, [], []} == Publication.Index.search(term)
     end
   end
+
+  describe "search/1 with a composite term" do
+    test "retrieves publications matching any of the words", context do
+      %{publications: publications} = context
+
+      term = "Marie Barrett"
+      split_term = String.split(term, " ")
+      keywords = Enum.map(split_term, &String.downcase/1)
+
+      expected =
+        split_term
+        |> Enum.reduce([], fn t, acc -> filter(publications, :authors, t) ++ acc end)
+        |> Enum.uniq()
+        |> sort
+
+      assert {:ok, result, ^keywords} = Publication.Index.search(term)
+
+      assert length(result) > 0
+      assert expected == sort(result)
+    end
+  end
 end
