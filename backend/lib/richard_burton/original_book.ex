@@ -31,7 +31,7 @@ defmodule RichardBurton.OriginalBook do
     |> validate_required([:title])
     |> cast_assoc(:authors, required: true)
     |> validate_length(:authors, min: 1)
-    |> Author.fingerprint()
+    |> Author.link_fingerprint()
     |> unique_constraint([:authors_fingerprint, :title])
   end
 
