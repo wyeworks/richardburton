@@ -3,9 +3,14 @@ defmodule RichardBurtonWeb.PublicationController do
 
   alias RichardBurton.Publication
 
+  def index(conn, %{"search" => query}) do
+    {:ok, results, keywords} = Publication.Index.search(query)
+    json(conn, %{entries: results, keywords: keywords})
+  end
+
   def index(conn, _params) do
-    flat_publications = Publication.Codec.flatten(Publication.all())
-    json(conn, flat_publications)
+    {:ok, results} = Publication.Index.all()
+    json(conn, %{entries: results})
   end
 
   def create_all(conn, %{"_json" => entries}) do

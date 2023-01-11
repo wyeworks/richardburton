@@ -1,6 +1,5 @@
 import { ChangeEvent, FC, useCallback, useEffect, useState } from "react";
 import Button from "./Button";
-import Router from "next/router";
 import Toggle from "./Toggle";
 import UploadIcon from "assets/upload.svg";
 import {
@@ -58,6 +57,9 @@ const PublicationEdit: FC = () => {
   };
 
   const reset = () => {
+    if (!overriddenIds)
+      throw "Can not reset publications: overriden ids are undefined.";
+
     resetDeleted();
     resetOverridden();
     clearSelection();
@@ -160,6 +162,7 @@ const PublicationUpload: FC = () => {
           payload.append("csv", file);
 
           try {
+            resetPublications();
             const { data } = await http.post<ValidationResult[]>(
               "publications/validate",
               payload
@@ -218,22 +221,20 @@ const PublicationNav: FC = () => {
 
 const PublicationSubmit: FC = () => {
   const bulk = Publication.REMOTE.useBulk();
-  const reset = Publication.STORE.useResetAll();
+  const setAll = Publication.STORE.useSetAll();
   const notify = useNotify();
 
-  const handleSubmit = useCallback(
-    () =>
-      bulk().then((publications) => {
-        reset();
-        notify({
-          message: `${publications.length} ${
-            publications.length === 1 ? "publication" : "publications"
-          } inserted successfully`,
-          level: "success",
-        });
-      }),
-    [bulk, reset, notify]
-  );
+  const handleSubmit = useCallback(() => {
+    bulk().then((publications) => {
+      setAll([]);
+      notify({
+        message: `${publications.length} ${
+          publications.length === 1 ? "publication" : "publications"
+        } inserted successfully`,
+        level: "success",
+      });
+    });
+  }, [bulk, notify, setAll]);
 
   const publicationCount = Publication.STORE.useVisibleCount();
   const validPublicationCount = Publication.STORE.useValidCount();
@@ -275,7 +276,7 @@ const PublicationToolbar: FC<Props> = ({
   return (
     <section
       className={classNames(
-        "flex flex-col w-48 p-2 space-y-2",
+        "flex flex-col w-48 space-y-2",
         edit && "min-h-toolbar"
       )}
     >
