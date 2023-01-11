@@ -5,7 +5,6 @@ defmodule RichardBurton.Author do
   use Ecto.Schema
   import Ecto.Changeset
 
-  alias Hex.API.Auth
   alias RichardBurton.Repo
   alias RichardBurton.OriginalBook
   alias RichardBurton.TranslatedBook
