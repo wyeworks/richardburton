@@ -33,7 +33,7 @@ defmodule RichardBurton.TranslatedBook do
     |> cast_assoc(:authors, required: true)
     |> cast_assoc(:original_book, required: true)
     |> validate_length(:authors, min: 1)
-    |> Author.fingerprint()
+    |> Author.link_fingerprint()
     |> unique_constraint([:authors_fingerprint, :original_book_id])
   end
 
