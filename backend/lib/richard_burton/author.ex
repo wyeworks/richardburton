@@ -64,14 +64,21 @@ defmodule RichardBurton.Author do
 
   def link(changeset = %{valid?: false}), do: changeset
 
-  def fingerprint(changeset) do
+  def fingerprint(authors) when is_list(authors) do
+    authors
+    |> Enum.map(&Author.to_map/1)
+    |> Enum.map_join(&Map.get(&1, :name))
+    |> Util.create_fingerprint()
+  end
+
+  def link_fingerprint(changeset = %Ecto.Changeset{valid?: true}) do
     authors_fingerprint =
       changeset
       |> get_field(:authors)
-      |> Enum.map(&Author.to_map/1)
-      |> Enum.map_join(&Map.get(&1, :name))
-      |> Util.create_fingerprint()
+      |> fingerprint
 
     put_change(changeset, :authors_fingerprint, authors_fingerprint)
   end
+
+  def link_fingerprint(changeset = %Ecto.Changeset{valid?: false}), do: changeset
 end
