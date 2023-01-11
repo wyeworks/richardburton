@@ -128,7 +128,7 @@ defmodule RichardBurton.Publication.IndexTest do
       assert sort(filter(publications, :year, term)) == sort(result)
     end
 
-    test "retrieves no publications and no keywords for inexistent term", context do
+    test "retrieves no publications and no keywords for inexistent term" do
       term = "Blablabla"
 
       assert {:ok, [], []} == Publication.Index.search(term)
