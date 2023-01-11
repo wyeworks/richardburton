@@ -24,59 +24,6 @@ defmodule RichardBurton.DataCase do
       import Ecto.Changeset
       import Ecto.Query
       import RichardBurton.DataCase
-
-      def entity do
-        raise "Not implemented"
-      end
-
-      def changeset_fixture(attrs \\ %{}) do
-        {struct, changeset, valid_attrs} = entity()
-
-        changeset.(
-          struct,
-          Enum.into(attrs, valid_attrs)
-        )
-      end
-
-      def entity_fixture(attrs) do
-        attrs |> changeset_fixture |> Repo.insert()
-      end
-
-      def test_valid_attrs() do
-        changeset = changeset_fixture()
-        assert changeset.valid?
-        assert %{} = errors_on(changeset)
-      end
-
-      def test_invalid_attr_value(name, value, error \\ false) do
-        changeset = %{} |> Map.put(name, value) |> changeset_fixture
-        refute changeset.valid?, "Changeset is valid"
-
-        if error do
-          assert Map.put(%{}, String.to_atom(name), error) ==
-                   errors_on(changeset)
-        end
-      end
-
-      def test_not_blank(attr),
-        do: test_invalid_attr_value(attr, "", ["can't be blank"])
-
-      def test_not_nil(attr),
-        do: test_invalid_attr_value(attr, nil, ["can't be blank"])
-
-      def test_unique_constraint(unique_constraint_name) do
-        {_struct, _changeset, valid_attrs} = entity()
-
-        {:ok, _} = entity_fixture(valid_attrs)
-        {:error, changeset} = entity_fixture(valid_attrs)
-
-        expected_errors = Map.put(%{}, unique_constraint_name, ["has already been taken"])
-
-        refute changeset.valid?, "Changeset is valid"
-        assert expected_errors == errors_on(changeset)
-      end
-
-      defoverridable entity: 0
     end
   end
 

@@ -58,7 +58,7 @@ defmodule RichardBurtonWeb.PublicationController do
 
   defp validate_publication(p) do
     case Publication.validate(p) do
-      {:ok, ^p} -> %{publication: p, errors: nil}
+      :ok -> %{publication: p, errors: nil}
       {:error, errors} -> %{publication: p, errors: errors}
     end
   end

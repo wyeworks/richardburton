@@ -1,6 +1,6 @@
 José de Alencar;1886;GB;Iracema;Iraçéma the Honey-Lips: A Legend of Brazil;Isabel Burton;Bickers & Son
 José de Alencar;1922;GB;Ubirajara;Ubirajara: A Legend of the Tupy Indians;J. T. W. Sadler;Ronald Massey
-J. M. Pereira da Silva;1886;GB;Manuel de Moraes: crônica do século XVII;Manuel de Moraes: A Chronicle of the Seventeenth Century;Richard Burton and Isabel Burton;Bickers & Son
+J. M. Pereira da Silva;1886;GB;Manuel de Moraes: crônica do século XVII;Manuel de Moraes: A Chronicle of the Seventeenth Century;Richard Burton, Isabel Burton;Bickers & Son
 Visconde de Taunay;1889;GB;Inocência;Innocencia: A Story of the Prairie Regions of Brazil;James W. Wells;Chapman and Hall
 Visconde de Taunay;1945;US;Inocência;Inocência;Henriqueta Chamberlain;Macmillan
 Manuel Antônio de Almeida;1959;GB;Memórias de um sargento de milícias;Memoirs of a Militia Sergeant;Linton Lemos Barrett;Pan American Union
@@ -12,8 +12,8 @@ Aluísio de Azevedo;1928;GB;O cortiço;A Brazilian Tenement;Harry W. Brown;Casse
 José Américo de Almeida;1978;GB;A bagaceira;Trash;Robert Scott-Buccleuch;Peter Owen
 Lima Barreto;1978;GB;Triste fim de Policarpo Quaresma;The Patriot;Robert Scott-Buccleuch;Rex Collings
 Mário de Andrade;1933;US;Amar  verbo intransitivo;Fraulein;Margaret Richardson Hollingsworth;MacCaulay
-Oswald de Andrade;1979;US;Serafim Ponte Grande;Seraphim Grosse Pointe;Kenneth D. Jackson and Albert Bork;Nefertiti Head Press
-Oswald de Andrade;1979;US;Memórias sentimentais de João Miramar;The Sentimental Memoirs of John Seaborne;Albert Bork and Ralph Niebuhr;Nefertiti Head Press
+Oswald de Andrade;1979;US;Serafim Ponte Grande;Seraphim Grosse Pointe;Kenneth D. Jackson, Albert Bork;Nefertiti Head Press
+Oswald de Andrade;1979;US;Memórias sentimentais de João Miramar;The Sentimental Memoirs of John Seaborne;Albert Bork, Ralph Niebuhr;Nefertiti Head Press
 Erico Verissimo;1943;US;Caminhos cruzados;Crossroads;L. C. Kaplan;Macmillan
 Erico Verissimo;1956;GB;Caminhos cruzados;Crossroads and Destinies;L. C. Kaplan;Arco Publications
 Erico Verissimo;1945;US;O resto é silêncio;The Rest is Silence;L. C. Kaplan;Macmillan
@@ -25,7 +25,7 @@ Erico Verissimo;1951;US;O tempo e o vento;Time and the Wind;Linton Lemos Barrett
 Erico Verissimo;1954;GB;O tempo e o vento;Time and the Wind;Linton Lemos Barrett;Arco Publications
 Erico Verissimo;1956;US;Noite;Night;Linton Lemos Barrett;Macmillan
 Erico Verissimo;1956;GB;Noite;Night;Linton Lemos Barrett;Arco Publications
-Erico Verissimo;1967;US;O senhor embaixador;His Excellency, the Ambassador;Linton Lemos Barrett and Marie Barrett;Macmillan
+Erico Verissimo;1967;US;O senhor embaixador;His Excellency, the Ambassador;Linton Lemos Barrett, Marie Barrett;Macmillan
 Graciliano Ramos;1946;US;Angústia;Anguish;L. C. Kaplan;Alfred A. Knopf
 Graciliano Ramos;1961;US;Vidas secas;Barren Lives;Ralph Edward Dimmick;Texas University Press
 Graciliano Ramos;1974;US;Memórias do cárcere;Jail Prison Memoirs;Thomas Colchie;Evans
@@ -34,7 +34,7 @@ Graciliano Ramos;1979;US;São Bernardo;São Bernardo;Robert Scott-Buccleuch;Tapl
 Graciliano Ramos;1979;GB;Infância;Childhood;Celso de Oliveira;Peter Owen
 José Lins do Rego;1948;GB;Pureza;Pureza;Lucie Marion;Hutchinson
 José Lins do Rego;1966;US;Menino de engenho;Plantation Boy;Emmi Baum;Alfred A. Knopf
-Cornélio Penna;1975;US;Fronteira;Threshold;Tona Riggio and Edward A. Riggio;Franklin Publishing Co.
+Cornélio Penna;1975;US;Fronteira;Threshold;Tona Riggio, Edward A. Riggio;Franklin Publishing Co.
 Cyro dos Anjos;1986;CA;O amanuense Belmiro;Diary of a Civil Servant;Arthur Brakel;Fairleigh Dickinson University Press
 Cyro dos Anjos;1988;GB;O amanuense Belmiro;Diary of a Civil Servant;Arthur Brakel;Associated University Presses
 Rachel de Queiroz;1963;US;As três Marias;The Three Marias;Fred P. Ellison;University of Texas Press
@@ -62,19 +62,19 @@ Machado de Assis;1990;GB;Memorial de Aires;The Wager: Aires's Journal;R. L. Scot
 Mário de Andrade;1968;US;Pauliceia Desvairada;Hallucinated City;Jack E. Tomllins;Vanderbilt University Press
 Mário de Andrade;1984;US;Macunaíma: o herói sem nenhum caráter;Macunaíma;E. A. Goodland;Random House
 Mário de Andrade;1984;GB;Macunaíma: o herói sem nenhum caráter;Macunaíma;E. A. Goodland;Quartet Books
-Guimarães Rosa;1963;US;Grande sertão: veredas;The Devil to Pay in the Backlands;James L. Taylor and Harriet de Onís;Alfred Knopf
+Guimarães Rosa;1963;US;Grande sertão: veredas;The Devil to Pay in the Backlands;James L. Taylor, Harriet de Onís;Alfred Knopf
 Guimarães Rosa;1966;US;Sagarana;Sagarana: A Cycle of Stories;Harriet de Onís;Alfred A. Knopf
 Guimarães Rosa;1968;US;Primeira estórias;The Third Bank of the River and Other Stories;Barbara Shelby;Alfred A. Knopf
 Jorge Amado;1945;US;Terras do sem fim;The Violent Land;Samuel Putnam;Alfred A. Knopf
 Jorge Amado;1989;GB;Terras do sem fim;The Violent Land;Samuel Putnam;Collins Harvill
-Jorge Amado;1962;US;Gabriela  cravo e canela;Gabriela Clove and Cinnamon;James L. Taylor and William L. Grossman;Alfred A. Knopf
-Jorge Amado;1963;GB;Gabriela  cravo e canela;Gabriela Clove and Cinnamon;James L. Taylor and William L. Grossman;Chatto & Windus
+Jorge Amado;1962;US;Gabriela  cravo e canela;Gabriela Clove and Cinnamon;James L. Taylor, William L. Grossman;Alfred A. Knopf
+Jorge Amado;1963;GB;Gabriela  cravo e canela;Gabriela Clove and Cinnamon;James L. Taylor, William L. Grossman;Chatto & Windus
 Jorge Amado;1984;US;Mar morto;Sea of Death;Gregory Rabassa;Avon Books
 Jorge Amado;1988;US;Capitães da areia;Captains of the Sands;Gregory Rabassa;Avon Books
 Jorge Amado;1988;GB;Tocaia grande;Show Down;Gregory Rabassa;Bantam Books
 Jorge Amado;1988;US;Tocaia grande;Show Down;Gregory Rabassa;Bantam Books
 Jorge Amado;1969;US;Dona Flor e seus dois maridos;Dona Flor and her Two Husbands: A Moral and Amorous Tale;Harriet de Onís;Alfred A. Knopf
-Jorge Amado;1969;GB;Dona Flor e seus dois maridos;Dona Flor and her Two Husbands: A Moral and Amorous Tale;Weidenfeld and Nicolson;Alfred A. Knopf
+Jorge Amado;1969;GB;Dona Flor e seus dois maridos;Dona Flor and her Two Husbands: A Moral and Amorous Tale;Weidenfeld, Nicolson;Alfred A. Knopf
 Jorge Amado;1971;US;Tenda dos milagres;Tend of Miracles;Barbara Shelby;Alfred A. Knopf
 Jorge Amado;1978;GB;Tenda dos milagres;Tend of Miracles;Barbara Shelby;Avon Books
 Jorge Amado;1974;US;Tereza Batista cansada de guerra;Tereza Batista: Home from the Wars;Barbara Shelby;Alfred A. Knopf
@@ -94,7 +94,7 @@ Clarice Lispector;1990;US;Perto do coração selvagem;Near to the Wild Heart;Gio
 Clarice Lispector;1986;GB;A hora da estrela;The Hour of the Star;Giovanni Pontiero;Carcanet Press
 Clarice Lispector;1992;US;A hora da estrela;The Hour of the Star;Giovanni Pontiero;New Directions
 Clarice Lispector;1988;US;A paixão Segundo G.H.;The Passion according to G. H.;Ronald W. Sousa;University of Minnesota Press
-Clarice Lispector;1989;US;Água viva;Stream of life;Elizabeth Lowe and Earl Fitz;University of Minnesota Press
+Clarice Lispector;1989;US;Água viva;Stream of life;Elizabeth Lowe, Earl Fitz;University of Minnesota Press
 Clarice Lispector;1989;US;Onde estivestes de noite & A via crucis do corpo;Soulstorm: Stories;Alexis Levitin;New Directions
 Clarice Lispector;1992;GB;A descoberta do mundo;Discovering the World;Giovanni Pontiero;Carcanet Press
 Clarice Lispector;1969;US;Uma aprendizagem ou o livro dos prazeres;"An apprenticeship; or; The Book of Delights";Richard A. Mazzara;University of Texas Press
@@ -134,7 +134,7 @@ Adélia Prado;1990;US;Coração disparado;The Headlong Heart;Elen Watson;Weslaya
 Adélia Prado;1990;US;Os componentes da banda;The Alphabet in the Park;Elen Watson;Weslayan University Press
 Caio Fernando Abreu;1990;GB;Os dragões não conhecem o paraíso;Dragons;David Treece;Boulevard
 Caio Fernando Abreu;2000;US;Onde andará Dulce Veiga?;Whatever happened to Dulce Veiga? A B novel;Adria Frizzi;University of Texas Press
-Lya Luft;1986;US;O quarto fechado;Island of the Dead;C. C. McClendon and B. J. Craige;University of Georgia Press
+Lya Luft;1986;US;O quarto fechado;Island of the Dead;C. C. McClendon, B. J. Craige;University of Georgia Press
 Lya Luft;1994;GB;Exílio;The Red House;Giovanni Pontiero;Carcanet Press
 Chico Buarque;1992;GB;Estorvo;Turbulence;Peter Brush;Bloomsbury
 Chico Buarque;1997;GB;Benjamin;Benjamin;Clifford E. Landers;Bloomsbury
@@ -168,8 +168,8 @@ Paulo Coelho;1998;US;O Monte Cinco;The fifth Mountain;Clifford E. Landers;Harper
 Paulo Coelho;1999;GB;Veronika decide morrer;Veronika Decides to Die;Margaret Jull Costa;Harper Collins Publishers
 Paulo Coelho;1999;US;Veronika decide morrer;Veronika Decides to Die;Margaret Jull Costa;Harper Collins Publishers
 Paulo Coelho;2003;GB;Manual do Guerreiro da Luz;Manual of Warrior of the Light;Margaret Jull Costa;Harper Collins Publishers
-Paulo Coelho;2002;GB;O demônio e a Srta. Prym;The Devil and Miss: A Novel of Temptation;Amanda Hopkinson and Nick Caistor;Harper Collins Publishers
-Paulo Coelho;2006;US;O demônio e a Srta. Prym;The Devil and Miss: A Novel of Temptation;Amanda Hopkinson and Nick Caistor;Harper Collins Publishers
+Paulo Coelho;2002;GB;O demônio e a Srta. Prym;The Devil and Miss: A Novel of Temptation;Amanda Hopkinson, Nick Caistor;Harper Collins Publishers
+Paulo Coelho;2006;US;O demônio e a Srta. Prym;The Devil and Miss: A Novel of Temptation;Amanda Hopkinson, Nick Caistor;Harper Collins Publishers
 Paulo Coelho;2003;GB;Onze minutos;Eleven Minutes;Margaret Jull Costa;Harper Collins Publishers
 Paulo Coelho;2004;US;Onze minutos;Eleven Minutes;Margaret Jull Costa;Harper Collins Publishers
 Paulo Coelho;2005;GB;O Zahir;The Zahir: A Novel of Obsession;Margaret Jull Costa;Harper Collins Publishers
@@ -185,16 +185,16 @@ Clarice Lispector;2011;US;A hora da estrela;The Hour of the Star;Benjamin Moser;
 Clarice Lispector;2014;GB;A hora da estrela;The Hour of the Star;Benjamin Moser;Penguin
 Clarice Lispector;2012;US;Água Viva;Água Viva;Stefan Tobler;New Directions
 Clarice Lispector;2012;CA;Água Viva;Água Viva;Stefan Tobler;New Directions
-Clarice Lispector;2014;GB;Água Viva;Água Viva;Stefan Tobler and Benjamin Moser;Penguin
+Clarice Lispector;2014;GB;Água Viva;Água Viva;Stefan Tobler, Benjamin Moser;Penguin
 Clarice Lispector;2012;US;Um sopro de vida: pulsações;A Breath of Life (Pulsations);Johnny Lorenz;New Directions
 Clarice Lispector;2012;CA;Um sopro de vida: pulsações;A Breath of Life (Pulsations);Johnny Lorenz;New Directions
-Clarice Lispector;2014;GB;Um sopro de vida: pulsações;A Breath of Life (Pulsations);Johnny Lorenz and Benjamin Moser;Penguin
+Clarice Lispector;2014;GB;Um sopro de vida: pulsações;A Breath of Life (Pulsations);Johnny Lorenz, Benjamin Moser;Penguin
 Clarice Lispector;2012;US;A Paixão Segundo G.H.;The Passion According to G.H.;Idra Novey;New Directions
 Clarice Lispector;2012;CA;A Paixão Segundo G.H.;The Passion According to G.H.;Idra Novey;New Directions
-Clarice Lispector;2014;GB;A Paixão Segundo G.H.;The Passion According to G.H.;Idra Novey and Benjamin Moser;Penguin
+Clarice Lispector;2014;GB;A Paixão Segundo G.H.;The Passion According to G.H.;Idra Novey, Benjamin Moser;Penguin
 Clarice Lispector;2012;US;Perto do coracão selvagem;Near to the Wild Heart;Alison Entrekin;New Directions
 Clarice Lispector;2012;CA;Perto do coracão selvagem;Near to the Wild Heart;Alison Entrekin;New Directions
-Clarice Lispector;2014;GB;Perto do coracão selvagem;Near to the Wild Heart;Alison Entrekin and Benjamin Moser;Penguin
+Clarice Lispector;2014;GB;Perto do coracão selvagem;Near to the Wild Heart;Alison Entrekin, Benjamin Moser;Penguin
 Patricia Melo;1997;GB;O matador;The Killer;Clifford E. Landers;Bloomsbury
 Patricia Melo;1997;US;O matador;The Killer;Clifford E. Landers;Bloomsbury
 Patricia Melo;1999;GB;Elogio da mentira;In Praise of Lies;Clifford E. Landers;Bloomsbury
@@ -204,16 +204,16 @@ Eduardo Gianetti;2000;GB;Auto-engano;Lies We Believe by: the Art of Self-Decepti
 Eduardo Gianetti;2000;US;Auto-engano;Lies We Believe by: the Art of Self-Deception;John Gledson;Bloomsbury
 Luis Fernando Verissimo;2001;GB;Clube dos anjos;Club of Angels;Margaret Jull Costa;The  Harvill Press
 Jô Soares;2000;US;O Homem Que Matou Getúlio Vargas;Twelve Fingers;Clifford E. Landers;Pantheon Books
-Paulo Coelho;2002;GB;O demônio e a Srta. Prym;The Devil and Miss Prym: A Novel of Temptation;Amanda Hopkinson and Nick Caistor;Harper Collins Publishers
-Paulo Coelho;2006;US;O demônio e a Srta. Prym;The Devil and Miss Prym: A Novel of Temptation;Amanda Hopkinson and Nick Caistor;Harper Collins Publishers
+Paulo Coelho;2002;GB;O demônio e a Srta. Prym;The Devil and Miss Prym: A Novel of Temptation;Amanda Hopkinson, Nick Caistor;Harper Collins Publishers
+Paulo Coelho;2006;US;O demônio e a Srta. Prym;The Devil and Miss Prym: A Novel of Temptation;Amanda Hopkinson, Nick Caistor;Harper Collins Publishers
 Patrícia Melo;2002;GB;Inferno;Inferno;Clifford E. Landers;Bloomsbury
 Patrícia Melo;2002;US;Inferno;Inferno;Clifford E. Landers;Bloomsbury
 Luis Alfredo Garcia-Roza;2002;US;O silêncio da chuva;The Silence of the Rain;Benjamin Moser;Henry Holt and Company
 Milton Hatoum;2003;GB;Dois irmãos;The Brothers;John Gledson;Bloomsbury
 Milton Hatoum;2003;US;Dois irmãos;The Brothers;John Gledson;Bloomsbury
 Luis Alfredo Garcia-Roza;2003;US;Achados e perdidos;December Heat;Benjamin Moser;Henry Holdand Company
-Milton Hatoum;2004;GB;Relato de um certo Oriente;Tale of a Certain Orient;Ellen Watson and John Gledson;Bloomsbury
-Milton Hatoum;2004;US;Relato de um certo Oriente;Tale of a Certain Orient;Ellen Watson and John Gledson;Bloomsbury
+Milton Hatoum;2004;GB;Relato de um certo Oriente;Tale of a Certain Orient;Ellen Watson, John Gledson;Bloomsbury
+Milton Hatoum;2004;US;Relato de um certo Oriente;Tale of a Certain Orient;Ellen Watson, John Gledson;Bloomsbury
 Patrícia Melo;2004;GB;Valsa negra;Black Waltz;Clifford E. Landers;Bloomsbury
 Patrícia Melo;2004;US;Valsa negra;Black Waltz;Clifford E. Landers;Bloomsbury
 Luis Alfredo Garcia-Roza;2004;US;Vento sudoeste;Southwesterly Wind;Benjamin Moser;Henry Holt and Company
@@ -250,8 +250,8 @@ Cristóvão Tezza;2013;AU;O filho eterno;Eternal Son;Alison Entrekin;Scribe
 Cristóvão Tezza;2013;NZ;O filho eterno;Eternal Son;Alison Entrekin;Scribe
 Cristóvão Tezza;2013;US;O filho eterno;Eternal Son;Alison Entrekin;Tagus Press
 João Paulo Cuenca;2013;US;O único final feliz para uma história de amor é um acidente;The Only Happy Ending for a Love Story Is an Accident;Elizabeth Lowe;Tagus Press
-Rodrigo de Souza Leão;2013;GB;Todos os cachorros são azuis;All Dogs are Blue;Zoë Perry and Stefan Tobler;And Other Stories
-Rodrigo de Souza Leão;2013;US;Todos os cachorros são azuis;All Dogs are Blue;Zoë Perry and Stefan Tobler;And Other Stories
+Rodrigo de Souza Leão;2013;GB;Todos os cachorros são azuis;All Dogs are Blue;Zoë Perry, Stefan Tobler;And Other Stories
+Rodrigo de Souza Leão;2013;US;Todos os cachorros são azuis;All Dogs are Blue;Zoë Perry, Stefan Tobler;And Other Stories
 Alberto Mussa;2013;US;O senhor do lado esquerdo;The Mistery of Rio;Alex Ladd;Europa Editions
 Bernardo Kucinski;2013;GB;K;K;Sue Branford;Latin American Bureau
 Edney Silvestre;2013;GB;Se eu fechar os olhos agora;If I Close My Eyes Now;Nick Caistor;Doubleday

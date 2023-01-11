@@ -57,9 +57,9 @@ Now you can visit [`localhost:3000`](http://localhost:3000) from your browser.
 
 ### Environment Variables
 
-|Key|Description|Recommended value for dev|
-|-|-|-|
-|`NEXT_PUBLIC_API_URL`| URL of the backend server API |`http://localhost:4000/api`|
+| Key                   | Description                   | Recommended value for dev   |
+| --------------------- | ----------------------------- | --------------------------- |
+| `NEXT_PUBLIC_API_URL` | URL of the backend server API | `http://localhost:4000/api` |
 
 ## Deployment
 
@@ -71,10 +71,10 @@ This app provides a mix task to initialize the database from a CSV file, `data.c
 
 A `data.csv` entry is a `Publication`, with their associated entities embedded. The fields, ordered, are:
 
-- `original book authors` (separated by `and`)
+- `original book authors` (separated by commas)
 - `publication year`
 - `publication country`
 - `original book title`
 - `publication title`
-- `publication authors` (separated by `and`)
+- `publication authors` (separated by commas)
 - `publication publisher`
