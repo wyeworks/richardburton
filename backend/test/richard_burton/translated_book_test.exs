@@ -116,7 +116,7 @@ defmodule RichardBurton.TranslatedBookTest do
       assert Enum.empty?(Author.all())
       assert Enum.empty?(OriginalBook.all())
       changeset(@valid_attrs)
-      assert Enum.empty?(OriginalBook.all())
+      assert Enum.empty?(Author.all())
       assert Enum.empty?(OriginalBook.all())
     end
   end
