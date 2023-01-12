@@ -5,7 +5,10 @@ defmodule RichardBurton.TranslatedBookTest do
 
   use RichardBurton.DataCase
 
+  alias RichardBurton.Author
   alias RichardBurton.TranslatedBook
+  alias RichardBurton.OriginalBook
+  alias RichardBurton.Publication
   alias RichardBurton.Util
   alias RichardBurton.Validation
 
@@ -45,6 +48,17 @@ defmodule RichardBurton.TranslatedBookTest do
 
   defp insert(attrs) do
     attrs |> changeset() |> Repo.insert()
+  end
+
+  defp insert!(attrs) do
+    attrs |> changeset() |> Repo.insert!()
+  end
+
+  defp linked(changeset) do
+    changeset
+    |> get_change(:translated_book)
+    |> apply_changes
+    |> TranslatedBook.preload()
   end
 
   describe "changeset/2" do
@@ -97,6 +111,14 @@ defmodule RichardBurton.TranslatedBookTest do
 
       refute authors_fingerprint1 == authors_fingerprint2
     end
+
+    test "has no side effects" do
+      assert Enum.empty?(Author.all())
+      assert Enum.empty?(OriginalBook.all())
+      changeset(@valid_attrs)
+      assert Enum.empty?(Author.all())
+      assert Enum.empty?(OriginalBook.all())
+    end
   end
 
   describe "maybe_insert/1" do
@@ -122,6 +144,62 @@ defmodule RichardBurton.TranslatedBookTest do
       {:ok, translated_book} = insert(@valid_attrs)
 
       assert @valid_attrs_atom_keys == TranslatedBook.to_map(translated_book)
+    end
+  end
+
+  describe "link/1" do
+    @publication_attrs %{
+      "title" => "Manuel de Moraes: A Chronicle of the Seventeenth Century",
+      "country" => "GB",
+      "year" => 1886,
+      "publisher" => "Bickers & Son",
+      "translated_book" => %{
+        "authors" => [
+          %{"name" => "Richard Burton"},
+          %{"name" => "Isabel Burton"}
+        ],
+        "original_book" => %{
+          "authors" => [
+            %{"name" => "J. M. Pereira da Silva"}
+          ],
+          "title" => "Manuel de Moraes: crônica do século XVII"
+        }
+      }
+    }
+
+    test "links existing original book to Publication changeset" do
+      original_book = insert!(@publication_attrs["translated_book"])
+
+      changeset =
+        %Publication{}
+        |> Publication.changeset(@publication_attrs)
+        |> TranslatedBook.link()
+
+      assert changeset.valid?
+
+      assert original_book == linked(changeset)
+    end
+
+    test "links non-existing authors to Publication changeset, inserting them" do
+      changeset =
+        %Publication{}
+        |> Publication.changeset(@publication_attrs)
+        |> TranslatedBook.link()
+
+      assert changeset.valid?
+
+      assert TranslatedBook.all() == [linked(changeset)]
+    end
+
+    test "has no side effects when Publication changeset is invalid" do
+      changeset =
+        %Publication{}
+        |> Publication.changeset(%{})
+        |> TranslatedBook.link()
+
+      refute changeset.valid?
+
+      assert Enum.empty?(TranslatedBook.all())
     end
   end
 end

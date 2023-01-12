@@ -9,7 +9,6 @@ defmodule RichardBurton.OriginalBook do
   alias RichardBurton.Repo
   alias RichardBurton.OriginalBook
   alias RichardBurton.TranslatedBook
-  alias RichardBurton.Util
 
   @external_attributes [:authors, :title]
 
@@ -27,39 +26,19 @@ defmodule RichardBurton.OriginalBook do
 
   @doc false
   def changeset(original_book, attrs \\ %{}) do
-    # Compute basic changeset with basic validation and authors validation
-    result =
-      original_book
-      |> cast(attrs, [:title])
-      |> validate_required([:title])
-      |> cast_assoc(:authors, required: true)
-      |> validate_length(:authors, min: 1)
-
-    # Check if authors are valid
-    if result.valid? do
-      # Insert or fetch the valid authors
-      authors_attrs = result |> get_field(:authors) |> Enum.map(&Author.to_map/1)
-      authors = Enum.map(authors_attrs, &Author.maybe_insert!/1)
-
-      authors_fingerprint =
-        authors_attrs
-        |> Enum.map_join(&Map.get(&1, :name))
-        |> Util.create_fingerprint()
-
-      # Compute complete changeset with the complete authors associated
-      result
-      |> put_change(:authors_fingerprint, authors_fingerprint)
-      |> put_assoc(:authors, authors)
-      |> unique_constraint([:authors_fingerprint, :title])
-    else
-      # Return the changeset with the author validation errors
-      result
-    end
+    original_book
+    |> cast(attrs, [:title])
+    |> validate_required([:title])
+    |> cast_assoc(:authors, required: true)
+    |> validate_length(:authors, min: 1)
+    |> Author.link_fingerprint()
+    |> unique_constraint([:authors_fingerprint, :title])
   end
 
   def maybe_insert!(attrs) do
-    %__MODULE__{}
+    %OriginalBook{}
     |> changeset(attrs)
+    |> Author.link()
     |> Repo.maybe_insert!([:authors_fingerprint, :title])
   end
 
@@ -78,4 +57,17 @@ defmodule RichardBurton.OriginalBook do
   def preload(data) do
     Repo.preload(data, :authors)
   end
+
+  def link(changeset = %{valid?: true}) do
+    original_book =
+      changeset
+      |> get_change(:original_book)
+      |> apply_changes()
+      |> OriginalBook.to_map()
+      |> OriginalBook.maybe_insert!()
+
+    put_assoc(changeset, :original_book, original_book)
+  end
+
+  def link(changeset = %{valid?: false}), do: changeset
 end

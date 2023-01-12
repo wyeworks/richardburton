@@ -6,6 +6,7 @@ defmodule RichardBurton.PublicationTest do
   use RichardBurton.DataCase
 
   alias RichardBurton.Publication
+  alias RichardBurton.TranslatedBook
   alias RichardBurton.Util
   alias RichardBurton.Validation
 
@@ -145,6 +146,12 @@ defmodule RichardBurton.PublicationTest do
       refute changeset.valid?
       assert :conflict == Validation.get_errors(changeset)
     end
+
+    test "has no side effects" do
+      assert Enum.empty?(TranslatedBook.all())
+      changeset(@valid_attrs)
+      assert Enum.empty?(TranslatedBook.all())
+    end
   end
 
   describe "insert/1" do
@@ -188,6 +195,14 @@ defmodule RichardBurton.PublicationTest do
 
     test "when validating an skeleton publication, returns a deep error map with :required errors" do
       assert {:error, @skeleton_attrs_error_map} == validate(@skeleton_attrs)
+    end
+
+    test "has no side effects" do
+      assert Enum.empty?(TranslatedBook.all())
+
+      validate(@valid_attrs)
+
+      assert Enum.empty?(TranslatedBook.all())
     end
   end
 
