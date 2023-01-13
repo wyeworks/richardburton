@@ -13,6 +13,28 @@ defmodule RichardBurtonWeb.PublicationController do
     json(conn, %{entries: results})
   end
 
+  def export(conn, params) do
+    {results, filename} =
+      case params do
+        %{"search" => query} ->
+          {:ok, results, _} = Publication.Index.search(query)
+          {results, "publications-#{query}.csv"}
+
+        _ ->
+          {:ok, results} = Publication.Index.all()
+          {results, "publications.csv"}
+      end
+
+    content = Publication.Codec.to_csv(results)
+
+    send_download(
+      conn,
+      {:binary, content},
+      filename: filename,
+      disposition: :attachment
+    )
+  end
+
   def create_all(conn, %{"_json" => entries}) do
     {status, response_body} =
       entries
@@ -68,3 +90,5 @@ defmodule RichardBurtonWeb.PublicationController do
     end
   end
 end
+
+#
