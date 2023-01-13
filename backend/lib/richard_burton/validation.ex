@@ -43,7 +43,10 @@ defmodule RichardBurton.Validation do
 
   defp simplify_errors(node) when is_map(node) do
     if Kernel.map_size(node) == 1 do
-      node |> Map.values() |> List.first()
+      case node |> Map.values() |> List.first() do
+        :conflict -> :conflict
+        _ -> node
+      end
     else
       node
     end
