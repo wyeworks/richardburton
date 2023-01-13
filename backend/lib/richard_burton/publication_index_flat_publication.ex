@@ -27,11 +27,11 @@ defmodule RichardBurton.Publication.Index.FlatPublication do
     field(:original_authors, :string)
   end
 
-  def to_map(p = %FlatPublication{}) do
-    Map.take(p, @external_attributes)
-  end
-
   def to_map(ps) when is_list(ps) do
     Enum.map(ps, &FlatPublication.to_map/1)
+  end
+
+  def to_map(p) do
+    Map.take(p, @external_attributes)
   end
 end
