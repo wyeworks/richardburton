@@ -265,6 +265,8 @@ const PublicationSubmit: FC = () => {
 
 const PublicationDownload: FC = () => {
   const visibleCount = Publication.STORE.useVisibleCount();
+  const visibleAttributes = Publication.STORE.ATTRIBUTES.useVisible();
+
   const router = useRouter();
 
   const { search } = router.query;
@@ -274,6 +276,13 @@ const PublicationDownload: FC = () => {
   if (isString(search)) {
     params.set("search", search);
   }
+
+  const camelCaseToSnakeCase = (str: string) =>
+    str.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
+
+  visibleAttributes
+    .map(camelCaseToSnakeCase)
+    .forEach((key) => params.append("select[]", key));
 
   const qs = params.toString();
 

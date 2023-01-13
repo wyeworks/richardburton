@@ -34,12 +34,32 @@ defmodule RichardBurton.Publication.IndexTest do
     Enum.filter(publications, &String.contains?(to_string(&1[key]), term))
   end
 
+  defp select_attrs(publication, attributes) when is_map(publication) do
+    Enum.filter(publication, fn {k, _} -> k in attributes end) |> Map.new()
+  end
+
+  defp select_attrs(publications, attributes) when is_list(publications) do
+    Enum.map(publications, &select_attrs(&1, attributes))
+  end
+
   describe "all/0" do
-    test "returns all publications", context do
+    test "retrieves all publications", context do
       %{publications: publications} = context
       {:ok, result} = Publication.Index.all()
 
       assert sort(publications) == sort(result)
+    end
+  end
+
+  describe "all/1" do
+    test "retrieves a subset of all publications attributes", context do
+      %{publications: publications} = context
+
+      attributes = [:title, :original_title, :authors]
+
+      {:ok, result} = Publication.Index.all(select: attributes)
+
+      assert sort(select_attrs(publications, attributes)) == sort(result)
     end
   end
 
@@ -174,6 +194,27 @@ defmodule RichardBurton.Publication.IndexTest do
         |> sort
 
       assert {:ok, result, ^keywords} = Publication.Index.search(term)
+
+      assert length(result) > 0
+      assert expected == sort(result)
+    end
+  end
+
+  describe "search/2 with a single-word term present in the dataset" do
+    test "retrieves a subset of all publications attributes, by original author", context do
+      %{publications: publications} = context
+
+      term = "Verissimo"
+      keyword = String.downcase(term)
+      attributes = [:title, :original_title, :authors]
+
+      assert {:ok, result, [^keyword]} = Publication.Index.search(term, select: attributes)
+
+      expected =
+        publications
+        |> filter(:original_authors, term)
+        |> select_attrs(attributes)
+        |> sort
 
       assert length(result) > 0
       assert expected == sort(result)

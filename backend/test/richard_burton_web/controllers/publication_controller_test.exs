@@ -5,6 +5,18 @@ defmodule RichardBurtonWeb.PublicationControllerTest do
   use RichardBurtonWeb.ConnCase
   import Routes, only: [publication_path: 2]
 
+  alias RichardBurton.Publication
+
+  @publication_attrs %{
+    "title" => "Iraçéma the Honey-Lips: A Legend of Brazil",
+    "year" => "1886",
+    "country" => "GB",
+    "publisher" => "Bickers & Son",
+    "authors" => "Isabel Burton",
+    "original_authors" => "José de Alencar",
+    "original_title" => "Iracema"
+  }
+
   describe "POST /publications/bulk" do
     @valid_input_1 %{
       "title" => "Manuel de Moraes: A Chronicle of the Seventeenth Century",
@@ -243,6 +255,115 @@ defmodule RichardBurtonWeb.PublicationControllerTest do
         |> json_response(400)
 
       assert "invalid_escape_sequence" = response
+    end
+  end
+
+  describe "GET /files/publications without search and select params" do
+    test "returns 200 and a csv attachment with all the publications", meta do
+      {:ok, _p} =
+        @publication_attrs
+        |> Publication.Codec.nest()
+        |> Publication.insert()
+
+      conn = get(meta.conn, publication_path(meta.conn, :export))
+
+      expected_data =
+        "authors;country;original_authors;original_title;publisher;title;year\nIsabel Burton;GB;José de Alencar;Iracema;Bickers & Son;Iraçéma the Honey-Lips: A Legend of Brazil;1886\n"
+
+      expected_filename = "publications.csv"
+      expected_content_disposition = ["attachment; filename=\"#{expected_filename}\""]
+
+      content_disposition = Plug.Conn.get_resp_header(conn, "content-disposition")
+
+      assert response_content_type(conn, :csv)
+      assert expected_content_disposition == content_disposition
+      assert expected_data == response(conn, 200)
+    end
+  end
+
+  describe "GET /files/publications with search param and without select param" do
+    test "returns 200 and a csv attachment with the requested attributes of all the matching publications",
+         meta do
+      {:ok, [_p1, _p2]} =
+        [@publication_attrs, Map.put(@publication_attrs, "title", "bla")]
+        |> Publication.Codec.nest()
+        |> Publication.insert_all()
+
+      search = "Honey"
+
+      path = "#{publication_path(meta.conn, :export)}?search=#{search}"
+
+      conn = get(meta.conn, path)
+
+      expected_data =
+        "authors;country;original_authors;original_title;publisher;title;year\nIsabel Burton;GB;José de Alencar;Iracema;Bickers & Son;Iraçéma the Honey-Lips: A Legend of Brazil;1886\n"
+
+      expected_filename = "publications-#{search}.csv"
+      expected_content_disposition = ["attachment; filename=\"#{expected_filename}\""]
+
+      content_disposition = Plug.Conn.get_resp_header(conn, "content-disposition")
+
+      assert response_content_type(conn, :csv)
+      assert expected_content_disposition == content_disposition
+      assert expected_data == response(conn, 200)
+    end
+  end
+
+  describe "GET /files/publications with search param and with select param" do
+    test "returns 200 and a csv attachment with all the matching publications", meta do
+      {:ok, [_p1, _p2]} =
+        [@publication_attrs, Map.put(@publication_attrs, "title", "bla")]
+        |> Publication.Codec.nest()
+        |> Publication.insert_all()
+
+      search = "Honey"
+      attributes = [:title, :original_title, :authors]
+      select = Enum.map_join(attributes, "&", &"select[]=#{&1}")
+
+      path = "#{publication_path(meta.conn, :export)}?search=#{search}&#{select}"
+
+      conn = get(meta.conn, path)
+
+      expected_data =
+        "authors;original_title;title\nIsabel Burton;Iracema;Iraçéma the Honey-Lips: A Legend of Brazil\n"
+
+      expected_filename = "publications-#{search}-#{Enum.join(attributes, "-")}.csv"
+      expected_content_disposition = ["attachment; filename=\"#{expected_filename}\""]
+
+      content_disposition = Plug.Conn.get_resp_header(conn, "content-disposition")
+
+      assert response_content_type(conn, :csv)
+      assert expected_content_disposition == content_disposition
+      assert expected_data == response(conn, 200)
+    end
+  end
+
+  describe "GET /files/publications without search param and with select param" do
+    test "returns 200 and a csv attachment with the requested attributes of all the publications",
+         meta do
+      {:ok, _p} =
+        @publication_attrs
+        |> Publication.Codec.nest()
+        |> Publication.insert()
+
+      attributes = [:title, :original_title, :authors]
+      select = Enum.map_join(attributes, "&", &"select[]=#{&1}")
+
+      path = "#{publication_path(meta.conn, :export)}?#{select}"
+
+      conn = get(meta.conn, path)
+
+      expected_data =
+        "authors;original_title;title\nIsabel Burton;Iracema;Iraçéma the Honey-Lips: A Legend of Brazil\n"
+
+      expected_filename = "publications-#{Enum.join(attributes, "-")}.csv"
+      expected_content_disposition = ["attachment; filename=\"#{expected_filename}\""]
+
+      content_disposition = Plug.Conn.get_resp_header(conn, "content-disposition")
+
+      assert response_content_type(conn, :csv)
+      assert expected_content_disposition == content_disposition
+      assert expected_data == response(conn, 200)
     end
   end
 end

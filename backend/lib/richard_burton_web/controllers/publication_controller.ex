@@ -14,15 +14,21 @@ defmodule RichardBurtonWeb.PublicationController do
   end
 
   def export(conn, params) do
+    attributes =
+      case params do
+        %{"select" => attributes} -> Enum.map(attributes, &String.to_existing_atom/1)
+        _ -> []
+      end
+
     {results, filename} =
       case params do
         %{"search" => query} ->
-          {:ok, results, _} = Publication.Index.search(query)
-          {results, "publications-#{query}.csv"}
+          {:ok, results, _} = Publication.Index.search(query, select: attributes)
+          {results, "#{Enum.join(["publications", query | attributes], "-")}.csv"}
 
         _ ->
-          {:ok, results} = Publication.Index.all()
-          {results, "publications.csv"}
+          {:ok, results} = Publication.Index.all(select: attributes)
+          {results, "#{Enum.join(["publications" | attributes], "-")}.csv"}
       end
 
     content = Publication.Codec.to_csv(results)
@@ -90,5 +96,3 @@ defmodule RichardBurtonWeb.PublicationController do
     end
   end
 end
-
-#
