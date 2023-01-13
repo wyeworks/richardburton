@@ -57,9 +57,10 @@ Now you can visit [`localhost:3000`](http://localhost:3000) from your browser.
 
 ### Environment Variables
 
-| Key                   | Description                   | Recommended value for dev   |
-| --------------------- | ----------------------------- | --------------------------- |
-| `NEXT_PUBLIC_API_URL` | URL of the backend server API | `http://localhost:4000/api` |
+| Key                     | Description                     | Recommended value for dev     |
+| ----------------------- | ------------------------------- | ----------------------------- |
+| `NEXT_PUBLIC_API_URL`   | URL of the backend server API   | `http://localhost:4000/api`   |
+| `NEXT_PUBLIC_FILES_URL` | URL of the backend server files | `http://localhost:4000/files` |
 
 ## Deployment
 
