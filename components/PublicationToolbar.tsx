@@ -2,6 +2,7 @@ import { ChangeEvent, FC, useCallback, useEffect, useState } from "react";
 import Button from "./Button";
 import Toggle from "./Toggle";
 import UploadIcon from "assets/upload.svg";
+import DownloadIcon from "assets/download.svg";
 import {
   Publication,
   PublicationKey,
@@ -17,6 +18,8 @@ import Link from "next/link";
 import AddIcon from "assets/add.svg";
 import Tooltip from "./Tooltip";
 import { useNotify } from "./Notifications";
+import { useRouter } from "next/router";
+import { isString } from "lodash";
 
 const ToolbarHeading: FC<{ label: string }> = ({ label }) => (
   <h3 className="flex items-center space-x-2 text-sm">
@@ -260,11 +263,41 @@ const PublicationSubmit: FC = () => {
   );
 };
 
+const PublicationDownload: FC = () => {
+  const visibleCount = Publication.STORE.useVisibleCount();
+  const router = useRouter();
+
+  const { search } = router.query;
+
+  const params = new URLSearchParams();
+
+  if (isString(search)) {
+    params.set("search", search);
+  }
+
+  const qs = params.toString();
+
+  return (
+    <>
+      {visibleCount > 0 && (
+        <a
+          className="flex flex-col items-center justify-center text-sm transition-colors bg-gray-100 rounded-lg shadow cursor-pointer aspect-square hover:bg-gray-200"
+          href={`${process.env.NEXT_PUBLIC_FILES_URL}/publications?${qs}`}
+        >
+          Download .csv
+          <DownloadIcon className="w-8 h-8 text-indigo-800" />
+        </a>
+      )}
+    </>
+  );
+};
+
 type Props = {
   filter?: boolean;
   edit?: boolean;
   upload?: boolean;
   nav?: boolean;
+  download?: boolean;
 };
 
 const PublicationToolbar: FC<Props> = ({
@@ -272,6 +305,7 @@ const PublicationToolbar: FC<Props> = ({
   edit = false,
   upload = false,
   nav = false,
+  download = false,
 }) => {
   return (
     <section
@@ -287,6 +321,7 @@ const PublicationToolbar: FC<Props> = ({
         {edit && <PublicationSubmit />}
       </div>
       {upload && <PublicationUpload />}
+      {download && <PublicationDownload />}
     </section>
   );
 };
