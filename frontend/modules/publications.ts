@@ -1,6 +1,7 @@
 import {
   atom,
   atomFamily,
+  CallbackInterface,
   Resetter,
   selector,
   selectorFamily,
@@ -8,7 +9,10 @@ import {
   useRecoilCallback,
   useRecoilValue,
 } from "recoil";
-import { isString } from "lodash";
+import { isString, range } from "lodash";
+import { request } from "app";
+import { _ERRORS, _notify } from "components/Errors";
+import { AxiosInstance } from "axios";
 
 type Publication = {
   title: string;
@@ -20,43 +24,58 @@ type Publication = {
   originalAuthors: string;
 };
 
+type ValidationResult = { publication: Publication; errors: PublicationError };
 type PublicationKey = keyof Publication;
 type PublicationError = null | string | Record<PublicationKey, string>;
-type PublicationEntry = {
-  id: number;
-  publication: Publication;
-  errors: PublicationError;
-};
-type PublicationId = PublicationEntry["id"];
+type PublicationEntry = ValidationResult & { id: number };
+type PublicationId = number;
 
 const PUBLICATION_IDS = atom<PublicationId[]>({
   key: "publication-ids",
   default: [],
 });
 
-const PUBLICATIONS = atomFamily<PublicationEntry, PublicationId>({
+const PUBLICATIONS = atomFamily<Publication, PublicationId>({
   key: "publications",
   default: undefined,
 });
 
-const PUBLICATION_ERROR = selectorFamily<string, PublicationId>({
+const PUBLICATION_ERRORS = atomFamily<PublicationError, PublicationId>({
   key: "publication-error",
+  default: null,
+});
+
+const PUBLICATION_OVERRIDES = atomFamily<Partial<Publication>, PublicationId>({
+  key: "publication-overrides",
+  default: undefined,
+});
+
+const OVERRIDDEN_PUBLICATION_COUNT = selector<number>({
+  key: "overriden-publication-count",
+  get({ get }) {
+    return get(VISIBLE_PUBLICATION_IDS).map(PUBLICATION_OVERRIDES).filter(get)
+      .length;
+  },
+});
+
+const PUBLICATION_ERROR_DESCRIPTION = selectorFamily<string, PublicationId>({
+  key: "publication-error-description",
   get(id) {
     return function ({ get }) {
-      return Publication.describe(get(PUBLICATIONS(id)).errors);
+      return Publication.describe(get(PUBLICATION_ERRORS(id)));
     };
   },
 });
 
-const DELETED_PUBLICATIONS = atomFamily<boolean, PublicationId>({
-  key: "deleted-publications",
+const IS_PUBLICATION_DELETED = atomFamily<boolean, PublicationId>({
+  key: "is-publication-deleted",
   default: false,
 });
 
 const DELETED_PUBLICATIONS_IDS = selector<PublicationId[]>({
   key: "deleted-publications-ids",
   get({ get }) {
-    return get(PUBLICATION_IDS).filter((id) => get(DELETED_PUBLICATIONS(id)));
+    return get(PUBLICATION_IDS).filter((id) => get(IS_PUBLICATION_DELETED(id)));
   },
 });
 
@@ -70,7 +89,21 @@ const DELETED_PUBLICATION_COUNT = selector<number>({
 const VISIBLE_PUBLICATION_IDS = selector<PublicationId[]>({
   key: "visible-publications-ids",
   get({ get }) {
-    return get(PUBLICATION_IDS).filter((id) => !get(DELETED_PUBLICATIONS(id)));
+    return get(PUBLICATION_IDS).filter(
+      (id) => !get(IS_PUBLICATION_DELETED(id))
+    );
+  },
+});
+
+const VISIBLE_PUBLICATIONS = selectorFamily<Publication, PublicationId>({
+  key: "visible-publications",
+  get(id) {
+    return function ({ get }) {
+      return {
+        ...get(PUBLICATIONS(id)),
+        ...(get(PUBLICATION_OVERRIDES(id)) || {}),
+      };
+    };
   },
 });
 
@@ -81,11 +114,11 @@ const VISIBLE_PUBLICATION_COUNT = selector<number>({
   },
 });
 
-const VALID_PUBLICATIONS = selectorFamily<boolean, PublicationId>({
-  key: "valid-publications",
+const IS_PUBLICATION_VALID = selectorFamily<boolean, PublicationId>({
+  key: "is-publication-valid",
   get(id) {
     return function ({ get }) {
-      return !Boolean(get(PUBLICATIONS(id)).errors);
+      return !Boolean(get(PUBLICATION_ERRORS(id)));
     };
   },
 });
@@ -94,8 +127,8 @@ const VALID_PUBLICATIONS_IDS = selector<number[]>({
   key: "valid-publication-ids",
   get({ get }) {
     return get(PUBLICATION_IDS)
-      .filter((id) => !get(DELETED_PUBLICATIONS(id)))
-      .filter((id) => get(VALID_PUBLICATIONS(id)));
+      .filter((id) => !get(IS_PUBLICATION_DELETED(id)))
+      .filter((id) => get(IS_PUBLICATION_VALID(id)));
   },
 });
 
@@ -131,20 +164,20 @@ const PUBLICATION_ATTRIBUTE = selectorFamily<
   get(compositeId) {
     return function ({ get }) {
       const [id, key] = compositeId.split(".") as [string, PublicationKey];
-      return get(PUBLICATIONS(parseInt(id))).publication[key];
+      return get(VISIBLE_PUBLICATIONS(parseInt(id)))[key];
     };
   },
 });
 
-const PUBLICATION_ATTRIBUTE_ERROR = selectorFamily<
+const PUBLICATION_ATTRIBUTE_ERROR_DESCRIPTION = selectorFamily<
   string,
   CompositeAttributeId
 >({
-  key: "publication-error",
+  key: "publication-attribute-error-description",
   get(compositeId) {
     return function ({ get }) {
       const [id, key] = compositeId.split(".") as [string, PublicationKey];
-      return Publication.describe(get(PUBLICATIONS(parseInt(id))).errors, key);
+      return Publication.describe(get(PUBLICATION_ERRORS(parseInt(id))), key);
     };
   },
 });
@@ -162,23 +195,33 @@ interface PublicationModule {
 
   STORE: {
     useVisibleIds(): PublicationId[];
-    useValue(id: PublicationId): PublicationEntry;
-    useError(id: PublicationId): string;
-    useSetAll(): (ids: PublicationId[], entries: PublicationEntry[]) => void;
+    useValue(id: PublicationId): Publication;
+    useError(id: PublicationId): PublicationError;
+    useErrorDescription(id: PublicationId): string;
+    useSetAll(): (entries: PublicationEntry[]) => void;
     useSetDeleted(): (ids: PublicationId[], isDeleted?: boolean) => void;
     useResetAll(): Resetter;
     useResetDeleted(): Resetter;
+    useResetOverridden(): Resetter;
+    useOverrideValue(id: PublicationId): Partial<Publication>;
+
     useIsValid(id: PublicationId): boolean;
 
     useVisibleCount(): number;
     useValidCount(): number;
     useDeletedCount(): number;
+    useOverriddenCount(): number;
 
     from: (snapshot: Snapshot) => {
       getVisibleIds(): PublicationId[];
-      getAllVisible(): PublicationEntry[];
-      getValue(id: PublicationId): PublicationEntry;
+      getAllVisible(): Publication[];
+      getValue(id: PublicationId): Publication;
       isDeleted(id: PublicationId): boolean;
+    };
+
+    with: (params: Pick<CallbackInterface, "set">) => {
+      setPublications(entries: PublicationEntry[]): void;
+      setErrors(entries: PublicationEntry[]): void;
     };
 
     ATTRIBUTES: {
@@ -189,8 +232,27 @@ interface PublicationModule {
         id: PublicationId,
         key: K
       ): Publication[K];
-      useError(id: PublicationId, key: PublicationKey): string;
+      useOverride(): (
+        id: PublicationId,
+        attribute: PublicationKey,
+        value: string | number
+      ) => void;
+      useErrorDescription(id: PublicationId, key: PublicationKey): string;
     };
+  };
+
+  REMOTE: {
+    request: typeof request;
+    useRequest<T = void, P = void>(
+      factory: (
+        params: Pick<CallbackInterface, "set" | "snapshot">,
+        http: AxiosInstance
+      ) => (args: P) => Promise<T>
+    ): (args: P) => Promise<void>;
+
+    useIndex(): () => Promise<void>;
+    useBulk(): () => Promise<void>;
+    useValidate(): (ids: PublicationId[]) => Promise<void>;
   };
 
   describe(error: PublicationError, scope?: PublicationKey): string;
@@ -220,17 +282,25 @@ const Publication: PublicationModule = {
       return useRecoilValue(VISIBLE_PUBLICATION_IDS);
     },
     useValue(id) {
-      return useRecoilValue(PUBLICATIONS(id));
+      return useRecoilValue(VISIBLE_PUBLICATIONS(id));
     },
     useError(id) {
-      return useRecoilValue(PUBLICATION_ERROR(id));
+      return useRecoilValue(PUBLICATION_ERRORS(id));
+    },
+    useErrorDescription(id) {
+      return useRecoilValue(PUBLICATION_ERROR_DESCRIPTION(id));
     },
     useSetAll() {
       return useRecoilCallback(
         ({ set }) =>
-          (ids, entries) => {
+          (entries) => {
+            const ids = entries.map(({ id }) => id);
             set(PUBLICATION_IDS, ids);
-            ids.forEach((id, index) => set(PUBLICATIONS(id), entries[index]));
+
+            entries.forEach(({ id, publication, errors }) => {
+              set(PUBLICATIONS(id), publication);
+              set(PUBLICATION_ERRORS(id), errors);
+            });
           },
         []
       );
@@ -239,7 +309,7 @@ const Publication: PublicationModule = {
       return useRecoilCallback(
         ({ set }) =>
           (ids, isDeleted = true) => {
-            ids.forEach((id) => set(DELETED_PUBLICATIONS(id), isDeleted));
+            ids.forEach((id) => set(IS_PUBLICATION_DELETED(id), isDeleted));
           },
         []
       );
@@ -251,7 +321,9 @@ const Publication: PublicationModule = {
             const ids = snapshot.getLoadable(PUBLICATION_IDS).valueOrThrow();
             ids.forEach((id) => {
               reset(PUBLICATIONS(id));
-              reset(DELETED_PUBLICATIONS(id));
+              reset(PUBLICATION_OVERRIDES(id));
+              reset(PUBLICATION_ERRORS(id));
+              reset(IS_PUBLICATION_DELETED(id));
             });
             reset(PUBLICATION_IDS);
           },
@@ -266,26 +338,45 @@ const Publication: PublicationModule = {
               .getLoadable(DELETED_PUBLICATIONS_IDS)
               .valueOrThrow()
               .forEach((id) => {
-                reset(DELETED_PUBLICATIONS(id));
+                reset(IS_PUBLICATION_DELETED(id));
               });
           },
         []
       );
     },
+
+    useResetOverridden() {
+      return useRecoilCallback(
+        ({ reset, snapshot }) =>
+          () => {
+            snapshot
+              .getLoadable(PUBLICATION_IDS)
+              .valueOrThrow()
+              .forEach((id) => {
+                reset(PUBLICATION_OVERRIDES(id));
+              });
+          },
+        []
+      );
+    },
+    useOverrideValue(id) {
+      return useRecoilValue(PUBLICATION_OVERRIDES(id));
+    },
     useIsValid(id) {
-      return useRecoilValue(VALID_PUBLICATIONS(id));
+      return useRecoilValue(IS_PUBLICATION_VALID(id));
     },
 
     useVisibleCount() {
       return useRecoilValue(VISIBLE_PUBLICATION_COUNT);
     },
-
     useDeletedCount() {
       return useRecoilValue(DELETED_PUBLICATION_COUNT);
     },
-
     useValidCount() {
       return useRecoilValue(VALID_PUBLICATION_COUNT);
+    },
+    useOverriddenCount() {
+      return useRecoilValue(OVERRIDDEN_PUBLICATION_COUNT);
     },
 
     from: (snapshot) => ({
@@ -293,14 +384,29 @@ const Publication: PublicationModule = {
         return snapshot.getLoadable(VISIBLE_PUBLICATION_IDS).valueOrThrow();
       },
       getValue(id) {
-        return snapshot.getLoadable(PUBLICATIONS(id)).valueOrThrow();
+        return snapshot.getLoadable(VISIBLE_PUBLICATIONS(id)).valueOrThrow();
       },
       getAllVisible() {
         const { getVisibleIds, getValue } = Publication.STORE.from(snapshot);
         return getVisibleIds().map(getValue);
       },
       isDeleted(id) {
-        return snapshot.getLoadable(DELETED_PUBLICATIONS(id)).valueOrThrow();
+        return snapshot.getLoadable(IS_PUBLICATION_DELETED(id)).valueOrThrow();
+      },
+    }),
+
+    with: ({ set }) => ({
+      setPublications(entries) {
+        const ids = entries.map(({ id }) => id);
+        set(PUBLICATION_IDS, ids);
+        entries.forEach(({ id, publication }) => {
+          set(PUBLICATIONS(id), publication);
+        });
+      },
+      setErrors(entries) {
+        entries.forEach(({ id, errors }) => {
+          set(PUBLICATION_ERRORS(id), errors);
+        });
       },
     }),
 
@@ -331,12 +437,98 @@ const Publication: PublicationModule = {
           PUBLICATION_ATTRIBUTE(compositeId)
         ) as Publication[K];
       },
-      useError(id, key) {
+      useOverride() {
+        return useRecoilCallback(
+          ({ set }) =>
+            (id, attribute, value) => {
+              set(PUBLICATION_OVERRIDES(id), (current) => ({
+                ...current,
+                [attribute]: value,
+              }));
+            },
+          []
+        );
+      },
+
+      useErrorDescription(id, key) {
         const compositeId: CompositeAttributeId = `${id}.${key}`;
-        return useRecoilValue(PUBLICATION_ATTRIBUTE_ERROR(compositeId));
+        return useRecoilValue(
+          PUBLICATION_ATTRIBUTE_ERROR_DESCRIPTION(compositeId)
+        );
       },
     },
   },
+
+  REMOTE: {
+    async request(cb) {
+      return new Promise(async (resolve, reject) => {
+        try {
+          resolve(await request(cb));
+        } catch (error: any) {
+          reject(Publication.describe(error) || error);
+        }
+      });
+    },
+
+    useRequest(factory) {
+      const { request } = Publication.REMOTE;
+      return useRecoilCallback(
+        ({ set, snapshot }) =>
+          (args) => {
+            return new Promise(async (resolve, reject) => {
+              try {
+                await request((http) => factory({ set, snapshot }, http)(args));
+                resolve();
+              } catch (error: any) {
+                set(_ERRORS, _notify(error));
+                reject(error);
+              }
+            });
+          },
+        []
+      );
+    },
+
+    useIndex() {
+      return Publication.REMOTE.useRequest(({ set }, http) => async () => {
+        const { data } = await http.get<Publication[]>("publications");
+        set(PUBLICATION_IDS, range(data.length));
+        data.forEach((publication, index) =>
+          set(PUBLICATIONS(index), publication)
+        );
+      });
+    },
+    useBulk() {
+      return Publication.REMOTE.useRequest(
+        ({ snapshot }, http) =>
+          async () =>
+            http.post<void>(
+              "publications/bulk",
+              Publication.STORE.from(snapshot).getAllVisible()
+            )
+      );
+    },
+    useValidate() {
+      return Publication.REMOTE.useRequest(
+        ({ set, snapshot }, http) =>
+          async (ids: PublicationId[]) => {
+            const publications = ids
+              .map(VISIBLE_PUBLICATIONS)
+              .map((atom) => snapshot.getLoadable(atom).valueOrThrow());
+
+            const { data } = await http.post<ValidationResult[]>(
+              "publications/validate",
+              publications
+            );
+
+            Publication.STORE.with({ set }).setErrors(
+              data.map((entry, index) => ({ ...entry, id: ids[index] }))
+            );
+          }
+      );
+    },
+  },
+
   describe(error, scope) {
     if (!error) {
       return "";
@@ -361,5 +553,6 @@ export type {
   PublicationEntry,
   PublicationError,
   PublicationId,
+  ValidationResult,
 };
 export { Publication };
