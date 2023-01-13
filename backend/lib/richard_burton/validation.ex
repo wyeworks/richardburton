@@ -42,13 +42,9 @@ defmodule RichardBurton.Validation do
   defp get_description(%{constraint: :unique}), do: :conflict
 
   defp simplify_errors(node) when is_map(node) do
-    if Kernel.map_size(node) == 1 do
-      case node |> Map.values() |> List.first() do
-        :conflict -> :conflict
-        _ -> node
-      end
-    else
-      node
+    case node |> Map.values() do
+      [:conflict] -> :conflict
+      _ -> node
     end
   end
 
