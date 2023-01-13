@@ -1,9 +1,12 @@
-import { ChangeEvent, FC, useEffect, useState } from "react";
-import { API } from "app";
-import { useRecoilCallback } from "recoil";
-import { useNotifyError } from "./Errors";
-import { range } from "lodash";
-import axios from "axios";
+import {
+  ChangeEvent,
+  FC,
+  MouseEvent,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
+import { _ERRORS, _notify } from "./Errors";
 import Button from "./Button";
 import Router from "next/router";
 import Toggle from "./Toggle";
@@ -12,6 +15,7 @@ import {
   Publication,
   PublicationEntry,
   PublicationKey,
+  ValidationResult,
 } from "modules/publications";
 import {
   getSelection,
@@ -28,11 +32,19 @@ const ToolbarHeading: FC<{ label: string }> = ({ label }) => (
 );
 
 const PublicationEdit: FC = () => {
-  const { useDeletedCount, useSetDeleted, useResetDeleted } = Publication.STORE;
+  const {
+    useDeletedCount,
+    useOverriddenCount,
+    useSetDeleted,
+    useResetDeleted,
+    useResetOverridden,
+  } = Publication.STORE;
 
   const setDeleted = useSetDeleted();
   const resetDeleted = useResetDeleted();
+  const resetOverridden = useResetOverridden();
   const deletedCount = useDeletedCount();
+  const overriddenCount = useOverriddenCount();
 
   const selectionSize = useSelectionSize();
   const clearSelection = useClearSelection();
@@ -47,11 +59,14 @@ const PublicationEdit: FC = () => {
 
   const reset = () => {
     resetDeleted();
+    resetOverridden();
     clearSelection();
   };
 
   const isSelectionEmpty = selectionSize === 0;
   const isDeletionSetEmpty = deletedCount === 0;
+  const isOverrideSetEmpty = overriddenCount === 0;
+  const isResetEnabled = !isDeletionSetEmpty || !isOverrideSetEmpty;
 
   return (
     <section className="flex flex-col grow">
@@ -64,16 +79,16 @@ const PublicationEdit: FC = () => {
             onClick={deleteSelected}
           />
         )}
-        {isSelectionEmpty && isDeletionSetEmpty && (
-          <div className="flex items-center justify-center grow">
-            <p className="self-center m-3 text-sm text-center text-gray-400">
-              Select publications by clicking on them to start editing
-            </p>
-          </div>
-        )}
+
+        <div className="flex items-center justify-center grow">
+          <p className="self-center m-3.5 text-sm text-center text-gray-400">
+            Select publications to delete them, or click on the columns to start
+            editing
+          </p>
+        </div>
       </div>
 
-      {!isDeletionSetEmpty && (
+      {isResetEnabled && (
         <footer className="mt-auto">
           <Button type="outline" label="Reset" onClick={reset} />
         </footer>
@@ -113,52 +128,37 @@ const PublicationFilter: FC = () => {
 };
 
 const PublicationUpload: FC = () => {
-  const { useSetAll, useResetAll } = Publication.STORE;
-  const notifyError = useNotifyError();
-  const setPublications = useSetAll();
+  const { useResetAll } = Publication.STORE;
+  const { useRequest } = Publication.REMOTE;
+
   const resetPublications = useResetAll();
 
   const [key, setKey] = useState(1);
 
-  const handleChange = useRecoilCallback(
-    () => async (event: ChangeEvent<HTMLInputElement>) => {
-      if (event.target.files) {
-        const [file] = event.target.files;
+  const handleChange = useRequest(
+    ({ set }, http) =>
+      async (event: ChangeEvent<HTMLInputElement>) => {
+        if (event.target.files) {
+          const [file] = event.target.files;
+          const payload = new FormData();
+          payload.append("csv", file);
 
-        const data = new FormData();
-        data.append("csv", file);
-
-        try {
-          const { data: parsed } = await API.post<
-            Omit<PublicationEntry, "id">[]
-          >("publications/validate", data);
-
-          const ids = range(0, parsed.length);
-
-          setPublications(
-            ids,
-            parsed.map(({ publication, errors }, index) => ({
-              id: ids[index],
-              publication,
-              errors,
-            }))
-          );
-
-          Router.push("publications/new");
-        } catch (error) {
-          event.target.files = null;
-          setKey((key) => -key);
-          if (axios.isAxiosError(error)) {
-            const { response, message } = error;
-            const descriptiveError =
-              response && Publication.describe(response.data as string);
-
-            notifyError(descriptiveError || message);
+          try {
+            const { data } = await http.post<ValidationResult[]>(
+              "publications/validate",
+              payload
+            );
+            const entries = data.map((p, index) => ({ ...p, id: index }));
+            Publication.STORE.with({ set }).setPublications(entries);
+            Publication.STORE.with({ set }).setErrors(entries);
+            Router.push("publications/new");
+          } catch (error: any) {
+            event.target.files = null;
+            setKey((key) => -key);
+            throw error;
           }
         }
       }
-    },
-    []
   );
 
   useEffect(() => resetPublications(), [resetPublications]);
@@ -189,24 +189,11 @@ const PublicationToolbar: FC<Props> = ({
   edit = false,
   upload = false,
 }) => {
-  const notifyError = useNotifyError();
+  const bulk = Publication.REMOTE.useBulk();
 
-  const handleSubmit = useRecoilCallback(
-    ({ snapshot }) =>
-      async () => {
-        try {
-          const publications = Publication.STORE.from(snapshot)
-            .getAllVisible()
-            .map(({ publication }) => publication);
-
-          await API.post("publications/bulk", publications);
-
-          Router.push("/");
-        } catch (error) {
-          if (axios.isAxiosError(error)) notifyError(error.message);
-        }
-      },
-    []
+  const handleSubmit = useCallback(
+    () => bulk().then(() => Router.push("/")),
+    [bulk]
   );
 
   return (
