@@ -13,7 +13,7 @@ module.exports = {
         cell: "19.5rem",
       },
       minHeight: {
-        "1/2": "50%",
+        toolbar: "70%",
       },
     },
     fontFamily: {

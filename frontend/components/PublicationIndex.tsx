@@ -140,7 +140,7 @@ const PublicationIndex: FC<Props> = ({
   const ids = Publication.STORE.useVisibleIds();
 
   return (
-    <table className={classNames(className, "overflow-auto")}>
+    <table className={classNames(className, "overflow-auto h-fit")}>
       <thead className="sticky top-0 z-10 bg-gray-100">
         <tr>
           {ExtendedSignalColumn && <th />}
