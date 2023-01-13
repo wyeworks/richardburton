@@ -6,6 +6,7 @@ import axiosCaseConverter from "axios-case-converter";
 import { RecoilRoot } from "recoil";
 import Errors from "components/Errors";
 import ClearSelection from "listeners/ClearSelection";
+import { Publication } from "modules/publications";
 
 const http = axiosCaseConverter(
   axios.create({
@@ -38,9 +39,13 @@ function request<T = void>(
   });
 }
 
+enum Key {
+  ENTER = "Enter",
+}
+
 const App: FC<AppProps> = ({ Component, pageProps }) => {
   return (
-    <RecoilRoot>
+    <RecoilRoot initializeState={Publication.STORE.initialize}>
       <Errors />
       <ClearSelection />
       <Component {...pageProps} />
@@ -49,4 +54,4 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
 };
 
 export default App;
-export { request };
+export { request, Key };
