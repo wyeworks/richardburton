@@ -189,6 +189,10 @@ defmodule RichardBurton.PublicationTest do
     test "when validating an skeleton publication, returns a deep error map with :required errors" do
       assert {:error, @skeleton_attrs_error_map} == validate(@skeleton_attrs)
     end
+
+    test "when a single field is invalid, returns the corresponding error map" do
+      assert {:error, %{year: :integer}} = validate(Map.put(@valid_attrs, "year", "A"))
+    end
   end
 
   describe "insert_all/1" do
