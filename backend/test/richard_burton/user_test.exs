@@ -58,4 +58,22 @@ defmodule RichardBurton.UserTest do
       assert :reader == get_change(changeset, :role)
     end
   end
+
+  describe "insert/1" do
+    test "when inserting a valid user, returns the new user" do
+      {:ok, user} = User.insert(@valid_attrs)
+      assert User.all() == [user]
+    end
+
+    test "when inserting an invalid user, returns an error map" do
+      {:error, errors} = User.insert(Map.put(@valid_attrs, "email", ""))
+      assert %{email: :required} == errors
+    end
+
+    test "when inserting a duplicate user, returns conflict" do
+      insert(@valid_attrs)
+      {:error, errors} = User.insert(@valid_attrs)
+      assert :conflict == errors
+    end
+  end
 end
