@@ -20,6 +20,7 @@ import Tooltip from "./Tooltip";
 import { useNotify } from "./Notifications";
 import { useRouter } from "next/router";
 import { isString } from "lodash";
+import { useSession } from "next-auth/react";
 
 const ToolbarHeading: FC<{ label: string }> = ({ label }) => (
   <h3 className="flex items-center space-x-2 text-sm">
@@ -316,14 +317,14 @@ const PublicationToolbar: FC<Props> = ({
   nav = false,
   download = false,
 }) => {
+  const session = useSession();
+  const isAuthenticated = session.status === "authenticated";
+
   return (
     <section
-      className={classNames(
-        "flex flex-col w-48 space-y-2",
-        edit && "min-h-toolbar"
-      )}
+      className={classNames("flex flex-col space-y-2", edit && "min-h-toolbar")}
     >
-      {nav && <PublicationNav />}
+      {nav && isAuthenticated && <PublicationNav />}
       <div className="flex flex-col p-2 space-y-2 rounded shadow grow">
         {filter && <PublicationFilter />}
         {edit && <PublicationEdit />}
