@@ -7,7 +7,7 @@ import { RecoilRoot } from "recoil";
 import Notifications from "components/Notifications";
 import ClearSelection from "listeners/ClearSelection";
 import { Publication } from "modules/publications";
-import { debounce, isString } from "lodash";
+import { SessionProvider } from "next-auth/react";
 
 const http = axiosCaseConverter(
   axios.create({
@@ -46,11 +46,13 @@ enum Key {
 
 const App: FC<AppProps> = ({ Component, pageProps }) => {
   return (
-    <RecoilRoot initializeState={Publication.STORE.initialize}>
-      <Notifications />
-      <ClearSelection />
-      <Component {...pageProps} />
-    </RecoilRoot>
+    <SessionProvider>
+      <RecoilRoot initializeState={Publication.STORE.initialize}>
+        <Notifications />
+        <ClearSelection />
+        <Component {...pageProps} />
+      </RecoilRoot>
+    </SessionProvider>
   );
 };
 
