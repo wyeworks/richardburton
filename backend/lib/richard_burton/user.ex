@@ -9,6 +9,7 @@ defmodule RichardBurton.User do
   alias RichardBurton.Repo
   alias RichardBurton.Validation
 
+  @derive {Jason.Encoder, only: [:email, :role]}
   schema "users" do
     field :subject_id, :string
     field :email, :string
@@ -28,6 +29,10 @@ defmodule RichardBurton.User do
 
   def all do
     Repo.all(User)
+  end
+
+  def get(subject_id) do
+    Repo.get_by(User, subject_id: subject_id)
   end
 
   def insert(attrs) do
