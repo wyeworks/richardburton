@@ -3,6 +3,7 @@ import GoogleProvider from "next-auth/providers/google";
 import axios from "axios";
 
 import { http } from "app";
+import { User } from "modules/users";
 
 const clientId = process.env.GOOGLE_CLIENT_ID;
 const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
@@ -15,19 +16,18 @@ const authOptions: AuthOptions = {
   pages: { signIn: "/auth/sign-in" },
   callbacks: {
     async signIn(params) {
+      let user: User | null = null;
       try {
         const { id: subject_id, email } = params.user;
-        await http.post("/users", { subject_id, email });
-        return true;
+        const { data } = await http.post<User>("/users", { subject_id, email });
+        user = data;
       } catch (e) {
-        const isConflict =
-          axios.isAxiosError(e) && e.response && e.response?.status === 409;
-
-        if (isConflict) return true;
-
-        console.error(e);
-        return false;
+        if (axios.isAxiosError(e) && e.response && e.response.status === 409) {
+          user = e.response.data as User;
+        }
       }
+
+      return user ? User.isAdmin(user.role) : false;
     },
   },
 };
