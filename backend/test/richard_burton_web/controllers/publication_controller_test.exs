@@ -11,7 +11,7 @@ defmodule RichardBurtonWeb.PublicationControllerTest do
       "country" => "GB",
       "year" => 1886,
       "publisher" => "Bickers & Son",
-      "authors" => "Richard Burton and Isabel Burton",
+      "authors" => "Richard Burton, Isabel Burton",
       "original_authors" => "J. M. Pereira da Silva",
       "original_title" => "Manuel de Moraes: crônica do século XVII"
     }
@@ -84,7 +84,7 @@ defmodule RichardBurtonWeb.PublicationControllerTest do
       "year" => "1886",
       "country" => "GB",
       "publisher" => "Bickers & Son",
-      "authors" => "Isabel Burton",
+      "authors" => "Isabel Burton, Richard Burton",
       "original_authors" => "José de Alencar",
       "original_title" => "Iracema"
     }
@@ -168,7 +168,7 @@ defmodule RichardBurtonWeb.PublicationControllerTest do
           "year" => "1886",
           "country" => "GB",
           "publisher" => "Bickers & Son",
-          "authors" => "Isabel Burton",
+          "authors" => "Isabel Burton, Richard Burton",
           "original_authors" => "José de Alencar",
           "original_title" => "Iracema"
         },

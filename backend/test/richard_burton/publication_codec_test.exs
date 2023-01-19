@@ -20,9 +20,14 @@ defmodule RichardBurton.Publication.CodecTest do
           "country" => "GB",
           "publisher" => "Bickers & Son",
           "translated_book" => %{
-            "authors" => "Isabel Burton",
+            "authors" => [
+              %{"name" => "Isabel Burton"},
+              %{"name" => "Richard Burton"}
+            ],
             "original_book" => %{
-              "authors" => "José de Alencar",
+              "authors" => [
+                %{"name" => "José de Alencar"}
+              ],
               "title" => "Iracema"
             }
           }
@@ -33,9 +38,13 @@ defmodule RichardBurton.Publication.CodecTest do
           "country" => "US",
           "publisher" => "Ronald Massey",
           "translated_book" => %{
-            "authors" => "J. T. W. Sadler",
+            "authors" => [
+              %{"name" => "J. T. W. Sadler"}
+            ],
             "original_book" => %{
-              "authors" => "José de Alencar",
+              "authors" => [
+                %{"name" => "José de Alencar"}
+              ],
               "title" => "Ubirajara"
             }
           }
@@ -46,9 +55,13 @@ defmodule RichardBurton.Publication.CodecTest do
           "country" => "GB",
           "publisher" => "Bickers & Son",
           "translated_book" => %{
-            "authors" => "",
+            "authors" => [
+              %{"name" => ""}
+            ],
             "original_book" => %{
-              "authors" => "José de Alencar",
+              "authors" => [
+                %{"name" => "José de Alencar"}
+              ],
               "title" => "Iracema"
             }
           }
@@ -59,9 +72,13 @@ defmodule RichardBurton.Publication.CodecTest do
           "country" => "",
           "publisher" => "",
           "translated_book" => %{
-            "authors" => "J. T. W. Sadler",
+            "authors" => [
+              %{"name" => "J. T. W. Sadler"}
+            ],
             "original_book" => %{
-              "authors" => "",
+              "authors" => [
+                %{"name" => ""}
+              ],
               "title" => ""
             }
           }
@@ -83,9 +100,13 @@ defmodule RichardBurton.Publication.CodecTest do
           "country" => "GB",
           "publisher" => "",
           "translated_book" => %{
-            "authors" => "Isabel Burton",
+            "authors" => [
+              %{"name" => "Isabel Burton"}
+            ],
             "original_book" => %{
-              "authors" => "José de Alencar",
+              "authors" => [
+                %{"name" => "José de Alencar"}
+              ],
               "title" => "Iracema"
             }
           }
@@ -96,9 +117,13 @@ defmodule RichardBurton.Publication.CodecTest do
           "country" => "Ubirajara",
           "publisher" => "",
           "translated_book" => %{
-            "authors" => "Ronald Massey",
+            "authors" => [
+              %{"name" => "Ronald Massey"}
+            ],
             "original_book" => %{
-              "authors" => "",
+              "authors" => [
+                %{"name" => ""}
+              ],
               "title" => "Ubirajara: A Legend of the Tupy Indians"
             }
           }
@@ -109,10 +134,19 @@ defmodule RichardBurton.Publication.CodecTest do
           "country" => "",
           "publisher" => "",
           "translated_book" => %{
-            "authors" => "",
+            "authors" => [
+              %{"name" => ""}
+            ],
             "original_book" => %{
-              "authors" =>
-                "José de Alencar,1886,GB,Iracema,Iraçéma the Honey-Lips: A Legend of Brazil,Isabel Burton,Bickers & Son",
+              "authors" => [
+                %{"name" => "José de Alencar"},
+                %{"name" => "1886"},
+                %{"name" => "GB"},
+                %{"name" => "Iracema"},
+                %{"name" => "Iraçéma the Honey-Lips: A Legend of Brazil"},
+                %{"name" => "Isabel Burton"},
+                %{"name" => "Bickers & Son"}
+              ],
               "title" => ""
             }
           }
@@ -151,9 +185,13 @@ defmodule RichardBurton.Publication.CodecTest do
         "country" => "GB",
         "publisher" => "Bickers & Son",
         "translated_book" => %{
-          "authors" => "Isabel Burton",
+          "authors" => [
+            %{"name" => "Isabel Burton"}
+          ],
           "original_book" => %{
-            "authors" => "José de Alencar",
+            "authors" => [
+              %{"name" => "José de Alencar"}
+            ],
             "title" => "Iracema"
           }
         }
@@ -169,9 +207,13 @@ defmodule RichardBurton.Publication.CodecTest do
         country: "GB",
         publisher: "Bickers & Son",
         translated_book: %{
-          authors: "Isabel Burton",
+          authors: [
+            %{name: "Isabel Burton"}
+          ],
           original_book: %{
-            authors: "José de Alencar",
+            authors: [
+              %{name: "José de Alencar"}
+            ],
             title: "Iracema"
           }
         }
@@ -187,9 +229,13 @@ defmodule RichardBurton.Publication.CodecTest do
         country: "GB",
         publisher: "Bickers & Son",
         translated_book: %TranslatedBook{
-          authors: "Isabel Burton",
+          authors: [
+            %{name: "Isabel Burton"}
+          ],
           original_book: %OriginalBook{
-            authors: "José de Alencar",
+            authors: [
+              %{name: "José de Alencar"}
+            ],
             title: "Iracema"
           }
         }
@@ -206,9 +252,13 @@ defmodule RichardBurton.Publication.CodecTest do
           "country" => "GB",
           "publisher" => "Bickers & Son",
           "translated_book" => %{
-            "authors" => "Isabel Burton",
+            "authors" => [
+              %{"name" => "Isabel Burton"}
+            ],
             "original_book" => %{
-              "authors" => "José de Alencar",
+              "authors" => [
+                %{"name" => "José de Alencar"}
+              ],
               "title" => "Iracema"
             }
           }
@@ -219,9 +269,13 @@ defmodule RichardBurton.Publication.CodecTest do
           country: "GB",
           publisher: "Bickers & Son",
           translated_book: %{
-            authors: "Isabel Burton",
+            authors: [
+              %{name: "Isabel Burton"}
+            ],
             original_book: %{
-              authors: "José de Alencar",
+              authors: [
+                %{name: "José de Alencar"}
+              ],
               title: "Iracema"
             }
           }
@@ -232,9 +286,13 @@ defmodule RichardBurton.Publication.CodecTest do
           country: "GB",
           publisher: "Bickers & Son",
           translated_book: %TranslatedBook{
-            authors: "Isabel Burton",
+            authors: [
+              %{name: "Isabel Burton"}
+            ],
             original_book: %OriginalBook{
-              authors: "José de Alencar",
+              authors: [
+                %{name: "José de Alencar"}
+              ],
               title: "Iracema"
             }
           }
@@ -263,9 +321,13 @@ defmodule RichardBurton.Publication.CodecTest do
         "country" => "",
         "publisher" => "",
         "translated_book" => %{
-          "authors" => "J. T. W. Sadler",
+          "authors" => [
+            %{"name" => "J. T. W. Sadler"}
+          ],
           "original_book" => %{
-            "authors" => "",
+            "authors" => [
+              %{"name" => ""}
+            ],
             "title" => ""
           }
         }
@@ -280,7 +342,7 @@ defmodule RichardBurton.Publication.CodecTest do
             publisher: "required",
             translated_book: %{
               original_book: %{
-                authors: "required",
+                authors: [%{name: "required"}],
                 title: "required"
               }
             }
