@@ -194,5 +194,5 @@ defmodule RichardBurton.Publication.Codec do
     do: {key, error}
 
   defp stringify_keys({key, value}) when is_atom(key), do: {Atom.to_string(key), value}
-  defp stringify_keys({key, value}), do: {key, value}
+  defp stringify_keys({key, value}) when is_binary(key), do: {key, value}
 end
