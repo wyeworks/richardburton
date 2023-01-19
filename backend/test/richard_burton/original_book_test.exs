@@ -88,7 +88,7 @@ defmodule RichardBurton.OriginalBookTest do
 
       original_book = OriginalBook.maybe_insert!(@valid_attrs) |> OriginalBook.preload()
 
-      assert pre_existent_book.id == original_book.id
+      assert pre_existent_book == original_book
       assert [original_book] == OriginalBook.all()
     end
 
