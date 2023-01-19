@@ -6,14 +6,17 @@ defmodule RichardBurton.Repo do
   def maybe_insert!(changeset, conflict_target) do
     unique_key = replace_unique_key_assocs_with_ids(conflict_target, changeset)
     unique_key_values = get_unique_key_values(conflict_target, changeset)
-    unique_key_with_values = Enum.zip(unique_key, unique_key_values)
+    unique_key_paired = Enum.zip(unique_key, unique_key_values)
 
-    insert!(
-      changeset,
-      on_conflict: [set: unique_key_with_values],
-      conflict_target: unique_key,
-      returning: true
-    )
+    %queryable{} = changeset.data
+
+    case get_by(queryable, unique_key_paired) do
+      %^queryable{} = value ->
+        value
+
+      nil ->
+        insert!(changeset)
+    end
   end
 
   defp replace_unique_key_assocs_with_ids(unique_key, changeset) do
@@ -39,38 +42,4 @@ defmodule RichardBurton.Repo do
       end
     end)
   end
-
-  def get_errors(changeset = %Ecto.Changeset{}) do
-    %{valid?: valid?, errors: errors, changes: changes} = changeset
-
-    unless valid? do
-      errors
-      |> Enum.map(&parse_error/1)
-      |> Enum.into(%{})
-      |> Map.merge(
-        changes
-        |> Enum.map(&get_errors/1)
-        |> Enum.reduce(%{}, &Map.merge/2)
-      )
-      |> Enum.reject(fn {_, value} -> is_nil(value) end)
-      |> Enum.into(%{})
-    end
-  end
-
-  def get_errors({key, changeset = %Ecto.Changeset{}}) do
-    %{key => get_errors(changeset)}
-  end
-
-  def get_errors(_unknown) do
-    %{}
-  end
-
-  defp parse_error({key, {_message, [validation: name]}}),
-    do: {key, name}
-
-  defp parse_error({key, {_message, [constraint: name, constraint_name: _]}}),
-    do: {key, name}
-
-  defp parse_error({key, {_message, [type: type, validation: :cast]}}),
-    do: {key, type}
 end
