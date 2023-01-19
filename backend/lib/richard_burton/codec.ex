@@ -49,7 +49,7 @@ defmodule RichardBurton.Codec do
     String.to_atom(compose_keys("#{key1}", "#{key2}"))
   end
 
-  defp compose_keys(key1, key2) when not is_atom(key1) and not is_atom(key2) do
+  defp compose_keys(key1, key2) when is_binary(key1) and is_binary(key2) do
     "#{key1}_#{key2}"
   end
 end
