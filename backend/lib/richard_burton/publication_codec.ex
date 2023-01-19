@@ -140,7 +140,7 @@ defmodule RichardBurton.Publication.Codec do
   end
 
   defp nest_authors(authors) do
-    String.split(authors, ",") |> Enum.map(&Map.put(%{}, "name", String.trim(&1)))
+    Enum.map(String.split(authors, ","), &%{"name" => String.trim(&1)})
   end
 
   defp flatten_authors(authors) when is_list(authors) do
