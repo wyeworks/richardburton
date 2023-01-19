@@ -17,6 +17,8 @@ defmodule RichardBurtonWeb.Router do
       post("/bulk", PublicationController, :create_all)
       post("/validate", PublicationController, :validate)
     end
+
+    post("/users", UserController, :create)
   end
 
   scope "/files", RichardBurtonWeb do
