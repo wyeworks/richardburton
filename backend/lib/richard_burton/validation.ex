@@ -14,7 +14,7 @@ defmodule RichardBurton.Validation do
 
   defp validate_transaction(module, attrs) do
     Repo.transaction(fn ->
-      changeset = module.changeset(Kernel.struct(module, %{}), attrs)
+      changeset = module.changeset(struct(module, %{}), attrs)
 
       if changeset.valid? do
         case Repo.insert(changeset) do
