@@ -9,14 +9,12 @@ import ClearSelection from "listeners/ClearSelection";
 import { Publication } from "modules/publications";
 import { SessionProvider } from "next-auth/react";
 
-const http = axiosCaseConverter(
-  axios.create({
-    baseURL: process.env.NEXT_PUBLIC_API_URL,
-  })
-);
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
+const http = axiosCaseConverter(axios.create({ baseURL: API_URL }));
 
 function request<T = void>(
-  cb: (http: AxiosInstance) => Promise<T>
+  cb: (http: AxiosInstance) => Promise<T> | T
 ): Promise<T> {
   return new Promise(async (resolve, reject) => {
     try {
@@ -57,4 +55,4 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
 };
 
 export default App;
-export { request, Key };
+export { request, Key, http };
