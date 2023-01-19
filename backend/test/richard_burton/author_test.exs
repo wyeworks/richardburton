@@ -53,7 +53,7 @@ defmodule RichardBurton.AuthorTest do
 
       author = Author.maybe_insert!(@valid_attrs)
 
-      assert preexistent_author.id == author.id
+      assert preexistent_author == author
       assert [author] == Author.all()
     end
   end

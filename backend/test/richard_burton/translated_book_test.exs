@@ -112,7 +112,7 @@ defmodule RichardBurton.TranslatedBookTest do
 
       translated_book = TranslatedBook.maybe_insert!(@valid_attrs) |> TranslatedBook.preload()
 
-      assert pre_existent_book.id == translated_book.id
+      assert pre_existent_book == translated_book
       assert [translated_book] == TranslatedBook.all()
     end
   end
