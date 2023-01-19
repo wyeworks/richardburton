@@ -4,6 +4,7 @@ defmodule RichardBurton.CodecTest do
   """
 
   use ExUnit.Case, async: true
+  doctest RichardBurton.Codec
 
   alias RichardBurton.Codec
 
