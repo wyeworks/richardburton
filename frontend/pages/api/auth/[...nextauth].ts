@@ -29,6 +29,17 @@ const authOptions: AuthOptions = {
 
       return user ? User.isAdmin(user.role) : false;
     },
+    async jwt({ token, account }) {
+      if (account) {
+        token.idToken = account.id_token;
+      }
+      return token;
+    },
+
+    async session({ session, token }) {
+      session.idToken = token.idToken;
+      return session;
+    },
   },
 };
 
