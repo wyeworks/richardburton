@@ -11,8 +11,7 @@ defmodule RichardBurton.Auth.Google do
   @impl true
   @spec verify(conn :: Plug.Conn.t()) :: :ok | :error
   def verify(conn) do
-    {%{"issuer" => issuer}, keys} = init()
-
+    {%{"issuer" => issuer}, keys} = Application.get_env(:richard_burton, :auth_config)
     audience = Application.get_env(:richard_burton, :google_client_id)
 
     case Joken.verify(get_token(conn), get_signer(conn, keys)) do

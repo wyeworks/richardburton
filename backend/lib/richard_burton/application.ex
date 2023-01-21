@@ -20,6 +20,8 @@ defmodule RichardBurton.Application do
       # {RichardBurton.Worker, arg}
     ]
 
+    Application.put_env(:richard_burton, :auth_config, RichardBurton.Auth.init())
+
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
     opts = [strategy: :one_for_one, name: RichardBurton.Supervisor]
