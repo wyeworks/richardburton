@@ -20,6 +20,7 @@ defmodule RichardBurton.Application do
       # {RichardBurton.Worker, arg}
     ]
 
+    # Initialize configration for auth service
     Application.put_env(:richard_burton, :auth_config, RichardBurton.Auth.init())
 
     # See https://hexdocs.pm/elixir/Supervisor.html
