@@ -9,26 +9,21 @@ defmodule RichardBurton.Auth.Google do
   def init(), do: {get_config(), get_keys()}
 
   @impl true
-  @spec verify(conn :: Plug.Conn.t()) :: :ok | :error
-  def verify(conn) do
+  @spec verify(token :: String.t()) :: :ok | :error
+  def verify(token) do
     {%{"issuer" => issuer}, keys} = Application.get_env(:richard_burton, :auth_config)
     audience = Application.get_env(:richard_burton, :google_client_id)
 
-    case Joken.verify(get_token(conn), get_signer(conn, keys)) do
+    case Joken.verify(token, get_signer(token, keys)) do
       {:ok, %{"iss" => ^issuer, "aud" => ^audience}} -> :ok
       _ -> :error
     end
   end
 
-  defp get_signer(conn, keys) do
-    {:ok, %{"kid" => kid}} = Joken.peek_header(get_token(conn))
+  defp get_signer(token, keys) do
+    {:ok, %{"kid" => kid}} = Joken.peek_header(token)
     %{"alg" => alg} = key = Enum.find(keys, fn k -> k["kid"] == kid end)
     Joken.Signer.create(alg, key)
-  end
-
-  defp get_token(conn) do
-    ["Bearer " <> token] = Plug.Conn.get_req_header(conn, "authorization")
-    token
   end
 
   defp get_config do

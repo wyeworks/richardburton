@@ -7,16 +7,16 @@ defmodule RichardBurton.Auth do
   @config_not_found_message "Auth configuration not found, did you specify :auth_config in your environment's config?"
 
   @callback init() :: {Map.t(), List.t()}
-  @callback verify(conn :: Plug.Conn.t()) :: :ok | :error
+  @callback verify(token :: String.t()) :: :ok | :error
 
   @spec init() :: {Map.t(), List.t()}
   def init, do: impl().init()
 
-  @spec verify(conn :: Plug.Conn.t()) :: :ok | :error
-  def verify(conn) do
+  @spec verify(token :: String.t()) :: :ok | :error
+  def verify(token) do
     case Application.get_env(:richard_burton, :auth_config, nil) do
       nil -> throw(@config_not_found_message)
-      _ -> impl().verify(conn)
+      _ -> impl().verify(token)
     end
   end
 

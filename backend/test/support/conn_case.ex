@@ -33,7 +33,11 @@ defmodule RichardBurtonWeb.ConnCase do
 
   setup tags do
     RichardBurton.DataCase.setup_sandbox(tags)
-    {:ok, conn: Phoenix.ConnTest.build_conn()}
+    {:ok, conn: build_conn()}
+  end
+
+  defp build_conn do
+    Phoenix.ConnTest.build_conn() |> Plug.Conn.put_req_header("authorization", "Bearer token")
   end
 
   def uploaded_file_fixture(path) do
