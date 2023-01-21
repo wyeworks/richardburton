@@ -19,7 +19,11 @@ const authOptions: AuthOptions = {
       let user: User | null = null;
       try {
         const { id: subject_id, email } = params.user;
-        const { data } = await http.post<User>("/users", { subject_id, email });
+        const { data } = await http.post<User>(
+          "/users",
+          { subject_id, email },
+          { headers: { Authorization: `Bearer ${params.account?.id_token}` } }
+        );
         user = data;
       } catch (e) {
         if (axios.isAxiosError(e) && e.response && e.response.status === 409) {
