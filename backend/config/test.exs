@@ -25,3 +25,7 @@ config :logger, backends: [:console], level: :warn
 
 # Initialize plugs at runtime for faster test compilation
 config :phoenix, :plug_init_mode, :runtime
+
+# Disable auth_service during tests
+config :richard_burton,
+  auth_service: RichardBurton.Auth.Unsecured
