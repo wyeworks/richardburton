@@ -8,7 +8,8 @@
 import Config
 
 config :richard_burton,
-  ecto_repos: [RichardBurton.Repo]
+  ecto_repos: [RichardBurton.Repo],
+  auth_service: RichardBurton.Auth.Google
 
 # Configures the endpoint
 config :richard_burton, RichardBurtonWeb.Endpoint,
