@@ -7,11 +7,21 @@ import { RecoilRoot } from "recoil";
 import Notifications from "components/Notifications";
 import ClearSelection from "listeners/ClearSelection";
 import { Publication } from "modules/publications";
-import { SessionProvider } from "next-auth/react";
+import { getSession, SessionProvider } from "next-auth/react";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 const http = axiosCaseConverter(axios.create({ baseURL: API_URL }));
+
+http.interceptors.request.use(async (config) => {
+  const session = await getSession();
+
+  if (session && session.idToken && config.headers) {
+    config.headers.Authorization = `Bearer ${session.idToken}`;
+  }
+
+  return config;
+});
 
 function request<T = void>(
   cb: (http: AxiosInstance) => Promise<T> | T
