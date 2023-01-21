@@ -9,6 +9,6 @@ defmodule RichardBurton.Auth.Unsecured do
   def init, do: {%{}, []}
 
   @impl true
-  @spec verify(conn :: Plug.Conn.t()) :: :ok | :error
-  def verify(_conn), do: :ok
+  @spec verify(token :: String.t()) :: :ok | :error
+  def verify(_token), do: :ok
 end
