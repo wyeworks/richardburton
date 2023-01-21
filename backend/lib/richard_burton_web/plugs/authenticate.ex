@@ -4,12 +4,10 @@ defmodule RichardBurtonWeb.Plugs.Authenticate do
   """
   alias RichardBurton.Auth
 
-  def init(params) do
-    [Auth.get_config(), Auth.get_keys()] ++ params
-  end
+  def init(params), do: params
 
-  def call(conn, params) do
-    Auth.verify(conn, params)
+  def call(conn, _params) do
+    Auth.verify(conn)
     conn
   end
 end

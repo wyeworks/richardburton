@@ -3,18 +3,14 @@ defmodule RichardBurton.Auth do
   Behaviour for authentication services
   """
 
-  @callback get_config() :: Map.t()
-  @callback get_keys() :: List.t()
-  @callback verify(conn :: Plug.Conn.t(), params :: List.t()) :: :ok | :error
+  @callback init() :: {Map.t(), List.t()}
+  @callback verify(conn :: Plug.Conn.t()) :: :ok | :error
+
+  @spec init() :: {Map.t(), List.t()}
+  def init, do: impl().init()
+
+  @spec verify(conn :: Plug.Conn.t()) :: :ok | :error
+  def verify(conn), do: impl().verify(conn)
 
   defp impl, do: Application.get_env(:richard_burton, :auth_service, nil)
-
-  @spec get_config() :: Map.t()
-  def get_config, do: impl().get_config()
-
-  @spec get_keys() :: List.t()
-  def get_keys, do: impl().get_keys()
-
-  @spec verify(conn :: Plug.Conn.t(), params :: List.t()) :: :ok | :error
-  def verify(conn, keys), do: impl().verify(conn, keys)
 end

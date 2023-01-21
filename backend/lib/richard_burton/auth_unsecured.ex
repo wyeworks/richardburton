@@ -5,14 +5,10 @@ defmodule RichardBurton.Auth.Unsecured do
   @behaviour RichardBurton.Auth
 
   @impl true
-  @spec get_config() :: Map.t()
-  def get_config, do: %{}
+  @spec init() :: {Map.t(), List.t()}
+  def init, do: {%{}, []}
 
   @impl true
-  @spec get_keys() :: List.t()
-  def get_keys, do: []
-
-  @impl true
-  @spec verify(conn :: Plug.Conn.t(), params :: List.t()) :: :ok | :error
-  def verify(_conn, _params), do: :ok
+  @spec verify(conn :: Plug.Conn.t()) :: :ok | :error
+  def verify(_conn), do: :ok
 end
