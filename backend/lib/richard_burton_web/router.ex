@@ -3,7 +3,7 @@ defmodule RichardBurtonWeb.Router do
 
   pipeline :api do
     plug(:accepts, ["json"])
-    plug RichardBurtonWeb.Plugs.Authenticate
+    plug(RichardBurtonWeb.Plugs.Authenticate)
   end
 
   pipeline :files do
