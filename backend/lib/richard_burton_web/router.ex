@@ -13,6 +13,11 @@ defmodule RichardBurtonWeb.Router do
     plug(RichardBurtonWeb.Plugs.Authenticate)
   end
 
+  pipeline :authorize_admin do
+    plug RichardBurtonWeb.Plugs.Authenticate
+    plug RichardBurtonWeb.Plugs.AuthorizeAdmin
+  end
+
   scope "/api", RichardBurtonWeb do
     pipe_through(:api)
     get("/publications", PublicationController, :index)
@@ -20,13 +25,16 @@ defmodule RichardBurtonWeb.Router do
 
   scope "/api", RichardBurtonWeb do
     pipe_through(:api)
-    pipe_through(:authenticate)
+    pipe_through(:authorize_admin)
 
     scope "/publications" do
       post("/bulk", PublicationController, :create_all)
       post("/validate", PublicationController, :validate)
     end
+  end
 
+  scope "/api", RichardBurtonWeb do
+    pipe_through(:authenticate)
     post("/users", UserController, :create)
   end
 

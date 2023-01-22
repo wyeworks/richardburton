@@ -4,18 +4,29 @@ defmodule RichardBurton.Auth.Google do
   """
   @behaviour RichardBurton.Auth
 
+  alias RichardBurton.User
+
   @impl true
   @spec init() :: {Map.t(), List.t()}
   def init(), do: {get_config(), get_keys()}
 
   @impl true
-  @spec verify(token :: String.t()) :: :ok | :error
+  @spec verify(token :: String.t()) :: {:ok, String.t()} | :error
   def verify(token) do
     {%{"issuer" => issuer}, keys} = Application.get_env(:richard_burton, :auth_config)
     audience = Application.get_env(:richard_burton, :google_client_id)
 
     case Joken.verify(token, get_signer(token, keys)) do
-      {:ok, %{"iss" => ^issuer, "aud" => ^audience}} -> :ok
+      {:ok, %{"iss" => ^issuer, "aud" => ^audience, "sub" => subject_id}} -> {:ok, subject_id}
+      _ -> :error
+    end
+  end
+
+  @impl true
+  @spec authorize(subject_id :: String.t(), role :: Atom.t()) :: :ok | :error
+  def authorize(subject_id, role) do
+    case User.get(subject_id) do
+      %{role: ^role} -> :ok
       _ -> :error
     end
   end
