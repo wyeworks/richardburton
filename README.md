@@ -32,6 +32,39 @@ Access backend app docs [here](https://wyeworks.github.io/richardburton)
 - has one `name`
 - is identified by its `name`
 
+# Environment Variables
+
+## Frontend
+
+Define the following environment variables on a `.env` file in the `frontend` folder. Format is `KEY=VALUE`, one pair per line.
+
+```
+KEY1=value1
+KEY2=value2
+```
+
+| Key                    | Description                                                                                              | Recommended value for dev                                            |
+| ---------------------- | -------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| `NEXT_PUBLIC_API_URL`  | URL of the backend server API                                                                            | `http://localhost:4000/api`                                          |
+| `NEXTAUTH_URL`         | The canonical URL of the site ([read more](https://next-auth.js.org/configuration/options#nextauth_url)) | `http://localhost:3000`                                              |
+| `NEXTAUTH_SECRET`      | Secret for JWT encryption.                                                                               | Generate with `openssl rand -base64 32`                              |
+| `GOOGLE_CLIENT_ID`     | Google OAuth2 client id                                                                                  | Get from [google](https://console.cloud.google.com/apis/credentials) |
+| `GOOGLE_CLIENT_SECRET` | Google OAuth2 client secret                                                                              | Get from [google](https://console.cloud.google.com/apis/credentials) |
+
+## Backend
+
+Define the following environmentt variables on a `dev.secrets.exs` file inside the `backend` folder.environment. Format is as keyword arguments to a `config :richard_burton` function.
+
+```elixir
+config :richard_burton, key1: value1, key2: value2
+```
+
+| Key                        | Description                          | Recommended value for dev                                      |
+| -------------------------- | ------------------------------------ | -------------------------------------------------------------- |
+| `google_client_id`         | URL of the backend server API        | `http://localhost:4000/api`                                    |
+| `google_openid_config_url` | URL of Google's OpenId configuration | `https://accounts.google.com/.well-known/openid-configuration` |
+| `google_oauth2_certs_url`  | URL of Google's OAuth2 certificates  | `https://www.googleapis.com/oauth2/v2/certs`                   |
+
 # Starting the server
 
 You must have Node, NPM, Erlang, Elixir installed and a Postgres database configured as specified in [`backend/config/dev.ex`](https://github.com/wyeworks/richardburton/blob/main/backend/config/dev.exs).
