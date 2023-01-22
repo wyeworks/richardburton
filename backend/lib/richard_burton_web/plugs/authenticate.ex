@@ -8,10 +8,11 @@ defmodule RichardBurtonWeb.Plugs.Authenticate do
 
   def init(params), do: params
 
+  @spec call(Plug.Conn.t(), any) :: Plug.Conn.t()
   def call(conn, _params) do
     case verify(conn) do
-      :ok -> conn
-      :error -> conn |> send_resp(:unauthorized, "Unauthorized") |> halt
+      {:ok, subject_id} -> assign(conn, :subject_id, subject_id)
+      :error -> halt_unauthorized(conn)
     end
   end
 
@@ -20,5 +21,9 @@ defmodule RichardBurtonWeb.Plugs.Authenticate do
       ["Bearer " <> token] -> Auth.verify(token)
       _ -> :error
     end
+  end
+
+  defp halt_unauthorized(conn) do
+    conn |> send_resp(:unauthorized, "Unauthorized") |> halt
   end
 end
