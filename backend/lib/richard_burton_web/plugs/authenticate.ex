@@ -16,7 +16,7 @@ defmodule RichardBurtonWeb.Plugs.Authenticate do
     end
   end
 
-  def verify(conn) do
+  defp verify(conn) do
     case Plug.Conn.get_req_header(conn, "authorization") do
       ["Bearer " <> token] -> Auth.verify(token)
       _ -> :error
