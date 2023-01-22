@@ -3,18 +3,26 @@ defmodule RichardBurtonWeb.Router do
 
   pipeline :api do
     plug(:accepts, ["json"])
-    plug(RichardBurtonWeb.Plugs.Authenticate)
   end
 
   pipeline :files do
     plug(:accepts, ["csv"])
   end
 
+  pipeline :authenticate do
+    plug(RichardBurtonWeb.Plugs.Authenticate)
+  end
+
   scope "/api", RichardBurtonWeb do
     pipe_through(:api)
+    get("/publications", PublicationController, :index)
+  end
+
+  scope "/api", RichardBurtonWeb do
+    pipe_through(:api)
+    pipe_through(:authenticate)
 
     scope "/publications" do
-      get("/", PublicationController, :index)
       post("/bulk", PublicationController, :create_all)
       post("/validate", PublicationController, :validate)
     end
