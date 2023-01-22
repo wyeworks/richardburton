@@ -5,7 +5,7 @@ defmodule RichardBurtonWeb.UserControllerTest do
   use RichardBurtonWeb.ConnCase
   import Routes, only: [user_path: 2]
 
-  @valid_attrs %{"email" => "example@gmail.com", "subject_id" => "1245"}
+  @valid_attrs %{"email" => "example@gmail.com"}
 
   @valid_return %{"email" => "example@gmail.com", "role" => "reader"}
 
