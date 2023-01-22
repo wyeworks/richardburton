@@ -13,7 +13,10 @@ if (!clientSecret) throw "Must provide a client secret for authentication.";
 
 const authOptions: AuthOptions = {
   providers: [GoogleProvider({ clientId, clientSecret })],
-  pages: { signIn: "/auth/sign-in" },
+  pages: {
+    signIn: "/auth/sign-in",
+    error: "/auth/error",
+  },
   callbacks: {
     async signIn(params) {
       let user: User | null = null;
