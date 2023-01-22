@@ -18,14 +18,15 @@ const authOptions: AuthOptions = {
     async signIn(params) {
       let user: User | null = null;
       try {
-        const { id: subject_id, email } = params.user;
+        const { email } = params.user;
         const { data } = await http.post<User>(
           "/users",
-          { subject_id, email },
+          { email },
           { headers: { Authorization: `Bearer ${params.account?.id_token}` } }
         );
         user = data;
       } catch (e) {
+        console.log(e);
         if (axios.isAxiosError(e) && e.response && e.response.status === 409) {
           user = e.response.data as User;
         }
