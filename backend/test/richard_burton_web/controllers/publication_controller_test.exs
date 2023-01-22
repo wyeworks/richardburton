@@ -17,6 +17,13 @@ defmodule RichardBurtonWeb.PublicationControllerTest do
     "original_title" => "Iracema"
   }
 
+  describe "GET /publications" do
+    test "does not require authentication" do
+      expect_auth_verify(0)
+      expect_auth_authorize_admin(0)
+    end
+  end
+
   describe "POST /publications/bulk" do
     @valid_input_1 %{
       "title" => "Manuel de Moraes: A Chronicle of the Seventeenth Century",
@@ -54,6 +61,7 @@ defmodule RichardBurtonWeb.PublicationControllerTest do
     }
 
     test "on success, returns 201 and the created publications", meta do
+      expect_auth_authorize_admin()
       publications = [@valid_input_1, @valid_input_2]
 
       input = %{"_json" => publications}
@@ -65,6 +73,7 @@ defmodule RichardBurtonWeb.PublicationControllerTest do
     end
 
     test "on conflict, returns 409 and the conflictive publication", meta do
+      expect_auth_authorize_admin()
       publications = [@valid_input_1, @valid_input_2, @valid_input_2]
 
       input = %{"_json" => publications}
@@ -76,6 +85,7 @@ defmodule RichardBurtonWeb.PublicationControllerTest do
     end
 
     test "on validation error, returns 409, the invalid publication and the errors", meta do
+      expect_auth_authorize_admin()
       input = %{"_json" => [@valid_input_1, @invalid_input, @valid_input_2]}
 
       output = %{
@@ -165,6 +175,8 @@ defmodule RichardBurtonWeb.PublicationControllerTest do
     ]
 
     test "returns 200 a list of maps with the publications an their corresponding errors", meta do
+      expect_auth_authorize_admin()
+
       assert @output ==
                meta.conn
                |> post(publication_path(meta.conn, :validate), %{"_json" => @input})
@@ -236,6 +248,7 @@ defmodule RichardBurtonWeb.PublicationControllerTest do
 
     test "returns 200 and a list of maps with parsed publications and their corresponding errors",
          meta do
+      expect_auth_authorize_admin()
       input = uploaded_csv_fixture("test/fixtures/data_correct_with_errors.csv")
 
       assert @output ==
@@ -247,6 +260,7 @@ defmodule RichardBurtonWeb.PublicationControllerTest do
 
   describe "POST /publications/validate when sending incorrect csv" do
     test "on invalid escape sequence, returns 400 with invalid_escape_sequence code", meta do
+      expect_auth_authorize_admin()
       input = uploaded_csv_fixture("test/fixtures/data_incorrect_escape_sequence.csv")
 
       response =
