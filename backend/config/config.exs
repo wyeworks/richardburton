@@ -8,10 +8,10 @@
 import Config
 
 config :richard_burton,
-  ecto_repos: [RichardBurton.Repo],
-  auth_service: RichardBurton.Auth.Google
+  ecto_repos: [RichardBurton.Repo]
 
 # Configures the endpoint
+
 config :richard_burton, RichardBurtonWeb.Endpoint,
   url: [host: "localhost"],
   render_errors: [

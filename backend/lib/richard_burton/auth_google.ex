@@ -13,12 +13,17 @@ defmodule RichardBurton.Auth.Google do
   @impl true
   @spec verify(token :: String.t()) :: {:ok, String.t()} | :error
   def verify(token) do
-    {%{"issuer" => issuer}, keys} = Application.get_env(:richard_burton, :auth_config)
-    audience = Application.get_env(:richard_burton, :google_client_id)
+    case Application.get_env(:richard_burton, :auth_config) do
+      {%{"issuer" => issuer}, keys} ->
+        verify(
+          token,
+          issuer: issuer,
+          audience: get_audience(),
+          keys: keys
+        )
 
-    case Joken.verify(token, get_signer(token, keys)) do
-      {:ok, %{"iss" => ^issuer, "aud" => ^audience, "sub" => subject_id}} -> {:ok, subject_id}
-      _ -> :error
+      _ ->
+        throw("Auth configuration is not properly set.s")
     end
   end
 
@@ -27,6 +32,20 @@ defmodule RichardBurton.Auth.Google do
   def authorize(subject_id, role) do
     case User.get(subject_id) do
       %{role: ^role} -> :ok
+      _ -> :error
+    end
+  end
+
+  defp get_audience do
+    case Application.get_env(:richard_burton, :google_client_id, nil) do
+      nil -> throw("Google client id is not set")
+      audience -> audience
+    end
+  end
+
+  defp verify(token, issuer: issuer, audience: audience, keys: keys) do
+    case Joken.verify(token, get_signer(token, keys)) do
+      {:ok, %{"iss" => ^issuer, "aud" => ^audience, "sub" => subject_id}} -> {:ok, subject_id}
       _ -> :error
     end
   end

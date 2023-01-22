@@ -21,10 +21,8 @@ defmodule RichardBurton.Application do
     ]
 
     # Initialize configration for auth service
-    if Mix.env() != :test do
+    if Mix.env() !== :test do
       Application.put_env(:richard_burton, :auth_config, RichardBurton.Auth.init())
-    else
-      Application.put_env(:richard_burton, :auth_config, [%{}, []])
     end
 
     # See https://hexdocs.pm/elixir/Supervisor.html
