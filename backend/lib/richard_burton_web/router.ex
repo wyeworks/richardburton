@@ -14,8 +14,8 @@ defmodule RichardBurtonWeb.Router do
   end
 
   pipeline :authorize_admin do
-    plug RichardBurtonWeb.Plugs.Authenticate
-    plug RichardBurtonWeb.Plugs.AuthorizeAdmin
+    plug(RichardBurtonWeb.Plugs.Authenticate)
+    plug(RichardBurtonWeb.Plugs.AuthorizeAdmin)
   end
 
   scope "/api", RichardBurtonWeb do

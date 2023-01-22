@@ -6,21 +6,24 @@ defmodule RichardBurtonWeb.UserControllerTest do
   import Routes, only: [user_path: 2]
 
   @valid_attrs %{"email" => "example@gmail.com"}
-
   @valid_return %{"email" => "example@gmail.com", "role" => "reader"}
 
   describe "POST /users" do
     test "when providing valid params, returns 201 created and the inserted user", meta do
+      expect_auth_verify()
       conn = post(meta.conn, user_path(meta.conn, :create), @valid_attrs)
       assert @valid_return == json_response(conn, 201)
     end
 
     test "when providing invalid params, returs 400 bad request", meta do
+      expect_auth_verify()
       conn = post(meta.conn, user_path(meta.conn, :create), %{"email" => nil})
       assert is_nil(json_response(conn, 400))
     end
 
     test "when providing duplicated params, returns 409 conflict with the inserted user", meta do
+      expect_auth_verify(3)
+
       conn = post(meta.conn, user_path(meta.conn, :create), @valid_attrs)
       assert @valid_return == json_response(conn, 201)
 

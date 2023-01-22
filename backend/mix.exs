@@ -48,7 +48,8 @@ defmodule RichardBurton.MixProject do
       {:cors_plug, "~> 3.0"},
       {:ex_doc, "~> 0.27", only: :dev, runtime: false},
       {:joken, "~> 2.5"},
-      {:httpoison, "~> 1.8"}
+      {:httpoison, "~> 1.8"},
+      {:mox, "~> 1.0", only: :test}
     ]
   end
 
