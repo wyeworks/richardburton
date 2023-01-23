@@ -32,6 +32,32 @@ Access backend app docs [here](https://wyeworks.github.io/richardburton)
 - has one `name`
 - is identified by its `name`
 
+# Auth
+
+## Authentication
+
+Authentication is currently implemented using Google as identity provider. The OAuth2 flow is implemented in the frontend server using [NextAuth](https://next-auth.js.org/). To integrate with your environment, you should follow these steps:
+
+1. create a new project in the [Google Cloud Console](https://console.cloud.google.com/apis/dashboard);
+2. configure the [OAuth consent screen](https://console.cloud.google.com/apis/credentials/consent) in order to generate the credentials;
+3. create new [OAuth2 credentials](https://console.cloud.google.com/apis/credentials), ideally one per environment, setting the site's canonical URL as allowed JavaScript origin and the `/api/auth/callback/google` api path as allowed redirect URI.
+
+and generate OAuth2 credentials through the [credentials dashboard](https://console.cloud.google.com/apis/credentials). You will need to configure the OAuth consent screen in order to generate the credentials. This will generate a brand new Google OAuth2 Client whose Client ID and Secret must be passed to the app via [environment variables](#environment-variables).
+
+Authentication is achieved via JSON Web Tokens (JWT). An id token is retrieved and stored on sign in by the frontend server using Google's OAuth2 flow; everything happens in the server-side of the backend. This token is then sent to the backend server on each request's authorization header. The id token is verified in the backend server checking its issuer (that can be retrieved from [Google's well-known OpenId Configuration](https://accounts.google.com/.well-known/openid-configuration)); its audience (the configured Google OAuth2 client, identified by its id); and its cryptographic signature (using one of [Google's OAuth2 certificates](https://www.googleapis.com/oauth2/v2/certs) as public key).
+
+The [OpenId configuration](https://accounts.google.com/.well-known/openid-configuration) and the [OAuth2 certificates](https://www.googleapis.com/oauth2/v2/certs)) are referred as auth configuration. This configuration is fetched and stored in the application's environment on the backend server's startup. Although is unlikely for these to change, a stale configuration situation can be solved by restarting the server.
+
+## Authorization
+
+Authorization is role-based, and the domain defines three user roles: `admin`, `contributor` and `reader`. Currently, `admin` is the only relevant role, being the only one allowed to sign into the app. Every endpoint is secured behind the authorization layer, except `GET /publications`. The only endpoint that does not require `admin` privileges is `POST /users`. However, it requires authentication, and will only allow to operate on the authenticated user ([see more](#user-creation)). Authorization is also performed in the frontend, as non-admin users to won't be able to procede with sign in once their role is verified.
+
+## User creation
+
+Users are created automatically on their sign in, with the `reader` role by default. Only `email`, `subject_id` and `role` are stored. The `subject_id` is an identifier provided by google and serves as the user's key: email addresses and their plus-sign aliases, like `example@gmail.com` and `example+richardburton@gmail.com` are linked to the same `subject_id` and won't trigger redudant user creation that could be exploited. The only way to change a user's role is through the database.
+
+Users are retrieved during the sign in process for role verification in a "get or insert" fashion: a `POST /users` is issued once the id token is received from google. The expected outcome is a `201 CREATED` response with the user data (`email` and `role`) on the first sign in; and a `409 CONFLICT` response with the user data (`email` and `role`) if a user with the `subject_id` present in the id token already exists. Other responses will interrupt the sign in flow.
+
 # Environment Variables
 
 ## Frontend
@@ -43,13 +69,13 @@ KEY1=value1
 KEY2=value2
 ```
 
-| Key                    | Description                                                                                              | Recommended value for dev                                            |
-| ---------------------- | -------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
-| `NEXT_PUBLIC_API_URL`  | URL of the backend server API                                                                            | `http://localhost:4000/api`                                          |
-| `NEXTAUTH_URL`         | The canonical URL of the site ([read more](https://next-auth.js.org/configuration/options#nextauth_url)) | `http://localhost:3000`                                              |
-| `NEXTAUTH_SECRET`      | Secret for JWT encryption.                                                                               | Generate with `openssl rand -base64 32`                              |
-| `GOOGLE_CLIENT_ID`     | Google OAuth2 client id                                                                                  | Get from [google](https://console.cloud.google.com/apis/credentials) |
-| `GOOGLE_CLIENT_SECRET` | Google OAuth2 client secret                                                                              | Get from [google](https://console.cloud.google.com/apis/credentials) |
+| Key                    | Description                                                                                              | Recommended value for dev                                                                                   |
+| ---------------------- | -------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| `NEXT_PUBLIC_API_URL`  | URL of the backend server API                                                                            | `http://localhost:4000/api`                                                                                 |
+| `NEXTAUTH_URL`         | The canonical URL of the site ([read more](https://next-auth.js.org/configuration/options#nextauth_url)) | `http://localhost:3000`                                                                                     |
+| `NEXTAUTH_SECRET`      | Secret for JWT encryption.                                                                               | Generate with `openssl rand -base64 32`                                                                     |
+| `GOOGLE_CLIENT_ID`     | Google OAuth2 client id                                                                                  | Get from [google](https://console.cloud.google.com/apis/credentials), see [authentication](#authentication) |
+| `GOOGLE_CLIENT_SECRET` | Google OAuth2 client secret                                                                              | Get from [google](https://console.cloud.google.com/apis/credentials), see [authentication](#authentication) |
 
 ## Backend
 
