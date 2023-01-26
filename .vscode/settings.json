@@ -1,0 +1,7 @@
+{
+  "elixir.projectPath": "./backend",
+  "elixirLS.projectDir": "./backend",
+  "files.associations": {
+    ".env*": "properties"
+  }
+}

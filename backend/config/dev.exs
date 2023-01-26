@@ -2,10 +2,10 @@ import Config
 
 # Configure your database
 config :richard_burton, RichardBurton.Repo,
-  username: "postgres",
-  password: "postgres",
-  hostname: "localhost",
-  database: "richard_burton_dev",
+  username: System.get_env("PG_USER", "postgres"),
+  password: System.get_env("PG_PASSWORD", "postgres"),
+  hostname: System.get_env("PG_HOST", "localhost"),
+  database: System.get_env("PG_DATABASE", "richard_burton_dev"),
   stacktrace: true,
   show_sensitive_data_on_connection_error: true,
   pool_size: 10
@@ -59,6 +59,3 @@ config :phoenix, :stacktrace_depth, 20
 
 # Initialize plugs at runtime for faster development compilation
 config :phoenix, :plug_init_mode, :runtime
-
-config :cors_plug,
-  origin: ["http://localhost:3000"]
