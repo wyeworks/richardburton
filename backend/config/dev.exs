@@ -1,7 +1,5 @@
 import Config
 
-import_config "dev.secrets.exs"
-
 # Configure your database
 config :richard_burton, RichardBurton.Repo,
   username: "postgres",
