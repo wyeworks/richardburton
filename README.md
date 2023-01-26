@@ -79,7 +79,12 @@ KEY2=value2
 
 ## Backend
 
-Define the following environmentt variables on a `dev.secrets.exs` file inside the `backend` folder.environment. Format is as keyword arguments to a `config :richard_burton` function.
+Define the following environment variables on a `.env` file in the `backend` folder. Format is `KEY=VALUE`, one pair per line.
+
+```
+KEY1=value1
+KEY2=value2
+```
 
 ```elixir
 config :richard_burton, key1: value1, key2: value2
@@ -87,9 +92,9 @@ config :richard_burton, key1: value1, key2: value2
 
 | Key                        | Description                          | Recommended value for dev                                      |
 | -------------------------- | ------------------------------------ | -------------------------------------------------------------- |
-| `google_client_id`         | URL of the backend server API        | `http://localhost:4000/api`                                    |
-| `google_openid_config_url` | URL of Google's OpenId configuration | `https://accounts.google.com/.well-known/openid-configuration` |
-| `google_oauth2_certs_url`  | URL of Google's OAuth2 certificates  | `https://www.googleapis.com/oauth2/v2/certs`                   |
+| `GOOGLE_CLIENT_ID`         | URL of the backend server API        | `http://localhost:4000/api`                                    |
+| `GOOGLE_OPENID_CONFIG_URL` | URL of Google's OpenId configuration | `https://accounts.google.com/.well-known/openid-configuration` |
+| `GOOGLE_OAUTH2_CERTS_URL`  | URL of Google's OAuth2 certificates  | `https://www.googleapis.com/oauth2/v2/certs`                   |
 
 # Starting the server
 
