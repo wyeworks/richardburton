@@ -2,11 +2,13 @@ import NextAuth, { AuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import axios from "axios";
 
-import { http } from "app";
 import { User } from "modules/users";
+import HTTP from "modules/http";
 
 const clientId = process.env.GOOGLE_CLIENT_ID;
 const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
+
+const http = HTTP.client({ baseURL: process.env.NEXT_INTERNAL_API_URL });
 
 if (!clientId) throw "Must provide a client id for authentication.";
 if (!clientSecret) throw "Must provide a client secret for authentication.";

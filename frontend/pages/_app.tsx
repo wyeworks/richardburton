@@ -2,16 +2,16 @@ import "styles/globals.css";
 import type { AppProps } from "next/app";
 import { FC } from "react";
 import axios, { AxiosInstance } from "axios";
-import axiosCaseConverter from "axios-case-converter";
 import { RecoilRoot } from "recoil";
 import Notifications from "components/Notifications";
 import ClearSelection from "listeners/ClearSelection";
 import { Publication } from "modules/publications";
 import { getSession, SessionProvider } from "next-auth/react";
+import HTTP from "modules/http";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-const http = axiosCaseConverter(axios.create({ baseURL: API_URL }));
+const http = HTTP.client({ baseURL: API_URL });
 
 http.interceptors.request.use(async (config) => {
   const session = await getSession();

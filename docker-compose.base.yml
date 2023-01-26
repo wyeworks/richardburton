@@ -1,0 +1,34 @@
+services:
+  # Main NextJS frontend app
+  nextjs:
+    build:
+      context: ./frontend
+    environment:
+      # Google Identity Provider
+      GOOGLE_CLIENT_ID: $GOOGLE_CLIENT_ID
+      GOOGLE_CLIENT_SECRET: $GOOGLE_CLIENT_SECRET
+
+  # Main Phoenix backend app
+  phoenix:
+    build:
+      context: ./backend
+    environment:
+      # Postgres
+      PG_HOST: db
+      # Google Identity Provider
+      GOOGLE_CLIENT_ID: $GOOGLE_CLIENT_ID
+    depends_on:
+      - db
+
+  # Backend database
+  db:
+    image: postgres:15.1
+    environment:
+      PGHOST: db
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: always
+
+volumes:
+  pgdata:

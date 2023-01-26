@@ -5,6 +5,8 @@ defmodule RichardBurton.Application do
 
   use Application
 
+  @environment Mix.env()
+
   @impl true
   def start(_type, _args) do
     children = [
@@ -21,7 +23,7 @@ defmodule RichardBurton.Application do
     ]
 
     # Initialize configration for auth service
-    if Mix.env() !== :test do
+    if @environment !== :test do
       Application.put_env(:richard_burton, :auth_config, RichardBurton.Auth.init())
     end
 
@@ -37,5 +39,9 @@ defmodule RichardBurton.Application do
   def config_change(changed, _new, removed) do
     RichardBurtonWeb.Endpoint.config_change(changed, removed)
     :ok
+  end
+
+  def origin do
+    System.get_env("PHX_CONSUMER_URL") || raise "environment variable PHX_CONSUMER_URL not set"
   end
 end

@@ -48,7 +48,7 @@ defmodule RichardBurtonWeb.Endpoint do
   plug(Plug.Head)
   plug(Plug.Session, @session_options)
 
-  plug(CORSPlug)
+  plug(CORSPlug, origin: &RichardBurton.Application.origin/0)
 
   plug(RichardBurtonWeb.Router)
 end
