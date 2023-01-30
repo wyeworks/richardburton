@@ -29,7 +29,6 @@ const authOptions: AuthOptions = {
         );
         user = data;
       } catch (e) {
-        console.log(e);
         if (axios.isAxiosError(e) && e.response && e.response.status === 409) {
           user = e.response.data as User;
         }
