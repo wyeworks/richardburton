@@ -33,6 +33,8 @@ const authOptions: AuthOptions = {
       } catch (e) {
         if (axios.isAxiosError(e) && e.response && e.response.status === 409) {
           user = e.response.data as User;
+        } else {
+          console.error(e);
         }
       }
 
