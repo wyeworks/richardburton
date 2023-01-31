@@ -1,5 +1,10 @@
 import Config
 
+config :richard_burton,
+  phx_consumer_url: "http://localhost:3000"
+
+import_config "dev.local.exs"
+
 # Configure your database
 config :richard_burton, RichardBurton.Repo,
   username: System.get_env("PGUSER", "postgres"),
