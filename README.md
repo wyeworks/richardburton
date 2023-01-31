@@ -97,10 +97,10 @@ Environment variables are configuration units relevant to the app's build or run
 It's possible to run the development server using Docker, with fast reload enabled both in the frontend and in the backend server. You must have [Docker](https://www.docker.com/) installed for this to work. Environment variables, except secrets, are already set with recommended values in `docker.compose.dev.yml`. You must provide secret values in a `.env.development.local` file in the project's root with the following [environment variables](#environment-variables):
 
 ```Properties
-GOOGLE_CLIENT_ID
-GOOGLE_CLIENT_SECRET
-GOOGLE_OPENID_CONFIG_URL
-GOOGLE_OAUTH2_CERTS_URL
+GOOGLE_CLIENT_ID=value
+GOOGLE_CLIENT_SECRET=value
+GOOGLE_OPENID_CONFIG_URL=value
+GOOGLE_OAUTH2_CERTS_URL=value
 ```
 
 We recommend using `GNU Make` as command line tool for running the server without having to specify all the configuration flags in `docker compose up` command. Defined `make` targets for the development environments are:
@@ -118,6 +118,7 @@ You must have Node, NPM, Erlang, Elixir installed and a Postgres database config
 
 ## To start the backend server:
 
+- Configure secrets as described [below](#backend-secrets)
 - Start your `postgres` database
 - Navigate to the `backend` folder
 - Install dependencies with `mix deps.get`
@@ -126,14 +127,41 @@ You must have Node, NPM, Erlang, Elixir installed and a Postgres database config
 
 Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
 
+### Backend secrets
+
+To configure backend secrets in development mode, you should create a file named `dev.local.exs` in `backend/config` and add the relevant configuration for `google_client_id`, `google_openid_config_url` and `google_oauth2_certs_url`. These variables are the same as those described in the [environment variables](#environment-variables) section, although downcased. `phx_consumer_id` is already predefined in `config/dev.exs`, but it can be overrided by defining a value in `dev.local.exs`.
+
+The configuration file must follow this format:
+
+```elixir
+Import Config
+
+config :richard_burton,
+  google_cliente_id: "value",
+  google_openid_config_url: "value",
+  google_oauth2_certs_url: "value",
+```
+
 ## To start the frontend server:
 
+- Configure secrets as described [below](#frontend-secrets)
 - Navigate to the `frontend` folder
 - Set the environment variables in your `.env` or `.env.development` file:
 - Install dependencies with `npm i`
 - Start NextJS server with `npm run dev`
 
 Now you can visit [`localhost:3000`](http://localhost:3000) from your browser.
+
+### Frontend secrets
+
+To configure frontend secrets in development mode, you should create a file named `.env.development.local` in the `frontend` folter and add the relevant configuration for `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`. These variables are described in the [environment variables](#environment-variables) section. Other relevant variables for the frontend's development environment are predefined in `.env.development` and can be overridden by resetting them in `env.development.local`.
+
+The configuration file must follow this format:
+
+```properties
+GOOGLE_CLIENT_ID=value
+GOOGLE_CLIENT_SECRET=value
+```
 
 # Deployment
 
