@@ -31,7 +31,7 @@ services:
       GOOGLE_OPENID_CONFIG_URL: https://accounts.google.com/.well-known/openid-configuration
       GOOGLE_OAUTH2_CERTS_URL: https://www.googleapis.com/oauth2/v2/certs
       # Ecto configuration
-      PG_DATABASE: richard_burton_dev
+      PGDATABASE: richard_burton_dev
     volumes:
       - ./backend:/app
     ports:

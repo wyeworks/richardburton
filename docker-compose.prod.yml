@@ -10,8 +10,8 @@ services:
       PORT: $NEXT_PORT
       NEXT_INTERNAL_API_URL: $NEXT_INTERNAL_API_URL
       # Next Auth
-      NEXTAUTH_SECRET: $NEXT_AUTH_SECRET
-      NEXTAUTH_URL: $NEXT_AUTH_URL
+      NEXTAUTH_SECRET: $NEXTAUTH_SECRET
+      NEXTAUTH_URL: $NEXTAUTH_URL
       # Google Identity Provider
       GOOGLE_CLIENT_ID: $GOOGLE_CLIENT_ID
       GOOGLE_CLIENT_SECRET: $GOOGLE_CLIENT_SECRET
@@ -29,7 +29,7 @@ services:
       PHX_CONSUMER_URL: $PHX_CONSUMER_URL
       PHX_SECRET_KEY_BASE: $PHX_SECRET_KEY_BASE
       # Ecto configuration
-      DATABASE_URL: ecto://$PG_USER:$PG_PASSWORD@db:$PG_PORT/$PG_DATABASE
+      DATABASE_URL: ecto://$PGUSER:$PGPASSWORD@db:$PGPORT/$PGDATABASE
       # Google Identity Provider
       GOOGLE_OPENID_CONFIG_URL: $GOOGLE_OPENID_CONFIG_URL
       GOOGLE_OAUTH2_CERTS_URL: $GOOGLE_OAUTH2_CERTS_URL
@@ -40,13 +40,13 @@ services:
   db:
     environment:
       # Set Postgres environment
-      PGUSER: $PG_USER
-      PGPASSWORD: $PG_PASSWORD
-      PGDATABASE: $PG_DATABASE
-      PGPORT: $PG_PORT
+      PGUSER: $PGUSER
+      PGPASSWORD: $PGPASSWORD
+      PGDATABASE: $PGDATABASE
+      PGPORT: $PGPORT
       # Set user/password for Postgres.
-      POSTGRES_USER: $PG_USER
-      POSTGRES_PASSWORD: $PG_PASSWORD
+      POSTGRES_USER: $PGUSER
+      POSTGRES_PASSWORD: $PGPASSWORD
       # Set a path where Postgres should store the data.
       PGDATA: /var/lib/postgresql/data/pgdata
     volumes:
