@@ -14,7 +14,7 @@ services:
       context: ./backend
     environment:
       # Postgres
-      PG_HOST: db
+      PGHOST: db
       # Google Identity Provider
       GOOGLE_CLIENT_ID: $GOOGLE_CLIENT_ID
     depends_on:

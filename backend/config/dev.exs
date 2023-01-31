@@ -2,10 +2,10 @@ import Config
 
 # Configure your database
 config :richard_burton, RichardBurton.Repo,
-  username: System.get_env("PG_USER", "postgres"),
-  password: System.get_env("PG_PASSWORD", "postgres"),
-  hostname: System.get_env("PG_HOST", "localhost"),
-  database: System.get_env("PG_DATABASE", "richard_burton_dev"),
+  username: System.get_env("PGUSER", "postgres"),
+  password: System.get_env("PGPASSWORD", "postgres"),
+  hostname: System.get_env("PGHOST", "localhost"),
+  database: System.get_env("PGDATABASE", "richard_burton_dev"),
   stacktrace: true,
   show_sensitive_data_on_connection_error: true,
   pool_size: 10
