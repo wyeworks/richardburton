@@ -3,5 +3,6 @@
   "elixirLS.projectDir": "./backend",
   "files.associations": {
     ".env*": "properties"
-  }
+  },
+  "editor.tabSize": 2
 }
