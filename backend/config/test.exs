@@ -1,5 +1,11 @@
 import Config
 
+config :richard_burton,
+  phx_consumer_url: "http://localhost:3000",
+  google_client_id: nil,
+  google_openid_config_url: nil,
+  google_oauth2_certs_url: nil
+
 # Configure your database
 #
 # The MIX_TEST_PARTITION environment variable can be used
