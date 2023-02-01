@@ -28,16 +28,6 @@ COPY . .
 
 RUN npm run build
 
-# Development image
-FROM node:18-alpine as dev
-
-WORKDIR /app
-COPY package*.json ./
-RUN npm install
-EXPOSE 3000
-
-CMD npm run dev
-
 # Production image, copy all the files and run next
 FROM node:18-alpine AS prod
 WORKDIR /app
@@ -59,3 +49,13 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 USER nextjs
 
 CMD node server.js
+
+# Development image
+FROM node:18-alpine as dev
+
+WORKDIR /app
+COPY package*.json ./
+RUN npm install
+EXPOSE 3000
+
+CMD npm run dev

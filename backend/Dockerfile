@@ -59,18 +59,6 @@ COPY config/runtime.exs config/
 COPY rel rel
 RUN mix release
 
-# Devlopment image
-FROM ${BUILDER_IMAGE} AS dev 
-
-WORKDIR /app
-COPY mix.exs mix.lock ./
-RUN mix local.hex --force && \
-    mix local.rebar --force
-    
-RUN mix do deps.get, deps.compile
-
-CMD mix ecto.setup && mix phx.server
-
 # start a new build stage so that the final image will only contain
 # the compiled release and other runtime necessities
 FROM ${RUNNER_IMAGE} AS prod
@@ -97,3 +85,15 @@ COPY --from=builder --chown=nobody:root /app/_build/${MIX_ENV}/rel/richard_burto
 USER nobody
 
 CMD /app/bin/server
+
+# Development image
+FROM ${BUILDER_IMAGE} AS dev 
+
+WORKDIR /app
+COPY mix.exs mix.lock ./
+RUN mix local.hex --force && \
+    mix local.rebar --force
+    
+RUN mix do deps.get, deps.compile
+
+CMD mix ecto.setup && mix phx.server
