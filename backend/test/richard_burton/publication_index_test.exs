@@ -28,10 +28,6 @@ defmodule RichardBurton.Publication.IndexTest do
     Enum.sort(publications)
   end
 
-  defp filter(publications, key, term) do
-    Enum.filter(publications, &String.contains?(to_string(&1[key]), term))
-  end
-
   defp assert_search_results(publications, key, expected_values)
        when is_list(publications) and is_atom(key) and is_list(expected_values) do
     refute Enum.empty?(publications), "Expected publications not to be empty."
@@ -166,47 +162,44 @@ defmodule RichardBurton.Publication.IndexTest do
   end
 
   describe "search/1 with a single-word term not present in the dataset" do
-    test "prioritizes words that start with the term", context do
-      %{publications: publications} = context
-
+    test "prioritizes words that start with the term" do
       term = "veri"
 
-      assert {:ok, result, ["verissimo"]} = Publication.Index.search(term)
+      assert {:ok, publications, ["verissimo"]} = Publication.Index.search(term)
 
-      assert length(result) > 0
-      assert sort(filter(publications, :original_authors, "Verissimo")) == sort(result)
+      assert_search_results(
+        publications,
+        :original_authors,
+        ["Erico Verissimo", "Luis Fernando Verissimo"]
+      )
     end
 
-    test "does a fuzzy search when there's no words start with the term", context do
-      %{publications: publications} = context
-
+    test "does a fuzzy search when there's no words start with the term" do
       term = "vera"
 
-      assert {:ok, result, ["verbo"]} = Publication.Index.search(term)
+      assert {:ok, publications, ["verbo"]} = Publication.Index.search(term)
 
-      assert length(result) > 0
-      assert sort(filter(publications, :original_title, "verbo")) == sort(result)
+      assert_search_results(
+        publications,
+        :original_title,
+        ["Amar verbo intransitivo"]
+      )
     end
   end
 
   describe "search/1 with a composite term present in the dataset" do
-    test "retrieves publications matching any of the words", context do
-      %{publications: publications} = context
-
+    test "retrieves publications matching any of the words" do
       term = "Marie Barrett"
       split_term = String.split(term, " ")
       keywords = Enum.map(split_term, &String.downcase/1)
 
-      expected =
-        split_term
-        |> Enum.reduce([], fn t, acc -> filter(publications, :authors, t) ++ acc end)
-        |> Enum.uniq()
-        |> sort
+      assert {:ok, publications, ^keywords} = Publication.Index.search(term)
 
-      assert {:ok, result, ^keywords} = Publication.Index.search(term)
-
-      assert length(result) > 0
-      assert expected == sort(result)
+      assert_search_results(
+        publications,
+        :authors,
+        ["Linton Lemos Barrett", "Marie Barrett"]
+      )
     end
   end
 end
