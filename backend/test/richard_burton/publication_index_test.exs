@@ -18,20 +18,40 @@ defmodule RichardBurton.Publication.IndexTest do
     %Publication{} |> Publication.changeset(attrs) |> Repo.insert!()
   end
 
-  defp assert_search_results(publications, key, expected_values)
-       when is_list(publications) and is_atom(key) and is_list(expected_values) do
+  defp assert_search_results(publications, expected_values)
+       when is_list(publications) and is_list(expected_values) do
+    unless Keyword.keyword?(expected_values) do
+      throw(
+        "Expected values must be defined as a keyword with attribute as key and expected values as value"
+      )
+    end
+
     refute Enum.empty?(publications), "Expected publications not to be empty."
 
     Enum.each(publications, fn p ->
-      assert Enum.any?(expected_values, &String.contains?(inspect(p[key]), &1)),
+      assert Enum.any?(expected_values, fn {key, value} ->
+               String.contains?(inspect(p[key]), value)
+             end),
              """
              Expected publication
 
              #{inspect(p, pretty: true)}
 
-             to have #{key} containing one of the following values:
+             to meet one of the following conditions:
 
-             #{inspect(expected_values)}
+             #{Enum.map_join(expected_values, "", fn {key, value} -> """
+               - #{key} #{case value do
+                 [v] -> """
+                   contains #{inspect(v, pretty: true)}
+                   """
+                 v when is_list(v) -> """
+                   contains one of #{inspect(v, pretty: true)}
+                   """
+                 v -> """
+                   contains #{inspect(v, pretty: true)}
+                   """
+               end}
+               """ end)}
              """
     end)
   end
@@ -59,8 +79,7 @@ defmodule RichardBurton.Publication.IndexTest do
 
       assert_search_results(
         publications,
-        :original_authors,
-        expected_original_authors
+        original_authors: expected_original_authors
       )
     end
 
@@ -73,8 +92,7 @@ defmodule RichardBurton.Publication.IndexTest do
 
       assert_search_results(
         publications,
-        :title,
-        expected_titles
+        title: expected_titles
       )
     end
 
@@ -87,8 +105,7 @@ defmodule RichardBurton.Publication.IndexTest do
 
       assert_search_results(
         publications,
-        :original_title,
-        expected_original_titles
+        original_title: expected_original_titles
       )
     end
 
@@ -101,8 +118,7 @@ defmodule RichardBurton.Publication.IndexTest do
 
       assert_search_results(
         publications,
-        :country,
-        expected_countries
+        country: expected_countries
       )
     end
 
@@ -115,8 +131,7 @@ defmodule RichardBurton.Publication.IndexTest do
 
       assert_search_results(
         publications,
-        :authors,
-        expected_authors
+        authors: expected_authors
       )
     end
 
@@ -129,8 +144,7 @@ defmodule RichardBurton.Publication.IndexTest do
 
       assert_search_results(
         publications,
-        :publisher,
-        expected_publishers
+        publisher: expected_publishers
       )
     end
 
@@ -143,8 +157,7 @@ defmodule RichardBurton.Publication.IndexTest do
 
       assert_search_results(
         publications,
-        :year,
-        expected_years
+        year: expected_years
       )
     end
 
@@ -163,8 +176,7 @@ defmodule RichardBurton.Publication.IndexTest do
 
       assert_search_results(
         publications,
-        :original_authors,
-        ["Erico Verissimo", "Luis Fernando Verissimo"]
+        original_authors: ["Erico Verissimo", "Luis Fernando Verissimo"]
       )
     end
 
@@ -175,8 +187,35 @@ defmodule RichardBurton.Publication.IndexTest do
 
       assert_search_results(
         publications,
-        :original_title,
-        ["Amar verbo intransitivo"]
+        original_title: ["Amar verbo intransitivo"]
+      )
+    end
+  end
+
+  describe "search/1 with a single-word term that matches several fields" do
+    test "does a prefix search" do
+      term = "Mari"
+
+      assert {:ok, publications, ["marie", "marias"]} = Publication.Index.search(term)
+
+      assert_search_results(
+        publications,
+        title: "The Three Marias",
+        authors: "Marie Barrett",
+        original_title: "As três Marias"
+      )
+    end
+
+    test "does a fuzzy search" do
+      term = "Maries"
+
+      assert {:ok, publications, ["marie", "marias"]} = Publication.Index.search(term)
+
+      assert_search_results(
+        publications,
+        title: "The Three Marias",
+        authors: "Marie Barrett",
+        original_title: "As três Marias"
       )
     end
   end
@@ -191,8 +230,7 @@ defmodule RichardBurton.Publication.IndexTest do
 
       assert_search_results(
         publications,
-        :authors,
-        ["Linton Lemos Barrett", "Marie Barrett"]
+        authors: ["Linton Lemos Barrett", "Marie Barrett"]
       )
     end
   end
