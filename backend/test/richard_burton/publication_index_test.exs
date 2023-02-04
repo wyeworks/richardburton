@@ -6,26 +6,16 @@ defmodule RichardBurton.Publication.IndexTest do
   use RichardBurton.DataCase
 
   alias RichardBurton.Publication
+  alias RichardBurton.Util
 
   setup(_context) do
     {:ok, publications} = Publication.Codec.from_csv("test/fixtures/data_index.csv")
-
-    ps =
-      publications
-      |> Enum.map(&insert!/1)
-      |> Publication.preload()
-      |> Publication.Codec.flatten()
-      |> Enum.map(&Map.new(&1, fn {k, v} -> {String.to_existing_atom(k), v} end))
-
-    [publications: ps]
+    Enum.map(publications, &insert!/1)
+    []
   end
 
   defp insert!(attrs) do
     %Publication{} |> Publication.changeset(attrs) |> Repo.insert!()
-  end
-
-  defp sort(publications) do
-    Enum.sort(publications)
   end
 
   defp assert_search_results(publications, key, expected_values)
@@ -47,11 +37,15 @@ defmodule RichardBurton.Publication.IndexTest do
   end
 
   describe "all/0" do
-    test "returns all publications", context do
-      %{publications: publications} = context
-      {:ok, result} = Publication.Index.all()
+    test "returns all publications flattened" do
+      {:ok, actual} = Publication.Index.all()
 
-      assert sort(publications) == sort(result)
+      expected =
+        Publication.all()
+        |> Publication.preload()
+        |> Publication.Codec.flatten()
+
+      assert Enum.sort(Util.stringify_keys(actual)) == Enum.sort(expected)
     end
   end
 
