@@ -5,10 +5,11 @@ defmodule RichardBurton.Publication.Index do
 
   import Ecto.Query
 
-  alias RichardBurton.Repo
   alias RichardBurton.Publication.Index.FlatPublication
   alias RichardBurton.Publication.Index.SearchDocument
   alias RichardBurton.Publication.Index.SearchKeyword
+  alias RichardBurton.Repo
+  alias RichardBurton.Util
 
   def all do
     {:ok, FlatPublication |> Repo.all() |> FlatPublication.to_map()}
