@@ -88,7 +88,7 @@ defmodule RichardBurton.Publication.Codec do
           }
         }
       ) do
-    Codec.flatten(p, &(&1 |> rename_key |> flatten_value))
+    Codec.flatten(p) |> Map.new(&(&1 |> rename_key |> flatten_value))
   end
 
   def flatten(p = %Publication{}) do
@@ -112,7 +112,7 @@ defmodule RichardBurton.Publication.Codec do
           }
         }
       ) do
-    Codec.flatten(p, &(&1 |> rename_key |> flatten_value |> Util.stringify_keys()))
+    Codec.flatten(p) |> Map.new(&(&1 |> rename_key |> flatten_value |> Util.stringify_keys()))
   end
 
   def flatten(%{publication: publication, errors: nil}) do
@@ -172,7 +172,8 @@ defmodule RichardBurton.Publication.Codec do
   end
 
   defp flatten_errors(errors) do
-    Codec.flatten(errors, &(&1 |> rename_key |> flatten_error |> Util.stringify_keys()))
+    Codec.flatten(errors)
+    |> Map.new(&(&1 |> rename_key |> flatten_error |> Util.stringify_keys()))
   end
 
   defp rename_key({:translated_book_authors, v}), do: {:authors, v}

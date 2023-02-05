@@ -72,26 +72,6 @@ defmodule RichardBurton.CodecTest do
 
       assert output == Codec.flatten(input)
     end
-
-    test "modifies keys of the resulting flat map" do
-      input = %{
-        a_string: "hey",
-        a_number: 1,
-        a_list: [1, 2, 3],
-        a_tuple: {:error, nil},
-        nil_: nil
-      }
-
-      output = %{
-        "a_string" => "hey",
-        "a_number" => 1,
-        "a_list" => [1, 2, 3],
-        "a_tuple" => {:error, nil},
-        "nil_" => nil
-      }
-
-      assert output == Codec.flatten(input, fn {k, v} -> {Atom.to_string(k), v} end)
-    end
   end
 
   describe "nest/1" do
