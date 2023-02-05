@@ -55,29 +55,18 @@ defmodule RichardBurton.Publication.Codec do
     |> Enum.to_list()
   end
 
-  @spec nest(maybe_improper_list | map) :: list | %{optional(<<_::32, _::_*8>>) => any}
-  def nest(%{
-        "title" => title,
-        "year" => year,
-        "country" => country,
-        "publisher" => publisher,
-        "authors" => authors,
-        "original_title" => original_title,
-        "original_authors" => original_authors
-      }) do
-    %{
-      "title" => title,
-      "year" => year,
-      "country" => country,
-      "publisher" => publisher,
-      "translated_book" => %{
-        "authors" => nest_authors(authors),
-        "original_book" => %{
-          "title" => original_title,
-          "authors" => nest_authors(original_authors)
+  def nest(
+        p = %{
+          "title" => _title,
+          "year" => _year,
+          "country" => _country,
+          "publisher" => _publisher,
+          "authors" => _authors,
+          "original_title" => _original_title,
+          "original_authors" => _original_authors
         }
-      }
-    }
+      ) do
+    p |> Map.new(&rename_key/1) |> Codec.nest() |> nest_authors
   end
 
   def nest(flat_publications) when is_list(flat_publications) do
@@ -145,8 +134,33 @@ defmodule RichardBurton.Publication.Codec do
     Enum.map(publications, &flatten/1)
   end
 
-  defp nest_authors(authors) do
+  defp nest_authors(authors) when is_binary(authors) do
     Enum.map(String.split(authors, ","), &%{"name" => String.trim(&1)})
+  end
+
+  defp nest_authors(
+         p = %{
+           "title" => _title,
+           "year" => _year,
+           "country" => _country,
+           "publisher" => _publisher,
+           "translated_book" => %{
+             "authors" => authors,
+             "original_book" => %{
+               "title" => _original_title,
+               "authors" => original_authors
+             }
+           }
+         }
+       ) do
+    Util.deep_merge_maps(p, %{
+      "translated_book" => %{
+        "authors" => nest_authors(authors),
+        "original_book" => %{
+          "authors" => nest_authors(original_authors)
+        }
+      }
+    })
   end
 
   defp flatten_authors(authors) when is_list(authors) do
@@ -167,6 +181,11 @@ defmodule RichardBurton.Publication.Codec do
   defp rename_key({"translated_book_authors", v}), do: {"authors", v}
   defp rename_key({"translated_book_original_book_title", v}), do: {"original_title", v}
   defp rename_key({"translated_book_original_book_authors", v}), do: {"original_authors", v}
+
+  defp rename_key({"authors", v}), do: {"translated_book_authors", v}
+  defp rename_key({"original_title", v}), do: {"translated_book_original_book_title", v}
+  defp rename_key({"original_authors", v}), do: {"translated_book_original_book_authors", v}
+
   defp rename_key({key, value}), do: {key, value}
 
   defp flatten_value({"authors", value}),
