@@ -10,7 +10,7 @@ defmodule RichardBurton.Codec do
     Lists are not traversed.
     Keys on nested maps are regenerated prepending the key of their parent map.
 
-    Returns the nested map
+    Returns the flattened map with string keys.
 
     ## Examples
 
@@ -18,20 +18,20 @@ defmodule RichardBurton.Codec do
         %{}
 
         iex> RichardBurton.Codec.flatten(%{a: 1, b: 2, c: 3})
-        %{a: 1, b: 2, c: 3}
+        %{"a" => 1, "b" => 2, "c" => 3}
 
         iex> RichardBurton.Codec.flatten(%{a: [1, 2, %{a: 1}]})
-        %{a: [1, 2, %{a: 1}]}
+        %{"a" => [1, 2, %{a: 1}]}
 
         iex> RichardBurton.Codec.flatten(%{a: 1, b: %{a: 1, b: 2, c: 3}})
-        %{a: 1, b_a: 1, b_b: 2, b_c: 3}
+        %{"a" => 1, "b_a" => 1, "b_b" => 2, "b_c" => 3}
 
         iex> RichardBurton.Codec.flatten(%{a: 1, b: [2, 3, %{a: 1, b: 2}], c: %{a: 1, b: 2, c: 3}})
-        %{ a: 1, b: [2, 3, %{a: 1, b: 2}], c_a: 1, c_b: 2, c_c: 3}
+        %{ "a" => 1, "b" => [2, 3, %{a: 1, b: 2}], "c_a" => 1, "c_b"=> 2, "c_c"=> 3}
   """
   def flatten(map) when is_map(map) do
     map
-    |> Map.to_list()
+    |> Util.stringify_keys()
     |> Enum.reduce([], &do_flatten/2)
     |> Map.new()
   end
@@ -42,16 +42,8 @@ defmodule RichardBurton.Codec do
 
   defp do_flatten({key, map}, acc) when is_map(map) do
     flatten(map)
-    |> Enum.map(fn {k, v} -> {compose_keys(key, k), v} end)
+    |> Enum.map(fn {inner_key, v} -> {"#{key}_#{inner_key}", v} end)
     |> Enum.concat(acc)
-  end
-
-  defp compose_keys(key1, key2) when is_atom(key1) and is_atom(key2) do
-    String.to_atom(compose_keys("#{key1}", "#{key2}"))
-  end
-
-  defp compose_keys(key1, key2) when is_binary(key1) and is_binary(key2) do
-    "#{key1}_#{key2}"
   end
 
   @doc ~S"""
@@ -103,7 +95,7 @@ defmodule RichardBurton.Codec do
 
   defp coalesce_keys({key, map}) when is_map(map) do
     case(coalesce_keys(map)) do
-      {inner_key, v} -> {compose_keys(key, inner_key), v}
+      {inner_key, v} -> {"#{key}_#{inner_key}", v}
       v -> {key, v}
     end
   end
