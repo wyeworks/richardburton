@@ -30,18 +30,18 @@ defmodule RichardBurton.CodecTest do
       }
 
       output = %{
-        string: "hey",
-        number: 1,
-        list: [1, 2, 3],
-        tuple: {:error, nil},
-        parent_map_string: "bla",
-        parent_map_number: 2,
-        parent_map_list: ["1", "2", "3"],
-        parent_map_tuple: {:ok, 1},
-        parent_map_nil_: nil,
-        parent_map_another_map_string: "bye",
-        parent_map_another_map_number: 42,
-        nil_: nil
+        "string" => "hey",
+        "number" => 1,
+        "list" => [1, 2, 3],
+        "tuple" => {:error, nil},
+        "parent_map_string" => "bla",
+        "parent_map_number" => 2,
+        "parent_map_list" => ["1", "2", "3"],
+        "parent_map_tuple" => {:ok, 1},
+        "parent_map_nil_" => nil,
+        "parent_map_another_map_string" => "bye",
+        "parent_map_another_map_number" => 42,
+        "nil_" => nil
       }
 
       assert output == Codec.flatten(input)
