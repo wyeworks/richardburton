@@ -74,6 +74,7 @@ defmodule RichardBurtonWeb.PublicationController do
       {:ok, publications} ->
         result =
           publications
+          |> Publication.Codec.nest()
           |> Enum.map(&validate_publication/1)
           |> Publication.Codec.flatten()
 

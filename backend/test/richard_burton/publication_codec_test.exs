@@ -10,82 +10,49 @@ defmodule RichardBurton.Publication.CodecTest do
   alias RichardBurton.OriginalBook
 
   describe "from_csv/1 when the provided csv is correct" do
-    test "returns a list of publication-like maps" do
+    test "returns a list of flattened publications" do
       input = "test/fixtures/data_correct_with_errors.csv"
 
-      publications = [
+      output = [
         %{
+          "authors" => "Isabel Burton, Richard Burton",
+          "country" => "GB",
+          "original_authors" => "José de Alencar",
+          "original_title" => "Iracema",
+          "publisher" => "Bickers & Son",
           "title" => "Iraçéma the Honey-Lips: A Legend of Brazil",
-          "year" => "1886",
-          "country" => "GB",
-          "publisher" => "Bickers & Son",
-          "translated_book" => %{
-            "authors" => [
-              %{"name" => "Isabel Burton"},
-              %{"name" => "Richard Burton"}
-            ],
-            "original_book" => %{
-              "authors" => [
-                %{"name" => "José de Alencar"}
-              ],
-              "title" => "Iracema"
-            }
-          }
+          "year" => "1886"
         },
         %{
-          "title" => "Ubirajara: A Legend of the Tupy Indians",
-          "year" => "1922",
+          "authors" => "J. T. W. Sadler",
           "country" => "US",
+          "original_authors" => "José de Alencar",
+          "original_title" => "Ubirajara",
           "publisher" => "Ronald Massey",
-          "translated_book" => %{
-            "authors" => [
-              %{"name" => "J. T. W. Sadler"}
-            ],
-            "original_book" => %{
-              "authors" => [
-                %{"name" => "José de Alencar"}
-              ],
-              "title" => "Ubirajara"
-            }
-          }
-        },
-        %{
-          "title" => "",
-          "year" => "AAAA",
-          "country" => "GB",
-          "publisher" => "Bickers & Son",
-          "translated_book" => %{
-            "authors" => [
-              %{"name" => ""}
-            ],
-            "original_book" => %{
-              "authors" => [
-                %{"name" => "José de Alencar"}
-              ],
-              "title" => "Iracema"
-            }
-          }
-        },
-        %{
           "title" => "Ubirajara: A Legend of the Tupy Indians",
-          "year" => "",
+          "year" => "1922"
+        },
+        %{
+          "authors" => "",
+          "country" => "GB",
+          "original_authors" => "José de Alencar",
+          "original_title" => "Iracema",
+          "publisher" => "Bickers & Son",
+          "title" => "",
+          "year" => "AAAA"
+        },
+        %{
+          "authors" => "J. T. W. Sadler",
           "country" => "",
+          "original_authors" => "",
+          "original_title" => "",
           "publisher" => "",
-          "translated_book" => %{
-            "authors" => [
-              %{"name" => "J. T. W. Sadler"}
-            ],
-            "original_book" => %{
-              "authors" => [
-                %{"name" => ""}
-              ],
-              "title" => ""
-            }
-          }
+          "title" => "Ubirajara: A Legend of the Tupy Indians",
+          "year" => ""
         }
       ]
 
-      assert {:ok, publications} == Publication.Codec.from_csv(input)
+      assert {:ok, output} == Publication.Codec.from_csv(input)
     end
   end
 
@@ -95,61 +62,32 @@ defmodule RichardBurton.Publication.CodecTest do
 
       output = [
         %{
-          "title" => "Iraçéma the Honey-Lips: A Legend of Brazil",
-          "year" => "1886",
+          "authors" => "Isabel Burton",
           "country" => "GB",
+          "original_authors" => "José de Alencar",
+          "original_title" => "Iracema",
           "publisher" => "",
-          "translated_book" => %{
-            "authors" => [
-              %{"name" => "Isabel Burton"}
-            ],
-            "original_book" => %{
-              "authors" => [
-                %{"name" => "José de Alencar"}
-              ],
-              "title" => "Iracema"
-            }
-          }
+          "title" => "Iraçéma the Honey-Lips: A Legend of Brazil",
+          "year" => "1886"
         },
         %{
-          "title" => "J. T. W. Sadler",
-          "year" => "GB",
+          "authors" => "Ronald Massey",
           "country" => "Ubirajara",
+          "original_authors" => "",
+          "original_title" => "Ubirajara: A Legend of the Tupy Indians",
           "publisher" => "",
-          "translated_book" => %{
-            "authors" => [
-              %{"name" => "Ronald Massey"}
-            ],
-            "original_book" => %{
-              "authors" => [
-                %{"name" => ""}
-              ],
-              "title" => "Ubirajara: A Legend of the Tupy Indians"
-            }
-          }
+          "title" => "J. T. W. Sadler",
+          "year" => "GB"
         },
         %{
-          "title" => "",
-          "year" => "",
+          "authors" => "",
           "country" => "",
+          "original_authors" =>
+            "José de Alencar,1886,GB,Iracema,Iraçéma the Honey-Lips: A Legend of Brazil,Isabel Burton,Bickers & Son",
+          "original_title" => "",
           "publisher" => "",
-          "translated_book" => %{
-            "authors" => [
-              %{"name" => ""}
-            ],
-            "original_book" => %{
-              "authors" => [
-                %{"name" => "José de Alencar"},
-                %{"name" => "1886"},
-                %{"name" => "GB"},
-                %{"name" => "Iracema"},
-                %{"name" => "Iraçéma the Honey-Lips: A Legend of Brazil"},
-                %{"name" => "Isabel Burton"},
-                %{"name" => "Bickers & Son"}
-              ],
-              "title" => ""
-            }
-          }
+          "title" => "",
+          "year" => ""
         }
       ]
 

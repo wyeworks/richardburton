@@ -34,7 +34,6 @@ defmodule RichardBurton.Publication.Codec do
         |> File.stream!()
         |> CSV.decode!(separator: ?;, headers: @csv_headers)
         |> Enum.map(&Util.deep_merge_maps(@empty_flat_attrs, &1))
-        |> nest
 
       {:ok, publications}
     rescue
@@ -53,6 +52,13 @@ defmodule RichardBurton.Publication.Codec do
     flat_publications
     |> CSV.encode(separator: ?;, delimiter: "\n", headers: true)
     |> Enum.to_list()
+  end
+
+  def from_csv!(path) do
+    case from_csv(path) do
+      {:ok, publications} -> publications
+      {:error, error} -> throw(error)
+    end
   end
 
   def nest(flat_publication_like_map) when is_map(flat_publication_like_map) do
