@@ -5,8 +5,8 @@ defmodule RichardBurton.Publication.IndexTest do
 
   use RichardBurton.DataCase
 
+  alias RichardBurton.FlatPublication
   alias RichardBurton.Publication
-  alias RichardBurton.Publication.Index.FlatPublication
   alias RichardBurton.Util
 
   @publications [
