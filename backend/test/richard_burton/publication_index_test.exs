@@ -244,7 +244,11 @@ defmodule RichardBurton.Publication.IndexTest do
     test "returns all publications flattened" do
       {:ok, output} = Publication.Index.all()
 
-      actual = output |> Enum.map(&%{&1 | __meta__: nil, id: nil}) |> Enum.sort()
+      actual =
+        output
+        |> Enum.map(&%{&1 | __meta__: nil, id: nil, translated_book_fingerprint: nil})
+        |> Enum.sort()
+
       expected = @publications |> Enum.map(&%{&1 | __meta__: nil}) |> Enum.sort()
 
       assert expected == actual

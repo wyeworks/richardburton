@@ -3,8 +3,13 @@ defmodule RichardBurton.FlatPublication do
   Schema for publications
   """
   use Ecto.Schema
+  import Ecto.Changeset
+  import Ecto.Query
 
   alias RichardBurton.FlatPublication
+  alias RichardBurton.Publication
+  alias RichardBurton.Repo
+  alias RichardBurton.Validation
 
   @external_attributes [
     :title,
@@ -25,6 +30,51 @@ defmodule RichardBurton.FlatPublication do
     field(:publisher, :string)
     field(:original_title, :string)
     field(:original_authors, :string)
+
+    field(:translated_book_fingerprint, :string)
+  end
+
+  @doc false
+  def changeset(flat_publication, attrs) do
+    translated_book_fingerprint =
+      %Publication{}
+      |> Publication.changeset(Publication.Codec.nest(attrs))
+      |> get_field(:translated_book_fingerprint)
+
+    flat_publication
+    |> cast(attrs, @external_attributes)
+    |> validate_required(@external_attributes)
+    |> put_change(:translated_book_fingerprint, translated_book_fingerprint)
+  end
+
+  def validate(attrs) do
+    %FlatPublication{} |> changeset(attrs) |> validate_changeset()
+  end
+
+  defp validate_changeset(changeset = %{valid?: false}) do
+    {:error, Validation.get_errors(changeset)}
+  end
+
+  defp validate_changeset(changeset = %{valid?: true}) do
+    where =
+      Enum.map(
+        [
+          :title,
+          :year,
+          :country,
+          :publisher,
+          :translated_book_fingerprint
+        ],
+        &{&1, get_field(changeset, &1)}
+      )
+
+    query = from(fp in FlatPublication, where: ^where)
+
+    if Repo.exists?(query) do
+      {:error, :conflict}
+    else
+      :ok
+    end
   end
 
   def to_map(ps) when is_list(ps) do

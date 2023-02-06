@@ -5,7 +5,6 @@ defmodule RichardBurton.Validation do
 
   alias RichardBurton.Repo
 
-  @spec validate(%{:valid? => boolean, optional(any) => any}, any) :: :ok | {:error, any}
   def validate(changeset, link_assocs) do
     case validate_transaction(changeset, link_assocs) do
       {:error, :ok} -> :ok
