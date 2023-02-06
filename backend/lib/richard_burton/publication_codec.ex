@@ -122,16 +122,16 @@ defmodule RichardBurton.Publication.Codec do
   end
 
   def flatten(publication_like_map) when is_map(publication_like_map) do
-    publication_like_map |> Codec.flatten() |> Map.new(&(&1 |> rename_key |> flatten_value))
+    publication_like_map |> Codec.flatten() |> Map.new(&(&1 |> rename_key |> flatten_entry))
   end
 
-  defp flatten_value({"authors", value}),
+  defp flatten_entry({"authors", value}),
     do: {"authors", flatten_authors(value)}
 
-  defp flatten_value({"original_authors", value}),
+  defp flatten_entry({"original_authors", value}),
     do: {"original_authors", flatten_authors(value)}
 
-  defp flatten_value({key, value}),
+  defp flatten_entry({key, value}),
     do: {key, value}
 
   defp flatten_authors(authors) when is_list(authors) do
