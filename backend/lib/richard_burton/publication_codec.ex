@@ -6,7 +6,7 @@ defmodule RichardBurton.Publication.Codec do
   alias RichardBurton.Codec
   alias RichardBurton.Util
   alias RichardBurton.Publication
-  alias RichardBurton.Publication.Index.FlatPublication
+  alias RichardBurton.FlatPublication
 
   @empty_flat_attrs %{
     "title" => "",

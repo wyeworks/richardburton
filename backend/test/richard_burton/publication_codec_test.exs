@@ -6,7 +6,7 @@ defmodule RichardBurton.Publication.CodecTest do
   use RichardBurton.DataCase
 
   alias RichardBurton.Publication
-  alias RichardBurton.Publication.Index.FlatPublication
+  alias RichardBurton.FlatPublication
   alias RichardBurton.TranslatedBook
   alias RichardBurton.OriginalBook
 

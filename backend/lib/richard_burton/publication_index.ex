@@ -5,7 +5,7 @@ defmodule RichardBurton.Publication.Index do
 
   import Ecto.Query
 
-  alias RichardBurton.Publication.Index.FlatPublication
+  alias RichardBurton.FlatPublication
   alias RichardBurton.Publication.Index.SearchDocument
   alias RichardBurton.Publication.Index.SearchKeyword
   alias RichardBurton.Repo
