@@ -73,65 +73,27 @@ defmodule RichardBurton.Publication.Codec do
     Enum.map(flat_publications, &nest/1)
   end
 
-  def flatten(
-        p = %{
-          "title" => _title,
-          "year" => _year,
-          "country" => _country,
-          "publisher" => _publisher,
-          "translated_book" => %{
-            "authors" => _authors,
-            "original_book" => %{
-              "title" => _original_title,
-              "authors" => _original_authors
-            }
-          }
-        }
-      ) do
-    Codec.flatten(p) |> Map.new(&(&1 |> rename_key |> flatten_value))
-  end
-
   def flatten(p = %Publication{}) do
     p
     |> Publication.to_map()
     |> flatten
   end
 
-  def flatten(
-        p = %{
-          title: _title,
-          year: _year,
-          country: _country,
-          publisher: _publisher,
-          translated_book: %{
-            authors: _authors,
-            original_book: %{
-              title: _original_title,
-              authors: _original_authors
-            }
-          }
-        }
-      ) do
-    Codec.flatten(p) |> Map.new(&(&1 |> rename_key |> flatten_value))
+  def flatten(%{publication: publication, errors: errors})
+      when is_nil(errors) or is_atom(errors) do
+    %{"publication" => flatten(publication), "errors" => errors}
   end
 
-  def flatten(%{publication: publication, errors: nil}) do
-    %{publication: flatten(publication), errors: nil}
+  def flatten(%{publication: publication, errors: errors}) do
+    %{"publication" => flatten(publication), "errors" => flatten(errors)}
   end
 
-  def flatten(%{publication: publication, errors: errors}) when is_atom(errors) do
-    %{publication: flatten(publication), errors: errors}
+  def flatten(publication_like_maps) when is_list(publication_like_maps) do
+    Enum.map(publication_like_maps, &flatten/1)
   end
 
-  def flatten(%{publication: publication, errors: errors}) when is_map(errors) do
-    %{
-      publication: flatten(publication),
-      errors: flatten_errors(errors)
-    }
-  end
-
-  def flatten(publications) when is_list(publications) do
-    Enum.map(publications, &flatten/1)
+  def flatten(publication_like_map) when is_map(publication_like_map) do
+    publication_like_map |> Codec.flatten() |> Map.new(&(&1 |> rename_key |> flatten_value))
   end
 
   defp nest_authors(authors) when is_binary(authors) do
@@ -167,16 +129,6 @@ defmodule RichardBurton.Publication.Codec do
     Enum.map_join(authors, ", ", &(Map.get(&1, "name") || Map.get(&1, :name)))
   end
 
-  defp flatten_authors_error(authors) when is_list(authors) do
-    authors |> List.first() |> Map.get(:name)
-  end
-
-  defp flatten_errors(errors) do
-    errors
-    |> Codec.flatten()
-    |> Map.new(&(&1 |> rename_key |> flatten_error))
-  end
-
   defp rename_key({"translated_book_authors", v}), do: {"authors", v}
   defp rename_key({"translated_book_original_book_title", v}), do: {"original_title", v}
   defp rename_key({"translated_book_original_book_authors", v}), do: {"original_authors", v}
@@ -195,13 +147,4 @@ defmodule RichardBurton.Publication.Codec do
 
   defp flatten_value({key, value}),
     do: {key, value}
-
-  defp flatten_error({"authors", error}),
-    do: {"authors", flatten_authors_error(error)}
-
-  defp flatten_error({"original_authors", error}),
-    do: {"original_authors", flatten_authors_error(error)}
-
-  defp flatten_error({key, error}),
-    do: {key, error}
 end

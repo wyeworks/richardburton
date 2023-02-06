@@ -29,6 +29,7 @@ defmodule RichardBurton.Codec do
         iex> RichardBurton.Codec.flatten(%{a: 1, b: [2, 3, %{a: 1, b: 2}], c: %{a: 1, b: 2, c: 3}})
         %{ "a" => 1, "b" => [2, 3, %{a: 1, b: 2}], "c_a" => 1, "c_b"=> 2, "c_c"=> 3}
   """
+
   def flatten(map) when is_map(map) do
     map
     |> Util.stringify_keys()
