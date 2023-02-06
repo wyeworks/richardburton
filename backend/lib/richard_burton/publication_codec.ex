@@ -73,29 +73,6 @@ defmodule RichardBurton.Publication.Codec do
     Enum.map(flat_publications, &nest/1)
   end
 
-  def flatten(p = %Publication{}) do
-    p
-    |> Publication.to_map()
-    |> flatten
-  end
-
-  def flatten(%{publication: publication, errors: errors})
-      when is_nil(errors) or is_atom(errors) do
-    %{"publication" => flatten(publication), "errors" => errors}
-  end
-
-  def flatten(%{publication: publication, errors: errors}) do
-    %{"publication" => flatten(publication), "errors" => flatten(errors)}
-  end
-
-  def flatten(publication_like_maps) when is_list(publication_like_maps) do
-    Enum.map(publication_like_maps, &flatten/1)
-  end
-
-  def flatten(publication_like_map) when is_map(publication_like_map) do
-    publication_like_map |> Codec.flatten() |> Map.new(&(&1 |> rename_key |> flatten_value))
-  end
-
   defp nest_authors(authors) when is_binary(authors) do
     Enum.map(String.split(authors, ","), &%{"name" => String.trim(&1)})
   end
@@ -125,6 +102,38 @@ defmodule RichardBurton.Publication.Codec do
     })
   end
 
+  def flatten(p = %Publication{}) do
+    p
+    |> Publication.to_map()
+    |> flatten
+  end
+
+  def flatten(%{publication: publication, errors: errors})
+      when is_nil(errors) or is_atom(errors) do
+    %{"publication" => flatten(publication), "errors" => errors}
+  end
+
+  def flatten(%{publication: publication, errors: errors}) do
+    %{"publication" => flatten(publication), "errors" => flatten(errors)}
+  end
+
+  def flatten(publication_like_maps) when is_list(publication_like_maps) do
+    Enum.map(publication_like_maps, &flatten/1)
+  end
+
+  def flatten(publication_like_map) when is_map(publication_like_map) do
+    publication_like_map |> Codec.flatten() |> Map.new(&(&1 |> rename_key |> flatten_value))
+  end
+
+  defp flatten_value({"authors", value}),
+    do: {"authors", flatten_authors(value)}
+
+  defp flatten_value({"original_authors", value}),
+    do: {"original_authors", flatten_authors(value)}
+
+  defp flatten_value({key, value}),
+    do: {key, value}
+
   defp flatten_authors(authors) when is_list(authors) do
     Enum.map_join(authors, ", ", &(Map.get(&1, "name") || Map.get(&1, :name)))
   end
@@ -138,13 +147,4 @@ defmodule RichardBurton.Publication.Codec do
   defp rename_key({"original_authors", v}), do: {"translated_book_original_book_authors", v}
 
   defp rename_key({key, value}), do: {key, value}
-
-  defp flatten_value({"authors", value}),
-    do: {"authors", flatten_authors(value)}
-
-  defp flatten_value({"original_authors", value}),
-    do: {"original_authors", flatten_authors(value)}
-
-  defp flatten_value({key, value}),
-    do: {key, value}
 end
