@@ -6,10 +6,11 @@ defmodule RichardBurton.TranslatedBook do
   import Ecto.Changeset
 
   alias RichardBurton.Author
-  alias RichardBurton.Repo
   alias RichardBurton.OriginalBook
-  alias RichardBurton.TranslatedBook
   alias RichardBurton.Publication
+  alias RichardBurton.Repo
+  alias RichardBurton.TranslatedBook
+  alias RichardBurton.Util
 
   @external_attributes [:authors, :original_book]
 
@@ -82,4 +83,24 @@ defmodule RichardBurton.TranslatedBook do
   end
 
   def link(changeset = %{valid?: false}), do: changeset
+
+  def fingerprint(%TranslatedBook{
+        original_book_fingerprint: original_book_fingerprint,
+        authors_fingerprint: authors_fingerprint
+      }) do
+    [original_book_fingerprint, authors_fingerprint]
+    |> Enum.join()
+    |> Util.create_fingerprint()
+  end
+
+  def link_fingerprint(changeset = %Ecto.Changeset{valid?: true}) do
+    translated_book_fingerprint =
+      changeset
+      |> get_field(:translated_book)
+      |> fingerprint
+
+    put_change(changeset, :translated_book_fingerprint, translated_book_fingerprint)
+  end
+
+  def link_fingerprint(changeset = %Ecto.Changeset{valid?: false}), do: changeset
 end
