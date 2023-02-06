@@ -33,8 +33,12 @@ defmodule RichardBurton.Repo.Migrations.AddOriginalBookFingerprintToTranslatedBo
 
     drop(unique_index(:translated_books, [:authors_fingerprint, :original_book_id]))
 
-    create(unique_index(:translated_books, [:authors_fingerprint, :original_book_fingerprint]),
-      name: "translated_books_composite_key"
+    create(
+      unique_index(
+        :translated_books,
+        [:authors_fingerprint, :original_book_fingerprint],
+        name: "translated_books_composite_key"
+      )
     )
   end
 end
