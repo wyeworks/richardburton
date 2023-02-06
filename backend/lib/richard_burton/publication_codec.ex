@@ -6,6 +6,7 @@ defmodule RichardBurton.Publication.Codec do
   alias RichardBurton.Codec
   alias RichardBurton.Util
   alias RichardBurton.Publication
+  alias RichardBurton.Publication.Index.FlatPublication
 
   @empty_flat_attrs %{
     "title" => "",
@@ -61,8 +62,16 @@ defmodule RichardBurton.Publication.Codec do
     end
   end
 
+  def nest(p = %FlatPublication{}) do
+    p
+    |> FlatPublication.to_map()
+    |> nest
+  end
+
   def nest(flat_publication_like_map) when is_map(flat_publication_like_map) do
-    flat_publication_like_map |> Map.new(&(&1 |> nest_entry |> rename_key)) |> Codec.nest()
+    flat_publication_like_map
+    |> Map.new(&(&1 |> Util.stringify_keys() |> nest_entry |> rename_key))
+    |> Codec.nest()
   end
 
   def nest(flat_publication_like_maps) when is_list(flat_publication_like_maps) do
