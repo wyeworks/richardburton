@@ -54,11 +54,22 @@ defmodule RichardBurton.TranslatedBookTest do
     attrs |> changeset() |> Repo.insert!()
   end
 
-  defp linked(changeset) do
+  defp maybe_preload(changeset, true), do: TranslatedBook.preload(changeset)
+  defp maybe_preload(changeset, false), do: changeset
+
+  defp linked(changeset, preload: preload) do
     changeset
     |> get_change(:translated_book)
     |> apply_changes
-    |> TranslatedBook.preload()
+    |> maybe_preload(preload)
+  end
+
+  defp linked(changeset) do
+    linked(changeset, preload: false)
+  end
+
+  defp linked_fingerprint(changeset = %Ecto.Changeset{}) do
+    get_change(changeset, :translated_book_fingerprint)
   end
 
   describe "changeset/2" do
@@ -147,6 +158,53 @@ defmodule RichardBurton.TranslatedBookTest do
     end
   end
 
+  describe "fingerprint/1" do
+    test "given two translated_books with different original_book_fingerprint, generates different fingerprints" do
+      translated_book1 = %TranslatedBook{
+        original_book_fingerprint: "DEF",
+        authors_fingerprint: "ABC"
+      }
+
+      translated_book2 = %TranslatedBook{
+        original_book_fingerprint: "DEG",
+        authors_fingerprint: "ABC"
+      }
+
+      refute TranslatedBook.fingerprint(translated_book1) ==
+               TranslatedBook.fingerprint(translated_book2)
+    end
+
+    test "given two translated_books with different authors_fingerprint, generates different fingerprints" do
+      translated_book1 = %TranslatedBook{
+        original_book_fingerprint: "DEF",
+        authors_fingerprint: "ABC"
+      }
+
+      translated_book2 = %TranslatedBook{
+        original_book_fingerprint: "DEF",
+        authors_fingerprint: "ABD"
+      }
+
+      refute TranslatedBook.fingerprint(translated_book1) ==
+               TranslatedBook.fingerprint(translated_book2)
+    end
+
+    test "given two translated_books with the same original_book_fingerprint and authors_fingerprint, generates the same fingerprints" do
+      translated_book1 = %TranslatedBook{
+        original_book_fingerprint: "DEF",
+        authors_fingerprint: "ABC"
+      }
+
+      translated_book2 = %TranslatedBook{
+        original_book_fingerprint: "DEF",
+        authors_fingerprint: "ABC"
+      }
+
+      assert TranslatedBook.fingerprint(translated_book1) ==
+               TranslatedBook.fingerprint(translated_book2)
+    end
+  end
+
   describe "link/1" do
     @publication_attrs %{
       "title" => "Manuel de Moraes: A Chronicle of the Seventeenth Century",
@@ -177,7 +235,7 @@ defmodule RichardBurton.TranslatedBookTest do
 
       assert changeset.valid?
 
-      assert original_book == linked(changeset)
+      assert original_book == linked(changeset, preload: true)
     end
 
     test "links non-existing authors to Publication changeset, inserting them" do
@@ -200,6 +258,30 @@ defmodule RichardBurton.TranslatedBookTest do
       refute changeset.valid?
 
       assert Enum.empty?(TranslatedBook.all())
+    end
+  end
+
+  describe "link_fingerprint/1" do
+    test "links fingerprint using to Publication changeset" do
+      changeset =
+        %Publication{}
+        |> Publication.changeset(@publication_attrs)
+        |> TranslatedBook.link_fingerprint()
+
+      assert changeset.valid?
+
+      assert TranslatedBook.fingerprint(linked(changeset)) == linked_fingerprint(changeset)
+    end
+
+    test "does not link fingerprint to invalid Publication changeset" do
+      changeset =
+        %Publication{}
+        |> Publication.changeset(%{})
+        |> TranslatedBook.link_fingerprint()
+
+      refute changeset.valid?
+
+      assert is_nil(linked_fingerprint(changeset))
     end
   end
 end

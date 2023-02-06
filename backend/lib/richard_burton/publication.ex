@@ -20,6 +20,7 @@ defmodule RichardBurton.Publication do
     field(:publisher, :string)
     field(:title, :string)
     field(:year, :integer)
+    field(:translated_book_fingerprint, :string)
 
     belongs_to(:translated_book, TranslatedBook)
 
@@ -30,9 +31,13 @@ defmodule RichardBurton.Publication do
   def changeset(publication, attrs \\ %{}) do
     publication
     |> cast(attrs, [:title, :year, :country, :publisher])
-    |> validate_required([:title, :year, :country, :publisher])
     |> cast_assoc(:translated_book, required: true)
-    |> unique_constraint([:title, :year, :country, :publisher])
+    |> validate_required([:title, :year, :country, :publisher])
+    |> TranslatedBook.link_fingerprint()
+    |> unique_constraint(
+      [:title, :year, :country, :publisher, :translated_book_fingerprint],
+      name: "publications_composite_key"
+    )
   end
 
   def all do
