@@ -31,8 +31,6 @@ defmodule RichardBurton.Author do
     |> unique_constraint([:name])
   end
 
-  @spec maybe_insert!(:invalid | %{optional(:__struct__) => none, optional(atom | binary) => any}) ::
-          any
   def maybe_insert!(attrs) do
     %__MODULE__{}
     |> changeset(attrs)
