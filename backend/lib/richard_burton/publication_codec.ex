@@ -172,13 +172,11 @@ defmodule RichardBurton.Publication.Codec do
   end
 
   defp flatten_errors(errors) do
-    Codec.flatten(errors)
+    errors
+    |> Codec.flatten()
     |> Map.new(&(&1 |> rename_key |> flatten_error))
   end
 
-  defp rename_key({:translated_book_authors, v}), do: {:authors, v}
-  defp rename_key({:translated_book_original_book_title, v}), do: {:original_title, v}
-  defp rename_key({:translated_book_original_book_authors, v}), do: {:original_authors, v}
   defp rename_key({"translated_book_authors", v}), do: {"authors", v}
   defp rename_key({"translated_book_original_book_title", v}), do: {"original_title", v}
   defp rename_key({"translated_book_original_book_authors", v}), do: {"original_authors", v}
@@ -195,20 +193,8 @@ defmodule RichardBurton.Publication.Codec do
   defp flatten_value({"original_authors", value}),
     do: {"original_authors", flatten_authors(value)}
 
-  defp flatten_value({:authors, value}),
-    do: {:authors, flatten_authors(value)}
-
-  defp flatten_value({:original_authors, value}),
-    do: {:original_authors, flatten_authors(value)}
-
   defp flatten_value({key, value}),
     do: {key, value}
-
-  defp flatten_error({:authors, error}),
-    do: {:authors, flatten_authors_error(error)}
-
-  defp flatten_error({:original_authors, error}),
-    do: {:original_authors, flatten_authors_error(error)}
 
   defp flatten_error({"authors", error}),
     do: {"authors", flatten_authors_error(error)}
