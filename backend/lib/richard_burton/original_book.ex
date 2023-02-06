@@ -33,7 +33,10 @@ defmodule RichardBurton.OriginalBook do
     |> validate_required([:title])
     |> validate_length(:authors, min: 1)
     |> Author.link_fingerprint()
-    |> unique_constraint([:authors_fingerprint, :title])
+    |> unique_constraint(
+      [:authors_fingerprint, :title],
+      name: "original_books_composite_key"
+    )
   end
 
   def maybe_insert!(attrs) do
