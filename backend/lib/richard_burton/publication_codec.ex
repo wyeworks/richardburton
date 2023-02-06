@@ -51,6 +51,12 @@ defmodule RichardBurton.Publication.Codec do
 
   def to_csv(flat_publications) do
     flat_publications
+    |> Enum.map(fn
+      struct = %FlatPublication{} -> Map.from_struct(struct)
+      map when is_map(map) -> map
+    end)
+    |> Enum.map(&Util.stringify_keys/1)
+    |> Enum.map(&Map.take(&1, @csv_headers))
     |> CSV.encode(separator: ?;, delimiter: "\n", headers: true)
     |> Enum.to_list()
   end
