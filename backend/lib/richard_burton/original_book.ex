@@ -9,6 +9,7 @@ defmodule RichardBurton.OriginalBook do
   alias RichardBurton.Repo
   alias RichardBurton.OriginalBook
   alias RichardBurton.TranslatedBook
+  alias RichardBurton.Util
 
   @external_attributes [:authors, :title]
 
@@ -28,8 +29,8 @@ defmodule RichardBurton.OriginalBook do
   def changeset(original_book, attrs \\ %{}) do
     original_book
     |> cast(attrs, [:title])
-    |> validate_required([:title])
     |> cast_assoc(:authors, required: true)
+    |> validate_required([:title])
     |> validate_length(:authors, min: 1)
     |> Author.link_fingerprint()
     |> unique_constraint([:authors_fingerprint, :title])
@@ -70,4 +71,21 @@ defmodule RichardBurton.OriginalBook do
   end
 
   def link(changeset = %{valid?: false}), do: changeset
+
+  def fingerprint(%OriginalBook{title: title, authors_fingerprint: authors_fingerprint}) do
+    [title, authors_fingerprint]
+    |> Enum.join()
+    |> Util.create_fingerprint()
+  end
+
+  def link_fingerprint(changeset = %Ecto.Changeset{valid?: true}) do
+    original_book_fingerprint =
+      changeset
+      |> get_field(:original_book)
+      |> fingerprint
+
+    put_change(changeset, :original_book_fingerprint, original_book_fingerprint)
+  end
+
+  def link_fingerprint(changeset = %Ecto.Changeset{valid?: false}), do: changeset
 end

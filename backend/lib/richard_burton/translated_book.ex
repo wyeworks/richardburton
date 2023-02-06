@@ -16,6 +16,7 @@ defmodule RichardBurton.TranslatedBook do
   @derive {Jason.Encoder, only: @external_attributes}
   schema "translated_books" do
     field(:authors_fingerprint, :string)
+    field(:original_book_fingerprint, :string)
 
     has_many(:publications, Publication)
 
@@ -33,8 +34,12 @@ defmodule RichardBurton.TranslatedBook do
     |> cast_assoc(:authors, required: true)
     |> cast_assoc(:original_book, required: true)
     |> validate_length(:authors, min: 1)
+    |> OriginalBook.link_fingerprint()
     |> Author.link_fingerprint()
-    |> unique_constraint([:authors_fingerprint, :original_book_id])
+    |> unique_constraint(
+      [:authors_fingerprint, :original_book_fingerprint],
+      name: "translated_books_composite_key"
+    )
   end
 
   def maybe_insert!(attrs) do
