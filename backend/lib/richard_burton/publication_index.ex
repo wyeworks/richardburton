@@ -19,7 +19,6 @@ defmodule RichardBurton.Publication.Index do
       from(fp in FlatPublication)
       |> maybe_select(attributes)
       |> Repo.all()
-      |> FlatPublication.to_map()
 
     {:ok, results}
   end
