@@ -360,8 +360,8 @@ defmodule RichardBurton.Publication.CodecTest do
 
       output = [
         %{
-          publication: @output_publication,
-          errors: %{
+          "publication" => @output_publication,
+          "errors" => %{
             "year" => "required",
             "country" => "required",
             "publisher" => "required",
@@ -370,12 +370,12 @@ defmodule RichardBurton.Publication.CodecTest do
           }
         },
         %{
-          publication: @output_publication,
-          errors: nil
+          "publication" => @output_publication,
+          "errors" => nil
         },
         %{
-          publication: @output_publication,
-          errors: :conflict
+          "publication" => @output_publication,
+          "errors" => :conflict
         }
       ]
 
