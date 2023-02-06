@@ -1,10 +1,10 @@
-defmodule RichardBurton.Publication.Index.FlatPublication do
+defmodule RichardBurton.FlatPublication do
   @moduledoc """
   Schema for publications
   """
   use Ecto.Schema
 
-  alias RichardBurton.Publication.Index.FlatPublication
+  alias RichardBurton.FlatPublication
 
   @external_attributes [
     :title,
