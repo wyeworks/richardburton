@@ -6,15 +6,167 @@ defmodule RichardBurton.Publication.IndexTest do
   use RichardBurton.DataCase
 
   alias RichardBurton.Publication
+  alias RichardBurton.Publication.Index.FlatPublication
   alias RichardBurton.Util
 
+  @publications [
+    %FlatPublication{
+      authors: "Arthur Brakel",
+      country: "CA",
+      original_authors: "Cyro dos Anjos",
+      original_title: "O amanuense Belmiro",
+      publisher: "Fairleigh Dickinson University Press",
+      title: "Diary of a Civil Servant",
+      year: 1986
+    },
+    %FlatPublication{
+      authors: "Arthur Brakel",
+      country: "GB",
+      original_authors: "Cyro dos Anjos",
+      original_title: "O amanuense Belmiro",
+      publisher: "Associated University Presses",
+      title: "Diary of a Civil Servant",
+      year: 1988
+    },
+    %FlatPublication{
+      authors: "Dorothy Scott Loos",
+      country: "US",
+      original_authors: "Rachel de Queiroz",
+      original_title: "Dora Doralina",
+      publisher: "Dutton",
+      title: "Dora Doralina",
+      year: 1984
+    },
+    %FlatPublication{
+      authors: "E. Percy Ellis",
+      country: "BR",
+      original_authors: "Machado de Assis",
+      original_title: "Memórias póstumas de Brás Cubas",
+      publisher: "Instituto Nacional do Livro",
+      title: "Posthumous Reminiscences of Brás Cubas",
+      year: 1955
+    },
+    %FlatPublication{
+      authors: "Fred P. Ellison",
+      country: "US",
+      original_authors: "Rachel de Queiroz",
+      original_title: "As três Marias",
+      publisher: "University of Texas Press",
+      title: "The Three Marias",
+      year: 1963
+    },
+    %FlatPublication{
+      authors: "Gregory Rabassa",
+      country: "US",
+      original_authors: "Machado de Assis",
+      original_title: "Memórias póstumas de Brás Cubas",
+      publisher: "Oxford University Press",
+      title: "Posthumous Memoirs of Bras Cubas",
+      year: 1997
+    },
+    %FlatPublication{
+      authors: "Jean Neel Karnoff",
+      country: "GB",
+      original_authors: "Erico Verissimo",
+      original_title: "Olhai os lírios do campo",
+      publisher: "Greenwood",
+      title: "Consider the Lilies of the Field",
+      year: 1969
+    },
+    %FlatPublication{
+      authors: "L. C. Kaplan",
+      country: "US",
+      original_authors: "Graciliano Ramos",
+      original_title: "Angústia",
+      publisher: "Alfred A. Knopf",
+      title: "Anguish",
+      year: 1946
+    },
+    %FlatPublication{
+      authors: "Linton Lemos Barrett",
+      country: "GB",
+      original_authors: "Erico Verissimo",
+      original_title: "O tempo e o vento",
+      publisher: "Arco Publications",
+      title: "Time and the Wind",
+      year: 1954
+    },
+    %FlatPublication{
+      authors: "Linton Lemos Barrett",
+      country: "GB",
+      original_authors: "Erico Verissimo",
+      original_title: "Noite",
+      publisher: "Arco Publications",
+      title: "Night",
+      year: 1956
+    },
+    %FlatPublication{
+      authors: "Linton Lemos Barrett",
+      country: "US",
+      original_authors: "Erico Verissimo",
+      original_title: "O tempo e o vento",
+      publisher: "Macmillan",
+      title: "Time and the Wind",
+      year: 1951
+    },
+    %FlatPublication{
+      authors: "Linton Lemos Barrett",
+      country: "US",
+      original_authors: "Erico Verissimo",
+      original_title: "Noite",
+      publisher: "Macmillan",
+      title: "Night",
+      year: 1956
+    },
+    %FlatPublication{
+      authors: "Linton Lemos Barrett, Marie Barrett",
+      country: "US",
+      original_authors: "Erico Verissimo",
+      original_title: "O senhor embaixador",
+      publisher: "Macmillan",
+      title: "His Excellency, the Ambassador",
+      year: 1967
+    },
+    %FlatPublication{
+      authors: "Margaret Richardson Hollingsworth",
+      country: "US",
+      original_authors: "Mário de Andrade",
+      original_title: "Amar verbo intransitivo",
+      publisher: "MacCaulay",
+      title: "Fraulein",
+      year: 1933
+    },
+    %FlatPublication{
+      authors: "Thomas Colchie",
+      country: "US",
+      original_authors: "Graciliano Ramos",
+      original_title: "Memórias do cárcere",
+      publisher: "Evans",
+      title: "Jail Prison Memoirs",
+      year: 1974
+    },
+    %FlatPublication{
+      authors: "William L. Grossman",
+      country: "GB",
+      original_authors: "Machado de Assis",
+      original_title: "Memórias póstumas de Brás Cubas",
+      publisher: "W.H. Allen",
+      title: "Epitaph of a Small Winner",
+      year: 1953
+    },
+    %FlatPublication{
+      authors: "William L. Grossman",
+      country: "US",
+      original_authors: "Machado de Assis",
+      original_title: "Memórias póstumas de Brás Cubas",
+      publisher: "Noonday Press",
+      title: "Epitaph of a Small Winner",
+      year: 1952
+    }
+  ]
+
   setup(_context) do
-    publications = Publication.Codec.from_csv!("test/fixtures/data_index.csv")
-
-    publications
-    |> Publication.Codec.nest()
-    |> Enum.map(&Publication.insert/1)
-
+    @publications |> Publication.Codec.nest() |> Enum.map(&Publication.insert/1)
     []
   end
 
@@ -90,14 +242,12 @@ defmodule RichardBurton.Publication.IndexTest do
 
   describe "all/0" do
     test "returns all publications flattened" do
-      {:ok, actual} = Publication.Index.all()
+      {:ok, output} = Publication.Index.all()
 
-      expected =
-        Publication.all()
-        |> Publication.preload()
-        |> Publication.Codec.flatten()
+      actual = output |> Enum.map(&%{&1 | __meta__: nil, id: nil}) |> Enum.sort()
+      expected = @publications |> Enum.map(&%{&1 | __meta__: nil}) |> Enum.sort()
 
-      assert Enum.sort(Util.stringify_keys(actual)) == Enum.sort(expected)
+      assert expected == actual
     end
   end
 
