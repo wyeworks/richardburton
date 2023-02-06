@@ -6,6 +6,7 @@ defmodule RichardBurton.Publication.CodecTest do
   use RichardBurton.DataCase
 
   alias RichardBurton.Publication
+  alias RichardBurton.Publication.Index.FlatPublication
   alias RichardBurton.TranslatedBook
   alias RichardBurton.OriginalBook
 
@@ -318,6 +319,102 @@ defmodule RichardBurton.Publication.CodecTest do
       ]
 
       assert output == Publication.Codec.flatten(input)
+    end
+  end
+
+  describe "nest/1 on flat publications" do
+    @output %{
+      "title" => "Iraçéma the Honey-Lips: A Legend of Brazil",
+      "year" => "1886",
+      "country" => "GB",
+      "publisher" => "Bickers & Son",
+      "translated_book" => %{
+        "authors" => [
+          %{"name" => "Isabel Burton"}
+        ],
+        "original_book" => %{
+          "authors" => [
+            %{"name" => "José de Alencar"}
+          ],
+          "title" => "Iracema"
+        }
+      }
+    }
+
+    test "on a nested publication-like with string keys, returns the flattened representation with string keys" do
+      input = %{
+        "title" => "Iraçéma the Honey-Lips: A Legend of Brazil",
+        "year" => "1886",
+        "country" => "GB",
+        "publisher" => "Bickers & Son",
+        "authors" => "Isabel Burton",
+        "original_authors" => "José de Alencar",
+        "original_title" => "Iracema"
+      }
+
+      assert @output == Publication.Codec.nest(input)
+    end
+
+    test "on a nested publication-like with atom keys, returns the flattened representation with string keys" do
+      input = %{
+        title: "Iraçéma the Honey-Lips: A Legend of Brazil",
+        year: "1886",
+        country: "GB",
+        publisher: "Bickers & Son",
+        authors: "Isabel Burton",
+        original_authors: "José de Alencar",
+        original_title: "Iracema"
+      }
+
+      assert @output == Publication.Codec.nest(input)
+    end
+
+    test "on a Publication struct, returns the flattened representation with string keys" do
+      input = %FlatPublication{
+        title: "Iraçéma the Honey-Lips: A Legend of Brazil",
+        year: "1886",
+        country: "GB",
+        publisher: "Bickers & Son",
+        authors: "Isabel Burton",
+        original_authors: "José de Alencar",
+        original_title: "Iracema"
+      }
+
+      assert @output == Publication.Codec.nest(input)
+    end
+
+    test "on a list, returns the flattened representation of its items, with string keys" do
+      input = [
+        %{
+          "title" => "Iraçéma the Honey-Lips: A Legend of Brazil",
+          "year" => "1886",
+          "country" => "GB",
+          "publisher" => "Bickers & Son",
+          "authors" => "Isabel Burton",
+          "original_authors" => "José de Alencar",
+          "original_title" => "Iracema"
+        },
+        %{
+          title: "Iraçéma the Honey-Lips: A Legend of Brazil",
+          year: "1886",
+          country: "GB",
+          publisher: "Bickers & Son",
+          authors: "Isabel Burton",
+          original_authors: "José de Alencar",
+          original_title: "Iracema"
+        },
+        %FlatPublication{
+          title: "Iraçéma the Honey-Lips: A Legend of Brazil",
+          year: "1886",
+          country: "GB",
+          publisher: "Bickers & Son",
+          authors: "Isabel Burton",
+          original_authors: "José de Alencar",
+          original_title: "Iracema"
+        }
+      ]
+
+      assert [@output, @output, @output] == Publication.Codec.nest(input)
     end
   end
 end
