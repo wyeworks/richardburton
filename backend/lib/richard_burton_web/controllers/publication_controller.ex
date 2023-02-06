@@ -1,6 +1,7 @@
 defmodule RichardBurtonWeb.PublicationController do
   use RichardBurtonWeb, :controller
 
+  alias RichardBurton.FlatPublication
   alias RichardBurton.Publication
 
   def index(conn, %{"search" => query}) do
@@ -72,11 +73,7 @@ defmodule RichardBurtonWeb.PublicationController do
   def validate(conn, %{"csv" => %Plug.Upload{path: path}}) do
     case Publication.Codec.from_csv(path) do
       {:ok, publications} ->
-        result =
-          publications
-          |> Publication.Codec.nest()
-          |> Enum.map(&validate_publication/1)
-          |> Publication.Codec.flatten()
+        result = Enum.map(publications, &validate_publication/1)
 
         conn
         |> put_status(:ok)
@@ -88,11 +85,7 @@ defmodule RichardBurtonWeb.PublicationController do
   end
 
   def validate(conn, %{"_json" => publications}) do
-    result =
-      publications
-      |> Publication.Codec.nest()
-      |> Enum.map(&validate_publication/1)
-      |> Publication.Codec.flatten()
+    result = Enum.map(publications, &validate_publication/1)
 
     conn
     |> put_status(:ok)
@@ -100,7 +93,7 @@ defmodule RichardBurtonWeb.PublicationController do
   end
 
   defp validate_publication(p) do
-    case Publication.validate(p) do
+    case FlatPublication.validate(p) do
       :ok -> %{publication: p, errors: nil}
       {:error, errors} -> %{publication: p, errors: errors}
     end
