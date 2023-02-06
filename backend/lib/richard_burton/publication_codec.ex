@@ -133,6 +133,8 @@ defmodule RichardBurton.Publication.Codec do
     Enum.map_join(authors, ", ", &(Map.get(&1, "name") || Map.get(&1, :name)))
   end
 
+  defp flatten_authors(authors), do: authors
+
   defp rename_key({"translated_book_authors", v}), do: {"authors", v}
   defp rename_key({"translated_book_original_book_title", v}), do: {"original_title", v}
   defp rename_key({"translated_book_original_book_authors", v}), do: {"original_authors", v}
