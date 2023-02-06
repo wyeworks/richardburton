@@ -9,8 +9,12 @@ defmodule RichardBurton.Publication.IndexTest do
   alias RichardBurton.Util
 
   setup(_context) do
-    {:ok, publications} = Publication.Codec.from_csv("test/fixtures/data_index.csv")
-    Enum.map(publications, &Publication.insert/1)
+    publications = Publication.Codec.from_csv!("test/fixtures/data_index.csv")
+
+    publications
+    |> Publication.Codec.nest()
+    |> Enum.map(&Publication.insert/1)
+
     []
   end
 
