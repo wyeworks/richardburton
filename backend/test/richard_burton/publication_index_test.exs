@@ -208,7 +208,7 @@ defmodule RichardBurton.Publication.IndexTest do
 
     Enum.each(publications, fn p ->
       assert Enum.any?(expected_values, fn {key, value} ->
-               String.contains?(inspect(p[key]), value)
+               String.contains?(inspect(Map.fetch(p, key)), value)
              end),
              """
              Expected publication

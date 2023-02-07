@@ -79,10 +79,7 @@ defmodule RichardBurton.Publication.Index do
           )
           |> maybe_select(attributes)
 
-        results =
-          query
-          |> Repo.all()
-          |> FlatPublication.to_map()
+        results = Repo.all(query)
 
         {:ok, results, keywords}
     end
