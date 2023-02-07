@@ -91,12 +91,4 @@ defmodule RichardBurton.Publication do
         Repo.rollback({attrs, errors})
     end
   end
-
-  def to_map(publication) do
-    translated_book = TranslatedBook.to_map(publication.translated_book)
-
-    publication
-    |> Map.take(@external_attributes)
-    |> Map.put(:translated_book, translated_book)
-  end
 end
