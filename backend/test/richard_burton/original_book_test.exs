@@ -19,14 +19,6 @@ defmodule RichardBurton.OriginalBookTest do
     ]
   }
 
-  @valid_attrs_atom_keys %{
-    title: "Manuel de Moraes: crônica do século XVII",
-    authors: [
-      %{name: "J. M. Pereira da Silva"},
-      %{name: "Machado de Assis"}
-    ]
-  }
-
   defp changeset(attrs = %{}) do
     OriginalBook.changeset(%OriginalBook{}, attrs)
   end
@@ -130,14 +122,6 @@ defmodule RichardBurton.OriginalBookTest do
       authors_fingerprint2 = Ecto.Changeset.get_field(changeset2, :authors_fingerprint)
 
       refute authors_fingerprint1 == authors_fingerprint2
-    end
-  end
-
-  describe "to_map/1" do
-    test "returns the selected attributes as a map with atom keys" do
-      {:ok, original_book} = insert(@valid_attrs)
-
-      assert @valid_attrs_atom_keys == OriginalBook.to_map(original_book)
     end
   end
 
