@@ -99,10 +99,16 @@ defmodule RichardBurton.Publication.Codec do
     Enum.map(String.split(authors, ","), &%{"name" => String.trim(&1)})
   end
 
-  def flatten(p = %Publication{}) do
-    p
-    |> Publication.to_map()
-    |> flatten
+  def flatten(publication = %Publication{}) do
+    attrs =
+      publication
+      |> map_from_struct
+      |> Map.delete(:__meta__)
+      |> flatten
+
+    %FlatPublication{}
+    |> FlatPublication.changeset(attrs)
+    |> Ecto.Changeset.apply_changes()
   end
 
   def flatten(%{publication: publication, errors: errors})
@@ -146,4 +152,12 @@ defmodule RichardBurton.Publication.Codec do
   defp rename_key({"original_authors", v}), do: {"translated_book_original_book_authors", v}
 
   defp rename_key({key, value}), do: {key, value}
+
+  defp map_from_struct(struct) when is_struct(struct) do
+    struct
+    |> Map.from_struct()
+    |> Map.new(fn {key, value} -> {key, map_from_struct(value)} end)
+  end
+
+  defp map_from_struct(value), do: value
 end
