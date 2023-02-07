@@ -69,22 +69,11 @@ defmodule RichardBurton.TranslatedBook do
     Repo.preload(data, [:authors, original_book: [:authors]])
   end
 
-  def to_map(translated_book) do
-    original_book = OriginalBook.to_map(translated_book.original_book)
-    authors = Enum.map(translated_book.authors, &Author.to_map/1)
-
-    translated_book
-    |> Map.take(@external_attributes)
-    |> Map.put(:original_book, original_book)
-    |> Map.put(:authors, authors)
-  end
-
   def link(changeset = %{valid?: true}) do
     translated_book =
       changeset
       |> get_change(:translated_book)
       |> apply_changes()
-      |> TranslatedBook.to_map()
       |> TranslatedBook.maybe_insert!()
 
     put_assoc(changeset, :translated_book, translated_book)
