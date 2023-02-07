@@ -24,6 +24,14 @@ defmodule RichardBurton.Author do
   end
 
   @doc false
+  def changeset(author, attrs \\ %{})
+
+  @doc false
+  def changeset(author, attrs = %Author{}) do
+    changeset(author, Map.from_struct(attrs))
+  end
+
+  @doc false
   def changeset(author, attrs) do
     author
     |> cast(attrs, [:name])
