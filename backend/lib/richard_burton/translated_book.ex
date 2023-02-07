@@ -29,7 +29,15 @@ defmodule RichardBurton.TranslatedBook do
   end
 
   @doc false
-  def changeset(translated_book, attrs \\ %{}) do
+  def changeset(translated_book, attrs \\ %{})
+
+  @doc false
+  def changeset(translated_book, attrs = %TranslatedBook{}) do
+    changeset(translated_book, Map.from_struct(attrs))
+  end
+
+  @doc false
+  def changeset(translated_book, attrs) do
     translated_book
     |> cast(attrs, [])
     |> cast_assoc(:authors, required: true)
