@@ -54,14 +54,6 @@ defmodule RichardBurton.OriginalBook do
     |> Repo.maybe_insert!([:authors_fingerprint, :title])
   end
 
-  def to_map(original_book = %OriginalBook{}) do
-    authors = Enum.map(original_book.authors, &Author.to_map/1)
-
-    original_book
-    |> Map.take(@external_attributes)
-    |> Map.put(:authors, authors)
-  end
-
   def all() do
     OriginalBook |> Repo.all() |> preload
   end
@@ -75,7 +67,6 @@ defmodule RichardBurton.OriginalBook do
       changeset
       |> get_change(:original_book)
       |> apply_changes()
-      |> OriginalBook.to_map()
       |> OriginalBook.maybe_insert!()
 
     put_assoc(changeset, :original_book, original_book)
