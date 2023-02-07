@@ -76,12 +76,4 @@ defmodule RichardBurton.FlatPublication do
       :ok
     end
   end
-
-  def to_map(ps) when is_list(ps) do
-    Enum.map(ps, &FlatPublication.to_map/1)
-  end
-
-  def to_map(p) do
-    Map.take(p, @external_attributes)
-  end
 end

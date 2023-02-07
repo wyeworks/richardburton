@@ -166,7 +166,10 @@ defmodule RichardBurton.Publication.IndexTest do
   ]
 
   setup(_context) do
-    @publications |> Publication.Codec.nest() |> Enum.map(&Publication.insert/1)
+    @publications
+    |> Publication.Codec.nest()
+    |> Enum.map(&Publication.insert/1)
+
     []
   end
 

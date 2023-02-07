@@ -5,6 +5,7 @@ defmodule RichardBurton.Publication.CodecTest do
 
   use RichardBurton.DataCase
 
+  alias RichardBurton.Author
   alias RichardBurton.Publication
   alias RichardBurton.FlatPublication
   alias RichardBurton.TranslatedBook
@@ -169,11 +170,11 @@ defmodule RichardBurton.Publication.CodecTest do
         publisher: "Bickers & Son",
         translated_book: %TranslatedBook{
           authors: [
-            %{name: "Isabel Burton"}
+            %Author{name: "Isabel Burton"}
           ],
           original_book: %OriginalBook{
             authors: [
-              %{name: "José de Alencar"}
+              %Author{name: "José de Alencar"}
             ],
             title: "Iracema"
           }
@@ -226,11 +227,11 @@ defmodule RichardBurton.Publication.CodecTest do
           publisher: "Bickers & Son",
           translated_book: %TranslatedBook{
             authors: [
-              %{name: "Isabel Burton"}
+              %Author{name: "Isabel Burton"}
             ],
             original_book: %OriginalBook{
               authors: [
-                %{name: "José de Alencar"}
+                %Author{name: "José de Alencar"}
               ],
               title: "Iracema"
             }
@@ -341,6 +342,30 @@ defmodule RichardBurton.Publication.CodecTest do
       }
     }
 
+    @output_struct %Publication{
+      title: "Iraçéma the Honey-Lips: A Legend of Brazil",
+      year: 1886,
+      country: "GB",
+      publisher: "Bickers & Son",
+      translated_book: %TranslatedBook{
+        authors: [
+          %Author{name: "Isabel Burton"}
+        ],
+        authors_fingerprint: "3D9BE0F48628685291383A430443DE4D864E69660C376B17EE9E7501BE5BB2D8",
+        original_book: %OriginalBook{
+          title: "Iracema",
+          authors: [
+            %Author{name: "José de Alencar"}
+          ],
+          authors_fingerprint: "65931E62E55E5151BD2F625E9D3CBD821B6D4B6CE0B6F600BAFB9D49E2F338CB"
+        },
+        original_book_fingerprint:
+          "F9846F5EAF84555CE8AA7D20C8C89BEAB11C1466A2A79B0700050FEAC784226B"
+      },
+      translated_book_fingerprint:
+        "954F4C8E5EB33960B733BADB84134970AF5D970879260138C8C214B66DDBEF1F"
+    }
+
     test "on a nested publication-like with string keys, returns the flattened representation with string keys" do
       input = %{
         "title" => "Iraçéma the Honey-Lips: A Legend of Brazil",
@@ -380,7 +405,7 @@ defmodule RichardBurton.Publication.CodecTest do
         original_title: "Iracema"
       }
 
-      assert @output == Publication.Codec.nest(input)
+      assert @output_struct == Publication.Codec.nest(input)
     end
 
     test "on a list, returns the flattened representation of its items, with string keys" do
@@ -414,7 +439,7 @@ defmodule RichardBurton.Publication.CodecTest do
         }
       ]
 
-      assert [@output, @output, @output] == Publication.Codec.nest(input)
+      assert [@output, @output, @output_struct] == Publication.Codec.nest(input)
     end
   end
 end

@@ -51,10 +51,6 @@ defmodule RichardBurton.Publication.Codec do
 
   def to_csv(flat_publications) do
     flat_publications
-    |> Enum.map(fn
-      struct = %FlatPublication{} -> Map.from_struct(struct)
-      map when is_map(map) -> map
-    end)
     |> Enum.map(&Util.stringify_keys/1)
     |> Enum.map(&Map.take(&1, @csv_headers))
     |> CSV.encode(separator: ?;, delimiter: "\n", headers: true)
@@ -68,10 +64,16 @@ defmodule RichardBurton.Publication.Codec do
     end
   end
 
-  def nest(p = %FlatPublication{}) do
-    p
-    |> FlatPublication.to_map()
-    |> nest
+  def nest(flat_publication = %FlatPublication{}) do
+    attrs =
+      flat_publication
+      |> Map.from_struct()
+      |> Map.delete(:__meta__)
+      |> nest
+
+    %Publication{}
+    |> Publication.changeset(attrs)
+    |> Ecto.Changeset.apply_changes()
   end
 
   def nest(flat_publication_like_map) when is_map(flat_publication_like_map) do

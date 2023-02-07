@@ -26,7 +26,15 @@ defmodule RichardBurton.OriginalBook do
   end
 
   @doc false
-  def changeset(original_book, attrs \\ %{}) do
+  def changeset(original_book, attrs \\ %{})
+
+  @doc false
+  def changeset(original_book, attrs = %OriginalBook{}) do
+    changeset(original_book, Map.from_struct(attrs))
+  end
+
+  @doc false
+  def changeset(original_book, attrs) do
     original_book
     |> cast(attrs, [:title])
     |> cast_assoc(:authors, required: true)

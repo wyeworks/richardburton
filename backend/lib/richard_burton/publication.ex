@@ -28,7 +28,15 @@ defmodule RichardBurton.Publication do
   end
 
   @doc false
-  def changeset(publication, attrs \\ %{}) do
+  def changeset(publication, attrs \\ %{})
+
+  @doc false
+  def changeset(publication, attrs = %Publication{}) do
+    changeset(publication, Map.from_struct(attrs))
+  end
+
+  @doc false
+  def changeset(publication, attrs) do
     publication
     |> cast(attrs, [:title, :year, :country, :publisher])
     |> cast_assoc(:translated_book, required: true)
