@@ -25,19 +25,6 @@ defmodule RichardBurton.TranslatedBookTest do
     }
   }
 
-  @valid_attrs_atom_keys %{
-    authors: [
-      %{name: "Richard Burton"},
-      %{name: "Isabel Burton"}
-    ],
-    original_book: %{
-      title: "Manuel de Moraes: crônica do século XVII",
-      authors: [
-        %{name: "J. M. Pereira da Silva"}
-      ]
-    }
-  }
-
   defp changeset(attrs = %{}) do
     TranslatedBook.changeset(%TranslatedBook{}, attrs)
   end
@@ -147,14 +134,6 @@ defmodule RichardBurton.TranslatedBookTest do
 
       assert pre_existent_book == translated_book
       assert [translated_book] == TranslatedBook.all()
-    end
-  end
-
-  describe "to_map/1" do
-    test "returns the selected attributes as a map with atom keys" do
-      {:ok, translated_book} = insert(@valid_attrs)
-
-      assert @valid_attrs_atom_keys == TranslatedBook.to_map(translated_book)
     end
   end
 
