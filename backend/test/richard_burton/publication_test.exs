@@ -29,25 +29,6 @@ defmodule RichardBurton.PublicationTest do
     }
   }
 
-  @valid_attrs_atom_keys %{
-    title: "Manuel de Moraes: A Chronicle of the Seventeenth Century",
-    country: "GB",
-    year: 1886,
-    publisher: "Bickers & Son",
-    translated_book: %{
-      authors: [
-        %{name: "Richard Burton"},
-        %{name: "Isabel Burton"}
-      ],
-      original_book: %{
-        authors: [
-          %{name: "J. M. Pereira da Silva"}
-        ],
-        title: "Manuel de Moraes: crônica do século XVII"
-      }
-    }
-  }
-
   @empty_attrs %{}
   @skeleton_attrs %{translated_book: %{original_book: %{}}}
 
@@ -254,14 +235,6 @@ defmodule RichardBurton.PublicationTest do
       assert {@skeleton_attrs, @skeleton_attrs_error_map} == description
 
       assert [] == Publication.all()
-    end
-  end
-
-  describe "to_map/1" do
-    test "returns the selected attributes as a map with atom keys" do
-      {:ok, publication} = insert(@valid_attrs)
-      publication = Publication.preload(publication)
-      assert @valid_attrs_atom_keys == Publication.to_map(publication)
     end
   end
 end
