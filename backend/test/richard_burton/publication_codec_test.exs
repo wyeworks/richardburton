@@ -118,6 +118,18 @@ defmodule RichardBurton.Publication.CodecTest do
       "original_title" => "Iracema"
     }
 
+    @output_struct %FlatPublication{
+      title: "Iraçéma the Honey-Lips: A Legend of Brazil",
+      year: 1886,
+      country: "GB",
+      publisher: "Bickers & Son",
+      authors: "Isabel Burton",
+      original_authors: "José de Alencar",
+      original_title: "Iracema",
+      translated_book_fingerprint:
+        "954F4C8E5EB33960B733BADB84134970AF5D970879260138C8C214B66DDBEF1F"
+    }
+
     test "on a nested publication-like with string keys, returns the flattened representation with string keys" do
       input = %{
         "title" => "Iraçéma the Honey-Lips: A Legend of Brazil",
@@ -181,7 +193,7 @@ defmodule RichardBurton.Publication.CodecTest do
         }
       }
 
-      assert @output == Publication.Codec.flatten(input)
+      assert @output_struct == Publication.Codec.flatten(input)
     end
 
     test "on a list, returns the flattened representation of its items, with string keys" do
@@ -239,7 +251,7 @@ defmodule RichardBurton.Publication.CodecTest do
         }
       ]
 
-      assert [@output, @output, @output] == Publication.Codec.flatten(input)
+      assert [@output, @output, @output_struct] == Publication.Codec.flatten(input)
     end
   end
 

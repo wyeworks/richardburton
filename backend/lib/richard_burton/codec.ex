@@ -86,13 +86,15 @@ defmodule RichardBurton.Codec do
     |> Map.new(&coalesce_keys/1)
   end
 
-  defp put_path(map, [key], value) do
+  defp put_path(map, [key], value) when is_map(map) do
     Map.put(map, key, value)
   end
 
-  defp put_path(map, [key | rest], value) do
+  defp put_path(map, [key | rest], value) when is_map(map) do
     Map.put(map, key, put_path(map[key] || %{}, rest, value))
   end
+
+  defp put_path(not_map, _, _) when not is_map(not_map), do: not_map
 
   defp coalesce_keys({key, map}) when is_map(map) do
     case(coalesce_keys(map)) do
