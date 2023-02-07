@@ -45,14 +45,6 @@ defmodule RichardBurton.Author do
     |> Repo.maybe_insert!([:name])
   end
 
-  def to_map(author = %Author{}) do
-    Map.take(author, @external_attributes)
-  end
-
-  def to_map(author) when is_map(author) do
-    author
-  end
-
   def all do
     Repo.all(Author)
   end
@@ -62,7 +54,6 @@ defmodule RichardBurton.Author do
       changeset
       |> get_change(:authors)
       |> Enum.map(&apply_changes/1)
-      |> Enum.map(&Author.to_map/1)
       |> Enum.map(&Author.maybe_insert!/1)
 
     put_assoc(changeset, :authors, authors)
@@ -72,7 +63,6 @@ defmodule RichardBurton.Author do
 
   def fingerprint(authors) when is_list(authors) do
     authors
-    |> Enum.map(&Author.to_map/1)
     |> Enum.map_join(&Map.get(&1, :name))
     |> Util.create_fingerprint()
   end
