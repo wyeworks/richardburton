@@ -89,6 +89,13 @@ defmodule RichardBurton.AuthorTest do
 
       assert Author.fingerprint(authors1) == Author.fingerprint(authors2)
     end
+
+    test "given two lists of authors with the same and different order, generates the same fingerprints" do
+      authors1 = [%Author{name: "Isabel Burton"}, %Author{name: "Richard Burton"}]
+      authors2 = [%Author{name: "Richard Burton"}, %Author{name: "Isabel Burton"}]
+
+      assert Author.fingerprint(authors1) == Author.fingerprint(authors2)
+    end
   end
 
   describe "link/1" do
