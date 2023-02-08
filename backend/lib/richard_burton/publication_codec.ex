@@ -95,7 +95,7 @@ defmodule RichardBurton.Publication.Codec do
   defp nest_entry({key, value}),
     do: {key, value}
 
-  defp nest_authors(authors) when is_binary(authors) do
+  def nest_authors(authors) when is_binary(authors) do
     Enum.map(String.split(authors, ","), &%{"name" => String.trim(&1)})
   end
 

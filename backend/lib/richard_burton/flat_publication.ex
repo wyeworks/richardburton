@@ -9,6 +9,7 @@ defmodule RichardBurton.FlatPublication do
   alias RichardBurton.FlatPublication
   alias RichardBurton.Publication
   alias RichardBurton.Repo
+  alias RichardBurton.TranslatedBook
   alias RichardBurton.Validation
 
   @external_attributes [
@@ -36,15 +37,13 @@ defmodule RichardBurton.FlatPublication do
 
   @doc false
   def changeset(flat_publication, attrs) do
-    translated_book_fingerprint =
-      %Publication{}
-      |> Publication.changeset(Publication.Codec.nest(attrs))
-      |> get_field(:translated_book_fingerprint)
+    %Publication{}
+    |> Publication.changeset(Publication.Codec.nest(attrs))
 
     flat_publication
     |> cast(attrs, @external_attributes)
     |> validate_required(@external_attributes)
-    |> put_change(:translated_book_fingerprint, translated_book_fingerprint)
+    |> TranslatedBook.link_fingerprint()
   end
 
   def validate(attrs) do
