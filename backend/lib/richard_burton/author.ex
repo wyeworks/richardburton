@@ -63,7 +63,9 @@ defmodule RichardBurton.Author do
 
   def fingerprint(authors) when is_list(authors) do
     authors
-    |> Enum.map_join(fn %Author{name: name} -> name end)
+    |> Enum.map(fn %Author{name: name} -> name end)
+    |> Enum.sort()
+    |> Enum.join()
     |> Util.create_fingerprint()
   end
 
