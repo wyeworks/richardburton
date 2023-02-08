@@ -6,6 +6,7 @@ defmodule RichardBurton.TranslatedBook do
   import Ecto.Changeset
 
   alias RichardBurton.Author
+  alias RichardBurton.FlatPublication
   alias RichardBurton.OriginalBook
   alias RichardBurton.Publication
   alias RichardBurton.Repo
@@ -90,7 +91,31 @@ defmodule RichardBurton.TranslatedBook do
     |> Util.create_fingerprint()
   end
 
-  def link_fingerprint(changeset = %Ecto.Changeset{valid?: true}) do
+  def link_fingerprint(changeset = %Ecto.Changeset{valid?: true, data: %FlatPublication{}}) do
+    translated_book_fingerprint =
+      fingerprint(%TranslatedBook{
+        authors_fingerprint:
+          changeset
+          |> get_field(:authors)
+          |> Publication.Codec.nest_authors()
+          |> Enum.map(fn %{"name" => name} -> %Author{name: name} end)
+          |> Author.fingerprint(),
+        original_book_fingerprint:
+          OriginalBook.fingerprint(%OriginalBook{
+            title: get_field(changeset, :original_title),
+            authors_fingerprint:
+              changeset
+              |> get_field(:original_authors)
+              |> Publication.Codec.nest_authors()
+              |> Enum.map(fn %{"name" => name} -> %Author{name: name} end)
+              |> Author.fingerprint()
+          })
+      })
+
+    put_change(changeset, :translated_book_fingerprint, translated_book_fingerprint)
+  end
+
+  def link_fingerprint(changeset = %Ecto.Changeset{valid?: true, data: %Publication{}}) do
     translated_book_fingerprint =
       changeset
       |> get_field(:translated_book)
