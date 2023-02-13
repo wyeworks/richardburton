@@ -65,3 +65,6 @@ richard_burton-*.tar
 
 *.local.exs
 *.secrets.exs
+.env.*.local
+rel
+**/config/*.local.*
