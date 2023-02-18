@@ -1,0 +1,25 @@
+name: Run backend docs generator
+on:
+  push:
+    branches:
+      - main
+jobs:
+  ExDoc:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: "backend"
+    steps:
+      - uses: actions/checkout@v3
+      - uses: erlef/setup-beam@v1
+        with:
+          version-type: strict
+          version-file: backend/.tool-versions
+      - run: mix deps.get
+      - run: mix docs -f html -o docs
+      - uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: Update backend docs
+          commit_user_name: GitHub Actions Bot - Docs Generator
+          branch: gh-pages
+          create_branch: true
