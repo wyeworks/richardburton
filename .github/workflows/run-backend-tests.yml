@@ -1,5 +1,5 @@
 name: Run backend server's tests
-on: [push]
+on: push
 jobs:
   ExUnit:
     runs-on: ubuntu-latest
