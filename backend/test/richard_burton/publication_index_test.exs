@@ -6,32 +6,74 @@ defmodule RichardBurton.Publication.IndexTest do
   use RichardBurton.DataCase
 
   alias RichardBurton.Publication
+  alias RichardBurton.Util
 
   setup(_context) do
     {:ok, publications} = Publication.Codec.from_csv("test/fixtures/data_index.csv")
-
-    ps =
-      publications
-      |> Enum.map(&insert!/1)
-      |> Publication.preload()
-      |> Publication.Codec.flatten()
-      |> Enum.map(&Map.to_list/1)
-      |> Enum.map(&Enum.map(&1, fn {k, v} -> {String.to_existing_atom(k), v} end))
-      |> Enum.map(&Map.new/1)
-
-    [publications: ps]
+    Enum.map(publications, &Publication.insert/1)
+    []
   end
 
-  defp insert!(attrs) do
-    %Publication{} |> Publication.changeset(attrs) |> Repo.insert!()
+  defp assert_publication_fields(publication, expected_fields) do
+    Enum.each(
+      Map.keys(publication),
+      fn key ->
+        assert key in expected_fields,
+               """
+               Expected publication
+
+               #{inspect(publication, pretty: true)}
+
+               to only contain fields #{inspect(expected_fields)}
+
+               field #{key} found.
+               """
+      end
+    )
   end
 
-  defp sort(publications) do
-    Enum.sort(publications)
+  defp assert_search_results(publications, expect: expected_values) do
+    assert_search_results(publications, expect: expected_values, fields: [])
   end
 
-  defp filter(publications, key, term) do
-    Enum.filter(publications, &String.contains?(to_string(&1[key]), term))
+  defp assert_search_results(publications, expect: expected_values, fields: expected_fields)
+       when is_list(publications) and is_list(expected_values) do
+    unless Keyword.keyword?(expected_values) do
+      throw(
+        "Expected values must be defined as a keyword with attribute as key and expected values as value"
+      )
+    end
+
+    refute Enum.empty?(publications), "Expected publications not to be empty."
+
+    unless Enum.empty?(expected_fields) do
+      Enum.each(publications, &assert_publication_fields(&1, expected_fields))
+    end
+
+    Enum.each(publications, fn p ->
+      assert Enum.any?(expected_values, fn {key, value} ->
+               String.contains?(inspect(p[key]), value)
+             end),
+             """
+             Expected publication
+
+             #{inspect(p, pretty: true)}
+
+             to meet one of the following conditions:
+
+             #{Enum.map_join(expected_values, "", fn
+               {key, [v]} -> """
+                 #{key} contains #{inspect(v, pretty: true)}
+                 """
+               {key, v} when is_list(v) -> """
+                 #{key} contains one of #{inspect(v, pretty: true)}
+                 """
+               {key, v} -> """
+                 #{key} contains #{inspect(v, pretty: true)}
+                 """
+             end)}
+             """
+    end)
   end
 
   defp select_attrs(publication, attributes) when is_map(publication) do
@@ -43,109 +85,138 @@ defmodule RichardBurton.Publication.IndexTest do
   end
 
   describe "all/0" do
-    test "retrieves all publications", context do
-      %{publications: publications} = context
-      {:ok, result} = Publication.Index.all()
+    test "returns all publications flattened" do
+      {:ok, actual} = Publication.Index.all()
 
-      assert sort(publications) == sort(result)
+      expected =
+        Publication.all()
+        |> Publication.preload()
+        |> Publication.Codec.flatten()
+
+      assert Enum.sort(Util.stringify_keys(actual)) == Enum.sort(expected)
     end
   end
 
   describe "all/1" do
-    test "retrieves a subset of all publications attributes", context do
-      %{publications: publications} = context
-
+    test "retrieves a subset of all publications attributes" do
       attributes = [:title, :original_title, :authors]
 
-      {:ok, result} = Publication.Index.all(select: attributes)
+      {:ok, actual} = Publication.Index.all(select: attributes)
 
-      assert sort(select_attrs(publications, attributes)) == sort(result)
+      expected =
+        Publication.all()
+        |> Publication.preload()
+        |> Publication.Codec.flatten()
+        |> select_attrs(Enum.map(attributes, &Atom.to_string/1))
+
+      assert Enum.sort(Util.stringify_keys(actual)) == Enum.sort(expected)
     end
   end
 
   describe "search/1 with a single-word term present in the dataset" do
-    test "retrieves publications by original author", context do
-      %{publications: publications} = context
-
+    test "retrieves publications by original author" do
       term = "Verissimo"
       keyword = String.downcase(term)
+      expected_original_authors = ["Erico Verissimo", "Luis Fernando Verissimo"]
 
-      assert {:ok, result, [^keyword]} = Publication.Index.search(term)
+      assert {:ok, publications, [^keyword]} = Publication.Index.search(term)
 
-      assert length(result) > 0
-      assert sort(filter(publications, :original_authors, term)) == sort(result)
+      assert_search_results(
+        publications,
+        expect: [
+          original_authors: expected_original_authors
+        ]
+      )
     end
 
-    test "retrieves publications by title", context do
-      %{publications: publications} = context
-
+    test "retrieves publications by title" do
       term = "Night"
       keyword = String.downcase(term)
+      expected_titles = ["Night"]
 
-      assert {:ok, result, [^keyword]} = Publication.Index.search(term)
+      assert {:ok, publications, [^keyword]} = Publication.Index.search(term)
 
-      assert length(result) > 0
-      assert sort(filter(publications, :title, term)) == sort(result)
+      assert_search_results(
+        publications,
+        expect: [
+          title: expected_titles
+        ]
+      )
     end
 
-    test "retrieves publications by original title", context do
-      %{publications: publications} = context
-
+    test "retrieves publications by original title" do
       term = "Noite"
       keyword = String.downcase(term)
+      expected_original_titles = ["Noite"]
 
-      assert {:ok, result, [^keyword]} = Publication.Index.search(term)
+      assert {:ok, publications, [^keyword]} = Publication.Index.search(term)
 
-      assert length(result) > 0
-      assert sort(filter(publications, :original_title, term)) == sort(result)
+      assert_search_results(
+        publications,
+        expect: [
+          original_title: expected_original_titles
+        ]
+      )
     end
 
-    test "retrieves publications by country", context do
-      %{publications: publications} = context
-
+    test "retrieves publications by country" do
       term = "GB"
       keyword = String.downcase(term)
+      expected_countries = ["GB"]
 
-      assert {:ok, result, [^keyword]} = Publication.Index.search(term)
+      assert {:ok, publications, [^keyword]} = Publication.Index.search(term)
 
-      assert length(result) > 0
-      assert sort(filter(publications, :country, term)) == sort(result)
+      assert_search_results(
+        publications,
+        expect: [
+          country: expected_countries
+        ]
+      )
     end
 
-    test "retrieves publications by author", context do
-      %{publications: publications} = context
-
+    test "retrieves publications by author" do
       term = "Brakel"
       keyword = String.downcase(term)
+      expected_authors = ["Arthur Brakel"]
 
-      assert {:ok, result, [^keyword]} = Publication.Index.search(term)
+      assert {:ok, publications, [^keyword]} = Publication.Index.search(term)
 
-      assert length(result) > 0
-      assert sort(filter(publications, :authors, term)) == sort(result)
+      assert_search_results(
+        publications,
+        expect: [
+          authors: expected_authors
+        ]
+      )
     end
 
-    test "retrieves publications by publisher", context do
-      %{publications: publications} = context
-
+    test "retrieves publications by publisher" do
       term = "Macmillan"
       keyword = String.downcase(term)
+      expected_publishers = ["Macmillan"]
 
-      assert {:ok, result, [^keyword]} = Publication.Index.search(term)
+      assert {:ok, publications, [^keyword]} = Publication.Index.search(term)
 
-      assert length(result) > 0
-      assert sort(filter(publications, :publisher, term)) == sort(result)
+      assert_search_results(
+        publications,
+        expect: [
+          publisher: expected_publishers
+        ]
+      )
     end
 
-    test "retrieves publications by year", context do
-      %{publications: publications} = context
-
+    test "retrieves publications by year" do
       term = "1956"
       keyword = String.downcase(term)
+      expected_years = ["1956"]
 
-      assert {:ok, result, [^keyword]} = Publication.Index.search(term)
+      assert {:ok, publications, [^keyword]} = Publication.Index.search(term)
 
-      assert length(result) > 0
-      assert sort(filter(publications, :year, term)) == sort(result)
+      assert_search_results(
+        publications,
+        expect: [
+          year: expected_years
+        ]
+      )
     end
 
     test "retrieves no publications and no keywords for inexistent term" do
@@ -156,68 +227,98 @@ defmodule RichardBurton.Publication.IndexTest do
   end
 
   describe "search/1 with a single-word term not present in the dataset" do
-    test "prioritizes words that start with the term", context do
-      %{publications: publications} = context
-
+    test "prioritizes words that start with the term" do
       term = "veri"
 
-      assert {:ok, result, ["verissimo"]} = Publication.Index.search(term)
+      assert {:ok, publications, ["verissimo"]} = Publication.Index.search(term)
 
-      assert length(result) > 0
-      assert sort(filter(publications, :original_authors, "Verissimo")) == sort(result)
+      assert_search_results(
+        publications,
+        expect: [
+          original_authors: ["Erico Verissimo", "Luis Fernando Verissimo"]
+        ]
+      )
     end
 
-    test "does a fuzzy search when there's no words start with the term", context do
-      %{publications: publications} = context
-
+    test "does a fuzzy search when there's no words start with the term" do
       term = "vera"
 
-      assert {:ok, result, ["verbo"]} = Publication.Index.search(term)
+      assert {:ok, publications, ["verbo"]} = Publication.Index.search(term)
 
-      assert length(result) > 0
-      assert sort(filter(publications, :original_title, "verbo")) == sort(result)
+      assert_search_results(
+        publications,
+        expect: [
+          original_title: ["Amar verbo intransitivo"]
+        ]
+      )
+    end
+  end
+
+  describe "search/1 with a single-word term that matches several fields" do
+    test "does a prefix search" do
+      term = "Mari"
+
+      assert {:ok, publications, ["marie", "marias"]} = Publication.Index.search(term)
+
+      assert_search_results(
+        publications,
+        expect: [
+          title: "The Three Marias",
+          authors: "Marie Barrett",
+          original_title: "As três Marias"
+        ]
+      )
+    end
+
+    test "does a fuzzy search" do
+      term = "Maries"
+
+      assert {:ok, publications, ["marie", "marias"]} = Publication.Index.search(term)
+
+      assert_search_results(
+        publications,
+        expect: [
+          title: "The Three Marias",
+          authors: "Marie Barrett",
+          original_title: "As três Marias"
+        ]
+      )
     end
   end
 
   describe "search/1 with a composite term present in the dataset" do
-    test "retrieves publications matching any of the words", context do
-      %{publications: publications} = context
-
+    test "retrieves publications matching any of the words" do
       term = "Marie Barrett"
       split_term = String.split(term, " ")
       keywords = Enum.map(split_term, &String.downcase/1)
 
-      expected =
-        split_term
-        |> Enum.reduce([], fn t, acc -> filter(publications, :authors, t) ++ acc end)
-        |> Enum.uniq()
-        |> sort
+      assert {:ok, publications, ^keywords} = Publication.Index.search(term)
 
-      assert {:ok, result, ^keywords} = Publication.Index.search(term)
-
-      assert length(result) > 0
-      assert expected == sort(result)
+      assert_search_results(
+        publications,
+        expect: [
+          authors: ["Linton Lemos Barrett", "Marie Barrett"]
+        ]
+      )
     end
   end
 
   describe "search/2 with a single-word term present in the dataset" do
-    test "retrieves a subset of all publications attributes, by original author", context do
-      %{publications: publications} = context
-
+    test "retrieves a subset of all publications attributes, by original author" do
       term = "Verissimo"
       keyword = String.downcase(term)
-      attributes = [:title, :original_title, :authors]
+      attributes = [:title, :original_title, :original_authors, :authors]
+      expected_original_authors = ["Erico Verissimo", "Luis Fernando Verissimo"]
 
-      assert {:ok, result, [^keyword]} = Publication.Index.search(term, select: attributes)
+      assert {:ok, publications, [^keyword]} = Publication.Index.search(term, select: attributes)
 
-      expected =
-        publications
-        |> filter(:original_authors, term)
-        |> select_attrs(attributes)
-        |> sort
-
-      assert length(result) > 0
-      assert expected == sort(result)
+      assert_search_results(
+        publications,
+        expect: [
+          original_authors: expected_original_authors
+        ],
+        fields: attributes
+      )
     end
   end
 end
