@@ -7,7 +7,7 @@ import { RecoilRoot } from "recoil";
 import Notifications from "components/Notifications";
 import ClearSelection from "listeners/ClearSelection";
 import { Publication } from "modules/publications";
-import { debounce } from "lodash";
+import { debounce, isString } from "lodash";
 
 const http = axiosCaseConverter(
   axios.create({
@@ -28,7 +28,7 @@ function request<T = void>(
           if (error.response.status === 409) {
             reject("conflict");
           } else {
-            reject(error.response?.data);
+            reject((error.response?.data as any).errors?.detail);
           }
         } else {
           reject(error.message);

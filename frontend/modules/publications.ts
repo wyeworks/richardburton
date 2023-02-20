@@ -179,9 +179,18 @@ const DEFAULT_ATTRIBUTE_VISIBILITY: Record<PublicationKey, boolean> = {
   originalAuthors: false,
 };
 
-const VISIBLE_ATTRIBUTES = atomFamily<boolean, PublicationKey>({
-  key: "visible-attributes",
+const IS_ATTRIBUTE_VISIBLE = atomFamily<boolean, PublicationKey>({
+  key: "is-attributes-visible",
   default: (key) => DEFAULT_ATTRIBUTE_VISIBILITY[key],
+});
+
+const VISIBLE_ATTRIBUTES = selector<PublicationKey[]>({
+  key: "visible-attributes",
+  get({ get }) {
+    return Publication.ATTRIBUTES.filter((key) =>
+      get(IS_ATTRIBUTE_VISIBLE(key))
+    );
+  },
 });
 
 const KEYWORDS = atom<string[] | undefined>({
@@ -267,6 +276,7 @@ interface PublicationModule {
     };
 
     ATTRIBUTES: {
+      useVisible(): PublicationKey[];
       useSetVisible(): (keys: PublicationKey[], isVisible?: boolean) => void;
       useIsVisible(key: PublicationKey): boolean;
       useResetAll(): Resetter;
@@ -493,14 +503,18 @@ const Publication: PublicationModule = {
     }),
 
     ATTRIBUTES: {
+      useVisible() {
+        return useRecoilValue(VISIBLE_ATTRIBUTES);
+      },
+
       useIsVisible(key) {
-        return useRecoilValue(VISIBLE_ATTRIBUTES(key));
+        return useRecoilValue(IS_ATTRIBUTE_VISIBLE(key));
       },
       useSetVisible() {
         return useRecoilCallback(
           ({ set }) =>
             (keys, isVisible = true) => {
-              keys.map((key) => set(VISIBLE_ATTRIBUTES(key), isVisible));
+              keys.map((key) => set(IS_ATTRIBUTE_VISIBLE(key), isVisible));
             },
           []
         );
@@ -510,7 +524,7 @@ const Publication: PublicationModule = {
           ({ reset }) =>
             () => {
               Publication.ATTRIBUTES.forEach((key) => {
-                reset(VISIBLE_ATTRIBUTES(key));
+                reset(IS_ATTRIBUTE_VISIBLE(key));
               });
             },
           []

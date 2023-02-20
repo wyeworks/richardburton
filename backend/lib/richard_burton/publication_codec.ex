@@ -17,23 +17,22 @@ defmodule RichardBurton.Publication.Codec do
     "original_authors" => ""
   }
 
+  @csv_headers [
+    "original_authors",
+    "year",
+    "country",
+    "original_title",
+    "title",
+    "authors",
+    "publisher"
+  ]
+
   def from_csv(path) do
     try do
       publications =
         path
         |> File.stream!()
-        |> CSV.decode!(
-          separator: ?;,
-          headers: [
-            "original_authors",
-            "year",
-            "country",
-            "original_title",
-            "title",
-            "authors",
-            "publisher"
-          ]
-        )
+        |> CSV.decode!(separator: ?;, headers: @csv_headers)
         |> Enum.map(&Util.deep_merge_maps(@empty_flat_attrs, &1))
         |> nest
 
@@ -50,6 +49,13 @@ defmodule RichardBurton.Publication.Codec do
     end
   end
 
+  def to_csv(flat_publications) do
+    flat_publications
+    |> CSV.encode(separator: ?;, delimiter: "\n", headers: true)
+    |> Enum.to_list()
+  end
+
+  @spec nest(maybe_improper_list | map) :: list | %{optional(<<_::32, _::_*8>>) => any}
   def nest(%{
         "title" => title,
         "year" => year,
