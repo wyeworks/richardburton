@@ -12,5 +12,7 @@ jobs:
         with:
           version-type: strict
           version-file: backend/.tool-versions
+      - run: touch config/dev.secrets.exs
+      - run: echo -e "import Config\nconfig :richard_burton, []" >> config/dev.secrets.exs
       - run: mix deps.get
       - run: mix credo
