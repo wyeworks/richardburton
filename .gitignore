@@ -1,2 +1,5 @@
 .vscode
 .elixir_ls
+
+.env*.local
+.env

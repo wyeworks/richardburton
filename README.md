@@ -2,6 +2,8 @@
 
 This app is a repository that mantains data of English translations of brazilian literature books.
 
+Access backend app docs [here](https://wyeworks.github.io/richardburton)
+
 # Domain
 
 `Original book` represent a Brazilian literature book
