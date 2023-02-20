@@ -268,6 +268,7 @@ defmodule RichardBurton.Publication.IndexTest do
         Publication.all()
         |> Publication.preload()
         |> Publication.Codec.flatten()
+        |> Util.stringify_keys()
         |> select_attrs(Enum.map(attributes, &Atom.to_string/1))
 
       assert Enum.sort(Util.stringify_keys(actual)) == Enum.sort(expected)
