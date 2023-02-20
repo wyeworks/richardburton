@@ -39,19 +39,17 @@ defmodule RichardBurton.Publication.IndexTest do
 
              to meet one of the following conditions:
 
-             #{Enum.map_join(expected_values, "", fn {key, value} -> """
-               - #{key} #{case value do
-                 [v] -> """
-                   contains #{inspect(v, pretty: true)}
-                   """
-                 v when is_list(v) -> """
-                   contains one of #{inspect(v, pretty: true)}
-                   """
-                 v -> """
-                   contains #{inspect(v, pretty: true)}
-                   """
-               end}
-               """ end)}
+             #{Enum.map_join(expected_values, "", fn
+               {key, [v]} -> """
+                 #{key} contains #{inspect(v, pretty: true)}
+                 """
+               {key, v} when is_list(v) -> """
+                 #{key} contains one of #{inspect(v, pretty: true)}
+                 """
+               {key, v} -> """
+                 #{key} contains #{inspect(v, pretty: true)}
+                 """
+             end)}
              """
     end)
   end
