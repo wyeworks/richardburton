@@ -5,8 +5,10 @@ defmodule RichardBurton.OriginalBookTest do
 
   use RichardBurton.DataCase
 
+  alias RichardBurton.Author
   alias RichardBurton.Util
   alias RichardBurton.OriginalBook
+  alias RichardBurton.TranslatedBook
   alias RichardBurton.Validation
 
   @valid_attrs %{
@@ -35,6 +37,17 @@ defmodule RichardBurton.OriginalBookTest do
 
   defp insert(attrs) do
     attrs |> changeset() |> Repo.insert()
+  end
+
+  defp insert!(attrs) do
+    attrs |> changeset() |> Repo.insert!()
+  end
+
+  defp linked(changeset) do
+    changeset
+    |> get_change(:original_book)
+    |> apply_changes
+    |> OriginalBook.preload()
   end
 
   describe "changeset/2" do
@@ -73,6 +86,12 @@ defmodule RichardBurton.OriginalBookTest do
       refute changeset.valid?
       assert :conflict == Validation.get_errors(changeset)
     end
+
+    test "has no side effects" do
+      assert Enum.empty?(Author.all())
+      changeset(@valid_attrs)
+      assert Enum.empty?(Author.all())
+    end
   end
 
   describe "maybe_insert/1" do
@@ -108,6 +127,54 @@ defmodule RichardBurton.OriginalBookTest do
       {:ok, original_book} = insert(@valid_attrs)
 
       assert @valid_attrs_atom_keys == OriginalBook.to_map(original_book)
+    end
+  end
+
+  describe "link/1" do
+    @translated_book_attrs %{
+      "authors" => [
+        %{"name" => "Richard Burton"},
+        %{"name" => "Isabel Burton"}
+      ],
+      "original_book" => %{
+        "title" => "Dom Casmurro",
+        "authors" => [%{"name" => "Machado de Assis"}]
+      }
+    }
+
+    test "links existing original book to TranslatedBook changeset" do
+      original_book = insert!(@translated_book_attrs["original_book"])
+
+      changeset =
+        %TranslatedBook{}
+        |> TranslatedBook.changeset(@translated_book_attrs)
+        |> OriginalBook.link()
+
+      assert changeset.valid?
+
+      assert original_book == linked(changeset)
+    end
+
+    test "links non-existing authors to TranslatedBook changeset, inserting them" do
+      changeset =
+        %TranslatedBook{}
+        |> TranslatedBook.changeset(@translated_book_attrs)
+        |> OriginalBook.link()
+
+      assert changeset.valid?
+
+      assert OriginalBook.all() == [linked(changeset)]
+    end
+
+    test "has no side effects when TranslatedBook changeset is invalid" do
+      changeset =
+        %TranslatedBook{}
+        |> TranslatedBook.changeset(%{})
+        |> OriginalBook.link()
+
+      refute changeset.valid?
+
+      assert Enum.empty?(OriginalBook.all())
     end
   end
 end

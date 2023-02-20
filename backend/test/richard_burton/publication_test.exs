@@ -6,6 +6,7 @@ defmodule RichardBurton.PublicationTest do
   use RichardBurton.DataCase
 
   alias RichardBurton.Publication
+  alias RichardBurton.TranslatedBook
   alias RichardBurton.Util
   alias RichardBurton.Validation
 
@@ -145,6 +146,12 @@ defmodule RichardBurton.PublicationTest do
       refute changeset.valid?
       assert :conflict == Validation.get_errors(changeset)
     end
+
+    test "has no side effects" do
+      assert Enum.empty?(TranslatedBook.all())
+      changeset(@valid_attrs)
+      assert Enum.empty?(TranslatedBook.all())
+    end
   end
 
   describe "insert/1" do
@@ -192,6 +199,14 @@ defmodule RichardBurton.PublicationTest do
 
     test "when a single field is invalid, returns the corresponding error map" do
       assert {:error, %{year: :integer}} = validate(Map.put(@valid_attrs, "year", "A"))
+    end
+
+    test "has no side effects" do
+      assert Enum.empty?(TranslatedBook.all())
+
+      validate(@valid_attrs)
+
+      assert Enum.empty?(TranslatedBook.all())
     end
   end
 
