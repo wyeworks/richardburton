@@ -1,4 +1,5 @@
 import classNames from "classnames";
+import { times } from "lodash";
 import {
   Publication,
   PublicationId,
@@ -15,7 +16,7 @@ const ColumnHeader: FC<{ colId: ColId }> = ({ colId }) => {
   const isVisible = Publication.STORE.ATTRIBUTES.useIsVisible(colId);
 
   return isVisible ? (
-    <th className="px-2 py-4">{Publication.ATTRIBUTE_LABELS[colId]}</th>
+    <th className="px-2 py-4 ">{Publication.ATTRIBUTE_LABELS[colId]}</th>
   ) : null;
 };
 
@@ -53,7 +54,7 @@ const Column: FC<{
 
   return visible ? (
     <td
-      className="max-w-xs px-2 py-1 justify group-hover:bg-indigo-100 error:group-hover:bg-red-100 selected:bg-amber-100"
+      className="max-w-sm px-2 py-1 justify group-hover:bg-indigo-100 error:group-hover:bg-red-100 selected:bg-amber-100"
       data-selected={selected}
       data-selectable={selectable}
       data-error={invalid}
@@ -139,8 +140,8 @@ const PublicationIndex: FC<Props> = ({
 }) => {
   const ids = Publication.STORE.useVisibleIds();
 
-  return (
-    <table className={classNames(className, "overflow-auto h-fit")}>
+  return ids && (ids.length > 0 || ExtraRow) ? (
+    <table className={classNames(className, "overflow-auto h-fit table-fixed")}>
       <thead className="sticky top-0 z-10 bg-gray-100">
         <tr>
           {ExtendedSignalColumn && <th />}
@@ -163,6 +164,29 @@ const PublicationIndex: FC<Props> = ({
         {ExtraRow && <ExtraRow />}
       </tbody>
     </table>
+  ) : ids ? (
+    <div className="flex items-center justify-center w-full h-full">
+      <div className="flex flex-col items-center justify-center pb-32 group">
+        <div className="h-56 m-8 border-2 border-gray-300 rounded-2xl aspect-square group-hover:border-indigo-200" />
+        <span className="text-xl text-gray-300 group-hover:text-indigo-200">
+          No results found, try another query.
+        </span>
+      </div>
+    </div>
+  ) : (
+    <ul
+      className="w-full space-y-2 animate-pulse"
+      aria-label="Loading"
+      role="presentation"
+    >
+      {times(12, (index) => (
+        <li
+          key={index}
+          className="w-full h-8 bg-gray-200 rounded hover:bg-indigo-100"
+          style={{ opacity: index > 7 ? 1 - (2 * (index - 6)) / 12 : 1 }}
+        />
+      ))}
+    </ul>
   );
 };
 
