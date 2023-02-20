@@ -1,0 +1,16 @@
+name: Run backend app formatter
+on: push
+jobs:
+  MixFormatter:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: "backend"
+    steps:
+      - uses: actions/checkout@v3
+      - uses: erlef/setup-beam@v1
+        with:
+          version-type: strict
+          version-file: backend/.tool-versions
+      - run: mix deps.get
+      - run: mix format --check-formatted
