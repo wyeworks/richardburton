@@ -10,12 +10,8 @@ defmodule RichardBurton.Publication.IndexTest do
 
   setup(_context) do
     {:ok, publications} = Publication.Codec.from_csv("test/fixtures/data_index.csv")
-    Enum.map(publications, &insert!/1)
+    Enum.map(publications, &Publication.insert/1)
     []
-  end
-
-  defp insert!(attrs) do
-    %Publication{} |> Publication.changeset(attrs) |> Repo.insert!()
   end
 
   defp assert_search_results(publications, expected_values)
