@@ -44,7 +44,8 @@ defmodule RichardBurton.MixProject do
       {:plug_cowboy, "~> 2.5"},
       {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
       {:csv, "~> 3.0.5"},
-      {:cors_plug, "~> 3.0"}
+      {:cors_plug, "~> 3.0"},
+      {:ex_doc, "~> 0.27", only: :dev, runtime: false}
     ]
   end
 
