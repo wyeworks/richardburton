@@ -1,4 +1,4 @@
-name: Run backend server's tests
+name: Run backend app tests
 on: push
 jobs:
   ExUnit:
