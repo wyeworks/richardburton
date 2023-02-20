@@ -1,8 +1,7 @@
-name: Run frontend app compiler
+name: Run frontend app linter
 on: push
 jobs:
-  tsc:
-    name: tsc
+  ESLint:
     runs-on: ubuntu-latest
     defaults:
       run:
