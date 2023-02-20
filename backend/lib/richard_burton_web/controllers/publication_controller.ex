@@ -13,6 +13,43 @@ defmodule RichardBurtonWeb.PublicationController do
     json(conn, %{entries: results})
   end
 
+  def export(conn, %{"search" => query, "select" => attributes}) do
+    attributes = Enum.map(attributes, &String.to_existing_atom/1)
+    {:ok, results, _} = Publication.Index.search(query, select: attributes)
+    filename = "publications-#{query}-#{Enum.join(attributes, "-")}.csv"
+    send_exported_csv(conn, results, filename)
+  end
+
+  def export(conn, %{"search" => query}) do
+    {:ok, results, _} = Publication.Index.search(query, select: [])
+    filename = "publications-#{query}.csv"
+    send_exported_csv(conn, results, filename)
+  end
+
+  def export(conn, %{"select" => attributes}) do
+    attributes = Enum.map(attributes, &String.to_existing_atom/1)
+    {:ok, results} = Publication.Index.all(select: attributes)
+    filename = "publications-#{Enum.join(attributes, "-")}.csv"
+    send_exported_csv(conn, results, filename)
+  end
+
+  def export(conn, _params) do
+    {:ok, results} = Publication.Index.all(select: [])
+    filename = "publications.csv"
+    send_exported_csv(conn, results, filename)
+  end
+
+  defp send_exported_csv(conn, data, filename) do
+    content = Publication.Codec.to_csv(data)
+
+    send_download(
+      conn,
+      {:binary, content},
+      filename: filename,
+      disposition: :attachment
+    )
+  end
+
   def create_all(conn, %{"_json" => entries}) do
     {status, response_body} =
       entries

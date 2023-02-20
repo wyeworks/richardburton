@@ -12,14 +12,29 @@ defmodule RichardBurton.Publication.Index do
   alias RichardBurton.Util
 
   def all do
-    {:ok, FlatPublication |> Repo.all() |> FlatPublication.to_map()}
+    all(select: [])
+  end
+
+  def all(select: attributes) when is_list(attributes) do
+    results =
+      from(fp in FlatPublication)
+      |> maybe_select(attributes)
+      |> Repo.all()
+      |> FlatPublication.to_map()
+
+    {:ok, results}
+  end
+
+  defp maybe_select(query, []) do
+    query
+  end
+
+  defp maybe_select(query, attributes) do
+    select(query, [fp], map(fp, ^attributes))
   end
 
   def search_keywords(term, :prefix) do
-    from(
-      w in SearchKeyword,
-      where: ilike(w.word, ^"#{term}%")
-    )
+    from(w in SearchKeyword, where: ilike(w.word, ^"#{term}%"))
     |> Repo.all()
     |> Enum.map(&Map.get(&1, :word))
   end
@@ -40,7 +55,11 @@ defmodule RichardBurton.Publication.Index do
     end
   end
 
-  def search(term) when is_binary(term) do
+  def search(term) do
+    search(term, select: [])
+  end
+
+  def search(term, select: attributes) when is_binary(term) do
     case search_keywords(term) do
       [] ->
         {:ok, [], []}
@@ -60,6 +79,7 @@ defmodule RichardBurton.Publication.Index do
                  ^joint_keywords
                )}
           )
+          |> maybe_select(attributes)
 
         results =
           query

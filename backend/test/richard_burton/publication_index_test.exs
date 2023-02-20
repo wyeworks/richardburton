@@ -14,7 +14,29 @@ defmodule RichardBurton.Publication.IndexTest do
     []
   end
 
-  defp assert_search_results(publications, expected_values)
+  defp assert_publication_fields(publication, expected_fields) do
+    Enum.each(
+      Map.keys(publication),
+      fn key ->
+        assert key in expected_fields,
+               """
+               Expected publication
+
+               #{inspect(publication, pretty: true)}
+
+               to only contain fields #{inspect(expected_fields)}
+
+               field #{key} found.
+               """
+      end
+    )
+  end
+
+  defp assert_search_results(publications, expect: expected_values) do
+    assert_search_results(publications, expect: expected_values, fields: [])
+  end
+
+  defp assert_search_results(publications, expect: expected_values, fields: expected_fields)
        when is_list(publications) and is_list(expected_values) do
     unless Keyword.keyword?(expected_values) do
       throw(
@@ -23,6 +45,10 @@ defmodule RichardBurton.Publication.IndexTest do
     end
 
     refute Enum.empty?(publications), "Expected publications not to be empty."
+
+    unless Enum.empty?(expected_fields) do
+      Enum.each(publications, &assert_publication_fields(&1, expected_fields))
+    end
 
     Enum.each(publications, fn p ->
       assert Enum.any?(expected_values, fn {key, value} ->
@@ -50,6 +76,14 @@ defmodule RichardBurton.Publication.IndexTest do
     end)
   end
 
+  defp select_attrs(publication, attributes) when is_map(publication) do
+    Enum.filter(publication, fn {k, _} -> k in attributes end) |> Map.new()
+  end
+
+  defp select_attrs(publications, attributes) when is_list(publications) do
+    Enum.map(publications, &select_attrs(&1, attributes))
+  end
+
   describe "all/0" do
     test "returns all publications flattened" do
       {:ok, actual} = Publication.Index.all()
@@ -58,6 +92,22 @@ defmodule RichardBurton.Publication.IndexTest do
         Publication.all()
         |> Publication.preload()
         |> Publication.Codec.flatten()
+
+      assert Enum.sort(Util.stringify_keys(actual)) == Enum.sort(expected)
+    end
+  end
+
+  describe "all/1" do
+    test "retrieves a subset of all publications attributes" do
+      attributes = [:title, :original_title, :authors]
+
+      {:ok, actual} = Publication.Index.all(select: attributes)
+
+      expected =
+        Publication.all()
+        |> Publication.preload()
+        |> Publication.Codec.flatten()
+        |> select_attrs(Enum.map(attributes, &Atom.to_string/1))
 
       assert Enum.sort(Util.stringify_keys(actual)) == Enum.sort(expected)
     end
@@ -73,7 +123,9 @@ defmodule RichardBurton.Publication.IndexTest do
 
       assert_search_results(
         publications,
-        original_authors: expected_original_authors
+        expect: [
+          original_authors: expected_original_authors
+        ]
       )
     end
 
@@ -86,7 +138,9 @@ defmodule RichardBurton.Publication.IndexTest do
 
       assert_search_results(
         publications,
-        title: expected_titles
+        expect: [
+          title: expected_titles
+        ]
       )
     end
 
@@ -99,7 +153,9 @@ defmodule RichardBurton.Publication.IndexTest do
 
       assert_search_results(
         publications,
-        original_title: expected_original_titles
+        expect: [
+          original_title: expected_original_titles
+        ]
       )
     end
 
@@ -112,7 +168,9 @@ defmodule RichardBurton.Publication.IndexTest do
 
       assert_search_results(
         publications,
-        country: expected_countries
+        expect: [
+          country: expected_countries
+        ]
       )
     end
 
@@ -125,7 +183,9 @@ defmodule RichardBurton.Publication.IndexTest do
 
       assert_search_results(
         publications,
-        authors: expected_authors
+        expect: [
+          authors: expected_authors
+        ]
       )
     end
 
@@ -138,7 +198,9 @@ defmodule RichardBurton.Publication.IndexTest do
 
       assert_search_results(
         publications,
-        publisher: expected_publishers
+        expect: [
+          publisher: expected_publishers
+        ]
       )
     end
 
@@ -151,7 +213,9 @@ defmodule RichardBurton.Publication.IndexTest do
 
       assert_search_results(
         publications,
-        year: expected_years
+        expect: [
+          year: expected_years
+        ]
       )
     end
 
@@ -170,7 +234,9 @@ defmodule RichardBurton.Publication.IndexTest do
 
       assert_search_results(
         publications,
-        original_authors: ["Erico Verissimo", "Luis Fernando Verissimo"]
+        expect: [
+          original_authors: ["Erico Verissimo", "Luis Fernando Verissimo"]
+        ]
       )
     end
 
@@ -181,7 +247,9 @@ defmodule RichardBurton.Publication.IndexTest do
 
       assert_search_results(
         publications,
-        original_title: ["Amar verbo intransitivo"]
+        expect: [
+          original_title: ["Amar verbo intransitivo"]
+        ]
       )
     end
   end
@@ -194,9 +262,11 @@ defmodule RichardBurton.Publication.IndexTest do
 
       assert_search_results(
         publications,
-        title: "The Three Marias",
-        authors: "Marie Barrett",
-        original_title: "As três Marias"
+        expect: [
+          title: "The Three Marias",
+          authors: "Marie Barrett",
+          original_title: "As três Marias"
+        ]
       )
     end
 
@@ -207,9 +277,11 @@ defmodule RichardBurton.Publication.IndexTest do
 
       assert_search_results(
         publications,
-        title: "The Three Marias",
-        authors: "Marie Barrett",
-        original_title: "As três Marias"
+        expect: [
+          title: "The Three Marias",
+          authors: "Marie Barrett",
+          original_title: "As três Marias"
+        ]
       )
     end
   end
@@ -224,7 +296,28 @@ defmodule RichardBurton.Publication.IndexTest do
 
       assert_search_results(
         publications,
-        authors: ["Linton Lemos Barrett", "Marie Barrett"]
+        expect: [
+          authors: ["Linton Lemos Barrett", "Marie Barrett"]
+        ]
+      )
+    end
+  end
+
+  describe "search/2 with a single-word term present in the dataset" do
+    test "retrieves a subset of all publications attributes, by original author" do
+      term = "Verissimo"
+      keyword = String.downcase(term)
+      attributes = [:title, :original_title, :original_authors, :authors]
+      expected_original_authors = ["Erico Verissimo", "Luis Fernando Verissimo"]
+
+      assert {:ok, publications, [^keyword]} = Publication.Index.search(term, select: attributes)
+
+      assert_search_results(
+        publications,
+        expect: [
+          original_authors: expected_original_authors
+        ],
+        fields: attributes
       )
     end
   end

@@ -27,7 +27,7 @@ const Home: NextPage = () => {
     <Layout
       title="Richard Burton"
       header={<Header />}
-      sidebar={<PublicationToolbar filter nav />}
+      sidebar={<PublicationToolbar filter nav download />}
       content={<PublicationIndex />}
       subheader={<PublicationSearch />}
     />
