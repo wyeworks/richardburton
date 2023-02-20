@@ -123,7 +123,7 @@ defmodule RichardBurton.Publication.Codec do
           }
         }
       ) do
-    Codec.flatten(p, &(&1 |> rename_key |> flatten_value |> stringify_keys))
+    Codec.flatten(p, &(&1 |> rename_key |> flatten_value |> Util.stringify_keys()))
   end
 
   def flatten(%{publication: publication, errors: nil}) do
@@ -158,7 +158,7 @@ defmodule RichardBurton.Publication.Codec do
   end
 
   defp flatten_errors(errors) do
-    Codec.flatten(errors, &(&1 |> rename_key |> flatten_error |> stringify_keys))
+    Codec.flatten(errors, &(&1 |> rename_key |> flatten_error |> Util.stringify_keys()))
   end
 
   defp rename_key({:translated_book_authors, v}), do: {:authors, v}
@@ -198,7 +198,4 @@ defmodule RichardBurton.Publication.Codec do
 
   defp flatten_error({key, error}),
     do: {key, error}
-
-  defp stringify_keys({key, value}) when is_atom(key), do: {Atom.to_string(key), value}
-  defp stringify_keys({key, value}) when is_binary(key), do: {key, value}
 end
