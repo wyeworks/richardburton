@@ -6,14 +6,14 @@ defmodule RichardBurtonWeb.UserControllerTest do
   import Routes, only: [user_path: 2]
 
   @valid_attrs %{"email" => "example@gmail.com"}
-  @valid_return %{"email" => "example@gmail.com", "role" => "reader"}
+  @successful_return %{"email" => "example@gmail.com", "role" => "reader"}
 
   describe "POST /users" do
     test "when providing valid params, returns 201 created and the inserted user",
          %{conn: conn} do
       expect_auth_verify()
       conn = post(conn, user_path(conn, :create), @valid_attrs)
-      assert @valid_return == json_response(conn, 201)
+      assert @successful_return == json_response(conn, 201)
     end
 
     test "when providing invalid params, returs 400 bad request",
@@ -28,10 +28,10 @@ defmodule RichardBurtonWeb.UserControllerTest do
       expect_auth_verify(3)
 
       conn = post(conn, user_path(conn, :create), @valid_attrs)
-      assert @valid_return == json_response(conn, 201)
+      assert @successful_return == json_response(conn, 201)
 
       conn = post(conn, user_path(conn, :create), @valid_attrs)
-      assert @valid_return == json_response(conn, 409)
+      assert @successful_return == json_response(conn, 409)
 
       conn =
         post(conn, user_path(conn, :create), %{
@@ -39,7 +39,7 @@ defmodule RichardBurtonWeb.UserControllerTest do
           "subject_id" => "1245"
         })
 
-      assert @valid_return == json_response(conn, 409)
+      assert @successful_return == json_response(conn, 409)
     end
   end
 end
