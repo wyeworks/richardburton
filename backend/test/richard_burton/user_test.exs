@@ -45,7 +45,7 @@ defmodule RichardBurton.UserTest do
       refute change_valid(%{"subject_id" => nil}).valid?
     end
 
-    test "when an author with the provided attributes exist, is invalid" do
+    test "when a user with the provided attributes exist, is invalid" do
       {:ok, _} = insert(@valid_attrs)
       {:error, changeset} = insert(@valid_attrs)
 
