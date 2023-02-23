@@ -80,7 +80,7 @@ KEY2=value2
 
 ## Backend
 
-Define the following environmentt variables on a `dev.secrets.exs` file inside the `backend` folder.environment. Format is as keyword arguments to a `config :richard_burton` function.
+Define the following environment variables on a `dev.secrets.exs` file inside the `backend/config` folder. Format is as keyword arguments to a `config :richard_burton` function.
 
 ```elixir
 config :richard_burton, key1: value1, key2: value2
