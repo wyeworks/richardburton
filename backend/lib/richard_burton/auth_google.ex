@@ -23,7 +23,7 @@ defmodule RichardBurton.Auth.Google do
         )
 
       _ ->
-        throw("Auth configuration is not properly set.s")
+        throw("Auth configuration is not properly set")
     end
   end
 
