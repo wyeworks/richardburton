@@ -54,7 +54,7 @@ const SignIn: NextPage = () => {
   return (
     <Layout
       title="Error"
-      header={<Header compact />}
+      header={<Header />}
       content={
         description ? (
           <div className="flex items-center justify-center w-full">
