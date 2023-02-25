@@ -1,13 +1,8 @@
 import { ChangeEvent, FC, useCallback, useEffect, useState } from "react";
 import Button from "./Button";
-import Toggle from "./Toggle";
 import UploadIcon from "assets/upload.svg";
 import DownloadIcon from "assets/download.svg";
-import {
-  Publication,
-  PublicationKey,
-  ValidationResult,
-} from "modules/publications";
+import { Publication, ValidationResult } from "modules/publications";
 import {
   getSelection,
   useClearSelection,
@@ -21,14 +16,8 @@ import { useNotify } from "./Notifications";
 import { useRouter } from "next/router";
 import { isString } from "lodash";
 import { useSession } from "next-auth/react";
-
-const ToolbarHeading: FC<{ label: string }> = ({ label }) => (
-  <h3 className="flex items-center space-x-2 text-sm">
-    <span className="border-b grow h-fit" />
-    <span className="text-gray-500">{label}</span>
-    <span className="border-b grow h-fit" />
-  </h3>
-);
+import ToolbarHeading from "./ToolbarHeading";
+import PublicationFilter from "./PublicationFilter";
 
 const PublicationEdit: FC = () => {
   const {
@@ -114,36 +103,6 @@ const PublicationEdit: FC = () => {
           </Tooltip>
         </footer>
       )}
-    </section>
-  );
-};
-
-const AttributeToggle: FC<{ attribute: PublicationKey }> = ({ attribute }) => {
-  const { useIsVisible, useSetVisible } = Publication.STORE.ATTRIBUTES;
-
-  const isActive = useIsVisible(attribute);
-  const setVisible = useSetVisible();
-
-  return (
-    <Toggle
-      label={Publication.ATTRIBUTE_LABELS[attribute]}
-      checked={isActive}
-      onClick={() => setVisible([attribute], !isActive)}
-    />
-  );
-};
-
-const PublicationFilter: FC = () => {
-  const resetVisibleAttributes = Publication.STORE.ATTRIBUTES.useResetAll();
-
-  useEffect(() => resetVisibleAttributes(), [resetVisibleAttributes]);
-
-  return (
-    <section className="space-y-2">
-      <ToolbarHeading label="Filter" />
-      {Publication.ATTRIBUTES.map((key) => (
-        <AttributeToggle key={key} attribute={key} />
-      ))}
     </section>
   );
 };
@@ -325,11 +284,13 @@ const PublicationToolbar: FC<Props> = ({
       className={classNames("flex flex-col space-y-2", edit && "min-h-toolbar")}
     >
       {nav && isAuthenticated && <PublicationNav />}
-      <div className="flex flex-col p-2 space-y-2 rounded shadow grow">
-        {filter && <PublicationFilter />}
-        {edit && <PublicationEdit />}
-        {edit && <PublicationSubmit />}
-      </div>
+      {(filter || edit) && (
+        <div className="flex flex-col p-2 space-y-2 rounded shadow grow">
+          {filter && <PublicationFilter />}
+          {edit && <PublicationEdit />}
+          {edit && <PublicationSubmit />}
+        </div>
+      )}
       {upload && <PublicationUpload />}
       {download && isAuthenticated && <PublicationDownload />}
     </section>
