@@ -286,7 +286,6 @@ const PublicationToolbar: FC<Props> = ({
       {nav && isAuthenticated && <PublicationNav />}
       {(filter || edit) && (
         <div className="flex flex-col p-2 space-y-2 rounded shadow grow">
-          {filter && <PublicationFilter />}
           {edit && <PublicationEdit />}
           {edit && <PublicationSubmit />}
         </div>
