@@ -331,7 +331,7 @@ const PublicationToolbar: FC<Props> = ({
         {edit && <PublicationSubmit />}
       </div>
       {upload && <PublicationUpload />}
-      {download && <PublicationDownload />}
+      {download && isAuthenticated && <PublicationDownload />}
     </section>
   );
 };
