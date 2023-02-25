@@ -1,7 +1,6 @@
 import { Publication, PublicationKey } from "modules/publications";
 import { FC, useEffect } from "react";
 import Toggle from "./Toggle";
-import ToolbarHeading from "./ToolbarHeading";
 
 const AttributeToggle: FC<{ attribute: PublicationKey }> = ({ attribute }) => {
   const { useIsVisible, useSetVisible } = Publication.STORE.ATTRIBUTES;
@@ -24,8 +23,7 @@ const PublicationFilter: FC = () => {
   useEffect(() => resetVisibleAttributes(), [resetVisibleAttributes]);
 
   return (
-    <section className="space-y-2">
-      <ToolbarHeading label="Filter" />
+    <section className="flex space-x-2">
       {Publication.ATTRIBUTES.map((key) => (
         <AttributeToggle key={key} attribute={key} />
       ))}

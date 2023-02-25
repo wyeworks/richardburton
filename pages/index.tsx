@@ -8,6 +8,7 @@ import PublicationIndex from "components/PublicationIndex";
 import PublicationSearch from "components/PublicationSearch";
 import { useRouter } from "next/router";
 import { isString } from "lodash";
+import PublicationFilter from "components/PublicationFilter";
 
 const Home: NextPage = () => {
   const index = Publication.REMOTE.useIndex();
@@ -27,9 +28,14 @@ const Home: NextPage = () => {
     <Layout
       title="Richard Burton"
       header={<Header />}
-      sidebar={<PublicationToolbar filter nav download />}
+      //sidebar={<PublicationToolbar filter nav download />}
       content={<PublicationIndex />}
-      subheader={<PublicationSearch />}
+      subheader={
+        <div className="space-y-2">
+          <PublicationFilter />
+          <PublicationSearch />
+        </div>
+      }
     />
   );
 };
