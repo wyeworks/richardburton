@@ -22,7 +22,7 @@ const NewPublications: NextPage = () => {
     <Layout
       title="Richard Burton"
       header={
-        <Header compact>
+        <Header>
           <h2 className="my-6 text-4xl text-center">
             <div>
               {publicationCount > 0
