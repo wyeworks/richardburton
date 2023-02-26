@@ -12,7 +12,7 @@ import PublicationDownload from "components/PublicationDownload";
 import SignOutButton from "components/SignOutButton";
 import SignInButton from "components/SignInButton";
 import { User } from "modules/users";
-import ToolbarHeading from "components/ToolbarHeading";
+import StrikeHeading from "components/StrikeHeading";
 import Button from "components/Button";
 import AddIcon from "assets/add.svg";
 import Link from "next/link";
@@ -38,7 +38,7 @@ const Home: NextPage = () => {
       content={<PublicationIndex />}
       subheader={
         <div className="space-y-2">
-          <ToolbarHeading label="Browse data about Brazilian literary books translated to English" />
+          <StrikeHeading label="Browse data about Brazilian literary books translated to English" />
           <PublicationFilter />
           <PublicationSearch />
         </div>
