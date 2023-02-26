@@ -11,13 +11,12 @@ import PublicationSubmit from "components/PublicationSubmit";
 import ResetDeleted from "components/ResetDeleted";
 import ResetOverridden from "components/ResetOverridden";
 import PublicationDelete from "components/PublicationDelete";
+import ToolbarHeading from "components/ToolbarHeading";
+import PublicationErrorCounter from "components/PublicationErrorCounter";
+import PublicationCounter from "components/PublicationCounter";
 
 const NewPublications: NextPage = () => {
-  const publicationCount = Publication.STORE.useVisibleCount();
-  const validPublicationCount = Publication.STORE.useValidCount();
   const setAll = Publication.STORE.useSetAll();
-  const invalidPublicationCount = publicationCount - validPublicationCount;
-
   const setVisible = Publication.STORE.ATTRIBUTES.useSetVisible();
 
   useEffect(() => setAll([]), [setAll]);
@@ -28,19 +27,7 @@ const NewPublications: NextPage = () => {
       title="Richard Burton"
       header={<Header />}
       subheader={
-        <h2 className="my-6 text-4xl text-center">
-          <div>
-            {publicationCount > 0
-              ? `${publicationCount} publications about to be inserted...`
-              : "Add publications manually or upload a CSV file"}
-          </div>
-          <div className="h-4 text-lg text-red-500">
-            {invalidPublicationCount > 0 &&
-              `${invalidPublicationCount} of those ${
-                invalidPublicationCount === 1 ? "has" : "have"
-              } errors`}
-          </div>
-        </h2>
+        <ToolbarHeading label="Prepare new publications to be inserted in the database" />
       }
       content={<PublicationReview />}
       footer={
@@ -49,6 +36,8 @@ const NewPublications: NextPage = () => {
           <ResetOverridden />
           <ResetDeleted />
           <PublicationDelete />
+          <PublicationCounter />
+          <PublicationErrorCounter />
           <PublicationSubmit />
         </div>
       }
