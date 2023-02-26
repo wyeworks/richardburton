@@ -3,7 +3,6 @@ import { useEffect } from "react";
 import { Publication } from "modules/publications";
 import Header from "components/Header";
 import Layout from "components/Layout";
-import PublicationToolbar from "components/PublicationToolbar";
 import PublicationIndex from "components/PublicationIndex";
 import PublicationSearch from "components/PublicationSearch";
 import { useRouter } from "next/router";
@@ -14,6 +13,9 @@ import SignOutButton from "components/SignOutButton";
 import SignInButton from "components/SignInButton";
 import { User } from "modules/users";
 import ToolbarHeading from "components/ToolbarHeading";
+import Button from "components/Button";
+import AddIcon from "assets/add.svg";
+import Link from "next/link";
 
 const Home: NextPage = () => {
   const index = Publication.REMOTE.useIndex();
@@ -47,12 +49,19 @@ const Home: NextPage = () => {
           {isAuthenticated ? (
             <>
               <PublicationDownload />
+              <Link href="/publications/new">
+                <Button
+                  label="Add publications"
+                  type="outline"
+                  Icon={AddIcon}
+                  alignment="left"
+                  width="fixed"
+                />
+              </Link>
               <SignOutButton />
             </>
           ) : (
-            <>
-              <SignInButton />
-            </>
+            <SignInButton />
           )}
         </div>
       }

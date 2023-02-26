@@ -48,12 +48,12 @@ const PublicationDownload: FC = () => {
     <>
       <Button
         label="Download .csv"
-        className="w-48"
         type="outline"
         alignment="left"
         Icon={DownloadIcon}
         disabled={visibleCount === 0}
         onClick={download}
+        width="fixed"
       />
       <a className="hidden" ref={anchor} />
     </>
