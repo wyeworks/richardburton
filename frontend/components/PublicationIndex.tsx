@@ -16,7 +16,9 @@ const ColumnHeader: FC<{ colId: ColId }> = ({ colId }) => {
   const isVisible = Publication.STORE.ATTRIBUTES.useIsVisible(colId);
 
   return isVisible ? (
-    <th className="px-2 py-4 ">{Publication.ATTRIBUTE_LABELS[colId]}</th>
+    <th className="px-4 pb-4 text-left">
+      {Publication.ATTRIBUTE_LABELS[colId]}
+    </th>
   ) : null;
 };
 
