@@ -34,7 +34,7 @@ const PublicationDownload: FC = () => {
           className="flex items-center px-2 py-1.5 text-xs transition-colors bg-gray-100 rounded shadow-sm cursor-pointer hover:bg-white/50 w-48"
           href={`${process.env.NEXT_PUBLIC_FILES_URL}/publications?${qs}`}
         >
-          <DownloadIcon className="w-6 h-6 mr-2 text-indigo-700" />
+          <DownloadIcon className="w-5 h-5 mr-2 text-indigo-700" />
           Download .csv
         </a>
       )}
