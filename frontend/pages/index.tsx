@@ -9,11 +9,16 @@ import PublicationSearch from "components/PublicationSearch";
 import { useRouter } from "next/router";
 import { isString } from "lodash";
 import PublicationFilter from "components/PublicationFilter";
+import PublicationDownload from "components/PublicationDownload";
+import SignOutButton from "components/SignOutButton";
+import SignInButton from "components/SignInButton";
+import { User } from "modules/users";
 
 const Home: NextPage = () => {
   const index = Publication.REMOTE.useIndex();
   const reset = Publication.STORE.useResetAll();
   const router = useRouter();
+  const isAuthenticated = User.useIsAuthenticated();
 
   useEffect(() => reset(), [reset]);
 
@@ -28,13 +33,26 @@ const Home: NextPage = () => {
     <Layout
       title="Richard Burton"
       header={<Header />}
-      //sidebar={<PublicationToolbar filter nav download />}
       content={<PublicationIndex />}
       subheader={
         <div className="space-y-2">
           <PublicationFilter />
           <PublicationSearch />
         </div>
+      }
+      footer={
+        <footer className="flex px-8 py-4 space-x-2">
+          {isAuthenticated ? (
+            <>
+              <PublicationDownload />
+              <SignOutButton />
+            </>
+          ) : (
+            <>
+              <SignInButton />
+            </>
+          )}
+        </footer>
       }
     />
   );
