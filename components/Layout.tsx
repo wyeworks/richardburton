@@ -1,16 +1,23 @@
 import Head from "next/head";
 import { FC, ReactNode } from "react";
-import UserToolbar from "./UserToolbar";
 
 type Props = {
   title: string;
   header: ReactNode;
+  footer?: ReactNode;
   content: ReactNode;
   sidebar?: ReactNode;
   subheader?: ReactNode;
 };
 
-const Layout: FC<Props> = ({ title, header, content, sidebar, subheader }) => {
+const Layout: FC<Props> = ({
+  title,
+  header,
+  footer,
+  content,
+  sidebar,
+  subheader,
+}) => {
   return (
     <>
       <Head>
@@ -27,13 +34,9 @@ const Layout: FC<Props> = ({ title, header, content, sidebar, subheader }) => {
               </main>
             </div>
           </div>
-          {sidebar && (
-            <aside className="w-48 p-2 space-y-2">
-              {sidebar}
-              <UserToolbar />
-            </aside>
-          )}
+          {sidebar && <aside className="w-48 p-2 space-y-2">{sidebar}</aside>}
         </div>
+        {footer}
       </div>
     </>
   );
