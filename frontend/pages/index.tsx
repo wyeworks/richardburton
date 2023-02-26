@@ -13,6 +13,7 @@ import PublicationDownload from "components/PublicationDownload";
 import SignOutButton from "components/SignOutButton";
 import SignInButton from "components/SignInButton";
 import { User } from "modules/users";
+import ToolbarHeading from "components/ToolbarHeading";
 
 const Home: NextPage = () => {
   const index = Publication.REMOTE.useIndex();
@@ -36,12 +37,13 @@ const Home: NextPage = () => {
       content={<PublicationIndex />}
       subheader={
         <div className="space-y-2">
+          <ToolbarHeading label="Browse data about Brazilian literary books translated to English" />
           <PublicationFilter />
           <PublicationSearch />
         </div>
       }
       footer={
-        <footer className="flex px-8 py-4 space-x-2">
+        <div className="flex space-x-2">
           {isAuthenticated ? (
             <>
               <PublicationDownload />
@@ -52,7 +54,7 @@ const Home: NextPage = () => {
               <SignInButton />
             </>
           )}
-        </footer>
+        </div>
       }
     />
   );

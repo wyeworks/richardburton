@@ -25,9 +25,9 @@ const Layout: FC<Props> = ({
       </Head>
       <div className="flex flex-col h-full">
         {header}
-        <div className="flex justify-center p-4 space-x-8 overflow-hidden grow">
-          <div className="flex p-4 space-x-4 overflow-hidden grow">
-            <div className="flex flex-col justify-center space-y-4 overflow-hidden grow">
+        <div className="flex justify-center px-8 py-4 space-x-8 overflow-hidden grow">
+          <div className="flex space-x-4 overflow-hidden grow">
+            <div className="flex flex-col justify-center overflow-hidden grow">
               {subheader && <header className="p-2">{subheader}</header>}
               <main className="relative flex p-2 overflow-hidden grow">
                 <div className="flex overflow-scroll grow">{content}</div>
@@ -36,7 +36,7 @@ const Layout: FC<Props> = ({
           </div>
           {sidebar && <aside className="w-48 p-2 space-y-2">{sidebar}</aside>}
         </div>
-        {footer}
+        <footer className="px-8 py-4">{footer}</footer>
       </div>
     </>
   );
