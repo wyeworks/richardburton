@@ -3,7 +3,7 @@ import { FC, forwardRef, HTMLProps } from "react";
 
 type Props = HTMLProps<HTMLButtonElement> & {
   label: string;
-  type?: "primary" | "outline";
+  type?: "primary" | "secondary" | "outline";
   Icon?: FC<{ className: string }>;
   alignment?: "center" | "left";
   width?: "full" | "fixed";
@@ -22,6 +22,7 @@ const Button = forwardRef<HTMLButtonElement, Props>(function Button(
   ref
 ) {
   const isPrimary = type === "primary";
+  const isSecondary = type === "secondary";
   const isOutline = type === "outline";
   const isTextCentered = alignment === "center";
   const isFixedWidth = width === "fixed";
@@ -36,6 +37,7 @@ const Button = forwardRef<HTMLButtonElement, Props>(function Button(
         "disabled:bg-slate-300",
         {
           "text-white bg-indigo-600 hover:bg-indigo-700": isPrimary,
+          "text-white bg-yellow-500 hover:bg-yellow-600": isSecondary,
           "bg-gray-100 hover:bg-white/50": isOutline,
           "justify-center": isTextCentered,
           "w-full": isFullWidth,
