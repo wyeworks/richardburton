@@ -56,7 +56,7 @@ const Column: FC<{
 
   return visible ? (
     <td
-      className="max-w-sm px-2 py-1 justify group-hover:bg-indigo-100 error:group-hover:bg-red-100 selected:bg-amber-100"
+      className="max-w-sm px-2 py-1 text-sm justify group-hover:bg-indigo-100 error:group-hover:bg-red-100 selected:bg-amber-100"
       data-selected={selected}
       data-selectable={selectable}
       data-error={invalid}
