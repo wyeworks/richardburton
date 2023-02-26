@@ -6,6 +6,7 @@ type Props = HTMLProps<HTMLButtonElement> & {
   type?: "primary" | "outline";
   Icon?: FC<{ className: string }>;
   alignment?: "center" | "left";
+  width?: "full" | "fixed";
 };
 
 const Button = forwardRef<HTMLButtonElement, Props>(function Button(
@@ -15,7 +16,7 @@ const Button = forwardRef<HTMLButtonElement, Props>(function Button(
     type = "primary",
     Icon,
     alignment = "center",
-    className,
+    width = "full",
     ...props
   },
   ref
@@ -23,20 +24,23 @@ const Button = forwardRef<HTMLButtonElement, Props>(function Button(
   const isPrimary = type === "primary";
   const isOutline = type === "outline";
   const isTextCentered = alignment === "center";
+  const isFixedWidth = width === "fixed";
+  const isFullWidth = width === "full";
 
   return (
     <button
       {...props}
       ref={ref}
       className={c(
-        "w-full flex px-2 py-1.5 transition-colors items-center rounded font-base shadow-sm text-xs",
+        "flex px-2 py-1.5 transition-colors items-center rounded font-base shadow-sm text-xs",
         "disabled:bg-slate-300",
         {
           "text-white bg-indigo-600 hover:bg-indigo-700": isPrimary,
           "bg-gray-100 hover:bg-white/50": isOutline,
           "justify-center": isTextCentered,
-        },
-        className
+          "w-full": isFullWidth,
+          "w-48": isFixedWidth,
+        }
       )}
       onClick={onClick}
     >
