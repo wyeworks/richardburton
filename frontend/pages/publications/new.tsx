@@ -2,7 +2,6 @@ import { NextPage } from "next";
 import { Publication } from "modules/publications";
 import PublicationReview from "components/PublicationReview";
 
-import Header from "components/Header";
 import Layout from "components/Layout";
 import { useEffect } from "react";
 import PublicationUpload from "components/PublicationUpload";
