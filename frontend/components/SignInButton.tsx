@@ -6,12 +6,12 @@ import GoogleIcon from "assets/google.svg";
 const SignInButton: FC = () => {
   return (
     <Button
-      className="w-48"
       label="Sign in"
       type="outline"
       alignment="left"
       onClick={() => signIn("google")}
       Icon={GoogleIcon}
+      width="fixed"
     />
   );
 };
