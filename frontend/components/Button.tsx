@@ -21,7 +21,7 @@ const Button = forwardRef<HTMLButtonElement, Props>(function Button(
       {...props}
       ref={ref}
       className={classNames(
-        "w-full flex px-2 py-1.5 transition-colors items-center rounded-lg font-base shadow-sm text-xs",
+        "w-full flex px-2 py-1.5 transition-colors items-center rounded font-base shadow-sm text-xs",
         "disabled:bg-slate-300",
         {
           "text-white bg-indigo-600 hover:bg-indigo-700": isPrimary,
