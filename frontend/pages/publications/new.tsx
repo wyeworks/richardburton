@@ -11,7 +11,7 @@ import PublicationSubmit from "components/PublicationSubmit";
 import ResetDeleted from "components/ResetDeleted";
 import ResetOverridden from "components/ResetOverridden";
 import PublicationDelete from "components/PublicationDelete";
-import ToolbarHeading from "components/ToolbarHeading";
+import StrikeHeading from "components/StrikeHeading";
 import PublicationErrorCounter from "components/PublicationErrorCounter";
 import PublicationCounter from "components/PublicationCounter";
 
@@ -26,7 +26,7 @@ const NewPublications: NextPage = () => {
     <Layout
       title="Richard Burton"
       subheader={
-        <ToolbarHeading label="Prepare new publications to be inserted in the database" />
+        <StrikeHeading label="Prepare new publications to be inserted in the database" />
       }
       content={<PublicationReview />}
       footer={
