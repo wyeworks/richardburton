@@ -25,7 +25,6 @@ const NewPublications: NextPage = () => {
   return (
     <Layout
       title="Richard Burton"
-      header={<Header />}
       subheader={
         <ToolbarHeading label="Prepare new publications to be inserted in the database" />
       }

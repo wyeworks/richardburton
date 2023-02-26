@@ -35,7 +35,6 @@ const Home: NextPage = () => {
   return (
     <Layout
       title="Richard Burton"
-      header={<Header />}
       content={<PublicationIndex />}
       subheader={
         <div className="space-y-2">
