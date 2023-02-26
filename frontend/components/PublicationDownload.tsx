@@ -1,8 +1,11 @@
-import { isString } from "lodash";
+import { snakeCase } from "lodash";
 import { Publication } from "modules/publications";
 import { useRouter } from "next/router";
-import { FC } from "react";
+import { FC, useRef } from "react";
+import { FILES_URL, request } from "app";
 import DownloadIcon from "assets/download.svg";
+import Button from "./Button";
+import qs from "qs";
 
 const PublicationDownload: FC = () => {
   const visibleCount = Publication.STORE.useVisibleCount();
@@ -10,34 +13,49 @@ const PublicationDownload: FC = () => {
 
   const router = useRouter();
 
+  const anchor = useRef<HTMLAnchorElement>(null);
+
   const { search } = router.query;
 
-  const params = new URLSearchParams();
+  const download = () => {
+    request(async (http) => {
+      if (anchor.current) {
+        const query = qs.stringify(
+          {
+            search,
+            select: visibleAttributes.map(snakeCase),
+          },
+          { encode: false }
+        );
 
-  if (isString(search)) {
-    params.set("search", search);
-  }
+        const { data, headers } = await http.get(
+          `${FILES_URL}/publications?${query}`,
+          { responseType: "blob" }
+        );
 
-  const camelCaseToSnakeCase = (str: string) =>
-    str.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
+        const filename = /filename[^;=\n]*=([^;\n]*)/
+          .exec(headers.contentDisposition)![1]
+          .replace(/"/g, "");
 
-  visibleAttributes
-    .map(camelCaseToSnakeCase)
-    .forEach((key) => params.append("select[]", key));
-
-  const qs = params.toString();
+        anchor.current.href = URL.createObjectURL(data);
+        anchor.current.download = filename;
+        anchor.current.click();
+      }
+    });
+  };
 
   return (
     <>
-      {visibleCount > 0 && (
-        <a
-          className="flex items-center px-2 py-1.5 text-xs transition-colors bg-gray-100 rounded shadow-sm cursor-pointer hover:bg-white/50 w-48"
-          href={`${process.env.NEXT_PUBLIC_FILES_URL}/publications?${qs}`}
-        >
-          <DownloadIcon className="w-5 h-5 mr-2 text-indigo-700" />
-          Download .csv
-        </a>
-      )}
+      <Button
+        label="Download .csv"
+        className="w-48"
+        type="outline"
+        alignment="left"
+        Icon={DownloadIcon}
+        disabled={visibleCount === 0}
+        onClick={download}
+      />
+      <a className="hidden" ref={anchor} />
     </>
   );
 };
