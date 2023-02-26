@@ -6,18 +6,10 @@ type Props = {
   header: ReactNode;
   footer?: ReactNode;
   content: ReactNode;
-  sidebar?: ReactNode;
   subheader?: ReactNode;
 };
 
-const Layout: FC<Props> = ({
-  title,
-  header,
-  footer,
-  content,
-  sidebar,
-  subheader,
-}) => {
+const Layout: FC<Props> = ({ title, header, footer, content, subheader }) => {
   return (
     <>
       <Head>
@@ -34,7 +26,6 @@ const Layout: FC<Props> = ({
               </main>
             </div>
           </div>
-          {sidebar && <aside className="w-48 p-2 space-y-2">{sidebar}</aside>}
         </div>
         <footer className="px-8 py-4">{footer}</footer>
       </div>
