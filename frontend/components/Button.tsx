@@ -33,8 +33,8 @@ const Button = forwardRef<HTMLButtonElement, Props>(function Button(
       {...props}
       ref={ref}
       className={c(
-        "flex px-2 py-1.5 transition-colors items-center rounded font-base shadow-sm text-xs",
-        "disabled:bg-slate-300",
+        "flex px-2 py-1.5 transition-colors items-center rounded font-base shadow-sm text-xs group",
+        "disabled:bg-gray-100 disabled:text-gray-300",
         {
           "text-white bg-indigo-600 hover:bg-indigo-700": isPrimary,
           "text-white bg-yellow-500 hover:bg-yellow-600": isSecondary,
@@ -47,7 +47,11 @@ const Button = forwardRef<HTMLButtonElement, Props>(function Button(
       onClick={onClick}
     >
       {Icon && (
-        <Icon className={c("w-4 h-4 mr-2", { "text-indigo-700": isOutline })} />
+        <Icon
+          className={c("w-4 h-4 mr-2 group-disabled:text-gray-300", {
+            "text-indigo-700": isOutline,
+          })}
+        />
       )}
       {label}
     </button>
