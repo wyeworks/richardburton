@@ -208,7 +208,7 @@ const NewPublicationSignalColumn: FC<{ rowId: RowId }> = ({ rowId }) => {
         className="flex text-indigo-600 rounded-full w-fit h-fit hover:text-indigo-700"
         onClick={submit}
       >
-        <AddCircleIcon className="w-7 h-7" />
+        <AddCircleIcon className="w-5 h-5" />
       </button>
     </SignalColumn>
   );
