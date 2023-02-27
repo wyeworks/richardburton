@@ -56,7 +56,7 @@ const Column: FC<{
 
   return visible ? (
     <td
-      className="max-w-sm px-2 py-1 text-sm justify group-hover:bg-indigo-100 error:group-hover:bg-red-100 selected:bg-amber-100"
+      className="max-w-xs px-2 py-1 text-sm justify group-hover:bg-indigo-100 error:group-hover:bg-red-100 selected:bg-amber-100"
       data-selected={selected}
       data-selectable={selectable}
       data-error={invalid}
@@ -143,7 +143,7 @@ const PublicationIndex: FC<Props> = ({
   const ids = Publication.STORE.useVisibleIds();
 
   return ids && (ids.length > 0 || ExtraRow) ? (
-    <table className={classNames(className, "overflow-auto h-fit table-fixed")}>
+    <table className={classNames(className, "h-fit")}>
       <thead className="sticky top-0 z-10 bg-gray-100">
         <tr>
           {ExtendedSignalColumn && <th />}
