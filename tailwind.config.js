@@ -15,6 +15,9 @@ module.exports = {
       minHeight: {
         toolbar: "70%",
       },
+      colors: {
+        "gray-active": "#F8FAFB",
+      },
     },
     fontFamily: {
       montserrat: ["Montserrat", "sans-serif"],
