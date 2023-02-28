@@ -26,6 +26,7 @@
     "react-merge-refs": "^2.0.1",
     "react-selection-manager": "^0.0.6",
     "recoil": "^0.7.5",
+    "sharp": "^0.31.3",
     "uuid": "^9.0.0"
   },
   "devDependencies": {
