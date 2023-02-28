@@ -41,11 +41,15 @@ defmodule RichardBurton.MixProject do
       {:telemetry_metrics, "~> 0.6"},
       {:telemetry_poller, "~> 1.0"},
       {:jason, "~> 1.2"},
+      {:plug, "~> 1.14"},
       {:plug_cowboy, "~> 2.5"},
       {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
       {:csv, "~> 3.0.5"},
       {:cors_plug, "~> 3.0"},
-      {:ex_doc, "~> 0.27", only: :dev, runtime: false}
+      {:ex_doc, "~> 0.27", only: :dev, runtime: false},
+      {:joken, "~> 2.5"},
+      {:httpoison, "~> 1.8"},
+      {:mox, "~> 1.0", only: :test}
     ]
   end
 

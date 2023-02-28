@@ -9,18 +9,38 @@ defmodule RichardBurtonWeb.Router do
     plug(:accepts, ["csv"])
   end
 
+  pipeline :authenticate do
+    plug(RichardBurtonWeb.Plugs.Authenticate)
+  end
+
+  pipeline :authorize_admin do
+    plug(RichardBurtonWeb.Plugs.Authenticate)
+    plug(RichardBurtonWeb.Plugs.AuthorizeAdmin)
+  end
+
   scope "/api", RichardBurtonWeb do
     pipe_through(:api)
+    get("/publications", PublicationController, :index)
+  end
+
+  scope "/api", RichardBurtonWeb do
+    pipe_through(:api)
+    pipe_through(:authorize_admin)
 
     scope "/publications" do
-      get("/", PublicationController, :index)
       post("/bulk", PublicationController, :create_all)
       post("/validate", PublicationController, :validate)
     end
   end
 
+  scope "/api", RichardBurtonWeb do
+    pipe_through(:authenticate)
+    post("/users", UserController, :create)
+  end
+
   scope "/files", RichardBurtonWeb do
     pipe_through(:files)
+    pipe_through(:authorize_admin)
 
     get("/publications", PublicationController, :export)
   end

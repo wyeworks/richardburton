@@ -31,7 +31,7 @@ const PublicationSearch: FC = () => {
   return (
     <section className="space-y-3">
       <input
-        className="w-full p-2 bg-gray-100 rounded shadow-sm outline-none focus:shadow placeholder:text-sm focus:bg-white/50 hover:bg-white/50"
+        className="w-full p-2 bg-gray-100 rounded shadow-sm outline-none placeholder:text-sm focus:bg-white/50 hover:bg-white/50"
         placeholder="Search publications"
         aria-label="Search publications"
         value={search}

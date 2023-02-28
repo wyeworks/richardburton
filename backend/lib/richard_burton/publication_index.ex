@@ -9,7 +9,6 @@ defmodule RichardBurton.Publication.Index do
   alias RichardBurton.Publication.Index.SearchDocument
   alias RichardBurton.Publication.Index.SearchKeyword
   alias RichardBurton.Repo
-  alias RichardBurton.Util
 
   def all do
     all(select: [])

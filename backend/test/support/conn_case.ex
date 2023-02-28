@@ -16,6 +16,7 @@ defmodule RichardBurtonWeb.ConnCase do
   """
 
   use ExUnit.CaseTemplate
+  import Mox
 
   using do
     quote do
@@ -33,7 +34,13 @@ defmodule RichardBurtonWeb.ConnCase do
 
   setup tags do
     RichardBurton.DataCase.setup_sandbox(tags)
-    {:ok, conn: Phoenix.ConnTest.build_conn()}
+    {:ok, conn: build_conn()}
+  end
+
+  setup :verify_on_exit!
+
+  defp build_conn do
+    Phoenix.ConnTest.build_conn() |> Plug.Conn.put_req_header("authorization", "Bearer token")
   end
 
   def uploaded_file_fixture(path) do
@@ -42,5 +49,14 @@ defmodule RichardBurtonWeb.ConnCase do
 
   def uploaded_csv_fixture(path) do
     %{"csv" => uploaded_file_fixture(path)}
+  end
+
+  def expect_auth_verify(n \\ 1) do
+    expect(RichardBurton.AuthMock, :verify, n, fn _ -> {:ok, "12345"} end)
+  end
+
+  def expect_auth_authorize_admin(n \\ 1) do
+    expect_auth_verify(n)
+    expect(RichardBurton.AuthMock, :authorize, n, fn _, :admin -> :ok end)
   end
 end
