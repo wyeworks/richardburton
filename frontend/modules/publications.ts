@@ -171,12 +171,12 @@ const TOTAL_PUBLICATION_COUNT = selector<number>({
 
 const DEFAULT_ATTRIBUTE_VISIBILITY: Record<PublicationKey, boolean> = {
   title: true,
-  country: false,
+  country: true,
   year: true,
-  publisher: false,
+  publisher: true,
   authors: true,
   originalTitle: true,
-  originalAuthors: false,
+  originalAuthors: true,
 };
 
 const IS_ATTRIBUTE_VISIBLE = atomFamily<boolean, PublicationKey>({

@@ -15,7 +15,7 @@ defmodule RichardBurton.Auth.Google do
   def verify(token) do
     case Application.get_env(:richard_burton, :auth_config) do
       {%{"issuer" => issuer}, keys} ->
-        verify(
+        do_verify(
           token,
           issuer: issuer,
           audience: get_audience(),
@@ -23,7 +23,7 @@ defmodule RichardBurton.Auth.Google do
         )
 
       _ ->
-        throw("Auth configuration is not properly set.s")
+        throw("Auth configuration is not properly set")
     end
   end
 
@@ -43,7 +43,7 @@ defmodule RichardBurton.Auth.Google do
     end
   end
 
-  defp verify(token, issuer: issuer, audience: audience, keys: keys) do
+  defp do_verify(token, issuer: issuer, audience: audience, keys: keys) do
     case Joken.verify(token, get_signer(token, keys)) do
       {:ok, %{"iss" => ^issuer, "aud" => ^audience, "sub" => subject_id}} -> {:ok, subject_id}
       _ -> :error

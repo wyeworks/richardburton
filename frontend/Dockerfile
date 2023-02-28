@@ -15,7 +15,9 @@ RUN \
 # Rebuild the source code only when needed
 FROM node:18-alpine AS builder
 ARG NEXT_PUBLIC_API_URL
+ARG NEXT_PUBLIC_FILES_URL
 ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
+ENV NEXT_PUBLIC_FILES_URL=$NEXT_PUBLIC_FILES_URL
 
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
