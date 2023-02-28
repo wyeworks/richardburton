@@ -1,0 +1,58 @@
+services:
+  # Main NextJS frontend app
+  nextjs:
+    build:
+      target: prod
+      args:
+        NEXT_PUBLIC_API_URL: $NEXT_PUBLIC_API_URL
+        NEXT_PUBLIC_FILES_URL: $NEXT_PUBLIC_FILES_URL
+    environment:
+      # Server
+      PORT: $NEXT_PORT
+      NEXT_INTERNAL_API_URL: $NEXT_INTERNAL_API_URL
+      # Next Auth
+      NEXTAUTH_SECRET: $NEXTAUTH_SECRET
+      NEXTAUTH_URL: $NEXTAUTH_URL
+      # Google Identity Provider
+      GOOGLE_CLIENT_ID: $GOOGLE_CLIENT_ID
+      GOOGLE_CLIENT_SECRET: $GOOGLE_CLIENT_SECRET
+    ports:
+      - "$NEXT_PORT:$NEXT_PORT"
+
+  # Main Phoenix backend app
+  phoenix:
+    build:
+      target: prod
+    environment:
+      # Phoenix configuration
+      PHX_HOST: $PHX_HOST
+      PHX_PORT: $PHX_PORT
+      PHX_CONSUMER_URL: $PHX_CONSUMER_URL
+      PHX_SECRET_KEY_BASE: $PHX_SECRET_KEY_BASE
+      # Ecto configuration
+      DATABASE_URL: ecto://$PGUSER:$PGPASSWORD@db:$PGPORT/$PGDATABASE
+      # Google Identity Provider
+      GOOGLE_OPENID_CONFIG_URL: $GOOGLE_OPENID_CONFIG_URL
+      GOOGLE_OAUTH2_CERTS_URL: $GOOGLE_OAUTH2_CERTS_URL
+    ports:
+      - "$PHX_PORT:$PHX_PORT"
+
+  # Backend database
+  db:
+    environment:
+      # Set Postgres environment
+      PGUSER: $PGUSER
+      PGPASSWORD: $PGPASSWORD
+      PGDATABASE: $PGDATABASE
+      PGPORT: $PGPORT
+      # Set user/password for Postgres.
+      POSTGRES_USER: $PGUSER
+      POSTGRES_PASSWORD: $PGPASSWORD
+      # Set a path where Postgres should store the data.
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: always
+
+volumes:
+  pgdata:

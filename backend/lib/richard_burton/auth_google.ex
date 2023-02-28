@@ -37,8 +37,8 @@ defmodule RichardBurton.Auth.Google do
   end
 
   defp get_audience do
-    case Application.get_env(:richard_burton, :google_client_id, nil) do
-      nil -> throw("Google client id is not set")
+    case System.get_env("GOOGLE_CLIENT_ID") do
+      nil -> throw("GOOGLE_CLIENT_ID environment variable is not set")
       audience -> audience
     end
   end
@@ -57,18 +57,30 @@ defmodule RichardBurton.Auth.Google do
   end
 
   defp get_config do
-    Application.get_env(:richard_burton, :google_openid_config_url)
-    |> HTTPoison.get!()
-    |> Map.get(:body)
-    |> Jason.decode!()
-    |> Map.take(["issuer"])
+    case System.get_env("GOOGLE_OPENID_CONFIG_URL") do
+      nil ->
+        throw("GOOGLE_OPENID_CONFIG_URL environment variable is not set")
+
+      url ->
+        url
+        |> HTTPoison.get!()
+        |> Map.get(:body)
+        |> Jason.decode!()
+        |> Map.take(["issuer"])
+    end
   end
 
   defp get_keys do
-    Application.get_env(:richard_burton, :google_oauth2_certs_url)
-    |> HTTPoison.get!()
-    |> Map.get(:body)
-    |> Jason.decode!()
-    |> Map.get("keys")
+    case System.get_env("GOOGLE_OAUTH2_CERTS_URL") do
+      nil ->
+        throw("GOOGLE_OPENID_CONFIG_URL environment variable is not set")
+
+      url ->
+        url
+        |> HTTPoison.get!()
+        |> Map.get(:body)
+        |> Jason.decode!()
+        |> Map.get("keys")
+    end
   end
 end

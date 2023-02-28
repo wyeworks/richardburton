@@ -5,6 +5,8 @@ defmodule RichardBurton.Application do
 
   use Application
 
+  @environment Mix.env()
+
   @impl true
   def start(_type, _args) do
     children = [
@@ -20,8 +22,21 @@ defmodule RichardBurton.Application do
       # {RichardBurton.Worker, arg}
     ]
 
-    # Initialize configration for auth service
-    if Mix.env() !== :test do
+    # Set missing runtime config from Application env
+    [
+      "PHX_CONSUMER_URL",
+      "GOOGLE_CLIENT_ID",
+      "GOOGLE_OPENID_CONFIG_URL",
+      "GOOGLE_OAUTH2_CERTS_URL"
+    ]
+    |> Enum.map(&{&1, &1 |> String.downcase() |> String.to_atom()})
+    |> Enum.filter(fn {key, _} -> is_nil(System.get_env(key)) end)
+    |> Enum.reject(fn {_, key} -> is_nil(Application.get_env(:richard_burton, key)) end)
+    |> Enum.map(fn {k1, k2} -> {k1, Application.get_env(:richard_burton, k2)} end)
+    |> System.put_env()
+
+    if @environment !== :test do
+      # Initialize configration for auth service
       Application.put_env(:richard_burton, :auth_config, RichardBurton.Auth.init())
     end
 
@@ -37,5 +52,10 @@ defmodule RichardBurton.Application do
   def config_change(changed, _new, removed) do
     RichardBurtonWeb.Endpoint.config_change(changed, removed)
     :ok
+  end
+
+  def origin do
+    System.get_env("PHX_CONSUMER_URL") ||
+      raise "environment variable PHX_CONSUMER_URL not set"
   end
 end

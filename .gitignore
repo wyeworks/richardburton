@@ -36,7 +36,6 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-.vscode
 .elixir_ls
 
 # The directory Mix will write compiled artifacts to.
@@ -63,8 +62,7 @@ erl_crash.dump
 # Ignore package tarball (built via "mix hex.build").
 richard_burton-*.tar
 
-*.local.exs
-*.secrets.exs
-.env.*.local
-rel
-**/config/*.local.*
+# Ignore release files
+rel/
+
+*.local.*

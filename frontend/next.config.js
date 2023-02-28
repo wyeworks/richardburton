@@ -19,10 +19,10 @@ const nextConfig = {
         protocol: "https",
         hostname: "lh3.googleusercontent.com",
         pathname: "/a/**",
-        port: "",
       },
     ],
   },
+  output: "standalone",
 };
 
 module.exports = nextConfig;
