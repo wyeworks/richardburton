@@ -274,6 +274,8 @@ defmodule RichardBurtonWeb.PublicationControllerTest do
 
   describe "GET /files/publications without search and select params" do
     test "returns 200 and a csv attachment with all the publications", meta do
+      expect_auth_authorize_admin()
+
       {:ok, _p} =
         @publication_attrs
         |> Publication.Codec.nest()
@@ -298,6 +300,8 @@ defmodule RichardBurtonWeb.PublicationControllerTest do
   describe "GET /files/publications with search param and without select param" do
     test "returns 200 and a csv attachment with the requested attributes of all the matching publications",
          meta do
+      expect_auth_authorize_admin()
+
       {:ok, [_p1, _p2]} =
         [@publication_attrs, Map.put(@publication_attrs, "title", "bla")]
         |> Publication.Codec.nest()
@@ -325,6 +329,8 @@ defmodule RichardBurtonWeb.PublicationControllerTest do
 
   describe "GET /files/publications with search param and with select param" do
     test "returns 200 and a csv attachment with all the matching publications", meta do
+      expect_auth_authorize_admin()
+
       {:ok, [_p1, _p2]} =
         [@publication_attrs, Map.put(@publication_attrs, "title", "bla")]
         |> Publication.Codec.nest()
@@ -355,6 +361,8 @@ defmodule RichardBurtonWeb.PublicationControllerTest do
   describe "GET /files/publications without search param and with select param" do
     test "returns 200 and a csv attachment with the requested attributes of all the publications",
          meta do
+      expect_auth_authorize_admin()
+
       {:ok, _p} =
         @publication_attrs
         |> Publication.Codec.nest()

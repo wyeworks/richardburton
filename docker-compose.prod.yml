@@ -5,6 +5,7 @@ services:
       target: prod
       args:
         NEXT_PUBLIC_API_URL: $NEXT_PUBLIC_API_URL
+        NEXT_PUBLIC_FILES_URL: $NEXT_PUBLIC_FILES_URL
     environment:
       # Server
       PORT: $NEXT_PORT
