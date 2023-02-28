@@ -11,7 +11,7 @@ export default forwardRef<HTMLOListElement, Props>(function Menu(
 ) {
   return (
     <ol
-      className="z-30 text-xs rounded shadow w-max bg-gray-active"
+      className="z-30 overflow-y-scroll text-xs rounded shadow max-h-48 w-max bg-gray-active scrollbar-thumb-gray-300 scrollbar-thin"
       ref={ref}
       {...props}
     />
