@@ -114,6 +114,12 @@ We recommend using `GNU Make` as command line tool for running the server withou
 | `make dev_backend`  | Run the apps's backend (Phoenix and Postgres) as containers in a docker project              |
 | `make dev_phoenix`  | Run the Phoenix server as a docker container                                                 |
 
+Once the Phoenix container is running, run database migrations with the following command:
+
+```
+docker exec richard-burton-dev-phoenix-1 mix ecto.migrate
+```
+
 ## Manual
 
 You must have Node, NPM, Erlang, Elixir installed and a Postgres database configured as specified in [`backend/config/dev.ex`](https://github.com/wyeworks/richardburton/blob/main/backend/config/dev.exs). We recommend using `asdf` to manage Elixir and Erlang versions, which are specified for this project in [`backend/.tool-versions`](https://github.com/wyeworks/richardburton/blob/main/backend/.tool-versions)
@@ -177,6 +183,12 @@ We recommend using `GNU Make` as command line tool for running the server withou
 | `make prod_frontend` | Run the app's frontend (NextJS) as a docker container                                        |
 | `make prod_backend`  | Run the apps's backend (Phoenix and Postgres) as containers in a docker project              |
 | `make prod_phoenix`  | Run the Phoenix server as a docker container                                                 |
+
+Once the Phoenix container is running, run database migrations with the following command:
+
+```
+docker exec richard-burton-prod-phoenix-1 bin/migrate
+```
 
 # Initializing the database
 
