@@ -1,5 +1,4 @@
 import Button from "components/Button";
-import Header from "components/Header";
 import Layout from "components/Layout";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
@@ -54,7 +53,6 @@ const SignIn: NextPage = () => {
   return (
     <Layout
       title="Error"
-      header={<Header compact />}
       content={
         description ? (
           <div className="flex items-center justify-center w-full">

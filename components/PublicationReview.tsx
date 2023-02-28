@@ -32,6 +32,7 @@ import PublicationIndex, {
 } from "components/PublicationIndex";
 import AddCircleIcon from "assets/add-circle.svg";
 import { Key } from "app";
+import ErrorIcon from "assets/error.svg";
 
 const COUNTRIES: Record<string, string> = {
   BR: "Brazil",
@@ -63,7 +64,7 @@ const ExtendedSignalColumn: FC<{ rowId: RowId }> = ({ rowId }) => {
 
   return (
     <SignalColumn rowId={rowId} invalid={!valid} selected={selected} selectable>
-      {valid ? null : <>❗️</>}
+      {valid ? null : <ErrorIcon className="text-red-600" />}
     </SignalColumn>
   );
 };
@@ -208,7 +209,7 @@ const NewPublicationSignalColumn: FC<{ rowId: RowId }> = ({ rowId }) => {
         className="flex text-indigo-600 rounded-full w-fit h-fit hover:text-indigo-700"
         onClick={submit}
       >
-        <AddCircleIcon className="w-7 h-7" />
+        <AddCircleIcon className="w-5 h-5" />
       </button>
     </SignalColumn>
   );
