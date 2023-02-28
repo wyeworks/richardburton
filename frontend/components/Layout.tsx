@@ -1,31 +1,35 @@
 import Head from "next/head";
+import Link from "next/link";
 import { FC, ReactNode } from "react";
 
 type Props = {
   title: string;
-  header: ReactNode;
+  footer?: ReactNode;
   content: ReactNode;
-  sidebar: ReactNode;
   subheader?: ReactNode;
 };
 
-const Layout: FC<Props> = ({ title, header, content, sidebar, subheader }) => {
+const HEADING_TEXT = "Richard Burton Platform";
+const SUBHEADING_TEXT = "A database about Brazilian literature in translation";
+
+const Layout: FC<Props> = ({ title, footer, content, subheader }) => {
   return (
     <>
       <Head>
         <title>{title}</title>
       </Head>
-      <div className="flex flex-col h-full">
-        {header}
-        <div className="flex p-4 space-x-4 overflow-hidden grow">
-          <div className="flex flex-col justify-center space-y-4 overflow-hidden grow">
-            {subheader && <header className="p-2">{subheader}</header>}
-            <main className="relative flex p-2 overflow-hidden grow">
-              <div className="flex overflow-scroll grow">{content}</div>
-            </main>
-          </div>
-          <aside className="p-2">{sidebar}</aside>
-        </div>
+      <div className="flex flex-col h-full px-8 overflow-x-hidden">
+        <header className="sticky top-0 z-20 pb-6 bg-gray-100">
+          <h1 className="py-1 -mx-8 text-center text-white bg-indigo-600">
+            <div className="inline px-4 py-1 text-lg font-medium border-r">
+              <Link href="/">{HEADING_TEXT}</Link>
+            </div>
+            <div className="inline px-4 text-base">{SUBHEADING_TEXT}</div>
+          </h1>
+          {subheader}
+        </header>
+        <main className="relative overflow-x-scroll grow">{content}</main>
+        <footer className="sticky bottom-0 py-4 bg-gray-100">{footer}</footer>
       </div>
     </>
   );

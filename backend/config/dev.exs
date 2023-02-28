@@ -1,5 +1,7 @@
 import Config
 
+import_config "dev.secrets.exs"
+
 # Configure your database
 config :richard_burton, RichardBurton.Repo,
   username: "postgres",
@@ -19,7 +21,7 @@ config :richard_burton, RichardBurton.Repo,
 config :richard_burton, RichardBurtonWeb.Endpoint,
   # Binding to loopback ipv4 address prevents access from other machines.
   # Change to `ip: {0, 0, 0, 0}` to allow access from other machines.
-  http: [ip: {127, 0, 0, 1}, port: 4000],
+  http: [:inet6, port: 4000],
   check_origin: false,
   code_reloader: true,
   debug_errors: false,

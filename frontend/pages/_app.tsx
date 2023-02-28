@@ -7,16 +7,25 @@ import { RecoilRoot } from "recoil";
 import Notifications from "components/Notifications";
 import ClearSelection from "listeners/ClearSelection";
 import { Publication } from "modules/publications";
-import { debounce, isString } from "lodash";
+import { getSession, SessionProvider } from "next-auth/react";
 
-const http = axiosCaseConverter(
-  axios.create({
-    baseURL: process.env.NEXT_PUBLIC_API_URL,
-  })
-);
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+const FILES_URL = process.env.NEXT_PUBLIC_FILES_URL;
+
+const http = axiosCaseConverter(axios.create({ baseURL: API_URL }));
+
+http.interceptors.request.use(async (config) => {
+  const session = await getSession();
+
+  if (session && session.idToken && config.headers) {
+    config.headers.Authorization = `Bearer ${session.idToken}`;
+  }
+
+  return config;
+});
 
 function request<T = void>(
-  cb: (http: AxiosInstance) => Promise<T>
+  cb: (http: AxiosInstance) => Promise<T> | T
 ): Promise<T> {
   return new Promise(async (resolve, reject) => {
     try {
@@ -46,13 +55,15 @@ enum Key {
 
 const App: FC<AppProps> = ({ Component, pageProps }) => {
   return (
-    <RecoilRoot initializeState={Publication.STORE.initialize}>
-      <Notifications />
-      <ClearSelection />
-      <Component {...pageProps} />
-    </RecoilRoot>
+    <SessionProvider>
+      <RecoilRoot initializeState={Publication.STORE.initialize}>
+        <Notifications />
+        <ClearSelection />
+        <Component {...pageProps} />
+      </RecoilRoot>
+    </SessionProvider>
   );
 };
 
 export default App;
-export { request, Key };
+export { request, Key, http, FILES_URL };
