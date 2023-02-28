@@ -98,7 +98,7 @@ const DataInput = forwardRef<HTMLInputElement, DataInputProps>(
         ref={ref}
         placeholder={Publication.ATTRIBUTE_LABELS[colId]}
         className={classNames(
-          "px-2 py-1 rounded outline-none bg-transparent focus:bg-white/50 focus:shadow-sm placeholder:text-xs",
+          "px-2 py-1 rounded outline-none bg-transparent focus:bg-gray-active focus:shadow-sm placeholder:text-xs",
           "error:focus:bg-red-400/80 error:bg-red-300/40 error:focus:text-white error:shadow-sm error:placeholder-white"
         )}
         value={value}

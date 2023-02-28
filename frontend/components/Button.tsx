@@ -38,7 +38,7 @@ const Button = forwardRef<HTMLButtonElement, Props>(function Button(
         {
           "text-white bg-indigo-600 hover:bg-indigo-700": isPrimary,
           "text-white bg-yellow-500 hover:bg-yellow-600": isSecondary,
-          "bg-gray-100 hover:bg-white/50": isOutline,
+          "bg-gray-100 hover:bg-gray-active": isOutline,
           "justify-center": isTextCentered,
           "w-full": isFullWidth,
           "w-48": isFixedWidth,
