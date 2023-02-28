@@ -42,14 +42,19 @@ if config_env() == :prod do
   # to check this value into version control, so we use an environment
   # variable instead.
   secret_key_base =
-    System.get_env("SECRET_KEY_BASE") ||
+    System.get_env("PHX_SECRET_KEY_BASE") ||
       raise """
-      environment variable SECRET_KEY_BASE is missing.
+      environment variable PHX_SECRET_KEY_BASE is missing.
       You can generate one by calling: mix phx.gen.secret
       """
 
-  host = System.get_env("PHX_HOST") || "example.com"
-  port = String.to_integer(System.get_env("PORT") || "4000")
+  host =
+    System.get_env("PHX_HOST") ||
+      raise "environment variable PHX_HOST is missing"
+
+  port =
+    String.to_integer(System.get_env("PHX_PORT")) ||
+      raise "environment variable PHX_PORT is missing"
 
   config :richard_burton, RichardBurtonWeb.Endpoint,
     url: [host: host, port: 443, scheme: "https"],

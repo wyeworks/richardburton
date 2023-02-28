@@ -1,13 +1,16 @@
 import Config
 
-import_config "dev.secrets.exs"
+config :richard_burton,
+  phx_consumer_url: "http://localhost:3000"
+
+import_config "dev.local.exs"
 
 # Configure your database
 config :richard_burton, RichardBurton.Repo,
-  username: "postgres",
-  password: "postgres",
-  hostname: "localhost",
-  database: "richard_burton_dev",
+  username: System.get_env("PGUSER", "postgres"),
+  password: System.get_env("PGPASSWORD", "postgres"),
+  hostname: System.get_env("PGHOST", "localhost"),
+  database: System.get_env("PGDATABASE", "richard_burton_dev"),
   stacktrace: true,
   show_sensitive_data_on_connection_error: true,
   pool_size: 10
@@ -61,6 +64,3 @@ config :phoenix, :stacktrace_depth, 20
 
 # Initialize plugs at runtime for faster development compilation
 config :phoenix, :plug_init_mode, :runtime
-
-config :cors_plug,
-  origin: ["http://localhost:3000"]
