@@ -40,6 +40,7 @@ defmodule RichardBurtonWeb.Router do
 
   scope "/files", RichardBurtonWeb do
     pipe_through(:files)
+    pipe_through(:authorize_admin)
 
     get("/publications", PublicationController, :export)
   end

@@ -10,6 +10,7 @@ import { getSession, SessionProvider } from "next-auth/react";
 import HTTP from "modules/http";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
+const FILES_URL = process.env.NEXT_PUBLIC_FILES_URL;
 
 const http = HTTP.client({ baseURL: API_URL });
 
@@ -65,4 +66,4 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
 };
 
 export default App;
-export { request, Key, http };
+export { request, Key, http, FILES_URL };
