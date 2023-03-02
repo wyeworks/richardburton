@@ -1,4 +1,4 @@
-import { FC, KeyboardEventHandler, useRef, useState } from "react";
+import { forwardRef, KeyboardEventHandler, useRef, useState } from "react";
 import c from "classnames";
 import Pill from "./Pill";
 
@@ -9,7 +9,10 @@ type Props = {
   getOptions: (search: string) => Promise<string[]> | string[];
 };
 
+export default forwardRef<HTMLDivElement, Props>(function Multiselect(
   { placeholder, getOptions },
+  ref
+) {
   const [focused, setFocused] = useState(false);
   const [inputValue, setInputValue] = useState("");
   const [items, setItems] = useState<string[]>([]);
@@ -31,10 +34,10 @@ type Props = {
       event.preventDefault();
 
       if (!isInputValueBlank) {
-      setInputValue("");
+        setInputValue("");
         setOptions([]);
-      addItem(inputValue);
-    }
+        addItem(inputValue);
+      }
     }
 
     if (event.key === "Enter" && !isInputValueBlank) {
@@ -89,6 +92,7 @@ type Props = {
       onSelect={handleOptionSelect}
     >
       <div
+        ref={ref}
         className={c(
           "w-full overflow-x-scroll gap-1 inline-flex items-center text-xs rounded py-1 scrollbar scrollbar-none",
           {
@@ -119,6 +123,4 @@ type Props = {
       </div>
     </MenuProvider>
   );
-};
-
-export default Multiselect;
+});
