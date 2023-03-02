@@ -10,6 +10,7 @@ import c from "classnames";
 import Pill from "./Pill";
 
 import MenuProvider from "./MenuProvider";
+import { Key } from "app";
 
 type Props = HTMLProps<HTMLInputElement> & {
   placeholder: string;
@@ -47,7 +48,7 @@ export default forwardRef<HTMLDivElement, Props>(function Multiselect(
   const handleKeyDown: KeyboardEventHandler<HTMLInputElement> = (event) => {
     const isInputValueBlank = inputValue.trim() === "";
 
-    if (event.key === ",") {
+    if (event.key === Key.COMMA) {
       event.preventDefault();
 
       if (!isInputValueBlank) {
@@ -58,7 +59,7 @@ export default forwardRef<HTMLDivElement, Props>(function Multiselect(
     }
 
     if (
-      (event.key === "Enter" || event.key === "ArrowRight") &&
+      (event.key === Key.ENTER || event.key === Key.ARROW_RIGHT) &&
       !isInputValueBlank
     ) {
       setInputValue("");
@@ -72,7 +73,7 @@ export default forwardRef<HTMLDivElement, Props>(function Multiselect(
       }
     }
 
-    if (event.key === "Backspace" && inputValue === "") {
+    if (event.key === Key.BACKSPACE && inputValue === "") {
       setItems((items) => items.slice(0, -1));
     }
 
