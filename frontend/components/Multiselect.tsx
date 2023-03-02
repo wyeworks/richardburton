@@ -14,10 +14,20 @@ import MenuProvider from "./MenuProvider";
 type Props = HTMLProps<HTMLInputElement> & {
   placeholder: string;
   getOptions: (search: string) => Promise<string[]> | string[];
+  "data-error": boolean;
 };
 
 export default forwardRef<HTMLDivElement, Props>(function Multiselect(
-  { placeholder, getOptions, onBlur, onFocus, onChange, onKeyDown, ...props },
+  {
+    placeholder,
+    getOptions,
+    onBlur,
+    onFocus,
+    onChange,
+    onKeyDown,
+    "data-error": error,
+    ...props
+  },
   ref
 ) {
   const [focused, setFocused] = useState(false);
@@ -47,7 +57,10 @@ export default forwardRef<HTMLDivElement, Props>(function Multiselect(
       }
     }
 
-    if (event.key === "Enter" && !isInputValueBlank) {
+    if (
+      (event.key === "Enter" || event.key === "ArrowRight") &&
+      !isInputValueBlank
+    ) {
       setInputValue("");
       setOptions([]);
       setIsOpen(false);
@@ -92,7 +105,7 @@ export default forwardRef<HTMLDivElement, Props>(function Multiselect(
   };
 
   const handleFocus: FocusEventHandler<HTMLInputElement> = (event) => {
-    setFocused(false);
+    setFocused(true);
     onFocus?.(event);
   };
 
@@ -115,14 +128,16 @@ export default forwardRef<HTMLDivElement, Props>(function Multiselect(
       <div
         ref={ref}
         className={c(
-          "w-full overflow-x-scroll gap-1 inline-flex items-center text-xs rounded py-1 scrollbar scrollbar-none",
-          "error:focus:bg-red-400/80 error:bg-red-300/40 error:focus:text-white error:shadow-sm error:placeholder-white",
+          "w-full overflow-x-scroll gap-1 inline-flex items-center text-xs rounded h-full scrollbar scrollbar-none",
+          "error:shadow-sm ",
           {
-            "bg-gray-active shadow-sm": focused,
+            "bg-gray-active shadow-sm error:bg-red-400/80": focused,
+            "error:bg-red-300/40": !focused,
             "px-2": items.length === 0,
             "px-1": items.length > 0,
           }
         )}
+        data-error={error}
       >
         {items.map((item, index) => (
           <Pill
@@ -136,12 +151,13 @@ export default forwardRef<HTMLDivElement, Props>(function Multiselect(
           ref={inputRef}
           value={inputValue}
           placeholder={items.length === 0 ? placeholder : "Add another"}
-          className="bg-transparent outline-none shrink grow"
+          className="bg-transparent outline-none shrink grow error:focus:text-white error:placeholder-white"
           onFocus={handleFocus}
           onBlur={handleBlur}
           onChange={handleChange}
           onKeyDown={handleKeyDown}
           aria-autocomplete="list"
+          data-error={error}
         />
       </div>
     </MenuProvider>
