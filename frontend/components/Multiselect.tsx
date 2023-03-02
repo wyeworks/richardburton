@@ -1,16 +1,23 @@
-import { forwardRef, KeyboardEventHandler, useRef, useState } from "react";
+import {
+  FocusEventHandler,
+  forwardRef,
+  HTMLProps,
+  KeyboardEventHandler,
+  useRef,
+  useState,
+} from "react";
 import c from "classnames";
 import Pill from "./Pill";
 
 import MenuProvider from "./MenuProvider";
 
-type Props = {
+type Props = HTMLProps<HTMLInputElement> & {
   placeholder: string;
   getOptions: (search: string) => Promise<string[]> | string[];
 };
 
 export default forwardRef<HTMLDivElement, Props>(function Multiselect(
-  { placeholder, getOptions },
+  { placeholder, getOptions, onBlur, onFocus, onChange, onKeyDown, ...props },
   ref
 ) {
   const [focused, setFocused] = useState(false);
@@ -55,6 +62,8 @@ export default forwardRef<HTMLDivElement, Props>(function Multiselect(
     if (event.key === "Backspace" && inputValue === "") {
       setItems((items) => items.slice(0, -1));
     }
+
+    onKeyDown?.(event);
   };
 
   const [isOpen, setIsOpen] = useState(false);
@@ -72,12 +81,24 @@ export default forwardRef<HTMLDivElement, Props>(function Multiselect(
     } else {
       setIsOpen(false);
     }
+
+    onChange?.(event);
   };
 
   const handleOptionSelect = (option: string) => {
     addItem(option);
     setInputValue("");
     inputRef.current?.focus();
+  };
+
+  const handleFocus: FocusEventHandler<HTMLInputElement> = (event) => {
+    setFocused(false);
+    onFocus?.(event);
+  };
+
+  const handleBlur: FocusEventHandler<HTMLInputElement> = (event) => {
+    setFocused(false);
+    onBlur?.(event);
   };
 
   const inputRef = useRef<HTMLInputElement>(null);
@@ -95,6 +116,7 @@ export default forwardRef<HTMLDivElement, Props>(function Multiselect(
         ref={ref}
         className={c(
           "w-full overflow-x-scroll gap-1 inline-flex items-center text-xs rounded py-1 scrollbar scrollbar-none",
+          "error:focus:bg-red-400/80 error:bg-red-300/40 error:focus:text-white error:shadow-sm error:placeholder-white",
           {
             "bg-gray-active shadow-sm": focused,
             "px-2": items.length === 0,
@@ -110,12 +132,13 @@ export default forwardRef<HTMLDivElement, Props>(function Multiselect(
           />
         ))}
         <input
+          {...props}
           ref={inputRef}
           value={inputValue}
           placeholder={items.length === 0 ? placeholder : "Add another"}
           className="bg-transparent outline-none shrink grow"
-          onFocus={() => setFocused(true)}
-          onBlur={() => setFocused(false)}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
           onChange={handleChange}
           onKeyDown={handleKeyDown}
           aria-autocomplete="list"
