@@ -4,9 +4,12 @@ import Pill from "./Pill";
 
 import MenuProvider from "./MenuProvider";
 
-type Props = { getOptions: (search: string) => Promise<string[]> | string[] };
+type Props = {
+  placeholder: string;
+  getOptions: (search: string) => Promise<string[]> | string[];
+};
 
-const Multiselect: FC<Props> = ({ getOptions }) => {
+  { placeholder, getOptions },
   const [focused, setFocused] = useState(false);
   const [inputValue, setInputValue] = useState("");
   const [items, setItems] = useState<string[]>([]);
@@ -105,6 +108,7 @@ const Multiselect: FC<Props> = ({ getOptions }) => {
         <input
           ref={inputRef}
           value={inputValue}
+          placeholder={items.length === 0 ? placeholder : "Add another"}
           className="bg-transparent outline-none shrink grow"
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
