@@ -8,7 +8,15 @@ import {
   useListNavigation,
   useRole,
 } from "@floating-ui/react";
-import { cloneElement, FC, ReactElement, useRef, useState } from "react";
+import {
+  cloneElement,
+  FC,
+  ReactElement,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import { mergeRefs } from "react-merge-refs";
 import Menu from "./Menu";
 import MenuItem from "./MenuItem";
 
@@ -64,12 +72,18 @@ const MenuProvider: FC<Props> = ({
     ]
   );
 
+  const childrenRef = (children as any).ref;
+  const ref = useMemo(
+    () => mergeRefs([refs.setReference, childrenRef]),
+    [refs.setReference, childrenRef]
+  );
+
   return (
     <>
       {cloneElement(
         children,
         getReferenceProps({
-          ref: refs.setReference,
+          ref,
           ...children.props,
         })
       )}
