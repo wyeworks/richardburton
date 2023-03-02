@@ -47,10 +47,9 @@ const MenuProvider: FC<Props> = ({
     placement: "bottom-start",
     middleware: [
       size({
-        apply({ rects, availableHeight, elements }) {
+        apply({ rects, elements }) {
           Object.assign(elements.floating.style, {
             width: `${rects.reference.width}px`,
-            maxHeight: `${availableHeight}px`,
           });
         },
         padding: 10,
