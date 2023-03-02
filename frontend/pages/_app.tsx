@@ -51,6 +51,9 @@ function request<T = void>(
 
 enum Key {
   ENTER = "Enter",
+  ARROW_RIGHT = "ArrowRight",
+  BACKSPACE = "Backspace",
+  COMMA = ",",
 }
 
 const App: FC<AppProps> = ({ Component, pageProps }) => {
