@@ -12,14 +12,19 @@ import Pill from "./Pill";
 import MenuProvider from "./MenuProvider";
 import { Key } from "app";
 
-type Props = HTMLProps<HTMLInputElement> & {
+type Item = string;
+
+type Props = Omit<HTMLProps<HTMLInputElement>, "value" | "onChange"> & {
+  value: Item[];
+  onChange: (value: Item[]) => void;
   placeholder: string;
-  getOptions: (search: string) => Promise<string[]> | string[];
-  "data-error": boolean;
+  getOptions: (search: string) => Promise<Item[]> | Item[];
+  "data-error"?: boolean;
 };
 
 export default forwardRef<HTMLDivElement, Props>(function Multiselect(
   {
+    value,
     placeholder,
     getOptions,
     onBlur,
@@ -33,16 +38,15 @@ export default forwardRef<HTMLDivElement, Props>(function Multiselect(
 ) {
   const [focused, setFocused] = useState(false);
   const [inputValue, setInputValue] = useState("");
-  const [items, setItems] = useState<string[]>([]);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [options, setOptions] = useState<string[]>([]);
 
-  const removeItem = (index: number) => {
-    setItems((items) => items.filter((_, i) => i !== index));
+  const unselect = (index: number) => {
+    onChange(value.filter((_, i) => i !== index));
   };
 
-  const addItem = (item: string) => {
-    if (!items.includes(item)) setItems((items) => [...items, item]);
+  const select = (item: Item) => {
+    if (!value.includes(item)) onChange([...value, item]);
   };
 
   const handleKeyDown: KeyboardEventHandler<HTMLInputElement> = (event) => {
@@ -54,7 +58,7 @@ export default forwardRef<HTMLDivElement, Props>(function Multiselect(
       if (!isInputValueBlank) {
         setInputValue("");
         setOptions([]);
-        addItem(inputValue);
+        select(inputValue);
       }
     }
 
@@ -67,14 +71,14 @@ export default forwardRef<HTMLDivElement, Props>(function Multiselect(
       setIsOpen(false);
       setActiveIndex(null);
       if (activeIndex != null && options[activeIndex]) {
-        addItem(options[activeIndex]);
+        select(options[activeIndex]);
       } else {
-        addItem(inputValue);
+        select(inputValue);
       }
     }
 
     if (event.key === Key.BACKSPACE && inputValue === "") {
-      setItems((items) => items.slice(0, -1));
+      unselect(value.length - 1);
     }
 
     onKeyDown?.(event);
@@ -83,24 +87,22 @@ export default forwardRef<HTMLDivElement, Props>(function Multiselect(
   const [isOpen, setIsOpen] = useState(false);
 
   const handleChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value;
-    setInputValue(value);
+    const v = event.target.value;
+    setInputValue(v);
 
-    if (value) {
-      const options = await getOptions(value.toLowerCase());
+    if (v) {
+      const options = await getOptions(v.toLowerCase());
 
       setIsOpen(true);
       setActiveIndex(0);
-      setOptions(options.filter((option) => !items.includes(option)));
+      setOptions(options.filter((option) => !value.includes(option)));
     } else {
       setIsOpen(false);
     }
-
-    onChange?.(event);
   };
 
   const handleOptionSelect = (option: string) => {
-    addItem(option);
+    select(option);
     setInputValue("");
     inputRef.current?.focus();
   };
@@ -134,24 +136,24 @@ export default forwardRef<HTMLDivElement, Props>(function Multiselect(
           {
             "bg-gray-active shadow-sm error:bg-red-400/80": focused,
             "error:bg-red-300/40": !focused,
-            "px-2": items.length === 0,
-            "px-1": items.length > 0,
+            "px-2": value.length === 0,
+            "px-1": value.length > 0,
           }
         )}
         data-error={error}
       >
-        {items.map((item, index) => (
+        {value.map((item, index) => (
           <Pill
             key={`${item}-${index}`}
             label={item}
-            onRemove={() => removeItem(index)}
+            onRemove={() => unselect(index)}
           />
         ))}
         <input
           {...props}
           ref={inputRef}
           value={inputValue}
-          placeholder={items.length === 0 ? placeholder : "Add another"}
+          placeholder={value.length === 0 ? placeholder : "Add another"}
           className="bg-transparent outline-none shrink grow error:focus:text-white error:placeholder-white"
           onFocus={handleFocus}
           onBlur={handleBlur}
@@ -159,6 +161,7 @@ export default forwardRef<HTMLDivElement, Props>(function Multiselect(
           onKeyDown={handleKeyDown}
           aria-autocomplete="list"
           data-error={error}
+          data-multiselect-input="true"
         />
       </div>
     </MenuProvider>
