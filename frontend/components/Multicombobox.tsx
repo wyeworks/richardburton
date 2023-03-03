@@ -22,7 +22,7 @@ type Props = Omit<HTMLProps<HTMLInputElement>, "value" | "onChange"> & {
   "data-error"?: boolean;
 };
 
-export default forwardRef<HTMLDivElement, Props>(function Multiselect(
+export default forwardRef<HTMLDivElement, Props>(function Multicombobox(
   {
     value,
     placeholder,
