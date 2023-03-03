@@ -13,6 +13,7 @@ import {
   MouseEvent,
   useCallback,
   useEffect,
+  useMemo,
   useState,
 } from "react";
 import Tooltip from "./Tooltip";
@@ -33,6 +34,9 @@ import PublicationIndex, {
 import AddCircleIcon from "assets/add-circle.svg";
 import { Key } from "app";
 import ErrorIcon from "assets/error.svg";
+import { Author } from "modules/authors";
+import { isElement } from "lodash";
+import Multicombobox from "./Multicombobox";
 
 const COUNTRIES: Record<string, string> = {
   BR: "Brazil",
@@ -74,14 +78,16 @@ type DataInputProps = Omit<HTMLProps<HTMLInputElement>, "onChange"> & {
   colId: PublicationKey;
   value: string;
   error: string;
+  onChange?: (value: string) => void;
 };
 
 const DataInput = forwardRef<HTMLInputElement, DataInputProps>(
-  function DataInput({ rowId, colId, value: data, ...props }, ref) {
+  function DataInput({ rowId, colId, value: data, onChange, ...props }, ref) {
     const override = Publication.STORE.ATTRIBUTES.useOverride();
     const [value, setValue] = useState(data);
 
     useEffect(() => {
+      console.log({ data, value });
       if (data !== value) {
         setValue(data);
       }
@@ -90,9 +96,39 @@ const DataInput = forwardRef<HTMLInputElement, DataInputProps>(
     const handleChange: ChangeEventHandler<HTMLInputElement> = (e) => {
       setValue(e.target.value);
       override(rowId, colId, e.target.value);
+      onChange?.(e.target.value);
     };
 
-    return (
+    const handleArrayChange = (value: string[]) => {
+      const v = value.join(",");
+      setValue(v);
+      override(rowId, colId, v);
+      onChange?.(v);
+    };
+
+    const isArray = colId === "authors" || colId === "originalAuthors";
+
+    const items = useMemo(
+      () => (value === "" ? [] : value.split(",")),
+      [value]
+    );
+
+    return isArray ? (
+      <Multicombobox
+        {...props}
+        ref={ref}
+        value={items}
+        onChange={handleArrayChange}
+        placeholder={Publication.ATTRIBUTE_LABELS[colId]}
+        getOptions={async (search) => {
+          const authors = await Author.REMOTE.search("Richard");
+
+          return authors
+            .map(({ name }) => name)
+            .filter((name) => name.toLowerCase().startsWith(search));
+        }}
+      />
+    ) : (
       <input
         {...props}
         ref={ref}
@@ -123,12 +159,16 @@ const DataInputWithValidation = forwardRef<
     validate([props.rowId]);
   }, [props.rowId, validate]);
 
+  const isArray =
+    props.colId === "authors" || props.colId === "originalAuthors";
+
   return (
     <DataInput
       {...props}
       ref={ref}
       data-error={Boolean(props.error)}
       onBlur={doValidate}
+      onChange={isArray ? doValidate : undefined}
     />
   );
 });
@@ -181,9 +221,15 @@ const useSubmit = () => {
 const SubmittingData: typeof Content = ({ rowId, colId, value, error }) => {
   const submit = useSubmit();
 
-  const handleKeyDown: KeyboardEventHandler = useCallback(
+  const handleKeyDown: KeyboardEventHandler<HTMLInputElement> = useCallback(
     (event) => {
-      if (event.key === Key.ENTER) {
+      if (
+        event.key === Key.ENTER &&
+        isElement(event.target) &&
+        !(event.target as HTMLInputElement).matches(
+          '[data-multiselect-input="true"'
+        )
+      ) {
         submit();
       }
     },
