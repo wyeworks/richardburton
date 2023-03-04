@@ -106,7 +106,7 @@ const DataInput = forwardRef<HTMLInputElement, DataInputProps>(
       onChange?.(v);
     };
 
-    const isArray = colId === "authors" || colId === "originalAuthors";
+    const isArray = Publication.ATTRIBUTE_TYPES[colId] === "array";
 
     const items = useMemo(
       () => (value === "" ? [] : value.split(",")),
@@ -159,8 +159,7 @@ const DataInputWithValidation = forwardRef<
     validate([props.rowId]);
   }, [props.rowId, validate]);
 
-  const isArray =
-    props.colId === "authors" || props.colId === "originalAuthors";
+  const isArray = Publication.ATTRIBUTE_TYPES[props.colId] === "array";
 
   return (
     <DataInput
