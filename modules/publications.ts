@@ -233,6 +233,7 @@ const ERROR_MESSAGES: Record<string, string> = {
 interface PublicationModule {
   ATTRIBUTES: PublicationKey[];
   ATTRIBUTE_LABELS: Record<PublicationKey, string>;
+  ATTRIBUTE_TYPES: Record<PublicationKey, "array" | "text" | "enum" | "number">;
   NEW_ROW_ID: PublicationId;
 
   STORE: {
@@ -329,6 +330,16 @@ const Publication: PublicationModule = {
     publisher: "Publisher",
     title: "Title",
     year: "Year",
+  },
+
+  ATTRIBUTE_TYPES: {
+    authors: "array",
+    originalAuthors: "array",
+    originalTitle: "text",
+    country: "enum",
+    publisher: "text",
+    title: "text",
+    year: "number",
   },
   NEW_ROW_ID: -1,
   STORE: {
