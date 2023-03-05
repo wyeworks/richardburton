@@ -84,7 +84,7 @@ const DataInputWithValidation = forwardRef<
     <DataInput
       {...props}
       ref={ref}
-      data-error={Boolean(props.error)}
+      error={Boolean(props.error)}
       onBlur={doValidate}
       onChange={isArray ? doValidate : undefined}
     />
@@ -145,7 +145,7 @@ const SubmittingData: typeof Content = ({ rowId, colId, value, error }) => {
         event.key === Key.ENTER &&
         isElement(event.target) &&
         !(event.target as HTMLInputElement).matches(
-          '[data-multiselect-input="true"'
+          '[data-multiselect-input="true"]'
         )
       ) {
         submit();
@@ -159,7 +159,7 @@ const SubmittingData: typeof Content = ({ rowId, colId, value, error }) => {
       rowId={rowId}
       colId={colId}
       value={value}
-      error={error}
+      error={Boolean(error)}
       onKeyDown={handleKeyDown}
     />
   );
