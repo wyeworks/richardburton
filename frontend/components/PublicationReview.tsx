@@ -1,12 +1,6 @@
 import classNames from "classnames";
 import { Publication } from "modules/publications";
-import {
-  FC,
-  forwardRef,
-  KeyboardEventHandler,
-  MouseEvent,
-  useCallback,
-} from "react";
+import { FC, KeyboardEventHandler, MouseEvent, useCallback } from "react";
 import Tooltip from "./Tooltip";
 import {
   useIsSelected,
@@ -14,7 +8,6 @@ import {
   useSelectionEvent,
 } from "react-selection-manager";
 import PublicationIndex, {
-  ColId,
   Column,
   Content,
   Row,
@@ -63,19 +56,17 @@ const ExtendedSignalColumn: FC<{ rowId: RowId }> = ({ rowId }) => {
   );
 };
 
-const AutovalidatedData: typeof Content = ({ rowId, colId, value, error }) => {
+const ExtendedContent: typeof Content = ({ rowId, colId, value, error }) => {
   const content = colId === "country" ? COUNTRIES[value] || value : value;
 
   return (
-    <Tooltip error message={error}>
-      <DataInput
-        rowId={rowId}
-        colId={colId}
-        value={content}
-        error={Boolean(error)}
-        autoValidated
-      />
-    </Tooltip>
+    <DataInput
+      rowId={rowId}
+      colId={colId}
+      value={content}
+      error={error}
+      autoValidated
+    />
   );
 };
 
@@ -132,7 +123,7 @@ const SubmittingData: typeof Content = ({ rowId, colId, value, error }) => {
       rowId={rowId}
       colId={colId}
       value={value}
-      error={Boolean(error)}
+      error={error}
       onKeyDown={handleKeyDown}
     />
   );
@@ -182,7 +173,7 @@ const PublicationReview: FC = () => {
       className={classNames(!isSelectionEmpty && "select-none")}
       ExtendedRow={ExtendedRow}
       ExtendedColumn={ExtendedColumn}
-      ExtendedContent={AutovalidatedData}
+      ExtendedContent={ExtendedContent}
       ExtendedSignalColumn={ExtendedSignalColumn}
       ExtraRow={NewPublicationRow}
       onRowClick={toggleSelection}
