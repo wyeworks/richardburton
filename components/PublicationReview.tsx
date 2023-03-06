@@ -100,7 +100,7 @@ const useSubmit = () => {
   }, [register, validate]);
 };
 
-const SubmittingData: typeof Content = ({ rowId, colId, value, error }) => {
+const SubmittableData: typeof Content = ({ rowId, colId, value, error }) => {
   const submit = useSubmit();
 
   const handleKeyDown: KeyboardEventHandler<HTMLInputElement> = useCallback(
@@ -148,7 +148,7 @@ const NewPublicationRow: FC = () => {
     <Row
       rowId={Publication.NEW_ROW_ID}
       Column={Column}
-      Content={SubmittingData}
+      Content={SubmittableData}
       SignalColumn={NewPublicationSignalColumn}
     />
   );
