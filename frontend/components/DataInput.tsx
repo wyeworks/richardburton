@@ -22,6 +22,7 @@ type Props = Omit<HTMLProps<HTMLInputElement>, "onChange" | "ref"> & {
   value: string;
   error: boolean;
   onChange?: (value: string) => void;
+  autoValidated?: boolean;
 };
 
 const DataInput = forwardRef<HTMLElement, Props>(function DataInput(
