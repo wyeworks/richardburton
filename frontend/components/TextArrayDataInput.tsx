@@ -49,6 +49,7 @@ export default forwardRef<HTMLElement, DataInputProps>(
       onChange?.(v);
     }
 
+    //TODO: create a better abstraction for this function, so we don't tie this input to author search
     async function getOptions(search: string) {
       const authors = await Author.REMOTE.search(search);
 
