@@ -4,11 +4,18 @@ import { DataInputProps } from "./DataInput";
 import c from "classnames";
 
 export default forwardRef<HTMLElement, DataInputProps>(function TextDataInput(
-  { rowId, colId, error, value: data, onChange, ...props },
+  { rowId, colId, error, value: data, autoValidated, onChange, ...props },
   ref
 ) {
+  const validate = Publication.REMOTE.useValidate();
   const override = Publication.STORE.ATTRIBUTES.useOverride();
   const [value, setValue] = useState(data);
+
+  function doValidate() {
+    if (autoValidated) {
+      validate([rowId]);
+    }
+  }
 
   function handleChange(e: ChangeEvent<HTMLInputElement>) {
     setValue(e.target.value);
@@ -26,6 +33,7 @@ export default forwardRef<HTMLElement, DataInputProps>(function TextDataInput(
         "error:focus:bg-red-400/80 error:bg-red-300/40 error:focus:text-white error:shadow-sm error:placeholder-white"
       )}
       value={value}
+      onBlur={doValidate}
       onChange={handleChange}
       data-error={error}
     />
