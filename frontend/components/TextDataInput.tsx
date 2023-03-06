@@ -1,4 +1,11 @@
-import { ChangeEvent, FC, ForwardedRef, forwardRef, useState } from "react";
+import {
+  ChangeEvent,
+  FC,
+  ForwardedRef,
+  forwardRef,
+  useEffect,
+  useState,
+} from "react";
 import { Publication } from "modules/publications";
 import { DataInputProps } from "./DataInput";
 import c from "classnames";
@@ -22,6 +29,12 @@ export default forwardRef<HTMLElement, DataInputProps>(function TextDataInput(
     override(rowId, colId, e.target.value);
     onChange?.(e.target.value);
   }
+
+  useEffect(() => {
+    if (data !== value) {
+      setValue(data);
+    }
+  }, [data, rowId, colId, value, setValue]);
 
   return (
     <input

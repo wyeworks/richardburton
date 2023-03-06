@@ -3,6 +3,7 @@ import {
   FocusEvent,
   ForwardedRef,
   forwardRef,
+  useEffect,
   useMemo,
   useState,
 } from "react";
@@ -55,6 +56,12 @@ export default forwardRef<HTMLElement, DataInputProps>(
         .map(({ name }) => name)
         .filter((name) => name.toLowerCase().startsWith(search));
     }
+
+    useEffect(() => {
+      if (data !== value) {
+        setValue(data);
+      }
+    }, [data, rowId, colId, value, setValue]);
 
     return (
       <Multicombobox
