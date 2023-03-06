@@ -7,6 +7,7 @@ import {
   PublicationKey,
   PublicationKeyType,
 } from "modules/publications";
+import Tooltip from "./Tooltip";
 
 const COMPONENTS_PER_TYPE: Record<PublicationKeyType, FC<Props>> = {
   text: TextDataInput,
@@ -20,7 +21,7 @@ type Props = Omit<HTMLProps<HTMLInputElement>, "onChange" | "ref"> & {
   rowId: PublicationId;
   colId: PublicationKey;
   value: string;
-  error: boolean;
+  error: string;
   onChange?: (value: string) => void;
   autoValidated?: boolean;
 };
@@ -31,7 +32,11 @@ const DataInput = forwardRef<HTMLElement, Props>(function DataInput(
 ) {
   const type = Publication.ATTRIBUTE_TYPES[props.colId];
   const Component = COMPONENTS_PER_TYPE[type];
-  return <Component {...props} ref={ref} />;
+  return (
+    <Tooltip error message={props.error}>
+      <Component {...props} ref={ref} />
+    </Tooltip>
+  );
 });
 
 export type { Props as DataInputProps };
