@@ -1,4 +1,11 @@
-import { FC, ForwardedRef, forwardRef, useMemo, useState } from "react";
+import {
+  FC,
+  FocusEvent,
+  ForwardedRef,
+  forwardRef,
+  useMemo,
+  useState,
+} from "react";
 import { Publication } from "modules/publications";
 import { Author } from "modules/authors";
 import { DataInputProps } from "./DataInput";
@@ -6,9 +13,10 @@ import Multicombobox from "./Multicombobox";
 
 export default forwardRef<HTMLElement, DataInputProps>(
   function TextArrayDataInput(
-    { rowId, colId, value: data, onChange, ...props },
+    { rowId, colId, value: data, autoValidated, onChange, onBlur, ...props },
     ref
   ) {
+    const validate = Publication.REMOTE.useValidate();
     const override = Publication.STORE.ATTRIBUTES.useOverride();
     const [value, setValue] = useState(data);
 
@@ -17,10 +25,17 @@ export default forwardRef<HTMLElement, DataInputProps>(
       [value]
     );
 
+    function doValidate() {
+      if (autoValidated) {
+        validate([rowId]);
+      }
+    }
+
     function handleChange(value: string[]) {
       const v = value.join(",");
       setValue(v);
       override(rowId, colId, v);
+      doValidate();
       onChange?.(v);
     }
 
@@ -36,9 +51,10 @@ export default forwardRef<HTMLElement, DataInputProps>(
       <Multicombobox
         {...props}
         ref={ref as ForwardedRef<HTMLDivElement>}
-        value={items}
-        onChange={handleChange}
         placeholder={Publication.ATTRIBUTE_LABELS[colId]}
+        value={items}
+        onBlur={doValidate}
+        onChange={handleChange}
         getOptions={getOptions}
       />
     );

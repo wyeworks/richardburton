@@ -63,44 +63,17 @@ const ExtendedSignalColumn: FC<{ rowId: RowId }> = ({ rowId }) => {
   );
 };
 
-const DataInputWithValidation = forwardRef<
-  HTMLInputElement,
-  {
-    rowId: RowId;
-    colId: ColId;
-    value: string;
-    error: string;
-  }
->(function DataInputWithValidation(props, ref) {
-  const validate = Publication.REMOTE.useValidate();
-
-  const doValidate = useCallback(() => {
-    validate([props.rowId]);
-  }, [props.rowId, validate]);
-
-  const isArray = Publication.ATTRIBUTE_TYPES[props.colId] === "array";
-
-  return (
-    <DataInput
-      {...props}
-      ref={ref}
-      error={Boolean(props.error)}
-      onBlur={doValidate}
-      onChange={isArray ? doValidate : undefined}
-    />
-  );
-});
-
 const AutovalidatedData: typeof Content = ({ rowId, colId, value, error }) => {
   const content = colId === "country" ? COUNTRIES[value] || value : value;
 
   return (
     <Tooltip error message={error}>
-      <DataInputWithValidation
+      <DataInput
         rowId={rowId}
         colId={colId}
         value={content}
-        error={error}
+        error={Boolean(error)}
+        autoValidated
       />
     </Tooltip>
   );
