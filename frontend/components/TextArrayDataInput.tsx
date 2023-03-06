@@ -13,7 +13,16 @@ import Multicombobox from "./Multicombobox";
 
 export default forwardRef<HTMLElement, DataInputProps>(
   function TextArrayDataInput(
-    { rowId, colId, value: data, autoValidated, onChange, onBlur, ...props },
+    {
+      rowId,
+      colId,
+      value: data,
+      error,
+      autoValidated,
+      onChange,
+      onBlur,
+      ...props
+    },
     ref
   ) {
     const validate = Publication.REMOTE.useValidate();
@@ -56,6 +65,7 @@ export default forwardRef<HTMLElement, DataInputProps>(
         onBlur={doValidate}
         onChange={handleChange}
         getOptions={getOptions}
+        error={Boolean(error)}
       />
     );
   }

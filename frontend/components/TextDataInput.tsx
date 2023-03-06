@@ -35,7 +35,7 @@ export default forwardRef<HTMLElement, DataInputProps>(function TextDataInput(
       value={value}
       onBlur={doValidate}
       onChange={handleChange}
-      data-error={error}
+      data-error={Boolean(error)}
     />
   );
 }) as FC<DataInputProps>;
