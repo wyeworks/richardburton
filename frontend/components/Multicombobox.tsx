@@ -1,8 +1,9 @@
 import {
-  FocusEventHandler,
+  ChangeEvent,
+  FocusEvent,
   forwardRef,
   HTMLProps,
-  KeyboardEventHandler,
+  KeyboardEvent,
   useRef,
   useState,
 } from "react";
@@ -41,15 +42,17 @@ export default forwardRef<HTMLDivElement, Props>(function Multicombobox(
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [options, setOptions] = useState<string[]>([]);
 
-  const unselect = (index: number) => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  function unselect(index: number) {
     onChange(value.filter((_, i) => i !== index));
-  };
+  }
 
-  const select = (item: Item) => {
+  function select(item: Item) {
     if (!value.includes(item)) onChange([...value, item]);
-  };
+  }
 
-  const handleKeyDown: KeyboardEventHandler<HTMLInputElement> = (event) => {
+  function handleKeyDown(event: KeyboardEvent<HTMLInputElement>) {
     const isInputValueBlank = inputValue.trim() === "";
 
     if (event.key === Key.COMMA) {
@@ -82,11 +85,9 @@ export default forwardRef<HTMLDivElement, Props>(function Multicombobox(
     }
 
     onKeyDown?.(event);
-  };
+  }
 
-  const [isOpen, setIsOpen] = useState(false);
-
-  const handleChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  async function handleChange(event: ChangeEvent<HTMLInputElement>) {
     const v = event.target.value;
     setInputValue(v);
 
@@ -99,23 +100,23 @@ export default forwardRef<HTMLDivElement, Props>(function Multicombobox(
     } else {
       setIsOpen(false);
     }
-  };
+  }
 
-  const handleOptionSelect = (option: string) => {
+  function handleOptionSelect(option: string) {
     select(option);
     setInputValue("");
     inputRef.current?.focus();
-  };
+  }
 
-  const handleFocus: FocusEventHandler<HTMLInputElement> = (event) => {
+  function handleFocus(event: FocusEvent<HTMLInputElement>) {
     setFocused(true);
     onFocus?.(event);
-  };
+  }
 
-  const handleBlur: FocusEventHandler<HTMLInputElement> = (event) => {
+  function handleBlur(event: FocusEvent<HTMLInputElement>) {
     setFocused(false);
     onBlur?.(event);
-  };
+  }
 
   const inputRef = useRef<HTMLInputElement>(null);
 
