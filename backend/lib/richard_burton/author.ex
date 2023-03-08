@@ -4,6 +4,7 @@ defmodule RichardBurton.Author do
   """
   use Ecto.Schema
   import Ecto.Changeset
+  import Ecto.Query
 
   alias RichardBurton.Author
   alias RichardBurton.Repo
@@ -79,4 +80,21 @@ defmodule RichardBurton.Author do
   end
 
   def link_fingerprint(changeset = %Ecto.Changeset{valid?: false}), do: changeset
+
+  def search(term, :prefix) when is_binary(term) do
+    from(a in Author, where: ilike(a.name, ^"#{term}%"))
+    |> Repo.all()
+  end
+
+  def search(term, :fuzzy) when is_binary(term) do
+    from(a in Author, where: fragment("similarity((?), (?)) > 0.3", a.name, ^term))
+    |> Repo.all()
+  end
+
+  def search(term) when is_binary(term) do
+    case search(term, :prefix) do
+      [] -> search(term, :fuzzy)
+      keywords when is_list(keywords) -> keywords
+    end
+  end
 end

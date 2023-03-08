@@ -1,6 +1,5 @@
 import {
   FC,
-  FocusEvent,
   ForwardedRef,
   forwardRef,
   useEffect,
@@ -11,6 +10,7 @@ import { Publication } from "modules/publications";
 import { Author } from "modules/authors";
 import { DataInputProps } from "./DataInput";
 import Multicombobox from "./Multicombobox";
+import useDebounce from "utils/useDebounce";
 
 export default forwardRef<HTMLElement, DataInputProps>(
   function TextArrayDataInput(
@@ -49,20 +49,16 @@ export default forwardRef<HTMLElement, DataInputProps>(
       onChange?.(v);
     }
 
-    //TODO: create a better abstraction for this function, so we don't tie this input to author search
-    async function getOptions(search: string) {
-      const authors = await Author.REMOTE.search(search);
-
-      return authors
-        .map(({ name }) => name)
-        .filter((name) => name.toLowerCase().startsWith(search));
-    }
-
     useEffect(() => {
       if (data !== value) {
         setValue(data);
       }
     }, [data, rowId, colId, value, setValue]);
+
+    //TODO: uncouple this component from author search
+    const getOptions = useDebounce(Author.REMOTE.search, 350, {
+      leading: true,
+    });
 
     return (
       <Multicombobox
@@ -72,8 +68,8 @@ export default forwardRef<HTMLElement, DataInputProps>(
         value={items}
         onBlur={doValidate}
         onChange={handleChange}
-        getOptions={getOptions}
         error={Boolean(error)}
+        getOptions={getOptions}
       />
     );
   }
