@@ -10,15 +10,17 @@ import {
   useState,
 } from "react";
 import c from "classnames";
-import MenuProvider from "./MenuProvider";
+import MenuProvider, { MenuOption } from "./MenuProvider";
 import ChevronDownIcon from "assets/chevron-down.svg";
 import { Key } from "app";
 
+type Option = MenuOption;
+
 type Props = Omit<HTMLProps<HTMLInputElement>, "value" | "onChange"> & {
-  options: string[];
+  options: Option[];
   placeholder: string;
   value: string;
-  onChange: (option: string) => void;
+  onChange: (option: Option) => void;
 };
 
 export default forwardRef<HTMLInputElement, Props>(function Select(
@@ -51,7 +53,7 @@ export default forwardRef<HTMLInputElement, Props>(function Select(
   function handleBlur(event: FocusEvent<HTMLInputElement>) {
     setFocused(false);
 
-    if (!options.includes(inputValue)) {
+    if (!options.map((opt) => opt.label).includes(inputValue)) {
       setInputValue("");
     }
 
@@ -68,13 +70,11 @@ export default forwardRef<HTMLInputElement, Props>(function Select(
   }
 
   function handleKeyDown(event: KeyboardEvent<HTMLInputElement>) {
-    const isInputValueBlank = inputValue.trim() === "";
-
     if (
       (event.key === Key.ENTER || event.key === Key.ARROW_RIGHT) &&
       activeIndex != null
     ) {
-      setInputValue(options[activeIndex]);
+      setInputValue(options[activeIndex].label);
       setIsOpen(false);
     }
 
@@ -86,8 +86,8 @@ export default forwardRef<HTMLInputElement, Props>(function Select(
     inputRef.current?.focus();
   }
 
-  function handleSelect(option: string) {
-    setInputValue(option);
+  function handleSelect(option: Option) {
+    setInputValue(option.label);
     onChange?.(option);
   }
 
@@ -107,9 +107,7 @@ export default forwardRef<HTMLInputElement, Props>(function Select(
         className={c(
           "flex items-center px-2 py-1 rounded w-fit ",
           "hover:bg-gray-active hover:shadow-sm",
-          {
-            "bg-gray-active shadow-sm": focused || isOpen,
-          }
+          { "bg-gray-active shadow-sm": focused || isOpen }
         )}
       >
         <input
@@ -142,3 +140,5 @@ export default forwardRef<HTMLInputElement, Props>(function Select(
     </MenuProvider>
   );
 });
+
+export type { Option as SelectOption };

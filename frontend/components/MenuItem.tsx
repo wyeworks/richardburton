@@ -11,7 +11,7 @@ type Props = Omit<
   "className" | "onClick"
 > & {
   selected: boolean;
-  onClick: MouseEventHandler<HTMLButtonElement>;
+  onClick?: MouseEventHandler<HTMLButtonElement>;
 };
 
 export default forwardRef<HTMLLIElement, Props>(function MenuItem(
