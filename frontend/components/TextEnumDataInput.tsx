@@ -1,11 +1,19 @@
 import { FC, ForwardedRef, forwardRef, useEffect, useState } from "react";
 import { Publication } from "modules/publications";
 import { DataInputProps } from "./DataInput";
-import { getAlpha2Codes } from "i18n-iso-countries";
+import countries from "i18n-iso-countries";
+import countriesEN from "i18n-iso-countries/langs/en.json";
 import c from "classnames";
-import Select from "./Select";
+import Select, { SelectOption } from "./Select";
 
-const COUNTRIES = Object.keys(getAlpha2Codes());
+//TODO: decouple this component from countries
+countries.registerLocale(countriesEN);
+const COUNTRIES = countries.getNames("en", { select: "official" });
+
+const OPTIONS = Object.entries(COUNTRIES).map(([key, label]) => ({
+  id: key,
+  label: label,
+}));
 
 export default forwardRef<HTMLElement, DataInputProps>(function TextDataInput(
   { rowId, colId, error, value: data, autoValidated, onChange, ...props },
@@ -21,15 +29,15 @@ export default forwardRef<HTMLElement, DataInputProps>(function TextDataInput(
     }
   }
 
-  function handleChange(value: string) {
-    setValue(value);
-    override(rowId, colId, value);
-    onChange?.(value);
+  function handleChange(option: SelectOption) {
+    setValue(option.label);
+    override(rowId, colId, option.id);
+    onChange?.(option.id);
   }
 
   useEffect(() => {
-    if (data !== value) {
-      setValue(data);
+    if (COUNTRIES[data] !== value) {
+      setValue(COUNTRIES[data]);
     }
   }, [data, rowId, colId, value, setValue]);
 
@@ -46,7 +54,7 @@ export default forwardRef<HTMLElement, DataInputProps>(function TextDataInput(
       onBlur={doValidate}
       onChange={handleChange}
       data-error={Boolean(error)}
-      options={COUNTRIES}
+      options={OPTIONS}
     />
   );
 }) as FC<DataInputProps>;

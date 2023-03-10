@@ -10,7 +10,7 @@ import {
 import c from "classnames";
 import Pill from "./Pill";
 
-import MenuProvider from "./MenuProvider";
+import MenuProvider, { MenuOption } from "./MenuProvider";
 import { Key } from "app";
 
 type Item = string;

@@ -8,29 +8,25 @@ import {
   useListNavigation,
   useRole,
 } from "@floating-ui/react";
-import {
-  cloneElement,
-  FC,
-  ReactElement,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { isString } from "lodash";
+import { cloneElement, FC, ReactElement, useMemo, useRef } from "react";
 import { mergeRefs } from "react-merge-refs";
 import Menu from "./Menu";
 import MenuItem from "./MenuItem";
 
-type Props = {
+type Option = { id: string; label: string };
+
+type Props<OptionType extends Option | string> = {
   children: ReactElement;
-  options: string[];
+  options: OptionType[];
   isOpen: boolean;
   activeIndex: number | null;
   setIsOpen: (value: boolean) => void;
   setActiveIndex: (value: number | null) => void;
-  onSelect: (option: string) => void;
+  onSelect: (option: OptionType) => void;
 };
 
-const MenuProvider: FC<Props> = ({
+const MenuProvider = <OptionType extends Option | string>({
   children,
   options,
   isOpen,
@@ -38,7 +34,7 @@ const MenuProvider: FC<Props> = ({
   setIsOpen,
   setActiveIndex,
   onSelect,
-}) => {
+}: Props<OptionType>) => {
   const listRef = useRef<(HTMLLIElement | null)[]>([]);
 
   const { x, y, strategy, refs, context } = useFloating<HTMLDivElement>({
@@ -105,7 +101,7 @@ const MenuProvider: FC<Props> = ({
             >
               {options.map((option, index) => (
                 <MenuItem
-                  key={option}
+                  key={isString(option) ? option : option.id}
                   ref={(node) => (listRef.current[index] = node)}
                   selected={activeIndex === index}
                   {...getItemProps({
@@ -115,7 +111,7 @@ const MenuProvider: FC<Props> = ({
                     },
                   })}
                 >
-                  {option}
+                  {isString(option) ? option : option.label}
                 </MenuItem>
               ))}
             </Menu>
@@ -126,4 +122,5 @@ const MenuProvider: FC<Props> = ({
   );
 };
 
+export type { Option as MenuOption };
 export default MenuProvider;
