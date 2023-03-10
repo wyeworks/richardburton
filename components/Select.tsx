@@ -20,12 +20,14 @@ type Props = Omit<HTMLProps<HTMLInputElement>, "value" | "onChange"> & {
   options: Option[];
   placeholder: string;
   value: string;
+  error: boolean;
   onChange: (option: Option) => void;
 };
 
 export default forwardRef<HTMLInputElement, Props>(function Select(
   {
     value,
+    error,
     options,
     placeholder,
     onChange,
@@ -105,24 +107,27 @@ export default forwardRef<HTMLInputElement, Props>(function Select(
       <div
         ref={ref}
         className={c(
-          "flex items-center px-2 py-1 rounded w-fit ",
+          "flex items-center px-2 py-1 rounded w-fit",
           "hover:bg-gray-active hover:shadow-sm",
-          { "bg-gray-active shadow-sm": focused || isOpen }
+          "error:bg-red-300/40 error:hover:bg-red-300/40",
+          {
+            "bg-gray-active shadow-sm": focused || isOpen,
+            "error:bg-red-400/80 error:text-white error:shadow-sm": focused,
+          }
         )}
+        data-error={error}
       >
         <input
           {...props}
           ref={inputRef}
           placeholder={placeholder}
-          className={c(
-            "outline-none bg-transparent placeholder:text-xs text-xs",
-            "error:focus:bg-red-400/80 error:bg-red-300/40 error:focus:text-white error:shadow-sm error:placeholder-white"
-          )}
+          className="text-xs bg-transparent outline-none placeholder:text-xs error:placeholder-white"
           onFocus={handleFocus}
           onBlur={handleBlur}
           onChange={handleInputChange}
           onKeyDown={handleKeyDown}
           value={inputValue}
+          data-error={error}
         />
         <button
           className={c(
@@ -130,9 +135,11 @@ export default forwardRef<HTMLInputElement, Props>(function Select(
             "h-5 aspect-square",
             "flex items-center justify-center",
             "transition-transform",
+            "error:text-white",
             { "rotate-180": isOpen }
           )}
           onClick={handleToggleClick}
+          data-error={error}
         >
           <ChevronDownIcon className="h-5" />
         </button>
