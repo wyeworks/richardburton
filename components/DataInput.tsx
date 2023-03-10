@@ -8,10 +8,11 @@ import {
   PublicationKeyType,
 } from "modules/publications";
 import Tooltip from "./Tooltip";
+import TextEnumDataInput from "./TextEnumDataInput";
 
 const COMPONENTS_PER_TYPE: Record<PublicationKeyType, FC<Props>> = {
   text: TextDataInput,
-  enum: TextDataInput,
+  enum: TextEnumDataInput,
   number: TextDataInput,
   array: TextArrayDataInput,
 };
