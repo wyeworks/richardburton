@@ -20,13 +20,11 @@ export default forwardRef<HTMLLIElement, Props>(function MenuItem(
 ) {
   return (
     <li
-      className={c("px-2.5 py-1 focus:bg-indigo-100", {
-        "bg-indigo-100": selected,
-      })}
-      ref={ref}
       {...props}
+      className={c("focus:bg-indigo-100", { "bg-indigo-100": selected })}
+      ref={ref}
     >
-      <button className="w-full text-left" onClick={onClick}>
+      <button className="px-2.5 py-1 w-full text-left" onClick={onClick}>
         {children}
       </button>
     </li>
