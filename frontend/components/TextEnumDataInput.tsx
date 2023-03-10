@@ -1,15 +1,11 @@
-import {
-  ChangeEvent,
-  FC,
-  ForwardedRef,
-  forwardRef,
-  useEffect,
-  useState,
-} from "react";
+import { FC, ForwardedRef, forwardRef, useEffect, useState } from "react";
 import { Publication } from "modules/publications";
 import { DataInputProps } from "./DataInput";
+import { getAlpha2Codes } from "i18n-iso-countries";
 import c from "classnames";
 import Select from "./Select";
+
+const COUNTRIES = Object.keys(getAlpha2Codes());
 
 export default forwardRef<HTMLElement, DataInputProps>(function TextDataInput(
   { rowId, colId, error, value: data, autoValidated, onChange, ...props },
@@ -50,7 +46,7 @@ export default forwardRef<HTMLElement, DataInputProps>(function TextDataInput(
       onBlur={doValidate}
       onChange={handleChange}
       data-error={Boolean(error)}
-      options={["GB", "UK", "AU"]}
+      options={COUNTRIES}
     />
   );
 }) as FC<DataInputProps>;
