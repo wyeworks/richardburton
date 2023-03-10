@@ -16,6 +16,7 @@
     "axios-case-converter": "^0.9.0",
     "classnames": "^2.3.2",
     "framer-motion": "^7.9.1",
+    "i18n-iso-countries": "^7.5.0",
     "lodash": "^4.17.21",
     "next": "^13.0.6",
     "next-auth": "^4.18.8",
