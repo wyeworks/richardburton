@@ -55,7 +55,7 @@ export default forwardRef<HTMLElement, DataInputProps>(
       }
     }, [data, rowId, colId, value, setValue]);
 
-    //TODO: uncouple this component from author search
+    //TODO: decouple this component from author search
     const getOptions = useDebounce(Author.REMOTE.search, 350, {
       leading: true,
     });
