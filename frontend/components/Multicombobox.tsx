@@ -1,17 +1,9 @@
-import {
-  ChangeEvent,
-  FocusEvent,
-  forwardRef,
-  HTMLProps,
-  KeyboardEvent,
-  useRef,
-  useState,
-} from "react";
-import c from "classnames";
+import { forwardRef, HTMLProps, KeyboardEvent, useRef, useState } from "react";
 import Pill from "./Pill";
 
-import MenuProvider, { MenuOption } from "./MenuProvider";
+import MenuProvider from "./MenuProvider";
 import { Key } from "app";
+import TextInput from "./TextInput";
 
 type Item = string;
 
@@ -24,20 +16,9 @@ type Props = Omit<HTMLProps<HTMLInputElement>, "value" | "onChange"> & {
 };
 
 export default forwardRef<HTMLDivElement, Props>(function Multicombobox(
-  {
-    value,
-    placeholder,
-    getOptions,
-    onBlur,
-    onFocus,
-    onChange,
-    onKeyDown,
-    error,
-    ...props
-  },
+  { value, placeholder, getOptions, onChange, onKeyDown, error, ...props },
   ref
 ) {
-  const [focused, setFocused] = useState(false);
   const [inputValue, setInputValue] = useState("");
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [options, setOptions] = useState<string[]>([]);
@@ -87,8 +68,7 @@ export default forwardRef<HTMLDivElement, Props>(function Multicombobox(
     onKeyDown?.(event);
   }
 
-  async function handleChange(event: ChangeEvent<HTMLInputElement>) {
-    const v = event.target.value;
+  async function handleChange(v: string) {
     setInputValue(v);
 
     if (v) {
@@ -108,16 +88,6 @@ export default forwardRef<HTMLDivElement, Props>(function Multicombobox(
     inputRef.current?.focus();
   }
 
-  function handleFocus(event: FocusEvent<HTMLInputElement>) {
-    setFocused(true);
-    onFocus?.(event);
-  }
-
-  function handleBlur(event: FocusEvent<HTMLInputElement>) {
-    setFocused(false);
-    onBlur?.(event);
-  }
-
   const inputRef = useRef<HTMLInputElement>(null);
 
   return (
@@ -129,42 +99,29 @@ export default forwardRef<HTMLDivElement, Props>(function Multicombobox(
       setActiveIndex={setActiveIndex}
       onSelect={handleOptionSelect}
     >
-      <div
+      <TextInput
+        {...props}
         ref={ref}
-        className={c(
-          "w-full overflow-x-scroll gap-1 inline-flex items-center text-xs rounded h-full scrollbar scrollbar-none",
-          "error:shadow-sm ",
-          {
-            "bg-gray-active shadow-sm error:bg-red-400/80": focused,
-            "error:bg-red-300/40": !focused,
-            "px-2": value.length === 0,
-            "px-1": value.length > 0,
-          }
-        )}
-        data-error={error}
-      >
-        {value.map((item, index) => (
-          <Pill
-            key={`${item}-${index}`}
-            label={item}
-            onRemove={() => unselect(index)}
-          />
-        ))}
-        <input
-          {...props}
-          ref={inputRef}
-          value={inputValue}
-          placeholder={value.length === 0 ? placeholder : "Add another"}
-          className="bg-transparent outline-none shrink grow error:focus:text-white error:placeholder-white"
-          onFocus={handleFocus}
-          onBlur={handleBlur}
-          onChange={handleChange}
-          onKeyDown={handleKeyDown}
-          aria-autocomplete="list"
-          data-error={error}
-          data-multiselect-input="true"
-        />
-      </div>
+        inputRef={inputRef}
+        value={inputValue}
+        error={error}
+        placeholder={value.length === 0 ? placeholder : "Add another"}
+        onChange={handleChange}
+        onKeyDown={handleKeyDown}
+        aria-autocomplete="list"
+        data-multiselect-input="true"
+        left={
+          <>
+            {value.map((item, index) => (
+              <Pill
+                key={`${item}-${index}`}
+                label={item}
+                onRemove={() => unselect(index)}
+              />
+            ))}
+          </>
+        }
+      />
     </MenuProvider>
   );
 });
