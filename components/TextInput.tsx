@@ -28,8 +28,6 @@ export default forwardRef<HTMLDivElement, Props>(function TextInput(
 ) {
   const [focused, setFocused] = useState(false);
 
-  const empty = value.length === 0;
-
   function handleFocus(event: FocusEvent<HTMLInputElement>) {
     setFocused(true);
     onFocus?.(event);
@@ -47,13 +45,12 @@ export default forwardRef<HTMLDivElement, Props>(function TextInput(
     <div
       ref={ref}
       className={c(
-        "w-full overflow-x-scroll gap-1 inline-flex items-center text-xs rounded h-full scrollbar scrollbar-none py-1",
+        "w-full overflow-x-scroll gap-1 inline-flex items-center text-xs rounded h-full scrollbar scrollbar-none",
+        "p-1",
         "error:shadow-sm",
         {
           "bg-gray-active shadow-sm error:bg-red-400/80": focused,
           "error:bg-red-300/40": !focused,
-          "px-2": empty,
-          "px-1": !empty,
         }
       )}
       data-error={error}
@@ -63,7 +60,7 @@ export default forwardRef<HTMLDivElement, Props>(function TextInput(
         {...props}
         ref={inputRef}
         value={value}
-        className="bg-transparent outline-none shrink grow placeholder:text-xs error:focus:text-white error:placeholder-white"
+        className="px-1 bg-transparent outline-none shrink grow placeholder:text-xs error:focus:text-white error:placeholder-white"
         onFocus={handleFocus}
         onBlur={handleBlur}
         onChange={handleChange}
