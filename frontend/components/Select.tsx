@@ -5,7 +5,7 @@ import {
   HTMLProps,
   KeyboardEvent,
   MouseEvent,
-  useEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
@@ -41,11 +41,7 @@ export default forwardRef<HTMLInputElement, Props>(function Select(
   const [focused, setFocused] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
-  const [inputValue, setInputValue] = useState(value);
-
-  useEffect(() => {
-    setInputValue(value);
-  }, [value]);
+  const [search, setSearch] = useState("");
 
   function handleFocus(event: FocusEvent<HTMLInputElement>) {
     setFocused(true);
@@ -54,17 +50,13 @@ export default forwardRef<HTMLInputElement, Props>(function Select(
 
   function handleBlur(event: FocusEvent<HTMLInputElement>) {
     setFocused(false);
-
-    if (!options.map((opt) => opt.label).includes(inputValue)) {
-      setInputValue("");
-    }
-
+    setSearch("");
     onBlur?.(event);
   }
 
   function handleInputChange(event: ChangeEvent<HTMLInputElement>) {
     const v = event.target.value;
-    setInputValue(v);
+    setSearch(v);
 
     if (v) {
       setIsOpen(true);
@@ -76,7 +68,6 @@ export default forwardRef<HTMLInputElement, Props>(function Select(
       (event.key === Key.ENTER || event.key === Key.ARROW_RIGHT) &&
       activeIndex != null
     ) {
-      setInputValue(options[activeIndex].label);
       setIsOpen(false);
     }
 
@@ -89,15 +80,21 @@ export default forwardRef<HTMLInputElement, Props>(function Select(
   }
 
   function handleSelect(option: Option) {
-    setInputValue(option.label);
     onChange?.(option);
   }
 
   const inputRef = useRef<HTMLInputElement>(null);
 
+  const filteredOptions = useMemo(() => {
+    const matches = (opt: Option) =>
+      opt.label.toLowerCase().startsWith(search.toLowerCase());
+
+    return search ? options.filter(matches) : options;
+  }, [options, search]);
+
   return (
     <MenuProvider
-      options={options}
+      options={filteredOptions}
       isOpen={isOpen}
       activeIndex={activeIndex}
       setIsOpen={setIsOpen}
@@ -107,7 +104,7 @@ export default forwardRef<HTMLInputElement, Props>(function Select(
       <div
         ref={ref}
         className={c(
-          "flex items-center px-2 py-1 rounded w-fit",
+          "flex items-center px-2 py-1 rounded w-fit text-xs",
           "hover:bg-gray-active hover:shadow-sm",
           "error:bg-red-300/40 error:hover:bg-red-300/40",
           {
@@ -121,14 +118,16 @@ export default forwardRef<HTMLInputElement, Props>(function Select(
           {...props}
           ref={inputRef}
           placeholder={placeholder}
-          className="text-xs bg-transparent outline-none placeholder:text-xs error:placeholder-white"
+          className="bg-transparent outline-none placeholder:text-xs error:placeholder-white"
           onFocus={handleFocus}
           onBlur={handleBlur}
           onChange={handleInputChange}
           onKeyDown={handleKeyDown}
-          value={inputValue}
+          value={focused ? search : value || ""}
           data-error={error}
+          aria-autocomplete="list"
         />
+
         <button
           className={c(
             "outline-none",
