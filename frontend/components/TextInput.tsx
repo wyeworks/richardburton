@@ -9,14 +9,17 @@ import {
 } from "react";
 import c from "classnames";
 
-type Props = Omit<HTMLProps<HTMLInputElement>, "value" | "onChange"> & {
+type Props = Omit<
+  HTMLProps<HTMLInputElement>,
+  "value" | "onChange" | "className"
+> & {
   value: string;
   error?: boolean;
   onChange: (value: string) => void;
   left?: ReactNode;
   right?: ReactNode;
 
-  inputRef: Ref<HTMLInputElement>;
+  inputRef?: Ref<HTMLInputElement>;
 };
 
 export default forwardRef<HTMLDivElement, Props>(function TextInput(
@@ -44,7 +47,7 @@ export default forwardRef<HTMLDivElement, Props>(function TextInput(
     <div
       ref={ref}
       className={c(
-        "w-full overflow-x-scroll gap-1 inline-flex items-center text-xs rounded h-full scrollbar scrollbar-none",
+        "w-full overflow-x-scroll gap-1 inline-flex items-center text-xs rounded h-full scrollbar scrollbar-none py-1",
         "error:shadow-sm",
         {
           "bg-gray-active shadow-sm error:bg-red-400/80": focused,
