@@ -1,14 +1,7 @@
-import {
-  ChangeEvent,
-  FC,
-  ForwardedRef,
-  forwardRef,
-  useEffect,
-  useState,
-} from "react";
+import { FC, ForwardedRef, forwardRef, useEffect, useState } from "react";
 import { Publication } from "modules/publications";
 import { DataInputProps } from "./DataInput";
-import c from "classnames";
+import TextInput from "./TextInput";
 
 export default forwardRef<HTMLElement, DataInputProps>(function TextDataInput(
   { rowId, colId, error, value: data, autoValidated, onChange, ...props },
@@ -24,10 +17,10 @@ export default forwardRef<HTMLElement, DataInputProps>(function TextDataInput(
     }
   }
 
-  function handleChange(e: ChangeEvent<HTMLInputElement>) {
-    setValue(e.target.value);
-    override(rowId, colId, e.target.value);
-    onChange?.(e.target.value);
+  function handleChange(value: string) {
+    setValue(value);
+    override(rowId, colId, value);
+    onChange?.(value);
   }
 
   useEffect(() => {
@@ -37,18 +30,14 @@ export default forwardRef<HTMLElement, DataInputProps>(function TextDataInput(
   }, [data, rowId, colId, value, setValue]);
 
   return (
-    <input
+    <TextInput
       {...props}
       ref={ref as ForwardedRef<HTMLInputElement>}
       placeholder={Publication.ATTRIBUTE_LABELS[colId]}
-      className={c(
-        "px-2 py-1 rounded outline-none bg-transparent focus:bg-gray-active focus:shadow-sm placeholder:text-xs",
-        "error:focus:bg-red-400/80 error:bg-red-300/40 error:focus:text-white error:shadow-sm error:placeholder-white"
-      )}
       value={value}
       onBlur={doValidate}
       onChange={handleChange}
-      data-error={Boolean(error)}
+      error={Boolean(error)}
     />
   );
 }) as FC<DataInputProps>;
