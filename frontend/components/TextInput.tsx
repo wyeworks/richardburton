@@ -13,13 +13,14 @@ type Props = Omit<HTMLProps<HTMLInputElement>, "value" | "onChange"> & {
   value: string;
   error?: boolean;
   onChange: (value: string) => void;
-  left: ReactNode;
+  left?: ReactNode;
+  right?: ReactNode;
 
   inputRef: Ref<HTMLInputElement>;
 };
 
 export default forwardRef<HTMLDivElement, Props>(function TextInput(
-  { value, error, left, inputRef, onChange, onBlur, onFocus, ...props },
+  { value, error, left, right, inputRef, onChange, onBlur, onFocus, ...props },
   ref
 ) {
   const [focused, setFocused] = useState(false);
@@ -65,6 +66,7 @@ export default forwardRef<HTMLDivElement, Props>(function TextInput(
         onChange={handleChange}
         data-error={error}
       />
+      {right}
     </div>
   );
 });

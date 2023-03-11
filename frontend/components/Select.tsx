@@ -13,29 +13,19 @@ import c from "classnames";
 import MenuProvider, { MenuOption } from "./MenuProvider";
 import ChevronDownIcon from "assets/chevron-down.svg";
 import { Key } from "app";
+import TextInput from "./TextInput";
 
 type Option = MenuOption;
 
 type Props = Omit<HTMLProps<HTMLInputElement>, "value" | "onChange"> & {
   options: Option[];
-  placeholder: string;
   value: string;
   error: boolean;
   onChange: (option: Option) => void;
 };
 
 export default forwardRef<HTMLInputElement, Props>(function Select(
-  {
-    value,
-    error,
-    options,
-    placeholder,
-    onChange,
-    onFocus,
-    onKeyDown,
-    onBlur,
-    ...props
-  },
+  { value, error, options, onChange, onFocus, onKeyDown, onBlur, ...props },
   ref
 ) {
   const [focused, setFocused] = useState(false);
@@ -54,8 +44,7 @@ export default forwardRef<HTMLInputElement, Props>(function Select(
     onBlur?.(event);
   }
 
-  function handleInputChange(event: ChangeEvent<HTMLInputElement>) {
-    const v = event.target.value;
+  function handleInputChange(v: string) {
     setSearch(v);
 
     if (v) {
@@ -101,48 +90,34 @@ export default forwardRef<HTMLInputElement, Props>(function Select(
       setActiveIndex={setActiveIndex}
       onSelect={handleSelect}
     >
-      <div
+      <TextInput
+        {...props}
         ref={ref}
-        className={c(
-          "flex items-center px-2 py-1 rounded w-fit text-xs",
-          "hover:bg-gray-active hover:shadow-sm",
-          "error:bg-red-300/40 error:hover:bg-red-300/40",
-          {
-            "bg-gray-active shadow-sm": focused || isOpen,
-            "error:bg-red-400/80 error:text-white error:shadow-sm": focused,
-          }
-        )}
-        data-error={error}
-      >
-        <input
-          {...props}
-          ref={inputRef}
-          placeholder={placeholder}
-          className="bg-transparent outline-none placeholder:text-xs error:placeholder-white"
-          onFocus={handleFocus}
-          onBlur={handleBlur}
-          onChange={handleInputChange}
-          onKeyDown={handleKeyDown}
-          value={focused ? search : value || ""}
-          data-error={error}
-          aria-autocomplete="list"
-        />
-
-        <button
-          className={c(
-            "outline-none",
-            "h-5 aspect-square",
-            "flex items-center justify-center",
-            "transition-transform",
-            "error:text-white",
-            { "rotate-180": isOpen }
-          )}
-          onClick={handleToggleClick}
-          data-error={error}
-        >
-          <ChevronDownIcon className="h-5" />
-        </button>
-      </div>
+        inputRef={inputRef}
+        onFocus={handleFocus}
+        onBlur={handleBlur}
+        onChange={handleInputChange}
+        onKeyDown={handleKeyDown}
+        value={focused ? search : value || ""}
+        error={error}
+        aria-autocomplete="list"
+        right={
+          <button
+            className={c(
+              "outline-none",
+              "h-5 aspect-square",
+              "flex items-center justify-center",
+              "transition-transform",
+              "error:text-white",
+              { "rotate-180": isOpen }
+            )}
+            onClick={handleToggleClick}
+            data-error={error}
+          >
+            <ChevronDownIcon className="h-5" />
+          </button>
+        }
+      />
     </MenuProvider>
   );
 });
