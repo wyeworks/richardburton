@@ -1,4 +1,4 @@
-import { Publication } from "modules/publications";
+import { Publication } from "modules/publication";
 import { FC } from "react";
 import SparklesIcon from "assets/sparkles.svg";
 import Tooltip from "./Tooltip";

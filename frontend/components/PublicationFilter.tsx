@@ -1,4 +1,4 @@
-import { Publication, PublicationKey } from "modules/publications";
+import { Publication, PublicationKey } from "modules/publication";
 import { FC, useEffect } from "react";
 import Toggle from "./Toggle";
 
