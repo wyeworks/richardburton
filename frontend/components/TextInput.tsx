@@ -15,7 +15,7 @@ type Props = Omit<
 > & {
   value: string;
   error?: boolean;
-  onChange: (value: string) => void;
+  onChange?: (value: string) => void;
   left?: ReactNode;
   right?: ReactNode;
 
