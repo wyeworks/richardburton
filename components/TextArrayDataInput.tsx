@@ -7,7 +7,7 @@ import { Publication } from "modules/publications";
 
 export default forwardRef<HTMLDivElement, DataInputProps>(
   function TextArrayDataInput(
-    { rowId, colId, value, onChange, onBlur, ...props },
+    { rowId, colId, value, autoValidated, onChange, onBlur, ...props },
     ref
   ) {
     const items = useMemo(
