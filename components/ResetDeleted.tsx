@@ -1,4 +1,4 @@
-import { Publication } from "modules/publications";
+import { Publication } from "modules/publication";
 import { FC } from "react";
 import Button from "./Button";
 import RestoreTrashIcon from "assets/restore-trash.svg";

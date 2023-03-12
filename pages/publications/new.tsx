@@ -1,5 +1,5 @@
 import { NextPage } from "next";
-import { Publication } from "modules/publications";
+import { Publication } from "modules/publication";
 import PublicationReview from "components/PublicationReview";
 
 import Layout from "components/Layout";

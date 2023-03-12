@@ -1,5 +1,5 @@
 import { isString } from "lodash";
-import { Publication } from "modules/publications";
+import { Publication } from "modules/publication";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { ChangeEventHandler, FC, useEffect, useState } from "react";

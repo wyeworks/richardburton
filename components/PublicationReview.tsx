@@ -1,5 +1,5 @@
 import classNames from "classnames";
-import { Publication } from "modules/publications";
+import { Publication } from "modules/publication";
 import { FC, KeyboardEventHandler, MouseEvent, useCallback } from "react";
 import Tooltip from "./Tooltip";
 import {
