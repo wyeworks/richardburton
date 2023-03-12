@@ -5,7 +5,7 @@ import axios, { AxiosInstance } from "axios";
 import { RecoilRoot } from "recoil";
 import Notifications from "components/Notifications";
 import ClearSelection from "listeners/ClearSelection";
-import { Publication } from "modules/publications";
+import { Publication } from "modules/publication";
 import { getSession, SessionProvider } from "next-auth/react";
 import HTTP from "modules/http";
 
