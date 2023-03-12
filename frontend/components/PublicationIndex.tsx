@@ -5,7 +5,17 @@ import {
   PublicationId,
   PublicationKey,
 } from "modules/publication";
-import { FC, forwardRef, HTMLProps, MouseEvent, ReactNode } from "react";
+import {
+  FC,
+  forwardRef,
+  HTMLProps,
+  MouseEvent,
+  ReactNode,
+  useMemo,
+  useRef,
+} from "react";
+import { mergeRefs } from "react-merge-refs";
+import useVisible from "utils/useVisible";
 
 type RowId = PublicationId;
 type ColId = PublicationKey;
@@ -83,24 +93,38 @@ const Row = forwardRef<HTMLTableRowElement, RowProps>(function Row(
   ref
 ) {
   const clickable = Boolean(onClick);
+
+  const innerRef = useRef(null);
+
+  const compositeRef = useMemo(
+    () => mergeRefs([ref, innerRef]),
+    [ref, innerRef]
+  );
+
+  const visible = useVisible(innerRef, `${36 * 12}px`);
+
   return (
     <tr
-      ref={ref}
-      className={classNames(className, "relative group", {
+      ref={compositeRef}
+      className={classNames(className, "relative group h-9", {
         "cursor-pointer": clickable,
       })}
       onClick={onClick}
       {...props}
     >
-      {SignalColumn && <SignalColumn rowId={rowId} />}
-      {Publication.ATTRIBUTES.map((attribute) => (
-        <Column
-          key={attribute}
-          colId={attribute}
-          rowId={rowId}
-          Content={Content}
-        />
-      ))}
+      {visible && (
+        <>
+          {SignalColumn && <SignalColumn rowId={rowId} />}
+          {Publication.ATTRIBUTES.map((attribute) => (
+            <Column
+              key={attribute}
+              colId={attribute}
+              rowId={rowId}
+              Content={Content}
+            />
+          ))}
+        </>
+      )}
     </tr>
   );
 });
