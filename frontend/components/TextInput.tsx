@@ -60,7 +60,7 @@ export default forwardRef<HTMLDivElement, Props>(function TextInput(
         {...props}
         ref={inputRef}
         value={value}
-        className="px-1 bg-transparent outline-none shrink grow placeholder:text-xs error:focus:text-white error:placeholder-white"
+        className="w-full px-1 bg-transparent outline-none shrink grow placeholder:text-xs error:focus:text-white error:placeholder-white"
         onFocus={handleFocus}
         onBlur={handleBlur}
         onChange={handleChange}
