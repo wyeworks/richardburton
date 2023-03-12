@@ -9,12 +9,6 @@ import {
 } from "modules/publications";
 import Tooltip from "./Tooltip";
 import TextEnumDataInput from "./TextEnumDataInput";
-import countries from "i18n-iso-countries";
-import countriesEN from "i18n-iso-countries/langs/en.json";
-
-//TODO: decouple this component from countries
-countries.registerLocale(countriesEN);
-const COUNTRIES = countries.getNames("en", { select: "official" });
 
 const COMPONENTS_PER_TYPE: Record<PublicationKeyType, FC<Props>> = {
   text: TextDataInput,
@@ -53,21 +47,14 @@ const DataInput = forwardRef<HTMLElement, Props>(function DataInput(
   }
 
   function handleChange(value: string) {
-    console.log(value);
     setValue(value);
     override(rowId, colId, value);
     onChange?.(value);
   }
 
   useEffect(() => {
-    if (colId === "country") {
-      if (COUNTRIES[data] !== value) {
-        setValue(COUNTRIES[data]);
-      }
-    } else {
-      if (data !== value) {
-        setValue(data);
-      }
+    if (data !== value) {
+      setValue(data);
     }
   }, [data, rowId, colId, value, setValue]);
 
@@ -84,6 +71,5 @@ const DataInput = forwardRef<HTMLElement, Props>(function DataInput(
   );
 });
 
-export { COUNTRIES };
 export type { Props as DataInputProps };
 export default DataInput;
