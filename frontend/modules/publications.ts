@@ -706,16 +706,24 @@ const Publication: PublicationModule = {
     },
   },
 
-  async autocomplete(value, attribute): Promise<any> {
+  autocomplete(value, attribute): Promise<any> {
     switch (attribute) {
       case "authors":
       case "originalAuthors":
         return Author.REMOTE.search(value);
+
       case "country":
-        const countries = Object.values(COUNTRIES);
+        const all = Object.values(COUNTRIES);
+
+        const countries = value
+          ? Object.values(COUNTRIES).filter((opt) =>
+              opt.label.toLowerCase().startsWith(value.toLowerCase())
+            )
+          : all;
+
         return new Promise<Country[]>((resolve) => resolve(countries));
       default:
-        return new Promise<Country[]>((resolve) => resolve([]));
+        return new Promise<[]>((resolve) => resolve([]));
     }
   },
 

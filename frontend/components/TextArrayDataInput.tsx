@@ -1,9 +1,8 @@
-import { FC, forwardRef, useMemo } from "react";
-import { Author } from "modules/authors";
+import { FC, forwardRef, useCallback, useMemo } from "react";
 import { DataInputProps } from "./DataInput";
-import Multicombobox from "./Multicombobox";
-import useDebounce from "utils/useDebounce";
 import { Publication } from "modules/publications";
+import Multicombobox from "./Multicombobox";
+import pDebounce from "p-debounce";
 
 export default forwardRef<HTMLDivElement, DataInputProps>(
   function TextArrayDataInput(
@@ -19,12 +18,13 @@ export default forwardRef<HTMLDivElement, DataInputProps>(
       onChange?.(value.join(","));
     }
 
-    const getOptions = useDebounce(
-      () => Publication.autocomplete(value, colId),
-      350,
-      {
-        leading: true,
-      }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    const getOptions = useCallback(
+      pDebounce(
+        (search: string) => Publication.autocomplete(search, colId),
+        350
+      ),
+      [colId]
     );
 
     return (
