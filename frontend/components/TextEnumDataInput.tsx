@@ -4,7 +4,10 @@ import { DataInputProps } from "./DataInput";
 import Select, { SelectOption } from "./Select";
 
 export default forwardRef<HTMLInputElement, DataInputProps>(
-  function TextDataInput({ rowId, colId, value, onChange, ...props }, ref) {
+  function TextDataInput(
+    { rowId, colId, autoValidated, value, onChange, ...props },
+    ref
+  ) {
     function handleChange(option: SelectOption) {
       onChange?.(option.id);
     }
