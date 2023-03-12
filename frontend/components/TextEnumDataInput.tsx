@@ -1,12 +1,7 @@
+import { COUNTRIES } from "modules/publications";
 import { FC, forwardRef, useMemo } from "react";
 import { DataInputProps } from "./DataInput";
 import Select, { SelectOption } from "./Select";
-import countries from "i18n-iso-countries";
-import countriesEN from "i18n-iso-countries/langs/en.json";
-
-//TODO: decouple this component from countries
-countries.registerLocale(countriesEN);
-const COUNTRIES = countries.getNames("en", { select: "official" });
 
 const OPTIONS = Object.entries(COUNTRIES).map(([key, label]) => ({
   id: key,

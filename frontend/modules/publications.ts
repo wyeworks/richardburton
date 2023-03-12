@@ -17,6 +17,13 @@ import { AxiosInstance } from "axios";
 import hash from "object-hash";
 import useDebounce from "utils/useDebounce";
 
+import countries from "i18n-iso-countries";
+import countriesEN from "i18n-iso-countries/langs/en.json";
+
+//TODO: decouple this component from countries
+countries.registerLocale(countriesEN);
+const COUNTRIES = countries.getNames("en", { select: "official" });
+
 type Publication = {
   title: string;
   country: string;
@@ -73,7 +80,7 @@ const PUBLICATION_ERROR_DESCRIPTION = selectorFamily<string, PublicationId>({
   key: "publication-error-description",
   get(id) {
     return function ({ get }) {
-      return Publication.describe(get(PUBLICATION_ERRORS(id)));
+      return Publication.describeError(get(PUBLICATION_ERRORS(id)));
     };
   },
 });
@@ -218,7 +225,10 @@ const PUBLICATION_ATTRIBUTE_ERROR_DESCRIPTION = selectorFamily<
   get(compositeId) {
     return function ({ get }) {
       const [id, key] = compositeId.split(".") as [string, PublicationKey];
-      return Publication.describe(get(PUBLICATION_ERRORS(parseInt(id))), key);
+      return Publication.describeError(
+        get(PUBLICATION_ERRORS(parseInt(id))),
+        key
+      );
     };
   },
 });
@@ -311,7 +321,8 @@ interface PublicationModule {
     useValidate(): (ids: PublicationId[]) => Promise<void>;
   };
 
-  describe(error: PublicationError, scope?: PublicationKey): string;
+  describeValue(value: string, attribute: PublicationKey): string;
+  describeError(error: PublicationError, scope?: PublicationKey): string;
   empty(): Publication;
 }
 
@@ -579,7 +590,7 @@ const Publication: PublicationModule = {
         try {
           resolve(await request(cb));
         } catch (error: any) {
-          reject(Publication.describe(error) || error);
+          reject(Publication.describeError(error) || error);
         }
       });
     },
@@ -695,7 +706,20 @@ const Publication: PublicationModule = {
     },
   },
 
-  describe(error, scope) {
+  describeValue(value, attribute) {
+    if (attribute === "country") {
+      const country = COUNTRIES[value];
+      if (country) {
+        return COUNTRIES[value];
+      } else {
+        console.warn("Unknown country code: ", value);
+        return value;
+      }
+    }
+    return value;
+  },
+
+  describeError(error, scope) {
     if (!error) {
       return "";
     } else if (!scope) {
@@ -734,4 +758,4 @@ export type {
   PublicationId,
   ValidationResult,
 };
-export { Publication };
+export { Publication, COUNTRIES };
