@@ -1,4 +1,5 @@
 import {
+  FocusEvent,
   forwardRef,
   HTMLProps,
   KeyboardEvent,
@@ -27,12 +28,17 @@ type Props = Omit<
 };
 
 export default forwardRef<HTMLInputElement, Props>(function Select(
-  { value, error, options, onChange, onFocus, onKeyDown, onBlur, ...props },
+  { value, error, options, onChange, onFocus, onKeyDown, ...props },
   ref
 ) {
   const [isOpen, setIsOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [search, setSearch] = useState<string | undefined>();
+
+  function handleFocus(event: FocusEvent<HTMLInputElement>) {
+    setSearch("");
+    onFocus?.(event);
+  }
 
   function handleInputChange(v: string) {
     setSearch(v);
@@ -57,8 +63,11 @@ export default forwardRef<HTMLInputElement, Props>(function Select(
 
   function handleToggleClick(_event: MouseEvent<HTMLButtonElement>) {
     setIsOpen((isOpen) => !isOpen);
-    setSearch("");
-    inputRef.current?.focus();
+    if (!isOpen) {
+      inputRef.current?.focus();
+    } else {
+      inputRef.current?.blur();
+    }
   }
 
   function handleSelect(option: Option) {
@@ -99,6 +108,7 @@ export default forwardRef<HTMLInputElement, Props>(function Select(
         ref={ref}
         inputRef={inputRef}
         onChange={handleInputChange}
+        onFocus={handleFocus}
         onKeyDown={handleKeyDown}
         value={inputValue}
         error={error}
