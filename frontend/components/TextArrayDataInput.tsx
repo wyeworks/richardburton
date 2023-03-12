@@ -6,7 +6,7 @@ import pDebounce from "p-debounce";
 
 export default forwardRef<HTMLDivElement, DataInputProps>(
   function TextArrayDataInput(
-    { rowId, colId, value, autoValidated, onChange, onBlur, ...props },
+    { rowId, colId, value, autoValidated, onChange, ...props },
     ref
   ) {
     const items = useMemo(
