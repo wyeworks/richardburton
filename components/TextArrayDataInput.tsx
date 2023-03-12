@@ -3,6 +3,7 @@ import { Author } from "modules/authors";
 import { DataInputProps } from "./DataInput";
 import Multicombobox from "./Multicombobox";
 import useDebounce from "utils/useDebounce";
+import { Publication } from "modules/publications";
 
 export default forwardRef<HTMLDivElement, DataInputProps>(
   function TextArrayDataInput(
@@ -18,10 +19,13 @@ export default forwardRef<HTMLDivElement, DataInputProps>(
       onChange?.(value.join(","));
     }
 
-    //TODO: decouple this component from author search
-    const getOptions = useDebounce(Author.REMOTE.search, 350, {
-      leading: true,
-    });
+    const getOptions = useDebounce(
+      () => Publication.autocomplete(value, colId),
+      350,
+      {
+        leading: true,
+      }
+    );
 
     return (
       <Multicombobox
