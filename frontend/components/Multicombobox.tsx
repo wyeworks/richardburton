@@ -9,10 +9,9 @@ type Item = string;
 
 type Props = Omit<HTMLProps<HTMLInputElement>, "value" | "onChange"> & {
   value: Item[];
+  error?: string;
   onChange: (value: Item[]) => void;
-  placeholder: string;
   getOptions: (search: string) => Promise<Item[]> | Item[];
-  error?: boolean;
 };
 
 export default forwardRef<HTMLDivElement, Props>(function Multicombobox(

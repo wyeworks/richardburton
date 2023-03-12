@@ -31,10 +31,11 @@ const DataInput = forwardRef<HTMLElement, Props>(function DataInput(
   props,
   ref
 ) {
-  const { rowId, colId, value: data, autoValidated, onChange } = props;
+  const { rowId, colId, value: data, error, autoValidated, onChange } = props;
 
   const type = Publication.ATTRIBUTE_TYPES[props.colId];
   const Component = COMPONENTS_PER_TYPE[type];
+  const placeholder = Publication.ATTRIBUTE_LABELS[colId];
 
   const validate = Publication.REMOTE.useValidate();
   const override = Publication.STORE.ATTRIBUTES.useOverride();
@@ -66,6 +67,8 @@ const DataInput = forwardRef<HTMLElement, Props>(function DataInput(
         value={value}
         onChange={handleChange}
         onBlur={doValidate}
+        placeholder={placeholder}
+        error={error}
       />
     </Tooltip>
   );

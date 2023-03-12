@@ -21,8 +21,8 @@ type Props = Omit<
   "value" | "onChange" | "className"
 > & {
   options: Option[];
+  error: string;
   value: Option | undefined;
-  error: boolean;
   onChange: (option: Option) => void;
 };
 
@@ -114,7 +114,7 @@ export default forwardRef<HTMLInputElement, Props>(function Select(
               { "rotate-180": isOpen }
             )}
             onClick={handleToggleClick}
-            data-error={error}
+            data-error={Boolean(error)}
           >
             <ChevronDownIcon className="h-5" />
           </button>
