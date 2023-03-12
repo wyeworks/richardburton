@@ -124,11 +124,9 @@ export default forwardRef<HTMLInputElement, Props>(function Select(
         right={
           <button
             className={c(
-              "outline-none",
-              "h-5 aspect-square",
-              "flex items-center justify-center",
-              "transition-transform",
-              "error:text-white",
+              "flex items-center justify-center h-5 aspect-square transition-transform rounded-full",
+              "outline-none focus:bg-indigo-500 focus:text-white",
+              "error:text-white focus:error:bg-red-500",
               { "rotate-180": isOpen }
             )}
             onClick={handleToggleClick}

@@ -9,11 +9,12 @@ import {
 } from "modules/publication";
 import Tooltip from "./Tooltip";
 import TextEnumDataInput from "./TextEnumDataInput";
+import TextNumberDataInput from "./TextNumberDataInput";
 
 const COMPONENTS_PER_TYPE: Record<PublicationKeyType, FC<Props>> = {
   text: TextDataInput,
   enum: TextEnumDataInput,
-  number: TextDataInput,
+  number: TextNumberDataInput,
   array: TextArrayDataInput,
 };
 
@@ -63,6 +64,7 @@ const DataInput = forwardRef<HTMLElement, Props>(function DataInput(
     <Tooltip error message={props.error}>
       <Component
         {...props}
+        {...Publication.define(colId)}
         ref={ref}
         value={value}
         onChange={handleChange}
