@@ -1,4 +1,4 @@
-import { FC, forwardRef } from "react";
+import { FC, forwardRef, useMemo } from "react";
 import { Publication } from "modules/publications";
 import { DataInputProps } from "./DataInput";
 import Select, { SelectOption } from "./Select";
@@ -15,7 +15,7 @@ const OPTIONS = Object.entries(COUNTRIES).map(([key, label]) => ({
 }));
 
 export default forwardRef<HTMLInputElement, DataInputProps>(
-  function TextDataInput({ rowId, colId, onChange, ...props }, ref) {
+  function TextDataInput({ rowId, colId, value, onChange, ...props }, ref) {
     const placeholder = Publication.ATTRIBUTE_LABELS[colId];
     const error = Boolean(props.error);
 
@@ -23,10 +23,16 @@ export default forwardRef<HTMLInputElement, DataInputProps>(
       onChange?.(option.id);
     }
 
+    const selectedOption = useMemo(
+      () => OPTIONS.find((opt) => opt.id === value),
+      [value]
+    );
+
     return (
       <Select
         {...props}
         ref={ref}
+        value={selectedOption}
         placeholder={placeholder}
         onChange={handleChange}
         error={error}

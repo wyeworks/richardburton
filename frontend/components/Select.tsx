@@ -1,10 +1,9 @@
 import {
-  ChangeEvent,
-  FocusEvent,
   forwardRef,
   HTMLProps,
   KeyboardEvent,
   MouseEvent,
+  useEffect,
   useMemo,
   useRef,
   useState,
@@ -22,7 +21,7 @@ type Props = Omit<
   "value" | "onChange" | "className"
 > & {
   options: Option[];
-  value: string;
+  value: Option | undefined;
   error: boolean;
   onChange: (option: Option) => void;
 };
@@ -31,21 +30,9 @@ export default forwardRef<HTMLInputElement, Props>(function Select(
   { value, error, options, onChange, onFocus, onKeyDown, onBlur, ...props },
   ref
 ) {
-  const [focused, setFocused] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
-  const [search, setSearch] = useState("");
-
-  function handleFocus(event: FocusEvent<HTMLInputElement>) {
-    setFocused(true);
-    onFocus?.(event);
-  }
-
-  function handleBlur(event: FocusEvent<HTMLInputElement>) {
-    setFocused(false);
-    setSearch("");
-    onBlur?.(event);
-  }
+  const [search, setSearch] = useState<string | undefined>();
 
   function handleInputChange(v: string) {
     setSearch(v);
@@ -60,7 +47,9 @@ export default forwardRef<HTMLInputElement, Props>(function Select(
       (event.key === Key.ENTER || event.key === Key.ARROW_RIGHT) &&
       activeIndex != null
     ) {
+      handleSelect(filteredOptions[activeIndex]);
       setIsOpen(false);
+      inputRef.current?.blur();
     }
 
     onKeyDown?.(event);
@@ -68,6 +57,7 @@ export default forwardRef<HTMLInputElement, Props>(function Select(
 
   function handleToggleClick(_event: MouseEvent<HTMLButtonElement>) {
     setIsOpen((isOpen) => !isOpen);
+    setSearch("");
     inputRef.current?.focus();
   }
 
@@ -78,11 +68,22 @@ export default forwardRef<HTMLInputElement, Props>(function Select(
   const inputRef = useRef<HTMLInputElement>(null);
 
   const filteredOptions = useMemo(() => {
-    const matches = (opt: Option) =>
-      opt.label.toLowerCase().startsWith(search.toLowerCase());
-
-    return search ? options.filter(matches) : options;
+    if (search) {
+      return options.filter((opt) =>
+        opt.label.toLowerCase().startsWith(search.toLowerCase())
+      );
+    } else {
+      return options;
+    }
   }, [options, search]);
+
+  const inputValue = search === undefined ? value?.label || "" : search;
+
+  useEffect(() => {
+    if (!isOpen) {
+      setSearch(undefined);
+    }
+  }, [isOpen]);
 
   return (
     <MenuProvider
@@ -97,11 +98,9 @@ export default forwardRef<HTMLInputElement, Props>(function Select(
         {...props}
         ref={ref}
         inputRef={inputRef}
-        onFocus={handleFocus}
-        onBlur={handleBlur}
         onChange={handleInputChange}
         onKeyDown={handleKeyDown}
-        value={focused ? search : value || ""}
+        value={inputValue}
         error={error}
         aria-autocomplete="list"
         right={
