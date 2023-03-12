@@ -1,5 +1,4 @@
 import { FC, forwardRef, useMemo } from "react";
-import { Publication } from "modules/publications";
 import { Author } from "modules/authors";
 import { DataInputProps } from "./DataInput";
 import Multicombobox from "./Multicombobox";
@@ -10,9 +9,6 @@ export default forwardRef<HTMLDivElement, DataInputProps>(
     { rowId, colId, value, onChange, onBlur, ...props },
     ref
   ) {
-    const placeholder = Publication.ATTRIBUTE_LABELS[colId];
-    const error = Boolean(props.error);
-
     const items = useMemo(
       () => (value === "" ? [] : value.split(",")),
       [value]
@@ -31,9 +27,7 @@ export default forwardRef<HTMLDivElement, DataInputProps>(
       <Multicombobox
         {...props}
         ref={ref}
-        placeholder={placeholder}
         value={items}
-        error={error}
         onChange={handleChange}
         getOptions={getOptions}
       />

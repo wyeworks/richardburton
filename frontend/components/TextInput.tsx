@@ -14,7 +14,7 @@ type Props = Omit<
   "value" | "onChange" | "className"
 > & {
   value: string;
-  error?: boolean;
+  error?: string;
   onChange?: (value: string) => void;
   left?: ReactNode;
   right?: ReactNode;
@@ -53,7 +53,7 @@ export default forwardRef<HTMLDivElement, Props>(function TextInput(
           "error:bg-red-300/40": !focused,
         }
       )}
-      data-error={error}
+      data-error={Boolean(error)}
     >
       {left}
       <input
@@ -64,7 +64,7 @@ export default forwardRef<HTMLDivElement, Props>(function TextInput(
         onFocus={handleFocus}
         onBlur={handleBlur}
         onChange={handleChange}
-        data-error={error}
+        data-error={Boolean(error)}
       />
       {right}
     </div>
