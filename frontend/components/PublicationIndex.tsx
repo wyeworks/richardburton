@@ -1,4 +1,4 @@
-import classNames from "classnames";
+import c from "classnames";
 import { times } from "lodash";
 import {
   Publication,
@@ -26,7 +26,7 @@ const ColumnHeader: FC<{ colId: ColId }> = ({ colId }) => {
   const isVisible = Publication.STORE.ATTRIBUTES.useIsVisible(colId);
 
   return isVisible ? (
-    <th className="px-4 pb-4 text-left">
+    <th className={c("px-4 pb-4 text-left", { "w-24": colId === "year" })}>
       {Publication.ATTRIBUTE_LABELS[colId]}
     </th>
   ) : null;
@@ -70,7 +70,7 @@ const Column: FC<{
 
   return visible ? (
     <td
-      className="max-w-xs px-2 py-1 text-sm justify group-hover:bg-indigo-100 error:group-hover:bg-red-100 selected:bg-amber-100"
+      className="px-2 py-1 text-sm truncate justify group-hover:bg-indigo-100 error:group-hover:bg-red-100 selected:bg-amber-100"
       data-selected={selected}
       data-selectable={selectable}
       data-error={invalid}
@@ -101,12 +101,12 @@ const Row = forwardRef<HTMLTableRowElement, RowProps>(function Row(
     [ref, innerRef]
   );
 
-  const visible = useVisible(innerRef, `${36 * 12}px`);
+  const visible = useVisible(innerRef);
 
   return (
     <tr
       ref={compositeRef}
-      className={classNames(className, "relative group h-9", {
+      className={c(className, "relative group h-9", {
         "cursor-pointer": clickable,
       })}
       onClick={onClick}
@@ -138,7 +138,7 @@ const SignalColumn: FC<{
 }> = ({ invalid = false, selected = false, selectable = false, children }) => {
   return (
     <td
-      className="sticky left-0 px-2 text-xl text-center bg-gray-100 grow group-hover:bg-indigo-100 error:group-hover:bg-red-100 selected:bg-amber-100"
+      className="sticky left-0 px-2 text-xl text-center bg-gray-100 group-hover:bg-indigo-100 error:group-hover:bg-red-100 selected:bg-amber-100"
       data-selected={selected}
       data-selectable={selectable}
       data-error={invalid}
@@ -171,10 +171,10 @@ const PublicationIndex: FC<Props> = ({
   const ids = Publication.STORE.useVisibleIds();
 
   return ids && (ids.length > 0 || ExtraRow) ? (
-    <table className={classNames(className, "h-fit")}>
+    <table className={c(className, "h-fit w-full table-fixed")}>
       <thead className="sticky top-0 z-10 bg-gray-100">
         <tr>
-          {ExtendedSignalColumn && <th />}
+          {ExtendedSignalColumn && <th className="w-8" />}
           {Publication.ATTRIBUTES.map((key) => (
             <ColumnHeader key={key} colId={key} />
           ))}
