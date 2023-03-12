@@ -5,7 +5,7 @@ import {
   KeyboardEvent,
   MouseEvent,
   useEffect,
-  useMemo,
+  useLayoutEffect,
   useRef,
   useState,
 } from "react";
@@ -21,30 +21,42 @@ type Props = Omit<
   HTMLProps<HTMLInputElement>,
   "value" | "onChange" | "className"
 > & {
-  options: Option[];
   error: string;
-  value: Option | undefined;
+  value: Option;
   onChange: (option: Option) => void;
+  getOptions: (search: string) => Promise<Option[]>;
 };
 
 export default forwardRef<HTMLInputElement, Props>(function Select(
-  { value, error, options, onChange, onFocus, onKeyDown, ...props },
+  { value, error, onChange, onBlur, onFocus, onKeyDown, getOptions, ...props },
   ref
 ) {
   const [isOpen, setIsOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [search, setSearch] = useState<string | undefined>();
+  const [options, setOptions] = useState<Option[]>([]);
+
+  function handleBlur(event: FocusEvent<HTMLInputElement>) {
+    getOptions("").then(setOptions);
+    onBlur?.(event);
+  }
 
   function handleFocus(event: FocusEvent<HTMLInputElement>) {
     setSearch("");
+    setIsOpen(true);
     onFocus?.(event);
   }
 
-  function handleInputChange(v: string) {
+  async function handleInputChange(v: string) {
     setSearch(v);
 
     if (v) {
+      const options = await getOptions(v.toLowerCase());
       setIsOpen(true);
+      setActiveIndex(0);
+      setOptions(options);
+    } else {
+      setIsOpen(false);
     }
   }
 
@@ -53,7 +65,7 @@ export default forwardRef<HTMLInputElement, Props>(function Select(
       (event.key === Key.ENTER || event.key === Key.ARROW_RIGHT) &&
       activeIndex != null
     ) {
-      handleSelect(filteredOptions[activeIndex]);
+      handleSelect(options[activeIndex]);
       setIsOpen(false);
       inputRef.current?.blur();
     }
@@ -68,6 +80,7 @@ export default forwardRef<HTMLInputElement, Props>(function Select(
     } else {
       inputRef.current?.blur();
     }
+    getOptions("").then(setOptions);
   }
 
   function handleSelect(option: Option) {
@@ -76,17 +89,7 @@ export default forwardRef<HTMLInputElement, Props>(function Select(
 
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const filteredOptions = useMemo(() => {
-    if (search) {
-      return options.filter((opt) =>
-        opt.label.toLowerCase().startsWith(search.toLowerCase())
-      );
-    } else {
-      return options;
-    }
-  }, [options, search]);
-
-  const inputValue = search === undefined ? value?.label || "" : search;
+  const inputValue = search === undefined ? value.label || "" : search;
 
   useEffect(() => {
     if (!isOpen) {
@@ -94,9 +97,13 @@ export default forwardRef<HTMLInputElement, Props>(function Select(
     }
   }, [isOpen]);
 
+  useLayoutEffect(() => {
+    getOptions("").then(setOptions);
+  }, [getOptions]);
+
   return (
     <MenuProvider
-      options={filteredOptions}
+      options={options}
       isOpen={isOpen}
       activeIndex={activeIndex}
       setIsOpen={setIsOpen}
@@ -108,6 +115,7 @@ export default forwardRef<HTMLInputElement, Props>(function Select(
         ref={ref}
         inputRef={inputRef}
         onChange={handleInputChange}
+        onBlur={handleBlur}
         onFocus={handleFocus}
         onKeyDown={handleKeyDown}
         value={inputValue}
