@@ -17,7 +17,10 @@ import TextInput from "./TextInput";
 
 type Option = MenuOption;
 
-type Props = Omit<HTMLProps<HTMLInputElement>, "value" | "onChange"> & {
+type Props = Omit<
+  HTMLProps<HTMLInputElement>,
+  "value" | "onChange" | "className"
+> & {
   options: Option[];
   value: string;
   error: boolean;
