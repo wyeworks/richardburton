@@ -1,12 +1,7 @@
-import { COUNTRIES } from "modules/publications";
-import { FC, forwardRef, useMemo } from "react";
+import { Publication } from "modules/publications";
+import { FC, forwardRef, useEffect, useMemo, useState } from "react";
 import { DataInputProps } from "./DataInput";
 import Select, { SelectOption } from "./Select";
-
-const OPTIONS = Object.entries(COUNTRIES).map(([key, label]) => ({
-  id: key,
-  label: label,
-}));
 
 export default forwardRef<HTMLInputElement, DataInputProps>(
   function TextDataInput({ rowId, colId, value, onChange, ...props }, ref) {
@@ -14,9 +9,15 @@ export default forwardRef<HTMLInputElement, DataInputProps>(
       onChange?.(option.id);
     }
 
+    const [options, setOptions] = useState<SelectOption[]>([]);
+
+    useEffect(() => {
+      Publication.autocomplete(value, colId).then(setOptions);
+    }, [value, colId]);
+
     const selectedOption = useMemo(
-      () => OPTIONS.find((opt) => opt.id === value),
-      [value]
+      () => options.find((opt) => opt.id === value),
+      [options, value]
     );
 
     return (
@@ -25,7 +26,7 @@ export default forwardRef<HTMLInputElement, DataInputProps>(
         ref={ref}
         value={selectedOption}
         onChange={handleChange}
-        options={OPTIONS}
+        options={options}
       />
     );
   }

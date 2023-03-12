@@ -16,13 +16,8 @@ import { _NOTIFICATIONS, _notify } from "components/Notifications";
 import { AxiosInstance } from "axios";
 import hash from "object-hash";
 import useDebounce from "utils/useDebounce";
-
-import countries from "i18n-iso-countries";
-import countriesEN from "i18n-iso-countries/langs/en.json";
-
-//TODO: decouple this component from countries
-countries.registerLocale(countriesEN);
-const COUNTRIES = countries.getNames("en", { select: "official" });
+import { Author } from "./authors";
+import { COUNTRIES, Country } from "./country";
 
 type Publication = {
   title: string;
@@ -320,6 +315,11 @@ interface PublicationModule {
     useBulk(): () => Promise<Publication[]>;
     useValidate(): (ids: PublicationId[]) => Promise<void>;
   };
+
+  autocomplete(value: string, attribute: "country"): Promise<Country[]>;
+  autocomplete(value: string, attribute: "originalAuthors"): Promise<Author[]>;
+  autocomplete(value: string, attribute: "authors"): Promise<Author[]>;
+  autocomplete(value: string, attribute: string): Promise<[]>;
 
   describeValue(value: string, attribute: PublicationKey): string;
   describeError(error: PublicationError, scope?: PublicationKey): string;
@@ -706,11 +706,24 @@ const Publication: PublicationModule = {
     },
   },
 
+  async autocomplete(value, attribute): Promise<any> {
+    switch (attribute) {
+      case "authors":
+      case "originalAuthors":
+        return Author.REMOTE.search(value);
+      case "country":
+        const countries = Object.values(COUNTRIES);
+        return new Promise<Country[]>((resolve) => resolve(countries));
+      default:
+        return new Promise<Country[]>((resolve) => resolve([]));
+    }
+  },
+
   describeValue(value, attribute) {
     if (attribute === "country") {
       const country = COUNTRIES[value];
       if (country) {
-        return COUNTRIES[value];
+        return COUNTRIES[value].label;
       } else {
         console.warn("Unknown country code: ", value);
         return value;
