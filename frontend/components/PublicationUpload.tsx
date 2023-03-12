@@ -1,4 +1,4 @@
-import { Publication, ValidationResult } from "modules/publications";
+import { Publication, ValidationResult } from "modules/publication";
 import { ChangeEvent, FC, useEffect, useRef, useState } from "react";
 import Tooltip from "./Tooltip";
 import UploadIcon from "assets/upload.svg";
