@@ -23,8 +23,11 @@ export default forwardRef<HTMLInputElement, DataInputProps>(
     );
 
     const selectedOption = useMemo(
-      () => ({ id: value, label: Publication.describeValue(value, colId) }),
-      [value]
+      () =>
+        value
+          ? { id: value, label: Publication.describeValue(value, colId) }
+          : undefined,
+      [value, colId]
     );
 
     return (
