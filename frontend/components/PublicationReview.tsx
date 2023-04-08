@@ -1,20 +1,6 @@
 import classNames from "classnames";
-import {
-  Publication,
-  PublicationId,
-  PublicationKey,
-} from "modules/publications";
-import {
-  ChangeEventHandler,
-  FC,
-  forwardRef,
-  HTMLProps,
-  KeyboardEventHandler,
-  MouseEvent,
-  useCallback,
-  useEffect,
-  useState,
-} from "react";
+import { Publication } from "modules/publications";
+import { FC, KeyboardEventHandler, MouseEvent, useCallback } from "react";
 import Tooltip from "./Tooltip";
 import {
   useIsSelected,
@@ -22,7 +8,6 @@ import {
   useSelectionEvent,
 } from "react-selection-manager";
 import PublicationIndex, {
-  ColId,
   Column,
   Content,
   Row,
@@ -30,9 +15,11 @@ import PublicationIndex, {
   RowProps,
   SignalColumn,
 } from "components/PublicationIndex";
-import AddCircleIcon from "assets/add-circle.svg";
+import { isElement } from "lodash";
 import { Key } from "app";
+import AddCircleIcon from "assets/add-circle.svg";
 import ErrorIcon from "assets/error.svg";
+import DataInput from "./DataInput";
 
 const COUNTRIES: Record<string, string> = {
   BR: "Brazil",
@@ -69,82 +56,17 @@ const ExtendedSignalColumn: FC<{ rowId: RowId }> = ({ rowId }) => {
   );
 };
 
-type DataInputProps = Omit<HTMLProps<HTMLInputElement>, "onChange"> & {
-  rowId: PublicationId;
-  colId: PublicationKey;
-  value: string;
-  error: string;
-};
-
-const DataInput = forwardRef<HTMLInputElement, DataInputProps>(
-  function DataInput({ rowId, colId, value: data, ...props }, ref) {
-    const override = Publication.STORE.ATTRIBUTES.useOverride();
-    const [value, setValue] = useState(data);
-
-    useEffect(() => {
-      if (data !== value) {
-        setValue(data);
-      }
-    }, [data, rowId, colId, value, setValue]);
-
-    const handleChange: ChangeEventHandler<HTMLInputElement> = (e) => {
-      setValue(e.target.value);
-      override(rowId, colId, e.target.value);
-    };
-
-    return (
-      <input
-        {...props}
-        ref={ref}
-        placeholder={Publication.ATTRIBUTE_LABELS[colId]}
-        className={classNames(
-          "px-2 py-1 rounded outline-none bg-transparent focus:bg-white/50 focus:shadow-sm placeholder:text-xs",
-          "error:focus:bg-red-400/80 error:bg-red-300/40 error:focus:text-white error:shadow-sm error:placeholder-white"
-        )}
-        value={value}
-        onChange={handleChange}
-      />
-    );
-  }
-);
-
-const DataInputWithValidation = forwardRef<
-  HTMLInputElement,
-  {
-    rowId: RowId;
-    colId: ColId;
-    value: string;
-    error: string;
-  }
->(function DataInputWithValidation(props, ref) {
-  const validate = Publication.REMOTE.useValidate();
-
-  const doValidate = useCallback(() => {
-    validate([props.rowId]);
-  }, [props.rowId, validate]);
-
-  return (
-    <DataInput
-      {...props}
-      ref={ref}
-      data-error={Boolean(props.error)}
-      onBlur={doValidate}
-    />
-  );
-});
-
-const AutovalidatedData: typeof Content = ({ rowId, colId, value, error }) => {
+const ExtendedContent: typeof Content = ({ rowId, colId, value, error }) => {
   const content = colId === "country" ? COUNTRIES[value] || value : value;
 
   return (
-    <Tooltip error message={error}>
-      <DataInputWithValidation
-        rowId={rowId}
-        colId={colId}
-        value={content}
-        error={error}
-      />
-    </Tooltip>
+    <DataInput
+      rowId={rowId}
+      colId={colId}
+      value={content}
+      error={error}
+      autoValidated
+    />
   );
 };
 
@@ -178,12 +100,18 @@ const useSubmit = () => {
   }, [register, validate]);
 };
 
-const SubmittingData: typeof Content = ({ rowId, colId, value, error }) => {
+const SubmittableData: typeof Content = ({ rowId, colId, value, error }) => {
   const submit = useSubmit();
 
-  const handleKeyDown: KeyboardEventHandler = useCallback(
+  const handleKeyDown: KeyboardEventHandler<HTMLInputElement> = useCallback(
     (event) => {
-      if (event.key === Key.ENTER) {
+      if (
+        event.key === Key.ENTER &&
+        isElement(event.target) &&
+        !(event.target as HTMLInputElement).matches(
+          '[data-multiselect-input="true"]'
+        )
+      ) {
         submit();
       }
     },
@@ -220,7 +148,7 @@ const NewPublicationRow: FC = () => {
     <Row
       rowId={Publication.NEW_ROW_ID}
       Column={Column}
-      Content={SubmittingData}
+      Content={SubmittableData}
       SignalColumn={NewPublicationSignalColumn}
     />
   );
@@ -245,7 +173,7 @@ const PublicationReview: FC = () => {
       className={classNames(!isSelectionEmpty && "select-none")}
       ExtendedRow={ExtendedRow}
       ExtendedColumn={ExtendedColumn}
-      ExtendedContent={AutovalidatedData}
+      ExtendedContent={ExtendedContent}
       ExtendedSignalColumn={ExtendedSignalColumn}
       ExtraRow={NewPublicationRow}
       onRowClick={toggleSelection}

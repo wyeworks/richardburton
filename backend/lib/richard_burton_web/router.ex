@@ -27,6 +27,8 @@ defmodule RichardBurtonWeb.Router do
     pipe_through(:api)
     pipe_through(:authorize_admin)
 
+    get("/authors", AuthorController, :index)
+
     scope "/publications" do
       post("/bulk", PublicationController, :create_all)
       post("/validate", PublicationController, :validate)

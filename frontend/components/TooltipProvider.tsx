@@ -11,8 +11,8 @@ import {
   useRole,
   useInteractions,
   FloatingPortal,
+  Placement,
 } from "@floating-ui/react";
-import type { Placement } from "@floating-ui/react";
 import { cloneElement, FC, ReactElement, useMemo, useState } from "react";
 import classNames from "classnames";
 
