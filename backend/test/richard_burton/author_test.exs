@@ -75,17 +75,6 @@ defmodule RichardBurton.AuthorTest do
     end
   end
 
-  describe "to_map/1" do
-    test "returns the selected attributes as a map with atom keys" do
-      result =
-        changeset(%{"name" => "Richard Burton"})
-        |> apply_changes()
-        |> Author.to_map()
-
-      assert %{name: "Richard Burton"} == result
-    end
-  end
-
   describe "fingerprint/1" do
     test "given two different lists of authors, generates different fingerprints" do
       authors1 = [%Author{name: "Richard Burton"}, %Author{name: "Isabel Burton"}]
@@ -96,6 +85,13 @@ defmodule RichardBurton.AuthorTest do
 
     test "given two lists of authors with the same names, generates the same fingerprints" do
       authors1 = [%Author{name: "Richard Burton"}, %Author{name: "Isabel Burton"}]
+      authors2 = [%Author{name: "Richard Burton"}, %Author{name: "Isabel Burton"}]
+
+      assert Author.fingerprint(authors1) == Author.fingerprint(authors2)
+    end
+
+    test "given two lists of authors with the same and different order, generates the same fingerprints" do
+      authors1 = [%Author{name: "Isabel Burton"}, %Author{name: "Richard Burton"}]
       authors2 = [%Author{name: "Richard Burton"}, %Author{name: "Isabel Burton"}]
 
       assert Author.fingerprint(authors1) == Author.fingerprint(authors2)

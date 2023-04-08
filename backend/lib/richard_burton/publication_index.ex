@@ -5,7 +5,7 @@ defmodule RichardBurton.Publication.Index do
 
   import Ecto.Query
 
-  alias RichardBurton.Publication.Index.FlatPublication
+  alias RichardBurton.FlatPublication
   alias RichardBurton.Publication.Index.SearchDocument
   alias RichardBurton.Publication.Index.SearchKeyword
   alias RichardBurton.Repo
@@ -19,7 +19,6 @@ defmodule RichardBurton.Publication.Index do
       from(fp in FlatPublication)
       |> maybe_select(attributes)
       |> Repo.all()
-      |> FlatPublication.to_map()
 
     {:ok, results}
   end
@@ -80,10 +79,7 @@ defmodule RichardBurton.Publication.Index do
           )
           |> maybe_select(attributes)
 
-        results =
-          query
-          |> Repo.all()
-          |> FlatPublication.to_map()
+        results = Repo.all(query)
 
         {:ok, results, keywords}
     end
