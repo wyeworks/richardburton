@@ -1,4 +1,12 @@
-import { FC, forwardRef, HTMLProps, Ref, useEffect, useState } from "react";
+import {
+  FC,
+  FocusEvent,
+  forwardRef,
+  HTMLProps,
+  Ref,
+  useEffect,
+  useState,
+} from "react";
 import TextDataInput from "./TextDataInput";
 import TextArrayDataInput from "./TextArrayDataInput";
 import {
@@ -32,7 +40,15 @@ const DataInput = forwardRef<HTMLElement, Props>(function DataInput(
   props,
   ref
 ) {
-  const { rowId, colId, value: data, error, autoValidated, onChange } = props;
+  const {
+    rowId,
+    colId,
+    value: data,
+    error,
+    autoValidated,
+    onBlur,
+    onChange,
+  } = props;
 
   const type = Publication.ATTRIBUTE_TYPES[props.colId];
   const Component = COMPONENTS_PER_TYPE[type];
@@ -57,6 +73,11 @@ const DataInput = forwardRef<HTMLElement, Props>(function DataInput(
     onChange?.(value);
   }
 
+  function handleBlur(event: FocusEvent<HTMLInputElement>) {
+    doValidate();
+    onBlur?.(event);
+  }
+
   useEffect(() => {
     if (data !== value) {
       setValue(data);
@@ -70,8 +91,8 @@ const DataInput = forwardRef<HTMLElement, Props>(function DataInput(
         {...Publication.define(colId)}
         ref={ref}
         value={value}
+        onBlur={handleBlur}
         onChange={handleChange}
-        onBlur={doValidate}
         placeholder={placeholder}
         error={error}
       />
