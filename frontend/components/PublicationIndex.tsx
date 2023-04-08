@@ -27,8 +27,12 @@ const Content: FC<{
   colId: ColId;
   error: string;
   value: string;
-}> = ({ value }) => {
-  return <div className="px-2 py-1 truncate">{value}</div>;
+}> = ({ value, colId }) => {
+  return (
+    <div className="px-2 py-1 truncate">
+      {Publication.describeValue(value, colId)}
+    </div>
+  );
 };
 
 const Column: FC<{
