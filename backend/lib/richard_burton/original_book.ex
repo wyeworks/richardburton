@@ -9,6 +9,7 @@ defmodule RichardBurton.OriginalBook do
   alias RichardBurton.Repo
   alias RichardBurton.OriginalBook
   alias RichardBurton.TranslatedBook
+  alias RichardBurton.Util
 
   @external_attributes [:authors, :title]
 
@@ -25,14 +26,25 @@ defmodule RichardBurton.OriginalBook do
   end
 
   @doc false
-  def changeset(original_book, attrs \\ %{}) do
+  def changeset(original_book, attrs \\ %{})
+
+  @doc false
+  def changeset(original_book, attrs = %OriginalBook{}) do
+    changeset(original_book, Map.from_struct(attrs))
+  end
+
+  @doc false
+  def changeset(original_book, attrs) do
     original_book
     |> cast(attrs, [:title])
-    |> validate_required([:title])
     |> cast_assoc(:authors, required: true)
+    |> validate_required([:title])
     |> validate_length(:authors, min: 1)
     |> Author.link_fingerprint()
-    |> unique_constraint([:authors_fingerprint, :title])
+    |> unique_constraint(
+      [:authors_fingerprint, :title],
+      name: "original_books_composite_key"
+    )
   end
 
   def maybe_insert!(attrs) do
@@ -40,14 +52,6 @@ defmodule RichardBurton.OriginalBook do
     |> changeset(attrs)
     |> Author.link()
     |> Repo.maybe_insert!([:authors_fingerprint, :title])
-  end
-
-  def to_map(original_book = %OriginalBook{}) do
-    authors = Enum.map(original_book.authors, &Author.to_map/1)
-
-    original_book
-    |> Map.take(@external_attributes)
-    |> Map.put(:authors, authors)
   end
 
   def all() do
@@ -63,11 +67,27 @@ defmodule RichardBurton.OriginalBook do
       changeset
       |> get_change(:original_book)
       |> apply_changes()
-      |> OriginalBook.to_map()
       |> OriginalBook.maybe_insert!()
 
     put_assoc(changeset, :original_book, original_book)
   end
 
   def link(changeset = %{valid?: false}), do: changeset
+
+  def fingerprint(%OriginalBook{title: title, authors_fingerprint: authors_fingerprint}) do
+    [title, authors_fingerprint]
+    |> Enum.join()
+    |> Util.create_fingerprint()
+  end
+
+  def link_fingerprint(changeset = %Ecto.Changeset{valid?: true}) do
+    original_book_fingerprint =
+      changeset
+      |> get_field(:original_book)
+      |> fingerprint
+
+    put_change(changeset, :original_book_fingerprint, original_book_fingerprint)
+  end
+
+  def link_fingerprint(changeset = %Ecto.Changeset{valid?: false}), do: changeset
 end

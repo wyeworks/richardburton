@@ -6,6 +6,7 @@ defmodule RichardBurton.Publication.Codec do
   alias RichardBurton.Codec
   alias RichardBurton.Util
   alias RichardBurton.Publication
+  alias RichardBurton.FlatPublication
 
   @empty_flat_attrs %{
     "title" => "",
@@ -34,7 +35,6 @@ defmodule RichardBurton.Publication.Codec do
         |> File.stream!()
         |> CSV.decode!(separator: ?;, headers: @csv_headers)
         |> Enum.map(&Util.deep_merge_maps(@empty_flat_attrs, &1))
-        |> nest
 
       {:ok, publications}
     rescue
@@ -51,151 +51,113 @@ defmodule RichardBurton.Publication.Codec do
 
   def to_csv(flat_publications) do
     flat_publications
+    |> Enum.map(&Util.stringify_keys/1)
+    |> Enum.map(&Map.take(&1, @csv_headers))
     |> CSV.encode(separator: ?;, delimiter: "\n", headers: true)
     |> Enum.to_list()
   end
 
-  @spec nest(maybe_improper_list | map) :: list | %{optional(<<_::32, _::_*8>>) => any}
-  def nest(%{
-        "title" => title,
-        "year" => year,
-        "country" => country,
-        "publisher" => publisher,
-        "authors" => authors,
-        "original_title" => original_title,
-        "original_authors" => original_authors
-      }) do
-    %{
-      "title" => title,
-      "year" => year,
-      "country" => country,
-      "publisher" => publisher,
-      "translated_book" => %{
-        "authors" => nest_authors(authors),
-        "original_book" => %{
-          "title" => original_title,
-          "authors" => nest_authors(original_authors)
-        }
-      }
-    }
+  def from_csv!(path) do
+    case from_csv(path) do
+      {:ok, publications} -> publications
+      {:error, error} -> throw(error)
+    end
   end
 
-  def nest(flat_publications) when is_list(flat_publications) do
-    Enum.map(flat_publications, &nest/1)
+  def nest(flat_publication = %FlatPublication{}) do
+    attrs =
+      flat_publication
+      |> Map.from_struct()
+      |> Map.delete(:__meta__)
+      |> nest
+
+    %Publication{}
+    |> Publication.changeset(attrs)
+    |> Ecto.Changeset.apply_changes()
   end
 
-  def flatten(
-        p = %{
-          "title" => _title,
-          "year" => _year,
-          "country" => _country,
-          "publisher" => _publisher,
-          "translated_book" => %{
-            "authors" => _authors,
-            "original_book" => %{
-              "title" => _original_title,
-              "authors" => _original_authors
-            }
-          }
-        }
-      ) do
-    Codec.flatten(p, &(&1 |> rename_key |> flatten_value))
+  def nest(flat_publication_like_map) when is_map(flat_publication_like_map) do
+    flat_publication_like_map
+    |> Map.new(&(&1 |> Util.stringify_keys() |> nest_entry |> rename_key))
+    |> Codec.nest()
   end
 
-  def flatten(p = %Publication{}) do
-    p
-    |> Publication.to_map()
-    |> flatten
+  def nest(flat_publication_like_maps) when is_list(flat_publication_like_maps) do
+    Enum.map(flat_publication_like_maps, &nest/1)
   end
 
-  def flatten(
-        p = %{
-          title: _title,
-          year: _year,
-          country: _country,
-          publisher: _publisher,
-          translated_book: %{
-            authors: _authors,
-            original_book: %{
-              title: _original_title,
-              authors: _original_authors
-            }
-          }
-        }
-      ) do
-    Codec.flatten(p, &(&1 |> rename_key |> flatten_value |> Util.stringify_keys()))
-  end
+  defp nest_entry({"authors", value}),
+    do: {"authors", nest_authors(value)}
 
-  def flatten(%{publication: publication, errors: nil}) do
-    %{publication: flatten(publication), errors: nil}
-  end
+  defp nest_entry({"original_authors", value}),
+    do: {"original_authors", nest_authors(value)}
 
-  def flatten(%{publication: publication, errors: errors}) when is_atom(errors) do
-    %{publication: flatten(publication), errors: errors}
-  end
+  defp nest_entry({key, value}),
+    do: {key, value}
 
-  def flatten(%{publication: publication, errors: errors}) when is_map(errors) do
-    %{
-      publication: flatten(publication),
-      errors: flatten_errors(errors)
-    }
-  end
-
-  def flatten(publications) when is_list(publications) do
-    Enum.map(publications, &flatten/1)
-  end
-
-  defp nest_authors(authors) do
+  def nest_authors(authors) when is_binary(authors) do
     Enum.map(String.split(authors, ","), &%{"name" => String.trim(&1)})
   end
+
+  def flatten(publication = %Publication{}) do
+    attrs =
+      publication
+      |> map_from_struct
+      |> Map.delete(:__meta__)
+      |> flatten
+
+    %FlatPublication{}
+    |> FlatPublication.changeset(attrs)
+    |> Ecto.Changeset.apply_changes()
+  end
+
+  def flatten(%{publication: publication, errors: errors})
+      when is_nil(errors) or is_atom(errors) do
+    %{"publication" => flatten(publication), "errors" => errors}
+  end
+
+  def flatten(%{publication: publication, errors: errors}) do
+    %{"publication" => flatten(publication), "errors" => flatten(errors)}
+  end
+
+  def flatten(publication_like_maps) when is_list(publication_like_maps) do
+    Enum.map(publication_like_maps, &flatten/1)
+  end
+
+  def flatten(publication_like_map) when is_map(publication_like_map) do
+    publication_like_map |> Codec.flatten() |> Map.new(&(&1 |> rename_key |> flatten_entry))
+  end
+
+  defp flatten_entry({"authors", value}),
+    do: {"authors", flatten_authors(value)}
+
+  defp flatten_entry({"original_authors", value}),
+    do: {"original_authors", flatten_authors(value)}
+
+  defp flatten_entry({key, value}),
+    do: {key, value}
 
   defp flatten_authors(authors) when is_list(authors) do
     Enum.map_join(authors, ", ", &(Map.get(&1, "name") || Map.get(&1, :name)))
   end
 
-  defp flatten_authors_error(authors) when is_list(authors) do
-    authors |> List.first() |> Map.get(:name)
-  end
+  defp flatten_authors(authors), do: authors
 
-  defp flatten_errors(errors) do
-    Codec.flatten(errors, &(&1 |> rename_key |> flatten_error |> Util.stringify_keys()))
-  end
-
-  defp rename_key({:translated_book_authors, v}), do: {:authors, v}
-  defp rename_key({:translated_book_original_book_title, v}), do: {:original_title, v}
-  defp rename_key({:translated_book_original_book_authors, v}), do: {:original_authors, v}
   defp rename_key({"translated_book_authors", v}), do: {"authors", v}
   defp rename_key({"translated_book_original_book_title", v}), do: {"original_title", v}
   defp rename_key({"translated_book_original_book_authors", v}), do: {"original_authors", v}
+
+  defp rename_key({"authors", v}), do: {"translated_book_authors", v}
+  defp rename_key({"original_title", v}), do: {"translated_book_original_book_title", v}
+  defp rename_key({"original_authors", v}), do: {"translated_book_original_book_authors", v}
+
   defp rename_key({key, value}), do: {key, value}
 
-  defp flatten_value({"authors", value}),
-    do: {"authors", flatten_authors(value)}
+  defp map_from_struct(struct) when is_struct(struct) do
+    struct
+    |> Map.from_struct()
+    |> Map.new(fn {key, value} -> {key, map_from_struct(value)} end)
+  end
 
-  defp flatten_value({"original_authors", value}),
-    do: {"original_authors", flatten_authors(value)}
-
-  defp flatten_value({:authors, value}),
-    do: {:authors, flatten_authors(value)}
-
-  defp flatten_value({:original_authors, value}),
-    do: {:original_authors, flatten_authors(value)}
-
-  defp flatten_value({key, value}),
-    do: {key, value}
-
-  defp flatten_error({:authors, error}),
-    do: {:authors, flatten_authors_error(error)}
-
-  defp flatten_error({:original_authors, error}),
-    do: {:original_authors, flatten_authors_error(error)}
-
-  defp flatten_error({"authors", error}),
-    do: {"authors", flatten_authors_error(error)}
-
-  defp flatten_error({"original_authors", error}),
-    do: {"original_authors", flatten_authors_error(error)}
-
-  defp flatten_error({key, error}),
-    do: {key, error}
+  defp map_from_struct(value), do: value
 end
