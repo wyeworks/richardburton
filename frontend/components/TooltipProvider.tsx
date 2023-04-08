@@ -102,7 +102,8 @@ const TooltipProvider: FC<Props> = ({
           ref,
           ...children.props,
           "data-state": state.open ? "open" : "closed",
-          onBlur() {
+          onBlur(event) {
+            children.props.onBlur?.(event);
             state.setOpen(false);
           },
         })
