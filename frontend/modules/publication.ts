@@ -321,6 +321,8 @@ interface PublicationModule {
   autocomplete(value: string, attribute: "authors"): Promise<Author[]>;
   autocomplete(value: string, attribute: string): Promise<[]>;
 
+  define(attribute: PublicationKey): Record<string, unknown>;
+
   describeValue(value: string, attribute: PublicationKey): string;
   describeError(error: PublicationError, scope?: PublicationKey): string;
   empty(): Publication;
@@ -725,6 +727,13 @@ const Publication: PublicationModule = {
       default:
         return new Promise<[]>((resolve) => resolve([]));
     }
+  },
+
+  define(attribute) {
+    if (attribute === "year") {
+      return { min: 0, max: new Date().getFullYear() };
+    }
+    return {};
   },
 
   describeValue(value, attribute) {
