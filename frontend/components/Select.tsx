@@ -22,7 +22,7 @@ type Props = Omit<
   "value" | "onChange" | "className"
 > & {
   error: string;
-  value: Option;
+  value?: Option;
   onChange: (option: Option) => void;
   getOptions: (search: string) => Promise<Option[]>;
 };
@@ -89,7 +89,7 @@ export default forwardRef<HTMLInputElement, Props>(function Select(
 
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const inputValue = search === undefined ? value.label || "" : search;
+  const inputValue = search === undefined ? value?.label || "" : search;
 
   useEffect(() => {
     if (!isOpen) {
