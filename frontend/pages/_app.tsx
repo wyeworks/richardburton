@@ -52,6 +52,8 @@ function request<T = void>(
 enum Key {
   ENTER = "Enter",
   ARROW_RIGHT = "ArrowRight",
+  ARROW_UP = "ArrowUp",
+  ARROW_DOWN = "ArrowDown",
   BACKSPACE = "Backspace",
   COMMA = ",",
 }
