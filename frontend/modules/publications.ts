@@ -230,9 +230,13 @@ const ERROR_MESSAGES: Record<string, string> = {
   incorrect_row_length: "Expected a different number of columns in csv",
   invalid_format: "Could not parse publications from the provided file",
 };
+
+type PublicationKeyType = "array" | "text" | "enum" | "number";
+
 interface PublicationModule {
   ATTRIBUTES: PublicationKey[];
   ATTRIBUTE_LABELS: Record<PublicationKey, string>;
+  ATTRIBUTE_TYPES: Record<PublicationKey, PublicationKeyType>;
   NEW_ROW_ID: PublicationId;
 
   STORE: {
@@ -329,6 +333,16 @@ const Publication: PublicationModule = {
     publisher: "Publisher",
     title: "Title",
     year: "Year",
+  },
+
+  ATTRIBUTE_TYPES: {
+    authors: "array",
+    originalAuthors: "array",
+    originalTitle: "text",
+    country: "enum",
+    publisher: "text",
+    title: "text",
+    year: "number",
   },
   NEW_ROW_ID: -1,
   STORE: {
@@ -714,6 +728,7 @@ const Publication: PublicationModule = {
 
 export type {
   PublicationKey,
+  PublicationKeyType,
   PublicationEntry,
   PublicationError,
   PublicationId,

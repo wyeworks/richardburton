@@ -34,11 +34,11 @@ const Button = forwardRef<HTMLButtonElement, Props>(function Button(
       ref={ref}
       className={c(
         "flex px-2 py-1.5 transition-colors items-center rounded font-base shadow-sm text-xs group",
-        "disabled:bg-gray-100 disabled:text-gray-300",
+        "disabled:bg-gray-100 disabled:text-gray-300 disabled:hover:bg-gray-100",
         {
           "text-white bg-indigo-600 hover:bg-indigo-700": isPrimary,
           "text-white bg-yellow-500 hover:bg-yellow-600": isSecondary,
-          "bg-gray-100 hover:bg-white/50": isOutline,
+          "bg-gray-100 hover:bg-gray-active": isOutline,
           "justify-center": isTextCentered,
           "w-full": isFullWidth,
           "w-48": isFixedWidth,
