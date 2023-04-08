@@ -6,7 +6,7 @@ import {
   PublicationId,
   PublicationKey,
   PublicationKeyType,
-} from "modules/publications";
+} from "modules/publication";
 import Tooltip from "./Tooltip";
 import TextEnumDataInput from "./TextEnumDataInput";
 

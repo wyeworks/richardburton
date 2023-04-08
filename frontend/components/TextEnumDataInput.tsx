@@ -1,4 +1,4 @@
-import { Publication } from "modules/publications";
+import { Publication } from "modules/publication";
 import { FC, forwardRef, useCallback, useMemo, useState } from "react";
 import { DataInputProps } from "./DataInput";
 import Select, { SelectOption } from "./Select";

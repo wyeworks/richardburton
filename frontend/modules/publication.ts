@@ -16,7 +16,7 @@ import { _NOTIFICATIONS, _notify } from "components/Notifications";
 import { AxiosInstance } from "axios";
 import hash from "object-hash";
 import useDebounce from "utils/useDebounce";
-import { Author } from "./authors";
+import { Author } from "./author";
 import { COUNTRIES, Country } from "./country";
 
 type Publication = {
