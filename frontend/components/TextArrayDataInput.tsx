@@ -1,74 +1,38 @@
-import {
-  FC,
-  ForwardedRef,
-  forwardRef,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
-import { Publication } from "modules/publications";
-import { Author } from "modules/authors";
+import { FC, forwardRef, useCallback, useMemo } from "react";
 import { DataInputProps } from "./DataInput";
+import { Publication } from "modules/publications";
 import Multicombobox from "./Multicombobox";
-import useDebounce from "utils/useDebounce";
+import pDebounce from "p-debounce";
 
-export default forwardRef<HTMLElement, DataInputProps>(
+export default forwardRef<HTMLDivElement, DataInputProps>(
   function TextArrayDataInput(
-    {
-      rowId,
-      colId,
-      value: data,
-      error,
-      autoValidated,
-      onChange,
-      onBlur,
-      ...props
-    },
+    { rowId, colId, value, autoValidated, onChange, onBlur, ...props },
     ref
   ) {
-    const validate = Publication.REMOTE.useValidate();
-    const override = Publication.STORE.ATTRIBUTES.useOverride();
-    const [value, setValue] = useState(data);
-
     const items = useMemo(
       () => (value === "" ? [] : value.split(",")),
       [value]
     );
 
-    function doValidate() {
-      if (autoValidated) {
-        validate([rowId]);
-      }
-    }
-
     function handleChange(value: string[]) {
-      const v = value.join(",");
-      setValue(v);
-      override(rowId, colId, v);
-      doValidate();
-      onChange?.(v);
+      onChange?.(value.join(","));
     }
 
-    useEffect(() => {
-      if (data !== value) {
-        setValue(data);
-      }
-    }, [data, rowId, colId, value, setValue]);
-
-    //TODO: uncouple this component from author search
-    const getOptions = useDebounce(Author.REMOTE.search, 350, {
-      leading: true,
-    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    const getOptions = useCallback(
+      pDebounce(
+        (search: string) => Publication.autocomplete(search, colId),
+        350
+      ),
+      [colId]
+    );
 
     return (
       <Multicombobox
         {...props}
-        ref={ref as ForwardedRef<HTMLDivElement>}
-        placeholder={Publication.ATTRIBUTE_LABELS[colId]}
+        ref={ref}
         value={items}
-        onBlur={doValidate}
         onChange={handleChange}
-        error={Boolean(error)}
         getOptions={getOptions}
       />
     );

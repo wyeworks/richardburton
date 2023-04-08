@@ -21,15 +21,6 @@ import AddCircleIcon from "assets/add-circle.svg";
 import ErrorIcon from "assets/error.svg";
 import DataInput from "./DataInput";
 
-const COUNTRIES: Record<string, string> = {
-  BR: "Brazil",
-  GB: "Great Britain",
-  US: "United States",
-  CA: "Canada",
-  IE: "Ireland",
-  NZ: "New Zealand",
-};
-
 const ExtendedColumn: typeof Column = (props) => {
   const { rowId } = props;
   const isSelected = useIsSelected(rowId);
@@ -57,13 +48,11 @@ const ExtendedSignalColumn: FC<{ rowId: RowId }> = ({ rowId }) => {
 };
 
 const ExtendedContent: typeof Content = ({ rowId, colId, value, error }) => {
-  const content = colId === "country" ? COUNTRIES[value] || value : value;
-
   return (
     <DataInput
       rowId={rowId}
       colId={colId}
-      value={content}
+      value={value}
       error={error}
       autoValidated
     />
