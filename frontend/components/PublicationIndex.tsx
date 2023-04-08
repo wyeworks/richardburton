@@ -4,7 +4,7 @@ import {
   Publication,
   PublicationId,
   PublicationKey,
-} from "modules/publications";
+} from "modules/publication";
 import { FC, forwardRef, HTMLProps, MouseEvent, ReactNode } from "react";
 
 type RowId = PublicationId;

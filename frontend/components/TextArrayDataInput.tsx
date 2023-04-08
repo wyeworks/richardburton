@@ -1,6 +1,6 @@
 import { FC, forwardRef, useCallback, useMemo } from "react";
 import { DataInputProps } from "./DataInput";
-import { Publication } from "modules/publications";
+import { Publication } from "modules/publication";
 import Multicombobox from "./Multicombobox";
 import pDebounce from "p-debounce";
 
