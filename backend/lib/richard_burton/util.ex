@@ -25,7 +25,7 @@ defmodule RichardBurton.Util do
 
   @doc ~S"""
     Given an enumerable with atom keys, return the enumerable with string keys instead.
-    Works for keyword lists, key-value tuples and maps.
+    Works for keyword lists, key-value tuples, maps and structs.
     When an ordinary list is given, it stringify the keys of its elements.
     Does not traverse structures other than ordinary lists.
 
@@ -76,8 +76,9 @@ defmodule RichardBurton.Util do
         iex> RichardBurton.Util.stringify_keys(%{key: {:key, "value"}})
         %{"key" => {:key, "value"}}
   """
-  def stringify_keys(list) when is_list(list), do: Enum.map(list, &stringify_keys/1)
-  def stringify_keys(map) when is_map(map), do: Map.new(map, &stringify_keys/1)
+  def stringify_keys(s) when is_struct(s), do: stringify_keys(Map.from_struct(s))
+  def stringify_keys(l) when is_list(l), do: Enum.map(l, &stringify_keys/1)
+  def stringify_keys(m) when is_map(m), do: Map.new(m, &stringify_keys/1)
   def stringify_keys({key, value}) when is_atom(key), do: {Atom.to_string(key), value}
   def stringify_keys({key, value}) when is_binary(key), do: {key, value}
 end

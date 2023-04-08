@@ -20,6 +20,7 @@ defmodule RichardBurton.Publication do
     field(:publisher, :string)
     field(:title, :string)
     field(:year, :integer)
+    field(:translated_book_fingerprint, :string)
 
     belongs_to(:translated_book, TranslatedBook)
 
@@ -27,12 +28,24 @@ defmodule RichardBurton.Publication do
   end
 
   @doc false
-  def changeset(publication, attrs \\ %{}) do
+  def changeset(publication, attrs \\ %{})
+
+  @doc false
+  def changeset(publication, attrs = %Publication{}) do
+    changeset(publication, Map.from_struct(attrs))
+  end
+
+  @doc false
+  def changeset(publication, attrs) do
     publication
     |> cast(attrs, [:title, :year, :country, :publisher])
-    |> validate_required([:title, :year, :country, :publisher])
     |> cast_assoc(:translated_book, required: true)
-    |> unique_constraint([:title, :year, :country, :publisher])
+    |> validate_required([:title, :year, :country, :publisher])
+    |> TranslatedBook.link_fingerprint()
+    |> unique_constraint(
+      [:title, :year, :country, :publisher, :translated_book_fingerprint],
+      name: "publications_composite_key"
+    )
   end
 
   def all do
@@ -77,13 +90,5 @@ defmodule RichardBurton.Publication do
       {:error, errors} ->
         Repo.rollback({attrs, errors})
     end
-  end
-
-  def to_map(publication) do
-    translated_book = TranslatedBook.to_map(publication.translated_book)
-
-    publication
-    |> Map.take(@external_attributes)
-    |> Map.put(:translated_book, translated_book)
   end
 end
