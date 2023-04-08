@@ -39,12 +39,15 @@ function request<T = void>(
           if (error.response.status === 409) {
             reject("conflict");
           } else {
-            const detail = (error.response?.data as any).errors?.detail;
-
-            if (detail) {
-              reject(detail);
+            if (error.response.data) {
+              const detail = (error.response?.data as any).errors?.detail;
+              if (detail) {
+                reject(detail);
+              } else {
+                reject(error.response?.data);
+              }
             } else {
-              reject(error.response?.data);
+              reject(error.message);
             }
           }
         } else if (error.request) {
