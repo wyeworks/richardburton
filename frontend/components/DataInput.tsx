@@ -51,6 +51,9 @@ const DataInput = forwardRef<HTMLElement, Props>(function DataInput(
   function handleChange(value: string) {
     setValue(value);
     override(rowId, colId, value);
+    if (type == "array" || type == "enum") {
+      doValidate();
+    }
     onChange?.(value);
   }
 
