@@ -5,8 +5,6 @@ compose_dev = docker compose \
 								--env-file .env.development.local \
 								up --build	
 
-build_backend = cd backend && mix phx.gen.release
-
 compose_prod = docker compose \
 								-f docker-compose.base.yml \
 								-f docker-compose.prod.yml \
@@ -27,16 +25,13 @@ dev_phoenix:
 	$(compose_dev) phoenix
 
 prod:
-	${build_backend}
 	$(compose_prod)
 
 prod_frontend:
 	$(compose_prod) nextjs
 
 prod_backend:
-	${build_backend}
 	$(compose_prod) phoenix db
 
 prod_phoenix:
-	${build_backend}	
 	$(compose_prod) phoenix
