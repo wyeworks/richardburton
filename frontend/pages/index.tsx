@@ -1,6 +1,6 @@
 import { NextPage } from "next";
 import { useEffect } from "react";
-import { Publication } from "modules/publications";
+import { Publication } from "modules/publication";
 import Layout from "components/Layout";
 import PublicationIndex from "components/PublicationIndex";
 import PublicationSearch from "components/PublicationSearch";

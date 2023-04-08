@@ -1,5 +1,5 @@
 import { snakeCase } from "lodash";
-import { Publication } from "modules/publications";
+import { Publication } from "modules/publication";
 import { useRouter } from "next/router";
 import { FC, useRef } from "react";
 import { FILES_URL, request } from "app";
