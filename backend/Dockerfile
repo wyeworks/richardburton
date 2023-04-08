@@ -56,7 +56,7 @@ RUN mix compile
 # Changes to config/runtime.exs don't require recompiling the code
 COPY config/runtime.exs config/
 
-COPY rel rel
+RUN mix phx.gen.release
 RUN mix release
 
 # start a new build stage so that the final image will only contain
