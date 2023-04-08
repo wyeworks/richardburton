@@ -42,7 +42,7 @@ const ExtendedSignalColumn: FC<{ rowId: RowId }> = ({ rowId }) => {
 
   return (
     <SignalColumn rowId={rowId} invalid={!valid} selected={selected} selectable>
-      {valid ? null : <ErrorIcon className="text-red-600" />}
+      {valid ? null : <ErrorIcon className="w-5 text-red-600 aspect-square" />}
     </SignalColumn>
   );
 };
@@ -126,7 +126,7 @@ const NewPublicationSignalColumn: FC<{ rowId: RowId }> = ({ rowId }) => {
         className="flex text-indigo-600 rounded-full w-fit h-fit hover:text-indigo-700"
         onClick={submit}
       >
-        <AddCircleIcon className="w-5 h-5" />
+        <AddCircleIcon className="w-5 aspect-square" />
       </button>
     </SignalColumn>
   );
