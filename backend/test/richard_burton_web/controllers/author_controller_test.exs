@@ -1,4 +1,4 @@
-defmodule RichardBurtonWeb.UserControllerTest do
+defmodule RichardBurtonWeb.AuthorControllerTest do
   @moduledoc """
   Tests for the Publication controller
   """
