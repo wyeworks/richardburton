@@ -5,7 +5,7 @@ import Select, { SelectOption } from "./Select";
 import pDebounce from "p-debounce";
 
 export default forwardRef<HTMLInputElement, DataInputProps>(
-  function TextDataInput(
+  function TextEnumDataInput(
     { rowId, colId, autoValidated, value, onChange, ...props },
     ref
   ) {
@@ -23,8 +23,11 @@ export default forwardRef<HTMLInputElement, DataInputProps>(
     );
 
     const selectedOption = useMemo(
-      () => ({ id: value, label: Publication.describeValue(value, colId) }),
-      [value]
+      () =>
+        value
+          ? { id: value, label: Publication.describeValue(value, colId) }
+          : undefined,
+      [value, colId]
     );
 
     return (
