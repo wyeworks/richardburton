@@ -26,7 +26,10 @@ const PublicationDownload: FC = () => {
   const download = () => {
     request(async (http) => {
       if (anchor.current) {
-        const query = qs.stringify({ search, select }, { encode: false });
+        const query = qs.stringify(
+          { search, select },
+          { encode: false, arrayFormat: "brackets" }
+        );
 
         const { data, headers } = await http.get(
           `${FILES_URL}/publications?${query}`,
