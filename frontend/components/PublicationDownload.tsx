@@ -10,6 +10,8 @@ import qs from "qs";
 const PublicationDownload: FC = () => {
   const visibleCount = Publication.STORE.useVisibleCount();
   const visibleAttributes = Publication.STORE.ATTRIBUTES.useVisible();
+  const areAllAttributesVisible =
+    visibleAttributes.length === Publication.ATTRIBUTES.length;
 
   const router = useRouter();
 
@@ -17,16 +19,14 @@ const PublicationDownload: FC = () => {
 
   const { search } = router.query;
 
+  const select = areAllAttributesVisible
+    ? undefined
+    : visibleAttributes.map(snakeCase);
+
   const download = () => {
     request(async (http) => {
       if (anchor.current) {
-        const query = qs.stringify(
-          {
-            search,
-            select: visibleAttributes.map(snakeCase),
-          },
-          { encode: false }
-        );
+        const query = qs.stringify({ search, select }, { encode: false });
 
         const { data, headers } = await http.get(
           `${FILES_URL}/publications?${query}`,
