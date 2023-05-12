@@ -23,6 +23,8 @@ services:
   phoenix:
     build:
       target: prod
+      args:
+        POSTGREX_TIMEOUT: $POSTGREX_TIMEOUT
     environment:
       # Phoenix configuration
       PHX_HOST: $PHX_HOST

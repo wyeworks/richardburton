@@ -28,6 +28,8 @@ services:
       PHX_HOST: localhost
       PHX_CONSUMER_URL: http://localhost:3000
       PHX_SECRET_KEY_BASE: 6RM4jaPQV7OeYsZ74E7GHy72a1GXc5F8GKjBKjjFP1OYiMN
+      # Postgrex configuration
+      POSTGREX_TIMEOUT: $POSTGREX_TIMEOUT
       # Google Idp configuration
       GOOGLE_OPENID_CONFIG_URL: https://accounts.google.com/.well-known/openid-configuration
       GOOGLE_OAUTH2_CERTS_URL: https://www.googleapis.com/oauth2/v2/certs

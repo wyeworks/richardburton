@@ -78,19 +78,20 @@ Environment variables are configuration units relevant to the app's build or run
 
 ## Backend
 
-| Key                        | Description                                                     | Recommended value for dev                                                                                   |
-| -------------------------- | --------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
-| `GOOGLE_CLIENT_ID`         | Google OAuth2 client id                                         | Get from [google](https://console.cloud.google.com/apis/credentials), see [authentication](#authentication) |
-| `GOOGLE_OPENID_CONFIG_URL` | URL of Google's OpenId configuration                            | `https://accounts.google.com/.well-known/openid-configuration`                                              |
-| `GOOGLE_OAUTH2_CERTS_URL`  | URL of Google's OAuth2 certificates                             | `https://www.googleapis.com/oauth2/v2/certs`                                                                |
-| `PGUSER`                   | Postgres user                                                   | `postgres`                                                                                                  |
-| `PGPASSWORD`               | Postgres password                                               | `postgres`                                                                                                  |
-| `PGDATABASE`               | Postgres database                                               | `richard_burton_dev`                                                                                        |
-| `PGPORT`                   | Postgres port                                                   | `3542`                                                                                                      |
-| `PHX_HOST`                 | Phoenix host                                                    | `localhost`                                                                                                 |
-| `PHX_PORT`                 | Phoenix port                                                    | `4000`                                                                                                      |
-| `PHX_SECRET_KEY_BASE`      | Phoenix secret key base                                         | Generate with `mix phx.gen.secret`                                                                          |
-| `PHX_CONSUMER_URL`         | URL of the frontend api. This is used to configure CORS headers | `http://localhost:3000`                                                                                     |
+| Key                        | Description                                                                                                       | Recommended value for dev                                                                                   |
+| -------------------------- | ----------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| `GOOGLE_CLIENT_ID`         | Google OAuth2 client id                                                                                           | Get from [google](https://console.cloud.google.com/apis/credentials), see [authentication](#authentication) |
+| `GOOGLE_OPENID_CONFIG_URL` | URL of Google's OpenId configuration                                                                              | `https://accounts.google.com/.well-known/openid-configuration`                                              |
+| `GOOGLE_OAUTH2_CERTS_URL`  | URL of Google's OAuth2 certificates                                                                               | `https://www.googleapis.com/oauth2/v2/certs`                                                                |
+| `PGUSER`                   | Postgres user                                                                                                     | `postgres`                                                                                                  |
+| `PGPASSWORD`               | Postgres password                                                                                                 | `postgres`                                                                                                  |
+| `PGDATABASE`               | Postgres database                                                                                                 | `richard_burton_dev`                                                                                        |
+| `PGPORT`                   | Postgres port                                                                                                     | `3542`                                                                                                      |
+| `PHX_HOST`                 | Phoenix host                                                                                                      | `localhost`                                                                                                 |
+| `PHX_PORT`                 | Phoenix port                                                                                                      | `4000`                                                                                                      |
+| `PHX_SECRET_KEY_BASE`      | Phoenix secret key base                                                                                           | Generate with `mix phx.gen.secret`                                                                          |
+| `PHX_CONSUMER_URL`         | URL of the frontend api. This is used to configure CORS headers                                                   | `http://localhost:3000`                                                                                     |
+| `POSTGREX_TIMEOUT`         | Timeout in milliseconds for database requests. Optional. Default is 15000. **Must be available in compile time.** | 15000                                                                                                       |
 
 # Development mode
 
