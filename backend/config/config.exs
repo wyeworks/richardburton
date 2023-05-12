@@ -10,6 +10,10 @@ import Config
 config :richard_burton,
   ecto_repos: [RichardBurton.Repo]
 
+# Postgrex configuration
+config :richard_burton, RichardBurton.Repo,
+  timeout: String.to_integer(System.get_env("POSTGREX_TIMEOUT", "15000"))
+
 # Configures the endpoint
 
 config :richard_burton, RichardBurtonWeb.Endpoint,
