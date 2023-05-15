@@ -3,7 +3,6 @@ import {
   atomFamily,
   CallbackInterface,
   MutableSnapshot,
-  RecoilState,
   Resetter,
   selector,
   selectorFamily,
@@ -236,6 +235,11 @@ const ARE_ROW_IDS_VISIBLE = atom<boolean>({
   default: false,
 });
 
+const FOCUSED_ROW_ID = atom<number | undefined>({
+  key: "focused-row-id",
+  default: undefined,
+});
+
 const ERROR_MESSAGES: Record<string, string> = {
   conflict: "A publication with this data already exists",
   required: "This field is required and cannot be blank",
@@ -269,6 +273,7 @@ interface PublicationModule {
     useAddNew(): () => PublicationId;
 
     useIsValid(id: PublicationId): boolean;
+    useIsFocused(id: PublicationId): boolean;
 
     useVisibleCount(): number;
     useValidCount(): number;
@@ -284,12 +289,15 @@ interface PublicationModule {
       getVisibleIds(): PublicationId[] | undefined;
       getAllVisible(): Publication[] | undefined;
       getValue(id: PublicationId): Publication;
+      getFocusedRowId(): PublicationId | undefined;
       isDeleted(id: PublicationId): boolean;
+      isValid(id: PublicationId): boolean;
     };
 
     with: (params: Pick<CallbackInterface, "set">) => {
       setPublications(entries: PublicationEntry[]): void;
       setErrors(entries: PublicationEntry[]): void;
+      setFocusedRowId(id: PublicationId | undefined): void;
     };
 
     ATTRIBUTES: {
@@ -508,6 +516,11 @@ const Publication: PublicationModule = {
       return useRecoilValue(KEYWORDS);
     },
 
+    useIsFocused(id) {
+      console.log(useRecoilValue(FOCUSED_ROW_ID));
+      return id === useRecoilValue(FOCUSED_ROW_ID);
+    },
+
     from: (snapshot) => ({
       getVisibleIds() {
         return snapshot.getLoadable(VISIBLE_PUBLICATION_IDS).valueOrThrow();
@@ -519,8 +532,15 @@ const Publication: PublicationModule = {
         const { getVisibleIds, getValue } = Publication.STORE.from(snapshot);
         return getVisibleIds()?.map(getValue);
       },
+      getFocusedRowId() {
+        return snapshot.getLoadable(FOCUSED_ROW_ID).valueOrThrow();
+      },
       isDeleted(id) {
         return snapshot.getLoadable(IS_PUBLICATION_DELETED(id)).valueOrThrow();
+      },
+
+      isValid(id) {
+        return snapshot.getLoadable(IS_PUBLICATION_VALID(id)).valueOrThrow();
       },
     }),
 
@@ -536,6 +556,10 @@ const Publication: PublicationModule = {
         entries.forEach(({ id, errors }) => {
           set(PUBLICATION_ERRORS(id), errors);
         });
+      },
+
+      setFocusedRowId(id) {
+        set(FOCUSED_ROW_ID, id);
       },
     }),
 
