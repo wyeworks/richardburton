@@ -3,11 +3,13 @@ import {
   atomFamily,
   CallbackInterface,
   MutableSnapshot,
+  RecoilState,
   Resetter,
   selector,
   selectorFamily,
   Snapshot,
   useRecoilCallback,
+  useRecoilState,
   useRecoilValue,
 } from "recoil";
 import { isString, range } from "lodash";
@@ -18,6 +20,7 @@ import hash from "object-hash";
 import useDebounce from "utils/useDebounce";
 import { Author } from "./author";
 import { COUNTRIES, Country } from "./country";
+import { SetterOrUpdater } from "recoil";
 
 type Publication = {
   title: string;
@@ -228,6 +231,11 @@ const PUBLICATION_ATTRIBUTE_ERROR_DESCRIPTION = selectorFamily<
   },
 });
 
+const ARE_ROW_IDS_VISIBLE = atom<boolean>({
+  key: "are-row-ids-visible",
+  default: false,
+});
+
 const ERROR_MESSAGES: Record<string, string> = {
   conflict: "A publication with this data already exists",
   required: "This field is required and cannot be blank",
@@ -299,6 +307,8 @@ interface PublicationModule {
         value: string
       ) => void;
       useErrorDescription(id: PublicationId, key: PublicationKey): string;
+
+      useAreRowIdsVisible(): [boolean, SetterOrUpdater<boolean>];
     };
   };
 
@@ -582,6 +592,10 @@ const Publication: PublicationModule = {
         return useRecoilValue(
           PUBLICATION_ATTRIBUTE_ERROR_DESCRIPTION(compositeId)
         );
+      },
+
+      useAreRowIdsVisible() {
+        return useRecoilState(ARE_ROW_IDS_VISIBLE);
       },
     },
   },

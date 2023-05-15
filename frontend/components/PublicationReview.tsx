@@ -1,4 +1,4 @@
-import classNames from "classnames";
+import c from "classnames";
 import { Publication } from "modules/publication";
 import { FC, KeyboardEventHandler, MouseEvent, useCallback } from "react";
 import Tooltip from "./Tooltip";
@@ -39,10 +39,17 @@ const ExtendedColumn: typeof Column = (props) => {
 const ExtendedSignalColumn: FC<{ rowId: RowId }> = ({ rowId }) => {
   const valid = Publication.STORE.useIsValid(rowId);
   const selected = useIsSelected(rowId);
+  const [isIdVisible] = Publication.STORE.ATTRIBUTES.useAreRowIdsVisible();
 
   return (
     <SignalColumn rowId={rowId} invalid={!valid} selected={selected} selectable>
-      {valid ? null : <ErrorIcon className="w-5 text-red-600 aspect-square" />}
+      <span
+        className="flex items-center text-xs text-gray-400 error:text-red-500"
+        data-error={!valid}
+      >
+        {!valid && <ErrorIcon className="w-5 aspect-square" />}
+        {isIdVisible && rowId + 1}
+      </span>
     </SignalColumn>
   );
 };
@@ -159,7 +166,7 @@ const PublicationReview: FC = () => {
 
   return (
     <PublicationIndex
-      className={classNames(!isSelectionEmpty && "select-none")}
+      className={c(!isSelectionEmpty && "select-none")}
       ExtendedRow={ExtendedRow}
       ExtendedColumn={ExtendedColumn}
       ExtendedContent={ExtendedContent}
