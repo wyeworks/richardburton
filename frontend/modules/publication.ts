@@ -448,6 +448,7 @@ const Publication: PublicationModule = {
               reset(IS_PUBLICATION_DELETED(id));
             });
             reset(PUBLICATION_IDS);
+            reset(FOCUSED_ROW_ID);
           },
         []
       );
