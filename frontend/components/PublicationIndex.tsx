@@ -138,7 +138,7 @@ const SignalColumn: FC<{
 }> = ({ invalid = false, selected = false, selectable = false, children }) => {
   return (
     <td
-      className="sticky left-0 px-2 text-xl text-center bg-gray-100 group-hover:bg-indigo-100 error:group-hover:bg-red-100 selected:bg-amber-100"
+      className="sticky left-0 flex items-center justify-center h-full px-2 truncate bg-gray-100 group-hover:bg-indigo-100 error:group-hover:bg-red-100 selected:bg-amber-100"
       data-selected={selected}
       data-selectable={selectable}
       data-error={invalid}
@@ -174,7 +174,7 @@ const PublicationIndex: FC<Props> = ({
     <table className={c(className, "h-fit w-full table-fixed")}>
       <thead className="sticky top-0 z-10 bg-gray-100">
         <tr>
-          {ExtendedSignalColumn && <th className="w-8" />}
+          {ExtendedSignalColumn && <th className="w-10" />}
           {Publication.ATTRIBUTES.map((key) => (
             <ColumnHeader key={key} colId={key} />
           ))}
