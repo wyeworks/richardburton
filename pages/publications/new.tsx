@@ -12,6 +12,7 @@ import PublicationDelete from "components/PublicationDelete";
 import StrikeHeading from "components/StrikeHeading";
 import PublicationErrorCounter from "components/PublicationErrorCounter";
 import PublicationCounter from "components/PublicationCounter";
+import RowIdToggle from "components/RowIdToggle";
 
 const NewPublications: NextPage = () => {
   const setAll = Publication.STORE.useSetAll();
@@ -35,6 +36,7 @@ const NewPublications: NextPage = () => {
           <PublicationDelete />
           <PublicationCounter />
           <PublicationErrorCounter />
+          <RowIdToggle />
           <PublicationSubmit />
         </div>
       }
