@@ -29,6 +29,7 @@ module.exports = {
     plugin(function ({ addVariant }) {
       addVariant("error", '&[data-error="true"]');
       addVariant("selected", '&[data-selected="true"]');
+      addVariant("focused", '&[data-focused="true"]');
     }),
     scrollbar,
   ],

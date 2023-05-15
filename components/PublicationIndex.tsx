@@ -49,6 +49,7 @@ const Column: FC<{
   rowId: RowId;
   colId: ColId;
   Content: typeof Content;
+  focused?: boolean;
   visible?: boolean;
   invalid?: boolean;
   selected?: boolean;
@@ -57,23 +58,24 @@ const Column: FC<{
   rowId,
   colId,
   Content,
+  focused = false,
   invalid = false,
   selected = false,
   selectable = false,
 }) => {
   const { useIsVisible, useValue, useErrorDescription } =
     Publication.STORE.ATTRIBUTES;
-
   const visible = useIsVisible(colId);
   const value = useValue(rowId, colId);
   const error = useErrorDescription(rowId, colId);
 
   return visible ? (
     <td
-      className="px-2 py-1 text-sm truncate justify group-hover:bg-indigo-100 error:group-hover:bg-red-100 selected:bg-amber-100"
+      className="px-2 py-1 text-sm truncate justify group-hover:bg-indigo-100 error:group-hover:bg-red-100 error:focused:bg-red-100 selected:bg-amber-100"
       data-selected={selected}
       data-selectable={selectable}
       data-error={invalid}
+      data-focused={focused}
     >
       <Content rowId={rowId} colId={colId} value={value} error={error} />
     </td>
@@ -131,17 +133,25 @@ const Row = forwardRef<HTMLTableRowElement, RowProps>(function Row(
 
 const SignalColumn: FC<{
   rowId: RowId;
+  focused?: boolean;
   invalid?: boolean;
   selected?: boolean;
   selectable?: boolean;
   children?: ReactNode;
-}> = ({ invalid = false, selected = false, selectable = false, children }) => {
+}> = ({
+  focused = false,
+  invalid = false,
+  selected = false,
+  selectable = false,
+  children,
+}) => {
   return (
     <td
-      className="sticky left-0 flex items-center justify-center h-full px-2 truncate bg-gray-100 group-hover:bg-indigo-100 error:group-hover:bg-red-100 selected:bg-amber-100"
+      className="sticky left-0 flex items-center justify-center h-full px-2 truncate bg-gray-100 group-hover:bg-indigo-100 error:group-hover:bg-red-100 error:focused:bg-red-100 selected:bg-amber-100"
       data-selected={selected}
       data-selectable={selectable}
       data-error={invalid}
+      data-focused={focused}
     >
       {children}
     </td>
