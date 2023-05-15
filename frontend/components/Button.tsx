@@ -6,7 +6,8 @@ type Props = HTMLProps<HTMLButtonElement> & {
   type?: "primary" | "secondary" | "outline";
   Icon?: FC<{ className: string }>;
   alignment?: "center" | "left";
-  width?: "full" | "fixed";
+  width?: "full" | "fixed" | "fit";
+  labelSrOnly?: boolean;
 };
 
 const Button = forwardRef<HTMLButtonElement, Props>(function Button(
@@ -17,6 +18,7 @@ const Button = forwardRef<HTMLButtonElement, Props>(function Button(
     Icon,
     alignment = "center",
     width = "full",
+    labelSrOnly,
     ...props
   },
   ref
@@ -27,13 +29,14 @@ const Button = forwardRef<HTMLButtonElement, Props>(function Button(
   const isTextCentered = alignment === "center";
   const isFixedWidth = width === "fixed";
   const isFullWidth = width === "full";
+  const isFitWidth = width === "fit";
 
   return (
     <button
       {...props}
       ref={ref}
       className={c(
-        "flex px-2 py-1.5 transition-colors items-center rounded font-base shadow-sm text-xs group",
+        "flex px-2 py-1.5 transition-colors items-center rounded font-base shadow-sm text-xs group space-x-2",
         "disabled:bg-gray-100 disabled:text-gray-300 disabled:hover:bg-gray-100",
         {
           "text-white bg-indigo-600 hover:bg-indigo-700": isPrimary,
@@ -42,20 +45,23 @@ const Button = forwardRef<HTMLButtonElement, Props>(function Button(
           "justify-center": isTextCentered,
           "w-full": isFullWidth,
           "w-48": isFixedWidth,
+          "w-fit": isFitWidth,
         }
       )}
       onClick={onClick}
     >
       {Icon && (
         <Icon
-          className={c("w-4 h-4 mr-2 group-disabled:text-gray-300", {
+          className={c("w-4 h-4 group-disabled:text-gray-300", {
             "text-indigo-700": isOutline,
           })}
         />
       )}
-      {label}
+      <span className={c({ "sr-only": labelSrOnly })}>{label}</span>
     </button>
   );
 });
+
+export type { Props as ButtonProps };
 
 export default Button;
