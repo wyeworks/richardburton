@@ -7,7 +7,7 @@ type Props = HTMLProps<HTMLButtonElement> & {
   Icon?: FC<{ className: string }>;
   alignment?: "center" | "left";
   width?: "full" | "fixed" | "fit";
-  labelSrOnly: boolean;
+  labelSrOnly?: boolean;
 };
 
 const Button = forwardRef<HTMLButtonElement, Props>(function Button(
