@@ -1,6 +1,13 @@
 import c from "classnames";
 import { Publication } from "modules/publication";
-import { FC, KeyboardEventHandler, MouseEvent, useCallback } from "react";
+import {
+  FC,
+  KeyboardEventHandler,
+  MouseEvent,
+  useCallback,
+  useEffect,
+  useRef,
+} from "react";
 import Tooltip from "./Tooltip";
 import {
   useIsSelected,
@@ -22,14 +29,18 @@ import ErrorIcon from "assets/error.svg";
 import DataInput from "./DataInput";
 
 const ExtendedColumn: typeof Column = (props) => {
+  const { useIsValid, useIsFocused } = Publication.STORE;
   const { rowId } = props;
+
   const isSelected = useIsSelected(rowId);
-  const isValid = Publication.STORE.useIsValid(rowId);
+  const isValid = useIsValid(rowId);
+  const isFocused = useIsFocused(rowId);
 
   return (
     <Column
       {...props}
       invalid={!isValid}
+      focused={isFocused}
       selected={isSelected}
       selectable={true}
     />
@@ -37,17 +48,26 @@ const ExtendedColumn: typeof Column = (props) => {
 };
 
 const ExtendedSignalColumn: FC<{ rowId: RowId }> = ({ rowId }) => {
-  const valid = Publication.STORE.useIsValid(rowId);
-  const selected = useIsSelected(rowId);
+  const { useIsValid, useIsFocused } = Publication.STORE;
+  const isValid = useIsValid(rowId);
+  const isFocused = useIsFocused(rowId);
+
+  const isSelected = useIsSelected(rowId);
   const [isIdVisible] = Publication.STORE.ATTRIBUTES.useAreRowIdsVisible();
 
   return (
-    <SignalColumn rowId={rowId} invalid={!valid} selected={selected} selectable>
+    <SignalColumn
+      rowId={rowId}
+      focused={isFocused}
+      invalid={!isValid}
+      selected={isSelected}
+      selectable
+    >
       <span
         className="flex items-center text-xs text-gray-400 error:text-red-500"
-        data-error={!valid}
+        data-error={!isValid}
       >
-        {!valid && <ErrorIcon className="w-5 aspect-square" />}
+        {!isValid && <ErrorIcon className="w-5 aspect-square" />}
         {isIdVisible && rowId + 1}
       </span>
     </SignalColumn>
@@ -68,9 +88,18 @@ const ExtendedContent: typeof Content = ({ rowId, colId, value, error }) => {
 
 const ExtendedRow: FC<RowProps> = (props) => {
   const { rowId } = props;
-  const { useErrorDescription } = Publication.STORE;
+  const { useErrorDescription, useIsFocused } = Publication.STORE;
 
   const error = useErrorDescription(rowId);
+  const focused = useIsFocused(rowId);
+
+  const ref = useRef<HTMLTableRowElement>(null);
+
+  useEffect(() => {
+    if (focused && ref.current) {
+      ref.current.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  }, [focused]);
 
   return (
     <Tooltip
@@ -81,7 +110,7 @@ const ExtendedRow: FC<RowProps> = (props) => {
       portalRoot="main"
       absoluteCenter
     >
-      <Row {...props} />
+      <Row {...props} ref={ref} />
     </Tooltip>
   );
 };
