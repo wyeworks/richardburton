@@ -1,5 +1,7 @@
 import Config
 
+import_config "prod.local.exs"
+
 # For production, don't forget to configure the url host
 # to something meaningful, Phoenix uses this information
 # when generating URLs.
