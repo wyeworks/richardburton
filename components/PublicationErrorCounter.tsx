@@ -19,7 +19,7 @@ const PublicationErrorCounter: FC = () => {
         const { getVisibleIds, isValid, getFocusedRowId } = from(snapshot);
 
         const visibleIds = getVisibleIds();
-        const focusedId = getFocusedRowId() || -1;
+        const focusedId = getFocusedRowId() ?? -1;
 
         if (visibleIds) {
           const nextInvalidId =
