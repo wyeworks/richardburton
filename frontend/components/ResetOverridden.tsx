@@ -26,7 +26,7 @@ const ResetOverridden: FC = () => {
       type="outline"
       Icon={RestorePageIcon}
       alignment="left"
-      width="fixed"
+      width="fit"
       onClick={reset}
     />
   ) : null;
