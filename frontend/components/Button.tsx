@@ -31,13 +31,15 @@ const Button = forwardRef<HTMLButtonElement, Props>(function Button(
   const isFixedWidth = width === "fixed";
   const isFullWidth = width === "full";
   const isFitWidth = width === "fit";
+  const hasIcon = !!Icon;
+  const hasLabel = !labelSrOnly;
 
   return (
     <button
       {...props}
       ref={ref}
       className={c(
-        "flex px-2 py-1.5 transition-colors items-center rounded font-base shadow-sm text-xs group space-x-2",
+        "flex py-1.5 transition-colors items-center rounded font-base shadow-sm text-xs group space-x-2",
         "disabled:bg-gray-100 disabled:text-gray-300 disabled:hover:bg-gray-100",
         {
           "text-white bg-indigo-600 hover:bg-indigo-700": isPrimary,
@@ -48,11 +50,13 @@ const Button = forwardRef<HTMLButtonElement, Props>(function Button(
           "w-full": isFullWidth,
           "w-48": isFixedWidth,
           "w-fit": isFitWidth,
+          "px-2": !hasIcon || !hasLabel,
+          "pl-2 pr-3": hasIcon && hasLabel,
         }
       )}
       onClick={onClick}
     >
-      {Icon && (
+      {hasIcon && (
         <Icon
           className={c("w-4 h-4 group-disabled:text-gray-300", {
             "text-indigo-700": isOutline,

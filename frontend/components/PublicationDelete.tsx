@@ -21,16 +21,16 @@ const PublicationDelete: FC = () => {
     }
   };
 
-  return selectionSize !== 0 ? (
+  return (
     <Button
       label={`Delete ${selectionSize}`}
-      type="secondary"
+      type="danger"
       alignment="left"
-      width="fixed"
+      width="fit"
       Icon={TrashIcon}
       onClick={deleteSelected}
     />
-  ) : null;
+  );
 };
 
 export default PublicationDelete;
