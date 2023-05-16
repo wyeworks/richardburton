@@ -84,6 +84,18 @@ defmodule RichardBurton.PublicationTest do
       refute change_valid(%{"country" => nil}).valid?
     end
 
+    test "when country is valid alpha3 code, is invalid" do
+      refute change_valid(%{"country" => "USA"}).valid?
+    end
+
+    test "when country is invalid 3 digit code, is invalid" do
+      refute change_valid(%{"country" => "EUA"}).valid?
+    end
+
+    test "when country is invalid 2 digit code, is invalid" do
+      refute change_valid(%{"country" => "XX"}).valid?
+    end
+
     test "when publisher is blank, is invalid" do
       refute change_valid(%{"publisher" => ""}).valid?
     end

@@ -11,6 +11,7 @@ defmodule RichardBurton.Publication do
   alias RichardBurton.Repo
   alias RichardBurton.TranslatedBook
   alias RichardBurton.Validation
+  alias RichardBurton.Country
 
   @external_attributes [:country, :publisher, :title, :year, :translated_book]
 
@@ -41,6 +42,7 @@ defmodule RichardBurton.Publication do
     |> cast(attrs, [:title, :year, :country, :publisher])
     |> cast_assoc(:translated_book, required: true)
     |> validate_required([:title, :year, :country, :publisher])
+    |> Country.validate_country()
     |> TranslatedBook.link_fingerprint()
     |> unique_constraint(
       [:title, :year, :country, :publisher, :translated_book_fingerprint],
