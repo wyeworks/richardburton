@@ -20,7 +20,7 @@ const ResetDeleted: FC = () => {
       type="outline"
       Icon={RestoreTrashIcon}
       alignment="left"
-      width="fixed"
+      width="fit"
       onClick={reset}
     />
   ) : null;
