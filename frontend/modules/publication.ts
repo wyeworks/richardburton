@@ -246,6 +246,7 @@ const ERROR_MESSAGES: Record<string, string> = {
   integer: "This field should be an integer",
   incorrect_row_length: "Expected a different number of columns in csv",
   invalid_format: "Could not parse publications from the provided file",
+  alpha2: "This field should be a valid ISO 3166-1 alpha 2 country code",
 };
 
 type PublicationKeyType = "array" | "text" | "enum" | "number";
@@ -518,7 +519,6 @@ const Publication: PublicationModule = {
     },
 
     useIsFocused(id) {
-      console.log(useRecoilValue(FOCUSED_ROW_ID));
       return id === useRecoilValue(FOCUSED_ROW_ID);
     },
 
