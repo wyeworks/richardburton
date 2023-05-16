@@ -39,8 +39,6 @@ const PublicationUpload: FC = () => {
       }
   );
 
-  useEffect(() => resetPublications(), [resetPublications]);
-
   const message = totalPublications > 0 ? "Current data will be replaced!" : "";
 
   const input = useRef<HTMLInputElement>(null);

@@ -13,13 +13,19 @@ import StrikeHeading from "components/StrikeHeading";
 import PublicationErrorCounter from "components/PublicationErrorCounter";
 import PublicationCounter from "components/PublicationCounter";
 import RowIdToggle from "components/RowIdToggle";
+import PublicationDuplicate from "components/PublicationDuplicate";
+import { useIsSelectionEmpty } from "react-selection-manager";
+import PublicationDeselect from "components/PublicationDeselect";
 
 const NewPublications: NextPage = () => {
   const setAll = Publication.STORE.useSetAll();
   const setVisible = Publication.STORE.ATTRIBUTES.useSetVisible();
+  const resetAll = Publication.STORE.useResetAll();
+  const isSelectionEmpty = useIsSelectionEmpty();
 
   useEffect(() => setAll([]), [setAll]);
   useEffect(() => setVisible(Publication.ATTRIBUTES), [setVisible, setAll]);
+  useEffect(() => resetAll, [resetAll]);
 
   return (
     <Layout
@@ -30,14 +36,23 @@ const NewPublications: NextPage = () => {
       content={<PublicationReview />}
       footer={
         <div className="flex space-x-2">
-          <PublicationUpload />
-          <ResetOverridden />
-          <ResetDeleted />
-          <PublicationDelete />
-          <PublicationCounter />
-          <PublicationErrorCounter />
-          <RowIdToggle />
-          <PublicationSubmit />
+          {isSelectionEmpty ? (
+            <>
+              <PublicationUpload />
+              <PublicationCounter />
+              <PublicationErrorCounter />
+              <ResetOverridden />
+              <ResetDeleted />
+              <RowIdToggle />
+              <PublicationSubmit />
+            </>
+          ) : (
+            <>
+              <PublicationDeselect />
+              <PublicationDuplicate />
+              <PublicationDelete />
+            </>
+          )}
         </div>
       }
     />

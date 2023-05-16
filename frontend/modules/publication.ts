@@ -272,6 +272,7 @@ interface PublicationModule {
     useOverriddenIds(): PublicationId[] | undefined;
     useOverrideValue(id: PublicationId): Partial<Publication>;
     useAddNew(): () => PublicationId;
+    useDuplicate(): (ids: Set<number>) => number[];
 
     useIsValid(id: PublicationId): boolean;
     useIsFocused(id: PublicationId): boolean;
@@ -410,6 +411,40 @@ const Publication: PublicationModule = {
         return id;
       });
     },
+
+    useDuplicate() {
+      return useRecoilCallback(({ set, snapshot }) => (duplicateIds) => {
+        const ids = snapshot.getLoadable(PUBLICATION_IDS).valueOrThrow();
+
+        if (!ids) throw "Can not duplicate publications: entries not loaded.";
+
+        const newIds = range(
+          ids.length + 1,
+          ids.length + 1 + duplicateIds.size
+        );
+
+        let duplicationCount = 0;
+        const orderedIds = ids.reduce<number[]>((acc, current) => {
+          if (duplicateIds.has(current)) {
+            const newId = newIds[duplicationCount++];
+
+            set(
+              PUBLICATIONS(newId),
+              snapshot.getLoadable(PUBLICATIONS(current)).valueOrThrow()
+            );
+
+            return [...acc, current, newId];
+          }
+
+          return [...acc, current];
+        }, []);
+
+        set(PUBLICATION_IDS, orderedIds);
+
+        return newIds;
+      });
+    },
+
     useErrorDescription(id) {
       return useRecoilValue(PUBLICATION_ERROR_DESCRIPTION(id));
     },
