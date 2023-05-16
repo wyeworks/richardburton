@@ -137,12 +137,22 @@ defmodule RichardBurtonWeb.PublicationControllerTest do
       "original_authors" => "",
       "original_title" => ""
     }
+    @correct_input_5 %{
+      "title" => "Ubirajara: A Legend of the Tupy Indians",
+      "year" => "",
+      "country" => "USA",
+      "publisher" => "",
+      "authors" => "J. T. W. Sadler",
+      "original_authors" => "",
+      "original_title" => ""
+    }
 
     @input [
       @correct_input_1,
       @correct_input_2,
       @correct_input_3,
-      @correct_input_4
+      @correct_input_4,
+      @correct_input_5
     ]
 
     @output [
@@ -167,6 +177,16 @@ defmodule RichardBurtonWeb.PublicationControllerTest do
         "errors" => %{
           "year" => "required",
           "country" => "required",
+          "publisher" => "required",
+          "original_authors" => "required",
+          "original_title" => "required"
+        }
+      },
+      %{
+        "publication" => @correct_input_5,
+        "errors" => %{
+          "year" => "required",
+          "country" => "alpha2",
           "publisher" => "required",
           "original_authors" => "required",
           "original_title" => "required"

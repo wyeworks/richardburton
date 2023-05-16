@@ -11,6 +11,7 @@ defmodule RichardBurton.FlatPublication do
   alias RichardBurton.Repo
   alias RichardBurton.TranslatedBook
   alias RichardBurton.Validation
+  alias RichardBurton.Country
 
   @external_attributes [
     :title,
@@ -43,6 +44,7 @@ defmodule RichardBurton.FlatPublication do
     flat_publication
     |> cast(attrs, @external_attributes)
     |> validate_required(@external_attributes)
+    |> Country.validate_country()
     |> TranslatedBook.link_fingerprint()
   end
 
