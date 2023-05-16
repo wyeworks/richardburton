@@ -71,7 +71,12 @@ const Column: FC<{
 
   return visible ? (
     <td
-      className="px-2 py-1 text-sm truncate justify group-hover:bg-indigo-100 error:group-hover:bg-red-100 error:focused:bg-red-100 selected:bg-amber-100"
+      className={c(
+        "px-2 py-1 text-sm truncate justify",
+        "group-hover:bg-indigo-100",
+        "error:group-hover:bg-red-100 error:focused:bg-red-100",
+        "selected:bg-amber-100 selected:focused:error:bg-amber-100"
+      )}
       data-selected={selected}
       data-selectable={selectable}
       data-error={invalid}
@@ -147,7 +152,12 @@ const SignalColumn: FC<{
 }) => {
   return (
     <td
-      className="sticky left-0 flex items-center justify-center h-full px-2 truncate bg-gray-100 group-hover:bg-indigo-100 error:group-hover:bg-red-100 error:focused:bg-red-100 selected:bg-amber-100"
+      className={c(
+        "sticky left-0 flex items-center justify-center h-full px-2 truncate bg-gray-100",
+        "group-hover:bg-indigo-100",
+        "error:group-hover:bg-red-100 error:focused:bg-red-100",
+        "selected:bg-amber-100 selected:focused:error:bg-amber-100"
+      )}
       data-selected={selected}
       data-selectable={selectable}
       data-error={invalid}
