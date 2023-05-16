@@ -13,6 +13,7 @@ import StrikeHeading from "components/StrikeHeading";
 import PublicationErrorCounter from "components/PublicationErrorCounter";
 import PublicationCounter from "components/PublicationCounter";
 import RowIdToggle from "components/RowIdToggle";
+import PublicationDuplicate from "components/PublicationDuplicate";
 import { useIsSelectionEmpty } from "react-selection-manager";
 import PublicationDeselect from "components/PublicationDeselect";
 
@@ -48,6 +49,7 @@ const NewPublications: NextPage = () => {
           ) : (
             <>
               <PublicationDeselect />
+              <PublicationDuplicate />
               <PublicationDelete />
             </>
           )}
