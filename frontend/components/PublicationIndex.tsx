@@ -31,7 +31,7 @@ const ColumnHeader: FC<{ colId: ColId }> = ({ colId }) => {
       {isVisible && (
         <motion.th
           layout
-          className={c("px-4 pb-4 text-left")}
+          className="px-4 pb-4 text-left whitespace-nowrap"
           initial={{ width: 0 }}
           animate={{ width: "auto" }}
           exit={{ width: 0 }}
