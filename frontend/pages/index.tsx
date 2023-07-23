@@ -6,7 +6,6 @@ import PublicationIndex from "components/PublicationIndex";
 import PublicationSearch from "components/PublicationSearch";
 import { useRouter } from "next/router";
 import { isString } from "lodash";
-import PublicationFilter from "components/PublicationFilter";
 import PublicationDownload from "components/PublicationDownload";
 import SignOutButton from "components/SignOutButton";
 import SignInButton from "components/SignInButton";
@@ -41,7 +40,6 @@ const Home: NextPage = () => {
       subheader={
         <div className="space-y-2">
           <StrikeHeading label="Browse data about Brazilian literary books translated to English" />
-          <PublicationFilter />
           <PublicationSearch />
         </div>
       }
