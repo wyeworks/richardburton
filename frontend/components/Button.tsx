@@ -54,8 +54,9 @@ const Button = forwardRef<HTMLButtonElement, Props>(function Button(
     >
       {Icon && (
         <Icon
-          className={c("-ml-0.5 w-4 h-4 group-disabled:text-gray-300", {
+          className={c("w-4 h-4 group-disabled:text-gray-300", {
             "text-indigo-700": isOutline,
+            "-ml-0.5": !labelSrOnly,
           })}
         />
       )}
