@@ -1,3 +1,4 @@
+import c from "classnames";
 import Head from "next/head";
 import Link from "next/link";
 import { FC, ReactNode } from "react";
@@ -7,12 +8,19 @@ type Props = {
   footer?: ReactNode;
   content: ReactNode;
   subheader?: ReactNode;
+  leftAside?: ReactNode;
 };
 
 const HEADING_TEXT = "Richard Burton Platform";
 const SUBHEADING_TEXT = "A database about Brazilian literature in translation";
 
-const Layout: FC<Props> = ({ title, footer, content, subheader }) => {
+const Layout: FC<Props> = ({
+  title,
+  footer,
+  content,
+  subheader,
+  leftAside,
+}) => {
   return (
     <>
       <Head>
@@ -28,9 +36,12 @@ const Layout: FC<Props> = ({ title, footer, content, subheader }) => {
           </h1>
           {subheader}
         </header>
-        <main className="relative pb-4 overflow-x-scroll grow scrollbar-thin scrollbar-thumb-indigo-600">
-          {content}
-        </main>
+        <div className="flex gap-2 overflow-x-hidden">
+          {leftAside && <aside>{leftAside}</aside>}
+          <main className="relative pb-4 overflow-x-scroll grow scrollbar-thin scrollbar-thumb-indigo-600">
+            {content}
+          </main>
+        </div>
         <footer className="sticky bottom-0 py-4 bg-gray-100">{footer}</footer>
       </div>
     </>

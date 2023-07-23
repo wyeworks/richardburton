@@ -15,6 +15,8 @@ import StrikeHeading from "components/StrikeHeading";
 import Button from "components/Button";
 import AddIcon from "assets/add.svg";
 import Link from "next/link";
+import c from "classnames";
+import PublicationHiddenAttributes from "components/PublicationHiddenAttributes";
 
 const Home: NextPage = () => {
   const index = Publication.REMOTE.useIndex();
@@ -35,6 +37,7 @@ const Home: NextPage = () => {
     <Layout
       title="Richard Burton"
       content={<PublicationIndex />}
+      leftAside={<PublicationHiddenAttributes />}
       subheader={
         <div className="space-y-2">
           <StrikeHeading label="Browse data about Brazilian literary books translated to English" />
