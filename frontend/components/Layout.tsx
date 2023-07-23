@@ -26,7 +26,7 @@ const Layout: FC<Props> = ({
       <Head>
         <title>{title}</title>
       </Head>
-      <div className="flex flex-col h-full px-8 overflow-x-hidden">
+      <div className="flex flex-col h-full px-8 overflow-x-clip">
         <header className="sticky top-0 z-20 pb-6 bg-gray-100">
           <h1 className="py-1 -mx-8 text-center text-white bg-indigo-600">
             <div className="inline px-4 py-1 text-lg font-medium border-r">
@@ -36,7 +36,7 @@ const Layout: FC<Props> = ({
           </h1>
           {subheader}
         </header>
-        <div className="flex gap-2 overflow-x-hidden">
+        <div className="flex gap-2 overflow-x-clip">
           {leftAside && <aside>{leftAside}</aside>}
           <main className="relative pb-4 overflow-x-scroll grow scrollbar-thin scrollbar-thumb-indigo-600">
             {content}
