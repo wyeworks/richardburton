@@ -32,17 +32,20 @@ const ColumnHeader: FC<{ colId: ColId; toggleable?: boolean }> = ({
   const isVisible = Publication.STORE.ATTRIBUTES.useIsVisible(colId);
   const setVisible = Publication.STORE.ATTRIBUTES.useSetVisible();
 
+  const TableHeader = toggleable ? motion.th : "th";
+  const TableHeaderContent = toggleable ? motion.div : "div";
+
   return (
     <AnimatePresence>
       {isVisible && (
-        <motion.th
+        <TableHeader
           layout
           className="px-4 pb-4 text-left whitespace-nowrap"
           initial={{ width: 0 }}
           animate={{ width: "auto" }}
           exit={{ width: 0 }}
         >
-          <motion.div
+          <TableHeaderContent
             layout
             className="flex items-center gap-2"
             initial={{ opacity: 0 }}
@@ -60,8 +63,8 @@ const ColumnHeader: FC<{ colId: ColId; toggleable?: boolean }> = ({
                 onClick={() => setVisible([colId], false)}
               />
             )}
-          </motion.div>
-        </motion.th>
+          </TableHeaderContent>
+        </TableHeader>
       )}
     </AnimatePresence>
   );
@@ -72,9 +75,12 @@ const Content: FC<{
   colId: ColId;
   error: string;
   value: string;
-}> = ({ value, colId }) => {
+  toggleable?: boolean;
+}> = ({ value, colId, toggleable }) => {
+  const TableContent = toggleable ? motion.div : "div";
+
   return (
-    <motion.div
+    <TableContent
       layout
       className="px-2 py-1 truncate"
       initial={{ opacity: 0 }}
@@ -82,7 +88,7 @@ const Content: FC<{
       exit={{ opacity: 0 }}
     >
       {Publication.describeValue(value, colId)}
-    </motion.div>
+    </TableContent>
   );
 };
 
@@ -95,6 +101,7 @@ const Column: FC<{
   invalid?: boolean;
   selected?: boolean;
   selectable?: boolean;
+  toggleable?: boolean;
 }> = ({
   rowId,
   colId,
@@ -103,6 +110,7 @@ const Column: FC<{
   invalid = false,
   selected = false,
   selectable = false,
+  toggleable,
 }) => {
   const { useIsVisible, useValue, useErrorDescription } =
     Publication.STORE.ATTRIBUTES;
@@ -110,10 +118,12 @@ const Column: FC<{
   const value = useValue(rowId, colId);
   const error = useErrorDescription(rowId, colId);
 
+  const TableData = toggleable ? motion.td : "td";
+
   return (
     <AnimatePresence>
       {isVisible && (
-        <motion.td
+        <TableData
           layout
           className={c(
             "px-2 py-1 text-sm truncate justify",
@@ -129,8 +139,14 @@ const Column: FC<{
           animate={{ width: "auto" }}
           exit={{ width: 0 }}
         >
-          <Content rowId={rowId} colId={colId} value={value} error={error} />
-        </motion.td>
+          <Content
+            rowId={rowId}
+            colId={colId}
+            value={value}
+            error={error}
+            toggleable={toggleable}
+          />
+        </TableData>
       )}
     </AnimatePresence>
   );
@@ -177,6 +193,7 @@ const Row = forwardRef<HTMLTableRowElement, RowProps>(function Row(
               colId={attribute}
               rowId={rowId}
               Content={Content}
+              toggleable
             />
           ))}
         </>
