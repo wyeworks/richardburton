@@ -33,7 +33,7 @@ const ColumnHeader: FC<{ colId: ColId }> = ({ colId }) => {
           layout
           className={c("px-4 pb-4 text-left")}
           initial={{ width: 0 }}
-          animate={{ width: colId === "year" ? "6rem" : "auto" }}
+          animate={{ width: "auto" }}
           exit={{ width: 0 }}
         >
           <motion.div
@@ -42,7 +42,6 @@ const ColumnHeader: FC<{ colId: ColId }> = ({ colId }) => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
           >
-            {" "}
             {Publication.ATTRIBUTE_LABELS[colId]}
           </motion.div>
         </motion.th>

@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 const PublicationHiddenAttributes: FC = () => {
   const hiddenAttributes = Publication.STORE.ATTRIBUTES.useHidden();
 
-  return (
+  return hiddenAttributes.length ? (
     <ol className="flex h-full shadow">
       <AnimatePresence>
         {hiddenAttributes.map((key) => (
@@ -33,7 +33,7 @@ const PublicationHiddenAttributes: FC = () => {
         ))}
       </AnimatePresence>
     </ol>
-  );
+  ) : null;
 };
 
 export default PublicationHiddenAttributes;
