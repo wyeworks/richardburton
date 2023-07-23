@@ -1,4 +1,5 @@
 import c from "classnames";
+import { motion, AnimatePresence } from "framer-motion";
 import { times } from "lodash";
 import {
   Publication,
@@ -25,11 +26,29 @@ type HTMLTableRowProps = HTMLProps<HTMLTableRowElement>;
 const ColumnHeader: FC<{ colId: ColId }> = ({ colId }) => {
   const isVisible = Publication.STORE.ATTRIBUTES.useIsVisible(colId);
 
-  return isVisible ? (
-    <th className={c("px-4 pb-4 text-left", { "w-24": colId === "year" })}>
-      {Publication.ATTRIBUTE_LABELS[colId]}
-    </th>
-  ) : null;
+  return (
+    <AnimatePresence>
+      {isVisible && (
+        <motion.th
+          layout
+          className={c("px-4 pb-4 text-left")}
+          initial={{ width: 0 }}
+          animate={{ width: colId === "year" ? "6rem" : "auto" }}
+          exit={{ width: 0 }}
+        >
+          <motion.div
+            layout
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            {" "}
+            {Publication.ATTRIBUTE_LABELS[colId]}
+          </motion.div>
+        </motion.th>
+      )}
+    </AnimatePresence>
+  );
 };
 
 const Content: FC<{
@@ -39,9 +58,15 @@ const Content: FC<{
   value: string;
 }> = ({ value, colId }) => {
   return (
-    <div className="px-2 py-1 truncate">
+    <motion.div
+      layout
+      className="px-2 py-1 truncate"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+    >
       {Publication.describeValue(value, colId)}
-    </div>
+    </motion.div>
   );
 };
 
@@ -69,22 +94,30 @@ const Column: FC<{
   const value = useValue(rowId, colId);
   const error = useErrorDescription(rowId, colId);
 
-  return isVisible ? (
-    <td
-      className={c(
-        "px-2 py-1 text-sm truncate justify",
-        "group-hover:bg-indigo-100",
-        "error:group-hover:bg-red-100 error:focused:bg-red-100",
-        "selected:bg-amber-100 selected:focused:error:bg-amber-100"
+  return (
+    <AnimatePresence>
+      {isVisible && (
+        <motion.td
+          layout
+          className={c(
+            "px-2 py-1 text-sm truncate justify",
+            "group-hover:bg-indigo-100",
+            "error:group-hover:bg-red-100 error:focused:bg-red-100",
+            "selected:bg-amber-100 selected:focused:error:bg-amber-100"
+          )}
+          data-selected={selected}
+          data-selectable={selectable}
+          data-error={invalid}
+          data-focused={focused}
+          initial={{ width: 0 }}
+          animate={{ width: "auto" }}
+          exit={{ width: 0 }}
+        >
+          <Content rowId={rowId} colId={colId} value={value} error={error} />
+        </motion.td>
       )}
-      data-selected={selected}
-      data-selectable={selectable}
-      data-error={invalid}
-      data-focused={focused}
-    >
-      <Content rowId={rowId} colId={colId} value={value} error={error} />
-    </td>
-  ) : null;
+    </AnimatePresence>
+  );
 };
 
 type RowProps = Omit<HTMLTableRowProps, "ref"> & {
