@@ -25,7 +25,10 @@ type ColId = PublicationKey;
 
 type HTMLTableRowProps = HTMLProps<HTMLTableRowElement>;
 
-const ColumnHeader: FC<{ colId: ColId }> = ({ colId }) => {
+const ColumnHeader: FC<{ colId: ColId; toggleable?: boolean }> = ({
+  colId,
+  toggleable,
+}) => {
   const isVisible = Publication.STORE.ATTRIBUTES.useIsVisible(colId);
   const setVisible = Publication.STORE.ATTRIBUTES.useSetVisible();
 
@@ -47,14 +50,16 @@ const ColumnHeader: FC<{ colId: ColId }> = ({ colId }) => {
             exit={{ opacity: 0 }}
           >
             {Publication.ATTRIBUTE_LABELS[colId]}
-            <Button
-              label={`Hide ${Publication.ATTRIBUTE_LABELS[colId]}`}
-              labelSrOnly
-              width="fit"
-              type="outline"
-              Icon={VisibilityOffIcon}
-              onClick={() => setVisible([colId], false)}
-            />
+            {toggleable && (
+              <Button
+                label={`Hide ${Publication.ATTRIBUTE_LABELS[colId]}`}
+                labelSrOnly
+                width="fit"
+                type="outline"
+                Icon={VisibilityOffIcon}
+                onClick={() => setVisible([colId], false)}
+              />
+            )}
           </motion.div>
         </motion.th>
       )}
@@ -215,6 +220,7 @@ const SignalColumn: FC<{
 type Props = {
   ExtendedRow?: FC<RowProps>;
   ExtendedColumn?: typeof Column;
+  ExtendedColumnHeader?: typeof ColumnHeader;
   ExtendedContent?: typeof Content;
   ExtendedSignalColumn?: typeof SignalColumn;
   ExtraRow?: FC;
@@ -226,6 +232,7 @@ type Props = {
 const PublicationIndex: FC<Props> = ({
   ExtendedRow = Row,
   ExtendedColumn = Column,
+  ExtendedColumnHeader = ColumnHeader,
   ExtendedContent = Content,
   ExtendedSignalColumn,
   ExtraRow,
@@ -240,7 +247,7 @@ const PublicationIndex: FC<Props> = ({
         <tr>
           {ExtendedSignalColumn && <th className="w-10" />}
           {Publication.ATTRIBUTES.map((key) => (
-            <ColumnHeader key={key} colId={key} />
+            <ExtendedColumnHeader key={key} colId={key} toggleable />
           ))}
         </tr>
       </thead>
@@ -286,4 +293,4 @@ const PublicationIndex: FC<Props> = ({
 
 export default PublicationIndex;
 export type { RowId, RowProps, ColId };
-export { Row, Column, Content, SignalColumn };
+export { Row, Column, ColumnHeader, Content, SignalColumn };
