@@ -65,11 +65,11 @@ const Column: FC<{
 }) => {
   const { useIsVisible, useValue, useErrorDescription } =
     Publication.STORE.ATTRIBUTES;
-  const visible = useIsVisible(colId);
+  const isVisible = useIsVisible(colId);
   const value = useValue(rowId, colId);
   const error = useErrorDescription(rowId, colId);
 
-  return visible ? (
+  return isVisible ? (
     <td
       className={c(
         "px-2 py-1 text-sm truncate justify",

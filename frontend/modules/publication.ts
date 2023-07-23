@@ -197,6 +197,15 @@ const VISIBLE_ATTRIBUTES = selector<PublicationKey[]>({
   },
 });
 
+const HIDDEN_ATTRIBUTES = selector<PublicationKey[]>({
+  key: "hidden-attributes",
+  get({ get }) {
+    return Publication.ATTRIBUTES.filter(
+      (key) => !get(IS_ATTRIBUTE_VISIBLE(key))
+    );
+  },
+});
+
 const KEYWORDS = atom<string[] | undefined>({
   key: "keywords",
   default: undefined,
@@ -304,6 +313,7 @@ interface PublicationModule {
 
     ATTRIBUTES: {
       useVisible(): PublicationKey[];
+      useHidden(): PublicationKey[];
       useSetVisible(): (keys: PublicationKey[], isVisible?: boolean) => void;
       useIsVisible(key: PublicationKey): boolean;
       useResetAll(): Resetter;
@@ -602,6 +612,9 @@ const Publication: PublicationModule = {
     ATTRIBUTES: {
       useVisible() {
         return useRecoilValue(VISIBLE_ATTRIBUTES);
+      },
+      useHidden() {
+        return useRecoilValue(HIDDEN_ATTRIBUTES);
       },
 
       useIsVisible(key) {
