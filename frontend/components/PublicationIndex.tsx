@@ -17,6 +17,8 @@ import {
 } from "react";
 import { mergeRefs } from "react-merge-refs";
 import useVisible from "utils/useVisible";
+import VisibilityOffIcon from "assets/visibility-off.svg";
+import Button from "./Button";
 
 type RowId = PublicationId;
 type ColId = PublicationKey;
@@ -25,6 +27,7 @@ type HTMLTableRowProps = HTMLProps<HTMLTableRowElement>;
 
 const ColumnHeader: FC<{ colId: ColId }> = ({ colId }) => {
   const isVisible = Publication.STORE.ATTRIBUTES.useIsVisible(colId);
+  const setVisible = Publication.STORE.ATTRIBUTES.useSetVisible();
 
   return (
     <AnimatePresence>
@@ -38,11 +41,20 @@ const ColumnHeader: FC<{ colId: ColId }> = ({ colId }) => {
         >
           <motion.div
             layout
+            className="flex items-center gap-2"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
           >
             {Publication.ATTRIBUTE_LABELS[colId]}
+            <Button
+              label={`Hide ${Publication.ATTRIBUTE_LABELS[colId]}`}
+              labelSrOnly
+              width="fit"
+              type="outline"
+              Icon={VisibilityOffIcon}
+              onClick={() => setVisible([colId], false)}
+            />
           </motion.div>
         </motion.th>
       )}
