@@ -19,6 +19,7 @@ import { mergeRefs } from "react-merge-refs";
 import useVisible from "utils/useVisible";
 import VisibilityOffIcon from "assets/visibility-off.svg";
 import Button from "./Button";
+import Tooltip from "./Tooltip";
 
 type RowId = PublicationId;
 type ColId = PublicationKey;
@@ -34,6 +35,8 @@ const ColumnHeader: FC<{ colId: ColId; toggleable?: boolean }> = ({
 
   const TableHeader = toggleable ? motion.th : "th";
   const TableHeaderContent = toggleable ? motion.div : "div";
+
+  const hideLabel = `Hide ${Publication.ATTRIBUTE_LABELS[colId]}`;
 
   return (
     <AnimatePresence initial={false}>
@@ -54,14 +57,16 @@ const ColumnHeader: FC<{ colId: ColId; toggleable?: boolean }> = ({
           >
             {Publication.ATTRIBUTE_LABELS[colId]}
             {toggleable && (
-              <Button
-                label={`Hide ${Publication.ATTRIBUTE_LABELS[colId]}`}
-                labelSrOnly
-                width="fit"
-                type="outline"
-                Icon={VisibilityOffIcon}
-                onClick={() => setVisible([colId], false)}
-              />
+              <Tooltip info message={hideLabel}>
+                <Button
+                  label={hideLabel}
+                  labelSrOnly
+                  width="fit"
+                  type="outline"
+                  Icon={VisibilityOffIcon}
+                  onClick={() => setVisible([colId], false)}
+                />
+              </Tooltip>
             )}
           </TableHeaderContent>
         </TableHeader>
