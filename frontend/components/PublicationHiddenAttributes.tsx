@@ -13,7 +13,7 @@ const PublicationHiddenAttributes: FC = () => {
           <motion.li
             key={key}
             className={c(
-              "relative origin-top-left shadow text-xs first:rounded-l last:rounded-r",
+              "relative origin-top-left overflow-clip shadow text-xs first:rounded-l last:rounded-r",
               "text-white bg-indigo-600"
             )}
             initial={{ width: 0 }}
@@ -23,9 +23,9 @@ const PublicationHiddenAttributes: FC = () => {
             <motion.div
               className="absolute z-20 text-center rotate-180 translate-x-1/2 top-3 whitespace-nowrap"
               style={{ writingMode: "vertical-lr" }}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
+              initial={{ left: "-2rem" }}
+              animate={{ left: 0 }}
+              exit={{ left: "-2rem" }}
             >
               {Publication.ATTRIBUTE_LABELS[key]}
             </motion.div>
