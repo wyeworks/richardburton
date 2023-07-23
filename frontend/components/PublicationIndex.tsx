@@ -36,7 +36,7 @@ const ColumnHeader: FC<{ colId: ColId; toggleable?: boolean }> = ({
   const TableHeaderContent = toggleable ? motion.div : "div";
 
   return (
-    <AnimatePresence>
+    <AnimatePresence initial={false}>
       {isVisible && (
         <TableHeader
           layout
@@ -121,7 +121,7 @@ const Column: FC<{
   const TableData = toggleable ? motion.td : "td";
 
   return (
-    <AnimatePresence>
+    <AnimatePresence initial={false}>
       {isVisible && (
         <TableData
           layout
