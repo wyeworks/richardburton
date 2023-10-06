@@ -44,7 +44,7 @@
     "autoprefixer": "^10.4.12",
     "eslint": "8.24.0",
     "eslint-config-next": "^13.0.6",
-    "postcss": "^8.4.16",
+    "postcss": "^8.4.31",
     "prettier": "2.7.1",
     "stylelint": "^14.13.0",
     "stylelint-config-prettier": "^9.0.3",
