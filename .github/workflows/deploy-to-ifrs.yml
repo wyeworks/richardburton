@@ -1,0 +1,50 @@
+name: Deploy to IFRS
+on:
+  push:
+    branches:
+      - main
+jobs:
+  DeployFrontend:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install SSH key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.IFRS_SSH_KEY }}
+          known_hosts: ${{ secrets.IFRS_SSH_HOST }}
+          if_key_exists: fail
+      - uses: actions/checkout@v3
+      - run: git config --global user.email "ghactions@wyeworks.com"
+      - run: git config --global user.name "GitHub Actions from WyeWorks"
+      - run: git subtree split -P frontend -b stage-release
+      - run: git checkout stage-release
+      - run: git clean -f -d
+      - run: rm -f Dockerfile .dockerignore
+      - run: git commit -a -m "Remove Dockerfile and .dockerignore"
+      - run: git remote add ifrs-frontend git@gitlab.com:ifrscanoas/richard-burton/frontend.git
+      - run: git reset $(git commit-tree HEAD^{tree} -m "Release to Stage `TZ=America/Sao_Paulo date '+%d %b %Y %T São Paulo (UTC%Z)'`")
+      - run: git pull --rebase ifrs-frontend stage -X theirs
+      - run: git push -f ifrs-frontend stage-release
+
+  DeployBackend:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install SSH key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.IFRS_SSH_KEY }}
+          known_hosts: ${{ secrets.IFRS_SSH_HOST }}
+          if_key_exists: fail
+      - uses: actions/checkout@v3
+      - run: export TZ=America/Sao_Paulo
+      - run: git config --global user.email "ghactions@wyeworks.com"
+      - run: git config --global user.name "GitHub Actions from WyeWorks"
+      - run: git subtree split -P backend -b stage-release
+      - run: git checkout stage-release
+      - run: git clean -f -d
+      - run: rm -f Dockerfile .dockerignore
+      - run: git commit -a -m "Remove Dockerfile and .dockerignore"
+      - run: git remote add ifrs-backend git@gitlab.com:ifrscanoas/richard-burton/backend.git
+      - run: git reset $(git commit-tree HEAD^{tree} -m "Release to Stage `TZ=America/Sao_Paulo date '+%d %b %Y %T São Paulo (UTC%Z)'`")
+      - run: git pull --rebase ifrs-backend stage -X theirs
+      - run: git push -f ifrs-backend stage-release
