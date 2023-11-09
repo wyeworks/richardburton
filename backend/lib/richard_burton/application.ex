@@ -36,7 +36,7 @@ defmodule RichardBurton.Application do
     |> System.put_env()
 
     if @environment !== :test do
-      # Initialize configration for auth service
+      # Initialize configuration for auth service
       Application.put_env(:richard_burton, :auth_config, RichardBurton.Auth.init())
     end
 

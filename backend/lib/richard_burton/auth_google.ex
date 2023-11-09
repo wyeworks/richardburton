@@ -73,7 +73,7 @@ defmodule RichardBurton.Auth.Google do
   defp get_keys do
     case System.get_env("GOOGLE_OAUTH2_CERTS_URL") do
       nil ->
-        throw("GOOGLE_OPENID_CONFIG_URL environment variable is not set")
+        throw("GOOGLE_OAUTH2_CERTS_URL environment variable is not set")
 
       url ->
         url
