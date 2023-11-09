@@ -66,3 +66,5 @@ richard_burton-*.tar
 rel/
 
 *.local.*
+
+.sentryclirc
