@@ -37,3 +37,17 @@ config :phoenix, :json_library, Jason
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{config_env()}.exs"
+
+# Sentry configuration
+sentry_dsn = System.get_env("SENTRY_DSN")
+sentry_environment = System.get_env("SENTRY_ENVIRONMENT", "development")
+
+if sentry_dsn && sentry_environment && Mix.env() !== :test do
+  config :sentry,
+    dsn: sentry_dsn,
+    environment_name: sentry_environment,
+    enable_source_code_context: true,
+    root_source_code_path: File.cwd!(),
+    tags: %{env: "production"},
+    included_environments: [:production, :staging]
+end

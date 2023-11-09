@@ -50,7 +50,8 @@ defmodule RichardBurton.MixProject do
       {:joken, "~> 2.5"},
       {:httpoison, "~> 1.8"},
       {:mox, "~> 1.0", only: :test},
-      {:countries, "~> 1.6"}
+      {:countries, "~> 1.6"},
+      {:sentry, "~> 8.0"}
     ]
   end
 

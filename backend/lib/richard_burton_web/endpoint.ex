@@ -1,4 +1,5 @@
 defmodule RichardBurtonWeb.Endpoint do
+  use Sentry.PlugCapture
   use Phoenix.Endpoint, otp_app: :richard_burton
 
   # The session will be stored in the cookie and signed,
@@ -43,6 +44,8 @@ defmodule RichardBurtonWeb.Endpoint do
     pass: ["*/*"],
     json_decoder: Phoenix.json_library()
   )
+
+  plug(Sentry.PlugContext)
 
   plug(Plug.MethodOverride)
   plug(Plug.Head)
