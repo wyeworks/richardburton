@@ -50,7 +50,7 @@ const ColumnHeader: FC<{ colId: ColId; toggleable?: boolean }> = ({
         >
           <TableHeaderContent
             layout
-            className="flex items-center gap-2"
+            className="flex items-center justify-between gap-2"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
