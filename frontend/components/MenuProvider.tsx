@@ -14,7 +14,7 @@ import { mergeRefs } from "react-merge-refs";
 import Menu from "./Menu";
 import MenuItem from "./MenuItem";
 
-type Option = { id: string; label: string };
+type Option = { id: string; label: string; sublabel?: string };
 
 type Props<OptionType extends Option | string> = {
   children: ReactElement;
@@ -111,7 +111,20 @@ const MenuProvider = <OptionType extends Option | string>({
                     },
                   })}
                 >
-                  {isString(option) ? option : option.label}
+                  {isString(option) ? (
+                    option
+                  ) : option.sublabel ? (
+                    <div className="space-y-1">
+                      <div>{option.label}</div>
+                      {option.sublabel && (
+                        <div className="text-indigo-600 text-xxs whitespace-nowrap">
+                          ({option.sublabel})
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    option.label
+                  )}
                 </MenuItem>
               ))}
             </Menu>

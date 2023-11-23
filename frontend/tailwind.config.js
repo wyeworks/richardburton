@@ -11,6 +11,9 @@ module.exports = {
 
   theme: {
     extend: {
+      fontSize: {
+        xxs: "0.7rem",
+      },
       maxWidth: {
         cell: "19.5rem",
       },

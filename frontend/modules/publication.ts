@@ -20,6 +20,7 @@ import useDebounce from "utils/useDebounce";
 import { Author } from "./author";
 import { COUNTRIES, Country } from "./country";
 import { SetterOrUpdater } from "recoil";
+import { OriginalBook } from "./original-book";
 
 type Publication = {
   title: string;
@@ -258,7 +259,7 @@ const ERROR_MESSAGES: Record<string, string> = {
   alpha2: "This field should be a valid ISO 3166-1 alpha 2 country code",
 };
 
-type PublicationKeyType = "array" | "text" | "enum" | "number";
+type PublicationKeyType = "array" | "text" | "enum" | "number" | "auto-text";
 
 interface PublicationModule {
   ATTRIBUTES: PublicationKey[];
@@ -347,10 +348,11 @@ interface PublicationModule {
     useValidate(): (ids: PublicationId[]) => Promise<void>;
   };
 
-  autocomplete(value: string, attribute: "country"): Promise<Country[]>;
-  autocomplete(value: string, attribute: "originalAuthors"): Promise<Author[]>;
-  autocomplete(value: string, attribute: "authors"): Promise<Author[]>;
-  autocomplete(value: string, attribute: string): Promise<[]>;
+  autocomplete(v: string, attr: "originalTitle"): Promise<OriginalBook[]>;
+  autocomplete(v: string, attr: "country"): Promise<Country[]>;
+  autocomplete(v: string, attr: "originalAuthors"): Promise<Author[]>;
+  autocomplete(v: string, attr: "authors"): Promise<Author[]>;
+  autocomplete(v: string, attr: string): Promise<[]>;
 
   define(attribute: PublicationKey): Record<string, unknown>;
 
@@ -382,7 +384,7 @@ const Publication: PublicationModule = {
   ATTRIBUTE_TYPES: {
     authors: "array",
     originalAuthors: "array",
-    originalTitle: "text",
+    originalTitle: "auto-text",
     country: "enum",
     publisher: "text",
     title: "text",
@@ -815,14 +817,16 @@ const Publication: PublicationModule = {
 
       case "country":
         const all = Object.values(COUNTRIES);
-
         const countries = value
           ? Object.values(COUNTRIES).filter((opt) =>
               opt.label.toLowerCase().startsWith(value.toLowerCase())
             )
           : all;
-
         return new Promise<Country[]>((resolve) => resolve(countries));
+      case "originalTitle":
+        const books = OriginalBook.REMOTE.search(value);
+
+        return new Promise<OriginalBook[]>((resolve) => resolve(books));
       default:
         return new Promise<[]>((resolve) => resolve([]));
     }
