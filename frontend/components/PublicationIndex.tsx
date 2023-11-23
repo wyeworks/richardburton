@@ -269,7 +269,11 @@ const PublicationIndex: FC<Props> = ({
         <tr>
           {ExtendedSignalColumn && <th className="w-10" />}
           {Publication.ATTRIBUTES.map((key) => (
-            <ExtendedColumnHeader key={key} colId={key} toggleable />
+            <ExtendedColumnHeader
+              key={key}
+              colId={key}
+              toggleable={Publication.ATTRIBUTE_IS_TOGGLEABLE[key]}
+            />
           ))}
         </tr>
       </thead>

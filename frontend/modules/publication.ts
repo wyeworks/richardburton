@@ -264,6 +264,7 @@ interface PublicationModule {
   ATTRIBUTES: PublicationKey[];
   ATTRIBUTE_LABELS: Record<PublicationKey, string>;
   ATTRIBUTE_TYPES: Record<PublicationKey, PublicationKeyType>;
+  ATTRIBUTE_IS_TOGGLEABLE: Record<PublicationKey, boolean>;
   NEW_ROW_ID: PublicationId;
 
   STORE: {
@@ -387,6 +388,17 @@ const Publication: PublicationModule = {
     title: "text",
     year: "number",
   },
+
+  ATTRIBUTE_IS_TOGGLEABLE: {
+    authors: true,
+    originalAuthors: true,
+    originalTitle: false,
+    country: true,
+    publisher: true,
+    title: false,
+    year: true,
+  },
+
   NEW_ROW_ID: -1,
   STORE: {
     initialize(snapshot) {
