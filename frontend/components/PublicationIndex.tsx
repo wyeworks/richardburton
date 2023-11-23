@@ -1,4 +1,5 @@
 import c from "classnames";
+import { motion, AnimatePresence } from "framer-motion";
 import { times } from "lodash";
 import {
   Publication,
@@ -16,20 +17,62 @@ import {
 } from "react";
 import { mergeRefs } from "react-merge-refs";
 import useVisible from "utils/useVisible";
+import VisibilityOffIcon from "assets/visibility-off.svg";
+import Button from "./Button";
+import Tooltip from "./Tooltip";
 
 type RowId = PublicationId;
 type ColId = PublicationKey;
 
 type HTMLTableRowProps = HTMLProps<HTMLTableRowElement>;
 
-const ColumnHeader: FC<{ colId: ColId }> = ({ colId }) => {
+const ColumnHeader: FC<{ colId: ColId; toggleable?: boolean }> = ({
+  colId,
+  toggleable,
+}) => {
   const isVisible = Publication.STORE.ATTRIBUTES.useIsVisible(colId);
+  const setVisible = Publication.STORE.ATTRIBUTES.useSetVisible();
 
-  return isVisible ? (
-    <th className={c("px-4 pb-4 text-left", { "w-24": colId === "year" })}>
-      {Publication.ATTRIBUTE_LABELS[colId]}
-    </th>
-  ) : null;
+  const TableHeader = toggleable ? motion.th : "th";
+  const TableHeaderContent = toggleable ? motion.div : "div";
+
+  const hideLabel = `Hide ${Publication.ATTRIBUTE_LABELS[colId]}`;
+
+  return (
+    <AnimatePresence initial={false}>
+      {isVisible && (
+        <TableHeader
+          layout
+          className="px-4 pb-4 text-left whitespace-nowrap"
+          initial={{ width: 0 }}
+          animate={{ width: "auto" }}
+          exit={{ width: 0 }}
+        >
+          <TableHeaderContent
+            layout
+            className="flex items-center justify-between gap-2"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            {Publication.ATTRIBUTE_LABELS[colId]}
+            {toggleable && (
+              <Tooltip info message={hideLabel}>
+                <Button
+                  label={hideLabel}
+                  labelSrOnly
+                  width="fit"
+                  type="outline"
+                  Icon={VisibilityOffIcon}
+                  onClick={() => setVisible([colId], false)}
+                />
+              </Tooltip>
+            )}
+          </TableHeaderContent>
+        </TableHeader>
+      )}
+    </AnimatePresence>
+  );
 };
 
 const Content: FC<{
@@ -37,11 +80,20 @@ const Content: FC<{
   colId: ColId;
   error: string;
   value: string;
-}> = ({ value, colId }) => {
+  toggleable?: boolean;
+}> = ({ value, colId, toggleable }) => {
+  const TableContent = toggleable ? motion.div : "div";
+
   return (
-    <div className="px-2 py-1 truncate">
+    <TableContent
+      layout
+      className="px-2 py-1 truncate"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+    >
       {Publication.describeValue(value, colId)}
-    </div>
+    </TableContent>
   );
 };
 
@@ -54,6 +106,7 @@ const Column: FC<{
   invalid?: boolean;
   selected?: boolean;
   selectable?: boolean;
+  toggleable?: boolean;
 }> = ({
   rowId,
   colId,
@@ -62,29 +115,46 @@ const Column: FC<{
   invalid = false,
   selected = false,
   selectable = false,
+  toggleable,
 }) => {
   const { useIsVisible, useValue, useErrorDescription } =
     Publication.STORE.ATTRIBUTES;
-  const visible = useIsVisible(colId);
+  const isVisible = useIsVisible(colId);
   const value = useValue(rowId, colId);
   const error = useErrorDescription(rowId, colId);
 
-  return visible ? (
-    <td
-      className={c(
-        "px-2 py-1 text-sm truncate justify",
-        "group-hover:bg-indigo-100",
-        "error:group-hover:bg-red-100 error:focused:bg-red-100",
-        "selected:bg-amber-100 selected:focused:error:bg-amber-100"
+  const TableData = toggleable ? motion.td : "td";
+
+  return (
+    <AnimatePresence initial={false}>
+      {isVisible && (
+        <TableData
+          layout
+          className={c(
+            "px-2 py-1 text-sm truncate justify",
+            "group-hover:bg-indigo-100",
+            "error:group-hover:bg-red-100 error:focused:bg-red-100",
+            "selected:bg-amber-100 selected:focused:error:bg-amber-100"
+          )}
+          data-selected={selected}
+          data-selectable={selectable}
+          data-error={invalid}
+          data-focused={focused}
+          initial={{ width: 0 }}
+          animate={{ width: "auto" }}
+          exit={{ width: 0 }}
+        >
+          <Content
+            rowId={rowId}
+            colId={colId}
+            value={value}
+            error={error}
+            toggleable={toggleable}
+          />
+        </TableData>
       )}
-      data-selected={selected}
-      data-selectable={selectable}
-      data-error={invalid}
-      data-focused={focused}
-    >
-      <Content rowId={rowId} colId={colId} value={value} error={error} />
-    </td>
-  ) : null;
+    </AnimatePresence>
+  );
 };
 
 type RowProps = Omit<HTMLTableRowProps, "ref"> & {
@@ -128,6 +198,7 @@ const Row = forwardRef<HTMLTableRowElement, RowProps>(function Row(
               colId={attribute}
               rowId={rowId}
               Content={Content}
+              toggleable
             />
           ))}
         </>
@@ -171,6 +242,7 @@ const SignalColumn: FC<{
 type Props = {
   ExtendedRow?: FC<RowProps>;
   ExtendedColumn?: typeof Column;
+  ExtendedColumnHeader?: typeof ColumnHeader;
   ExtendedContent?: typeof Content;
   ExtendedSignalColumn?: typeof SignalColumn;
   ExtraRow?: FC;
@@ -182,6 +254,7 @@ type Props = {
 const PublicationIndex: FC<Props> = ({
   ExtendedRow = Row,
   ExtendedColumn = Column,
+  ExtendedColumnHeader = ColumnHeader,
   ExtendedContent = Content,
   ExtendedSignalColumn,
   ExtraRow,
@@ -196,7 +269,7 @@ const PublicationIndex: FC<Props> = ({
         <tr>
           {ExtendedSignalColumn && <th className="w-10" />}
           {Publication.ATTRIBUTES.map((key) => (
-            <ColumnHeader key={key} colId={key} />
+            <ExtendedColumnHeader key={key} colId={key} toggleable />
           ))}
         </tr>
       </thead>
@@ -242,4 +315,4 @@ const PublicationIndex: FC<Props> = ({
 
 export default PublicationIndex;
 export type { RowId, RowProps, ColId };
-export { Row, Column, Content, SignalColumn };
+export { Row, Column, ColumnHeader, Content, SignalColumn };

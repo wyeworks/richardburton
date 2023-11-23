@@ -16,6 +16,7 @@ import {
 } from "react-selection-manager";
 import PublicationIndex, {
   Column,
+  ColumnHeader,
   Content,
   Row,
   RowId,
@@ -45,6 +46,10 @@ const ExtendedColumn: typeof Column = (props) => {
       selectable={true}
     />
   );
+};
+
+const ExtendedColumnHeader: typeof ColumnHeader = (props) => {
+  return <ColumnHeader {...props} toggleable={false} />;
 };
 
 const ExtendedSignalColumn: FC<{ rowId: RowId }> = ({ rowId }) => {
@@ -198,6 +203,7 @@ const PublicationReview: FC = () => {
       className={c(!isSelectionEmpty && "select-none")}
       ExtendedRow={ExtendedRow}
       ExtendedColumn={ExtendedColumn}
+      ExtendedColumnHeader={ExtendedColumnHeader}
       ExtendedContent={ExtendedContent}
       ExtendedSignalColumn={ExtendedSignalColumn}
       ExtraRow={NewPublicationRow}
