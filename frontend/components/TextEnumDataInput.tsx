@@ -10,6 +10,7 @@ export default forwardRef<HTMLInputElement, DataInputProps>(
     ref
   ) {
     function handleChange(option: SelectOption) {
+      console.log(option);
       onChange?.(option.id);
     }
 
@@ -48,6 +49,7 @@ export default forwardRef<HTMLInputElement, DataInputProps>(
         value={selectedOption}
         onChange={handleChange}
         getOptions={getOptions}
+        creatable
       />
     );
   }
