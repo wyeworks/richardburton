@@ -10,7 +10,7 @@ defmodule Mix.Tasks.Rb.LoadData do
     Mix.Task.run("app.start")
 
     File.cwd!()
-    |> Path.join('data.csv')
+    |> Path.join(~c"data.csv")
     |> Publication.Codec.from_csv()
     |> case do
       {:ok, publications} ->
