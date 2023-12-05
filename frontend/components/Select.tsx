@@ -22,12 +22,24 @@ type Props = Omit<
 > & {
   error: string;
   value?: Option;
+  creatable?: boolean;
   onChange: (option: Option) => void;
   getOptions: (search: string) => Promise<Option[]>;
 };
 
 export default forwardRef<HTMLInputElement, Props>(function Select(
-  { value, error, onChange, onBlur, onFocus, onKeyDown, getOptions, ...props },
+  {
+    value,
+    error,
+    creatable,
+    onChange,
+    onBlur,
+    onFocus,
+    onKeyDown,
+    getOptions,
+
+    ...props
+  },
   ref
 ) {
   const [isOpen, setIsOpen] = useState(false);
@@ -36,13 +48,17 @@ export default forwardRef<HTMLInputElement, Props>(function Select(
   const [options, setOptions] = useState<Option[]>([]);
 
   function handleBlur(event: FocusEvent<HTMLInputElement>) {
-    getOptions("").then(setOptions);
+    if (!creatable) {
+      getOptions("").then(setOptions);
+    }
     onBlur?.(event);
   }
 
   function handleFocus(event: FocusEvent<HTMLInputElement>) {
-    setSearch("");
-    setIsOpen(true);
+    if (!creatable) {
+      setSearch("");
+      setIsOpen(true);
+    }
     onFocus?.(event);
   }
 
@@ -50,9 +66,14 @@ export default forwardRef<HTMLInputElement, Props>(function Select(
     setSearch(v);
 
     if (v) {
+      if (creatable) {
+        onChange?.({ id: v, label: v });
+      } else {
+        setActiveIndex(0);
+      }
+
       const options = await getOptions(v.toLowerCase());
       setIsOpen(true);
-      setActiveIndex(0);
       setOptions(options);
     } else {
       setIsOpen(false);
@@ -60,13 +81,12 @@ export default forwardRef<HTMLInputElement, Props>(function Select(
   }
 
   function handleKeyDown(event: KeyboardEvent<HTMLInputElement>) {
-    if (
-      (event.key === Key.ENTER || event.key === Key.ARROW_RIGHT) &&
-      activeIndex != null
-    ) {
-      handleSelect(options[activeIndex]);
-      setIsOpen(false);
-      inputRef.current?.blur();
+    if (event.key === Key.ENTER || event.key === Key.ARROW_RIGHT) {
+      if (activeIndex != null) {
+        handleSelect(options[activeIndex]);
+        setIsOpen(false);
+        inputRef.current?.blur();
+      }
     }
 
     onKeyDown?.(event);
@@ -83,7 +103,11 @@ export default forwardRef<HTMLInputElement, Props>(function Select(
   }
 
   function handleSelect(option: Option) {
-    onChange?.(option);
+    if (option) {
+      onChange?.(option);
+    } else if (creatable && search) {
+      onChange?.({ id: search, label: search });
+    }
   }
 
   const inputRef = useRef<HTMLInputElement>(null);
@@ -91,10 +115,10 @@ export default forwardRef<HTMLInputElement, Props>(function Select(
   const inputValue = search === undefined ? value?.label || "" : search;
 
   useEffect(() => {
-    if (!isOpen) {
+    if (!isOpen && !creatable) {
       setSearch(undefined);
     }
-  }, [isOpen]);
+  }, [isOpen, creatable]);
 
   useLayoutEffect(() => {
     getOptions("").then(setOptions);

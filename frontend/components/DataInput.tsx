@@ -22,6 +22,7 @@ import TextNumberDataInput from "./TextNumberDataInput";
 const COMPONENTS_PER_TYPE: Record<PublicationKeyType, FC<Props>> = {
   text: TextDataInput,
   enum: TextEnumDataInput,
+  "auto-text": TextEnumDataInput,
   number: TextNumberDataInput,
   array: TextArrayDataInput,
 };

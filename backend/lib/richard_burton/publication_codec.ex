@@ -137,11 +137,12 @@ defmodule RichardBurton.Publication.Codec do
   defp flatten_entry({key, value}),
     do: {key, value}
 
-  defp flatten_authors(authors) when is_list(authors) do
+  # TODO: Test flatten_authors
+  def flatten_authors(authors) when is_list(authors) do
     Enum.map_join(authors, ", ", &(Map.get(&1, "name") || Map.get(&1, :name)))
   end
 
-  defp flatten_authors(authors), do: authors
+  def flatten_authors(authors), do: authors
 
   defp rename_key({"translated_book_authors", v}), do: {"authors", v}
   defp rename_key({"translated_book_original_book_title", v}), do: {"original_title", v}
