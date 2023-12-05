@@ -23,7 +23,7 @@ const IncrementButton: FC<{
         "flex items-center justify-center h-2 rounded-full",
         "hover:bg-indigo-500 hover:text-white",
         "focus:bg-indigo-500 focus:text-white outline-none",
-        "error:text-white focus:error:bg-red-500"
+        "error:text-white focus:error:bg-red-500",
       )}
       onClick={onClick}
       data-error={Boolean(error)}
@@ -35,7 +35,7 @@ const IncrementButton: FC<{
 
 export default forwardRef<HTMLDivElement, Props>(function NumberInput(
   { value, onChange, max = Infinity, min = -Infinity, error, ...props },
-  ref
+  ref,
 ) {
   function fit(value: number) {
     const lower = isString(min) ? parseInt(min) : min;

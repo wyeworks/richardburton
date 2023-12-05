@@ -9,7 +9,13 @@ import {
   useRole,
 } from "@floating-ui/react";
 import { isString } from "lodash";
-import { cloneElement, FC, ReactElement, useMemo, useRef } from "react";
+import {
+  cloneElement,
+  MutableRefObject,
+  ReactElement,
+  useMemo,
+  useRef,
+} from "react";
 import { mergeRefs } from "react-merge-refs";
 import Menu from "./Menu";
 import MenuItem from "./MenuItem";
@@ -67,7 +73,9 @@ const MenuProvider = <OptionType extends Option | string>({
     ]
   );
 
-  const childrenRef = (children as any).ref;
+  const childrenRef = (
+    children as unknown as { ref: MutableRefObject<unknown> }
+  ).ref;
   const ref = useMemo(
     () => mergeRefs([refs.setReference, childrenRef]),
     [refs.setReference, childrenRef]

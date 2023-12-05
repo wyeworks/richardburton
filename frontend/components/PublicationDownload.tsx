@@ -28,12 +28,12 @@ const PublicationDownload: FC = () => {
       if (anchor.current) {
         const query = qs.stringify(
           { search, select },
-          { encode: false, arrayFormat: "brackets" }
+          { encode: false, arrayFormat: "brackets" },
         );
 
         const { data, headers } = await http.get(
           `${FILES_URL}/publications?${query}`,
-          { responseType: "blob" }
+          { responseType: "blob" },
         );
 
         const filename = /filename[^;=\n]*=([^;\n]*)/

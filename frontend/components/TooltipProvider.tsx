@@ -13,7 +13,14 @@ import {
   FloatingPortal,
   Placement,
 } from "@floating-ui/react";
-import { cloneElement, FC, ReactElement, useMemo, useState } from "react";
+import {
+  cloneElement,
+  FC,
+  MutableRefObject,
+  ReactElement,
+  useMemo,
+  useState,
+} from "react";
 import classNames from "classnames";
 
 // Adapted from https://floating-ui.com/docs/tooltip
@@ -82,13 +89,14 @@ type Props = {
 const TooltipProvider: FC<Props> = ({
   children,
   content,
-  portalRoot,
   absoluteCenter,
   ...options
 }) => {
   const state = useTooltip(options);
 
-  const childrenRef = (children as any).ref;
+  const childrenRef = (
+    children as unknown as { ref: MutableRefObject<unknown> }
+  ).ref;
   const ref = useMemo(
     () => mergeRefs([state.reference, childrenRef]),
     [state.reference, childrenRef]

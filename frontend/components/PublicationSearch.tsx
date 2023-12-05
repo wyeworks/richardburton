@@ -24,7 +24,7 @@ const PublicationSearch: FC = () => {
     router.replace(
       { query: e.target.value ? { search: e.target.value } : {} },
       undefined,
-      { shallow: true }
+      { shallow: true },
     );
   };
 

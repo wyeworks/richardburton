@@ -3,7 +3,6 @@ import {
   forwardRef,
   HTMLProps,
   KeyboardEvent,
-  MouseEvent,
   useEffect,
   useLayoutEffect,
   useRef,
@@ -73,7 +72,7 @@ export default forwardRef<HTMLInputElement, Props>(function Select(
     onKeyDown?.(event);
   }
 
-  function handleToggleClick(_event: MouseEvent<HTMLButtonElement>) {
+  function handleToggleClick() {
     setIsOpen((isOpen) => !isOpen);
     if (!isOpen) {
       inputRef.current?.focus();

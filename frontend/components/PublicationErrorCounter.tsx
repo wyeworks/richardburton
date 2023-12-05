@@ -29,7 +29,7 @@ const PublicationErrorCounter: FC = () => {
           setFocusedRowId(nextInvalidId);
         }
       },
-    []
+    [],
   );
 
   return invalidPublicationCount !== 0 ? (

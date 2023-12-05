@@ -15,7 +15,7 @@ const Pill: FC<Props> = ({ label, onRemove }) => {
         className={c(
           "inline-flex items-center justify-center transition-colors rounded-full",
           "hover:bg-indigo-500 hover:text-white",
-          "focus:bg-indigo-500 focus:text-white outline-none"
+          "focus:bg-indigo-500 focus:text-white outline-none",
         )}
         onClick={onRemove}
       >

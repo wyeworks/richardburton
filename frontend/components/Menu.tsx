@@ -1,4 +1,4 @@
-import { DetailedHTMLProps, FC, forwardRef, OlHTMLAttributes } from "react";
+import { DetailedHTMLProps, forwardRef, OlHTMLAttributes } from "react";
 
 type Props = Omit<
   DetailedHTMLProps<OlHTMLAttributes<HTMLOListElement>, HTMLOListElement>,

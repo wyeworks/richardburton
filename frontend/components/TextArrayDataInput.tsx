@@ -5,10 +5,7 @@ import Multicombobox from "./Multicombobox";
 import pDebounce from "p-debounce";
 
 export default forwardRef<HTMLDivElement, DataInputProps>(
-  function TextArrayDataInput(
-    { rowId, colId, value, autoValidated, onChange, ...props },
-    ref
-  ) {
+  function TextArrayDataInput({ colId, value, onChange, ...props }, ref) {
     const items = useMemo(
       () => (value === "" ? [] : value.split(",")),
       [value]

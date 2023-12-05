@@ -1,4 +1,4 @@
-import { FC, forwardRef } from "react";
+import { forwardRef } from "react";
 import CheckIcon from "assets/check.svg";
 import Button, { ButtonProps } from "./Button";
 

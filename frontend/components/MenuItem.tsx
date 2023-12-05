@@ -16,7 +16,7 @@ type Props = Omit<
 
 export default forwardRef<HTMLLIElement, Props>(function MenuItem(
   { selected, children, onClick, ...props },
-  ref
+  ref,
 ) {
   return (
     <li

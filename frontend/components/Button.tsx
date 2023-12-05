@@ -21,7 +21,7 @@ const Button = forwardRef<HTMLButtonElement, Props>(function Button(
     labelSrOnly,
     ...props
   },
-  ref
+  ref,
 ) {
   const isPrimary = type === "primary";
   const isSecondary = type === "secondary";
@@ -48,7 +48,7 @@ const Button = forwardRef<HTMLButtonElement, Props>(function Button(
           "w-full": isFullWidth,
           "w-48": isFixedWidth,
           "w-fit": isFitWidth,
-        }
+        },
       )}
       onClick={onClick}
     >

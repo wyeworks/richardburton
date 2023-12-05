@@ -4,7 +4,7 @@ import { RefObject, useEffect, useState } from "react";
 
 export default function useVisible<T extends HTMLElement>(
   ref: RefObject<T>,
-  rootMargin: string = "0px"
+  rootMargin: string = "0px",
 ): boolean {
   // State and setter for storing whether element is visible
   const [isIntersecting, setIntersecting] = useState<boolean>(false);
@@ -16,7 +16,7 @@ export default function useVisible<T extends HTMLElement>(
       },
       {
         rootMargin,
-      }
+      },
     );
     if (ref.current) {
       const el = ref.current;

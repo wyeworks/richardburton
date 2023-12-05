@@ -139,13 +139,13 @@ const SubmittableData: typeof Content = ({ rowId, colId, value, error }) => {
         event.key === Key.ENTER &&
         isElement(event.target) &&
         !(event.target as HTMLInputElement).matches(
-          '[data-multiselect-input="true"]'
+          '[data-multiselect-input="true"]',
         )
       ) {
         submit();
       }
     },
-    [submit]
+    [submit],
   );
 
   return (

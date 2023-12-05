@@ -1,5 +1,5 @@
 import { Publication, ValidationResult } from "modules/publication";
-import { ChangeEvent, FC, useEffect, useRef, useState } from "react";
+import { ChangeEvent, FC, useRef, useState } from "react";
 import Tooltip from "./Tooltip";
 import UploadIcon from "assets/upload.svg";
 import Button from "./Button";
@@ -30,7 +30,7 @@ const PublicationUpload: FC = () => {
             const entries = data.map((p, index) => ({ ...p, id: index }));
             Publication.STORE.with({ set }).setPublications(entries);
             Publication.STORE.with({ set }).setErrors(entries);
-          } catch (error: any) {
+          } catch (error: unknown) {
             event.target.files = null;
             setKey((key) => -key);
             throw error;

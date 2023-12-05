@@ -47,7 +47,7 @@ const Tooltip: FC<Props> = ({
     </div>
   );
 
-  return Boolean(message) ? (
+  return message ? (
     <TooltipProvider {...props} content={content}>
       {children}
     </TooltipProvider>

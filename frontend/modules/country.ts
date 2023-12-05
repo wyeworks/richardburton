@@ -6,13 +6,13 @@ countries.registerLocale(countriesEN);
 type Country = { id: string; label: string };
 
 const COUNTRIES: Record<Country["id"], Country> = Object.entries(
-  countries.getNames("en", { select: "official" })
+  countries.getNames("en", { select: "official" }),
 ).reduce(
   (acc, [key, label]) => ({
     ...acc,
     [key]: { id: key, label: label },
   }),
-  {}
+  {},
 );
 
 export type { Country };

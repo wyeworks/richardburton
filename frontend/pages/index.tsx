@@ -14,7 +14,6 @@ import StrikeHeading from "components/StrikeHeading";
 import Button from "components/Button";
 import AddIcon from "assets/add.svg";
 import Link from "next/link";
-import c from "classnames";
 import PublicationHiddenAttributes from "components/PublicationHiddenAttributes";
 
 const Home: NextPage = () => {

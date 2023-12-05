@@ -24,7 +24,7 @@ type Props = Omit<
 
 export default forwardRef<HTMLDivElement, Props>(function TextInput(
   { value, error, left, right, inputRef, onChange, onBlur, onFocus, ...props },
-  ref
+  ref,
 ) {
   const [focused, setFocused] = useState(false);
 
@@ -51,7 +51,7 @@ export default forwardRef<HTMLDivElement, Props>(function TextInput(
         {
           "bg-gray-active shadow-sm error:bg-red-400/80": focused,
           "error:bg-red-300/40": !focused,
-        }
+        },
       )}
       data-error={Boolean(error)}
     >

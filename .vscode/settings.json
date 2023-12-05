@@ -4,5 +4,8 @@
   "files.associations": {
     ".env*": "properties"
   },
-  "editor.tabSize": 2
+  "editor.tabSize": 2,
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": false
+  }
 }

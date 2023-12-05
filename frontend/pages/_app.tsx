@@ -24,46 +24,45 @@ http.interceptors.request.use(async (config) => {
   return config;
 });
 
-function request<T = void>(
+async function request<T = void>(
   cb: (http: AxiosInstance) => Promise<T> | T
 ): Promise<T> {
-  return new Promise(async (resolve, reject) => {
-    try {
-      const result = await cb(http);
-      resolve(result);
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        if (error.response) {
-          // The request was made and the server responded with a status code
-          // that falls out of the range of 2xx
-          if (error.response.status === 409) {
-            reject("conflict");
-          } else {
-            if (error.response.data) {
-              const detail = (error.response?.data as any).errors?.detail;
-              if (detail) {
-                reject(detail);
-              } else {
-                reject(error.response?.data);
-              }
-            } else {
-              reject(error.message);
-            }
-          }
-        } else if (error.request) {
-          // The request was made but no response was received
-          // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
-          // http.ClientRequest in node.js
-          reject(error.message);
+  try {
+    const result = await cb(http);
+    return result;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      if (error.response) {
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx
+        if (error.response.status === 409) {
+          throw "conflict";
         } else {
-          // Something happened in setting up the request that triggered an Error
-          reject(error.message);
+          if (error.response.data) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const detail = (error.response?.data as any).errors?.detail;
+            if (detail) {
+              throw detail;
+            } else {
+              throw error.response?.data;
+            }
+          } else {
+            throw error.message;
+          }
         }
+      } else if (error.request) {
+        // The request was made but no response was received
+        // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+        // http.ClientRequest in node.js
+        throw error.message;
       } else {
-        reject(error);
+        // Something happened in setting up the request that triggered an Error
+        throw error.message;
       }
+    } else {
+      throw error;
     }
-  });
+  }
 }
 
 enum Key {

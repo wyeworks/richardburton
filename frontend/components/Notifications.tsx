@@ -41,7 +41,7 @@ const Notifications: FC = () => {
     if (notifications.length > 0) {
       const timeout = setTimeout(
         () => setNotifications(notifications.slice(1)),
-        NOTIFICATION_TIMEOUT_MS
+        NOTIFICATION_TIMEOUT_MS,
       );
       return () => clearTimeout(timeout);
     }
@@ -88,14 +88,14 @@ const Notifications: FC = () => {
                   role="presentation"
                   className={classNames(
                     "flex items-center justify-center w-7 h-6",
-                    { "text-indigo-700 text-xl": level === "info" }
+                    { "text-indigo-700 text-xl": level === "info" },
                   )}
                 >
                   {NOTIFICATION_ICONS[level]}
                 </div>
                 <label id={`snackbar-message-${key}`}>{message}</label>
               </motion.div>
-            )
+            ),
         )}
       </AnimatePresence>
     </section>
@@ -116,7 +116,7 @@ function useNotify(): Notifier {
       ({ message, level }) => {
         set(NOTIFICATIONS, _notify({ message, level }));
       },
-    []
+    [],
   );
 }
 

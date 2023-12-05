@@ -16,7 +16,7 @@ type Props = Omit<HTMLProps<HTMLInputElement>, "value" | "onChange"> & {
 
 export default forwardRef<HTMLDivElement, Props>(function Multicombobox(
   { value, placeholder, getOptions, onChange, onKeyDown, error, ...props },
-  ref
+  ref,
 ) {
   const [inputValue, setInputValue] = useState("");
   const [activeIndex, setActiveIndex] = useState<number | null>(null);

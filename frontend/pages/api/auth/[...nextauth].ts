@@ -27,7 +27,7 @@ const authOptions: AuthOptions = {
         const { data } = await http.post<User>(
           "/users",
           { email },
-          { headers: { Authorization: `Bearer ${params.account?.id_token}` } }
+          { headers: { Authorization: `Bearer ${params.account?.id_token}` } },
         );
         user = data;
       } catch (e) {
