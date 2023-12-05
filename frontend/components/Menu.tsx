@@ -7,7 +7,7 @@ type Props = Omit<
 
 export default forwardRef<HTMLOListElement, Props>(function Menu(
   { ...props },
-  ref
+  ref,
 ) {
   return (
     <ol

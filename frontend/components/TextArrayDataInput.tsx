@@ -8,7 +8,7 @@ export default forwardRef<HTMLDivElement, DataInputProps>(
   function TextArrayDataInput({ colId, value, onChange, ...props }, ref) {
     const items = useMemo(
       () => (value === "" ? [] : value.split(",")),
-      [value]
+      [value],
     );
 
     function handleChange(value: string[]) {
@@ -19,9 +19,9 @@ export default forwardRef<HTMLDivElement, DataInputProps>(
     const getOptions = useCallback(
       pDebounce(
         (search: string) => Publication.autocomplete(search, colId),
-        350
+        350,
       ),
-      [colId]
+      [colId],
     );
 
     return (
@@ -33,5 +33,5 @@ export default forwardRef<HTMLDivElement, DataInputProps>(
         getOptions={getOptions}
       />
     );
-  }
+  },
 ) as FC<DataInputProps>;

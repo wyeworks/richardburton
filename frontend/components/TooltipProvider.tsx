@@ -77,7 +77,7 @@ function useTooltip(options: TooltipOptions = {}) {
       ...interactions,
       ...data,
     }),
-    [open, setOpen, interactions, data]
+    [open, setOpen, interactions, data],
   );
 }
 
@@ -99,7 +99,7 @@ const TooltipProvider: FC<Props> = ({
   ).ref;
   const ref = useMemo(
     () => mergeRefs([state.reference, childrenRef]),
-    [state.reference, childrenRef]
+    [state.reference, childrenRef],
   );
 
   return (
@@ -114,7 +114,7 @@ const TooltipProvider: FC<Props> = ({
             children.props.onBlur?.(event);
             state.setOpen(false);
           },
-        })
+        }),
       )}
       <FloatingPortal>
         {state.open && (

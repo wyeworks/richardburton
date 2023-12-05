@@ -28,7 +28,7 @@ type Props = Omit<
 
 export default forwardRef<HTMLInputElement, Props>(function Select(
   { value, error, onChange, onBlur, onFocus, onKeyDown, getOptions, ...props },
-  ref
+  ref,
 ) {
   const [isOpen, setIsOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
@@ -126,7 +126,7 @@ export default forwardRef<HTMLInputElement, Props>(function Select(
               "flex items-center justify-center h-5 aspect-square transition-transform rounded-full",
               "outline-none focus:bg-indigo-500 focus:text-white",
               "error:text-white focus:error:bg-red-500",
-              { "rotate-180": isOpen }
+              { "rotate-180": isOpen },
             )}
             onClick={handleToggleClick}
             data-error={Boolean(error)}

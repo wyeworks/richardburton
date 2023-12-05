@@ -28,7 +28,7 @@ const Tooltip: FC<Props> = ({
         {
           "text-white bg-red-500": error,
           "bg-white ": warning || info,
-        }
+        },
       )}
     >
       <span

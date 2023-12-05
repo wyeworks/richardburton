@@ -17,5 +17,5 @@ export default forwardRef<HTMLInputElement, DataInputProps>(
         onChange={handleChange}
       />
     );
-  }
+  },
 ) as FC<DataInputProps>;

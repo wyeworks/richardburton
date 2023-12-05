@@ -14,9 +14,9 @@ export default forwardRef<HTMLInputElement, DataInputProps>(
     const getOptions = useCallback(
       pDebounce(
         (search: string) => Publication.autocomplete(search, colId),
-        350
+        350,
       ),
-      [colId]
+      [colId],
     );
 
     const selectedOption = useMemo(
@@ -24,7 +24,7 @@ export default forwardRef<HTMLInputElement, DataInputProps>(
         value
           ? { id: value, label: Publication.describeValue(value, colId) }
           : undefined,
-      [value, colId]
+      [value, colId],
     );
 
     return (
@@ -36,5 +36,5 @@ export default forwardRef<HTMLInputElement, DataInputProps>(
         getOptions={getOptions}
       />
     );
-  }
+  },
 ) as FC<DataInputProps>;

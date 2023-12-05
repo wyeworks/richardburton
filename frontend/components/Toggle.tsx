@@ -12,7 +12,7 @@ type Props = ButtonProps & {
 
 const Toggle = forwardRef<HTMLButtonElement, Props>(function Toggle(
   { label, checked, onClick, CheckedIcon = CheckIcon, UncheckedIcon, ...props },
-  ref
+  ref,
 ) {
   return (
     <Button

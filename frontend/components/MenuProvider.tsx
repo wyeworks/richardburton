@@ -70,7 +70,7 @@ const MenuProvider = <OptionType extends Option | string>({
         virtual: true,
         loop: true,
       }),
-    ]
+    ],
   );
 
   const childrenRef = (
@@ -78,7 +78,7 @@ const MenuProvider = <OptionType extends Option | string>({
   ).ref;
   const ref = useMemo(
     () => mergeRefs([refs.setReference, childrenRef]),
-    [refs.setReference, childrenRef]
+    [refs.setReference, childrenRef],
   );
 
   return (
@@ -88,7 +88,7 @@ const MenuProvider = <OptionType extends Option | string>({
         getReferenceProps({
           ref,
           ...children.props,
-        })
+        }),
       )}
       <FloatingPortal>
         {isOpen && (

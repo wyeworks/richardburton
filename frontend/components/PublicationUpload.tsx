@@ -25,7 +25,7 @@ const PublicationUpload: FC = () => {
             resetPublications();
             const { data } = await http.post<ValidationResult[]>(
               "publications/validate",
-              payload
+              payload,
             );
             const entries = data.map((p, index) => ({ ...p, id: index }));
             Publication.STORE.with({ set }).setPublications(entries);
@@ -36,7 +36,7 @@ const PublicationUpload: FC = () => {
             throw error;
           }
         }
-      }
+      },
   );
 
   const message = totalPublications > 0 ? "Current data will be replaced!" : "";
