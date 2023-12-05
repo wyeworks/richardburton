@@ -33,24 +33,26 @@ defmodule RichardBurton.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:phoenix, "~> 1.6.12"},
-      {:phoenix_ecto, "~> 4.4"},
-      {:ecto_sql, "~> 3.9"},
+      {:phoenix, "~> 1.7"},
+      {:phoenix_ecto, "~> 4.4.3"},
+      {:phoenix_view, "~> 2.0.3"},
+      {:ecto_sql, "~> 3.11"},
       {:postgrex, ">= 0.0.0"},
-      {:phoenix_live_dashboard, "~> 0.6"},
-      {:telemetry_metrics, "~> 0.6"},
-      {:telemetry_poller, "~> 1.0"},
-      {:jason, "~> 1.2"},
-      {:plug, "~> 1.14"},
-      {:plug_cowboy, "~> 2.5"},
-      {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
-      {:csv, "~> 3.0.5"},
-      {:cors_plug, "~> 3.0"},
-      {:ex_doc, "~> 0.27", only: :dev, runtime: false},
-      {:joken, "~> 2.5"},
-      {:httpoison, "~> 1.8"},
-      {:mox, "~> 1.0", only: :test},
-      {:countries, "~> 1.6"}
+      {:phoenix_live_dashboard, "~> 0.8.3"},
+      {:telemetry_metrics, "~> 0.6.1"},
+      {:telemetry_poller, "~> 1.0.0"},
+      {:jason, "~> 1.4.1"},
+      {:plug, "~> 1.15.2"},
+      {:plug_cowboy, "~> 2.6.1"},
+      {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
+      {:csv, "~> 3.2.1"},
+      {:cors_plug, "~> 3.0.3"},
+      {:ex_doc, "~> 0.30.9", only: :dev, runtime: false},
+      {:joken, "~> 2.6.0"},
+      {:httpoison, "~> 2.2.1"},
+      {:mox, "~> 1.1.0", only: :test},
+      {:countries, "~> 1.6"},
+      {:ssl_verify_fun, "~> 1.1.7"}
     ]
   end
 
