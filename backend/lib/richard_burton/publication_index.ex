@@ -23,6 +23,10 @@ defmodule RichardBurton.Publication.Index do
     {:ok, results}
   end
 
+  def count() do
+    Repo.aggregate(FlatPublication, :count, :id)
+  end
+
   defp maybe_select(query, []) do
     query
   end

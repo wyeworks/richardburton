@@ -1,26 +1,30 @@
-import { NextPage } from "next";
-import { useEffect } from "react";
-import { Publication } from "modules/publication";
+import AddIcon from "assets/add.svg";
+import Button from "components/Button";
+import { Counter } from "components/Counter";
 import Layout from "components/Layout";
+import PublicationDownload from "components/PublicationDownload";
+import PublicationHiddenAttributes from "components/PublicationHiddenAttributes";
 import PublicationIndex from "components/PublicationIndex";
 import PublicationSearch from "components/PublicationSearch";
-import { useRouter } from "next/router";
-import { isString } from "lodash";
-import PublicationDownload from "components/PublicationDownload";
-import SignOutButton from "components/SignOutButton";
 import SignInButton from "components/SignInButton";
-import { User } from "modules/users";
+import SignOutButton from "components/SignOutButton";
 import StrikeHeading from "components/StrikeHeading";
-import Button from "components/Button";
-import AddIcon from "assets/add.svg";
+import Tooltip from "components/Tooltip";
+import { isString } from "lodash";
+import { Publication } from "modules/publication";
+import { User } from "modules/users";
+import { NextPage } from "next";
 import Link from "next/link";
-import PublicationHiddenAttributes from "components/PublicationHiddenAttributes";
+import { useRouter } from "next/router";
+import { useEffect } from "react";
 
 const Home: NextPage = () => {
   const index = Publication.REMOTE.useIndex();
   const reset = Publication.STORE.useResetAll();
   const router = useRouter();
   const isAuthenticated = User.useIsAuthenticated();
+
+  const count = Publication.STORE.useIndexCount();
 
   useEffect(() => reset(), [reset]);
 
@@ -37,15 +41,15 @@ const Home: NextPage = () => {
       content={<PublicationIndex />}
       leftAside={<PublicationHiddenAttributes />}
       subheader={
-        <div className="space-y-2">
+        <div className="flex flex-col space-y-2">
           <StrikeHeading label="Browse data about Brazilian literary books translated to English" />
           <PublicationSearch />
         </div>
       }
       footer={
-        <div className="flex space-x-2">
+        <div className="flex justify-between gap-2">
           {isAuthenticated ? (
-            <>
+            <div className="flex gap-2">
               <PublicationDownload />
               <Link href="/publications/new">
                 <Button
@@ -57,9 +61,17 @@ const Home: NextPage = () => {
                 />
               </Link>
               <SignOutButton />
-            </>
+            </div>
           ) : (
             <SignInButton />
+          )}
+          {count && (
+            <Tooltip info message="Learn more.">
+              <button className="flex items-center gap-1 px-2 text-white transition-colors bg-indigo-600 rounded shadow hover:bg-indigo-700">
+                <Counter value={count} />
+                <span>publications registered so far.</span>
+              </button>
+            </Tooltip>
           )}
         </div>
       }

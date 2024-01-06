@@ -1,7 +1,7 @@
+import Logo from "assets/logo.svg";
 import Head from "next/head";
 import Link from "next/link";
 import { FC, ReactNode } from "react";
-import Logo from "assets/logo.svg";
 
 type Props = {
   title: string;

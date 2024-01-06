@@ -21,7 +21,7 @@ const Button = forwardRef<HTMLButtonElement, Props>(function Button(
     labelSrOnly,
     ...props
   },
-  ref,
+  ref
 ) {
   const isPrimary = type === "primary";
   const isSecondary = type === "secondary";
@@ -42,13 +42,13 @@ const Button = forwardRef<HTMLButtonElement, Props>(function Button(
         {
           "text-white bg-indigo-600 hover:bg-indigo-700": isPrimary,
           "text-white bg-yellow-500 hover:bg-yellow-600": isSecondary,
-          "bg-gray-100 hover:bg-gray-active": isOutline,
+          "text-gray-700 bg-gray-100 hover:bg-gray-active": isOutline,
           "text-white bg-red-500 hover:bg-red-600": isDanger,
           "justify-center": isTextCentered,
           "w-full": isFullWidth,
           "w-48": isFixedWidth,
           "w-fit": isFitWidth,
-        },
+        }
       )}
       onClick={onClick}
     >

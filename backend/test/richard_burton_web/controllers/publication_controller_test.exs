@@ -17,10 +17,18 @@ defmodule RichardBurtonWeb.PublicationControllerTest do
     "original_title" => "Iracema"
   }
 
-  describe "GET /publications" do
-    test "does not require authentication" do
+  describe "GET /publications when there are no publications" do
+    test "does not require authentication", %{conn: conn} do
       expect_auth_verify(0)
       expect_auth_authorize_admin(0)
+      get(conn, publication_path(conn, :index))
+    end
+
+    test "returns X-total-count header with value 0", %{conn: conn} do
+      assert ["0"] ==
+               conn
+               |> get(publication_path(conn, :index))
+               |> Plug.Conn.get_resp_header("x-total-count")
     end
   end
 

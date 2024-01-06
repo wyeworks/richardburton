@@ -37,6 +37,11 @@ type PublicationError = null | string | Record<PublicationKey, string>;
 type PublicationEntry = ValidationResult & { id: number };
 type PublicationId = number;
 
+const TOTAL_INDEX_COUNT = atom<number | null>({
+  key: "total-index-count",
+  default: null,
+});
+
 const PUBLICATION_IDS = atom<PublicationId[] | undefined>({
   key: "publication-ids",
   default: undefined,
@@ -296,6 +301,7 @@ interface PublicationModule {
     useIsValidating(): boolean;
 
     useKeywords(): string[] | undefined;
+    useIndexCount(): number | null;
 
     from: (snapshot: Snapshot) => {
       getVisibleIds(): PublicationId[] | undefined;
@@ -343,7 +349,6 @@ interface PublicationModule {
     ): (args: P) => Promise<T>;
 
     useIndex(): ({ search }: { search?: string }) => Promise<void>;
-    useIndexCount(): Promise<number>;
     useBulk(): () => Promise<Publication[]>;
     useValidate(): (ids: PublicationId[]) => Promise<void>;
   };
@@ -580,6 +585,10 @@ const Publication: PublicationModule = {
       return id === useRecoilValue(FOCUSED_ROW_ID);
     },
 
+    useIndexCount() {
+      return useRecoilValue(TOTAL_INDEX_COUNT);
+    },
+
     from: (snapshot) => ({
       getVisibleIds() {
         return snapshot.getLoadable(VISIBLE_PUBLICATION_IDS).valueOrThrow();
@@ -729,9 +738,12 @@ const Publication: PublicationModule = {
 
               set(PUBLICATION_IDS, undefined);
 
-              const { data } = await http.get<Result>(url);
+              const { data, headers } = await http.get<Result>(url);
               const { entries, keywords } = data;
 
+              if (headers.xTotalCount) {
+                set(TOTAL_INDEX_COUNT, parseInt(headers.xTotalCount));
+              }
               set(KEYWORDS, keywords);
               set(PUBLICATION_IDS, range(entries.length));
               entries.forEach((publication, index) =>
