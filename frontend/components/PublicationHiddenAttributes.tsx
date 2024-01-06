@@ -1,8 +1,8 @@
+import VisibilityOnIcon from "assets/visibility-on.svg";
+import c from "classnames";
+import { AnimatePresence, motion } from "framer-motion";
 import { Publication } from "modules/publication";
 import { FC } from "react";
-import c from "classnames";
-import { motion, AnimatePresence } from "framer-motion";
-import VisibilityOnIcon from "assets/visibility-on.svg";
 import Tooltip from "./Tooltip";
 
 const PublicationHiddenAttributes: FC = () => {
@@ -18,8 +18,8 @@ const PublicationHiddenAttributes: FC = () => {
             <motion.li
               key={key}
               className={c(
-                "relative origin-top-left overflow-clip shadow text-xs first:rounded-l last:rounded-r",
-                "text-white bg-indigo-600 hover:bg-indigo-700 transition-colors ",
+                "relative origin-top-left overflow-clip shadow shadow-indigo-900 text-xs first:rounded-l last:rounded-r",
+                "text-white bg-indigo-600 hover:bg-indigo-700 transition-colors "
               )}
               initial={{ width: 0 }}
               animate={{ width: "2rem" }}
