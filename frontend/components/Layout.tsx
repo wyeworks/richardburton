@@ -1,6 +1,7 @@
 import Head from "next/head";
 import Link from "next/link";
 import { FC, ReactNode } from "react";
+import Logo from "assets/logo.svg";
 
 type Props = {
   title: string;
@@ -27,11 +28,18 @@ const Layout: FC<Props> = ({
       </Head>
       <div className="flex flex-col h-full px-8 overflow-x-clip">
         <header className="sticky top-0 z-20 pb-6 bg-gray-100">
-          <h1 className="py-1 -mx-8 text-center text-white bg-indigo-600">
-            <div className="inline px-4 py-1 text-lg font-medium border-r">
-              <Link href="/">{HEADING_TEXT}</Link>
-            </div>
-            <div className="inline px-4 text-base">{SUBHEADING_TEXT}</div>
+          <h1 className="select-none py-1.5 -mx-8 text-center text-white bg-indigo-600 flex items-center justify-center">
+            <Link
+              href="/"
+              className="flex items-center justify-center flex-shrink gap-4 px-2 py-0.5 transition-colors rounded hover:bg-indigo-500 shadow-white"
+            >
+              <span className="inline-flex items-center gap-3 py-1 text-lg font-medium">
+                <Logo className="h-8" />
+                {HEADING_TEXT}
+              </span>
+              <hr className="w-0.5 h-8 bg-current border-none" />
+              <div className="inline text-base">{SUBHEADING_TEXT}</div>
+            </Link>
           </h1>
           {subheader}
         </header>

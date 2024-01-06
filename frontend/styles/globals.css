@@ -7,6 +7,26 @@
   src: url("./fonts/Montserrat-VariableFont_wght.ttf") format("ttf");
 }
 
+
 #__next {
   @apply h-screen text-gray-700;
+}
+
+
+.hover-1 {
+  --h: 1.2em;
+
+  line-height: var(--h);
+  color: #0000;
+  text-shadow:
+    0 0 #000,
+    0 var(--h) #1095c1;
+  overflow: hidden;
+  transition: .3s;
+}
+
+.hover-1:hover {
+  text-shadow:
+    0 calc(-1 * var(--h)) #000,
+    0 0 #1095c1;
 }
