@@ -1,25 +1,25 @@
+import { request } from "app";
+import { AxiosInstance } from "axios";
+import { _NOTIFICATIONS, _notify } from "components/Notifications";
+import { isString, range } from "lodash";
+import hash from "object-hash";
 import {
-  atom,
-  atomFamily,
   CallbackInterface,
   MutableSnapshot,
   Resetter,
+  SetterOrUpdater,
+  Snapshot,
+  atom,
+  atomFamily,
   selector,
   selectorFamily,
-  Snapshot,
   useRecoilCallback,
   useRecoilState,
   useRecoilValue,
 } from "recoil";
-import { isString, range } from "lodash";
-import { request } from "app";
-import { _NOTIFICATIONS, _notify } from "components/Notifications";
-import { AxiosInstance } from "axios";
-import hash from "object-hash";
 import useDebounce from "utils/useDebounce";
 import { Author } from "./author";
 import { COUNTRIES, Country } from "./country";
-import { SetterOrUpdater } from "recoil";
 
 type Publication = {
   title: string;
@@ -61,7 +61,7 @@ const OVERRIDDEN_PUBLICATION_IDS = selector<PublicationId[] | undefined>({
   key: "overridden-publications-ids",
   get({ get }) {
     return get(VISIBLE_PUBLICATION_IDS)?.filter((id) =>
-      get(PUBLICATION_OVERRIDES(id)),
+      get(PUBLICATION_OVERRIDES(id))
     );
   },
 });
@@ -91,7 +91,7 @@ const DELETED_PUBLICATIONS_IDS = selector<PublicationId[] | undefined>({
   key: "deleted-publications-ids",
   get({ get }) {
     return get(PUBLICATION_IDS)?.filter((id) =>
-      get(IS_PUBLICATION_DELETED(id)),
+      get(IS_PUBLICATION_DELETED(id))
     );
   },
 });
@@ -107,7 +107,7 @@ const VISIBLE_PUBLICATION_IDS = selector<PublicationId[] | undefined>({
   key: "visible-publications-ids",
   get({ get }) {
     return get(PUBLICATION_IDS)?.filter(
-      (id) => !get(IS_PUBLICATION_DELETED(id)),
+      (id) => !get(IS_PUBLICATION_DELETED(id))
     );
   },
 });
@@ -135,7 +135,7 @@ const IS_PUBLICATION_VALID = selectorFamily<boolean, PublicationId>({
   key: "is-publication-valid",
   get(id) {
     return function ({ get }) {
-      return !Boolean(get(PUBLICATION_ERRORS(id)));
+      return !get(PUBLICATION_ERRORS(id));
     };
   },
 });
@@ -192,7 +192,7 @@ const VISIBLE_ATTRIBUTES = selector<PublicationKey[]>({
   key: "visible-attributes",
   get({ get }) {
     return Publication.ATTRIBUTES.filter((key) =>
-      get(IS_ATTRIBUTE_VISIBLE(key)),
+      get(IS_ATTRIBUTE_VISIBLE(key))
     );
   },
 });
@@ -201,7 +201,7 @@ const HIDDEN_ATTRIBUTES = selector<PublicationKey[]>({
   key: "hidden-attributes",
   get({ get }) {
     return Publication.ATTRIBUTES.filter(
-      (key) => !get(IS_ATTRIBUTE_VISIBLE(key)),
+      (key) => !get(IS_ATTRIBUTE_VISIBLE(key))
     );
   },
 });
@@ -233,7 +233,7 @@ const PUBLICATION_ATTRIBUTE_ERROR_DESCRIPTION = selectorFamily<
       const [id, key] = compositeId.split(".") as [string, PublicationKey];
       return Publication.describeError(
         get(PUBLICATION_ERRORS(parseInt(id))),
-        key,
+        key
       );
     };
   },
@@ -320,12 +320,12 @@ interface PublicationModule {
       useResetAll(): Resetter;
       useValue<K extends PublicationKey>(
         id: PublicationId,
-        key: K,
+        key: K
       ): Publication[K];
       useOverride(): (
         id: PublicationId,
         attribute: PublicationKey,
-        value: string,
+        value: string
       ) => void;
       useErrorDescription(id: PublicationId, key: PublicationKey): string;
 
@@ -338,11 +338,12 @@ interface PublicationModule {
     useRequest<T = void, P = void>(
       factory: (
         params: Pick<CallbackInterface, "set" | "reset" | "snapshot">,
-        http: AxiosInstance,
-      ) => (args: P) => Promise<T>,
+        http: AxiosInstance
+      ) => (args: P) => Promise<T>
     ): (args: P) => Promise<T>;
 
     useIndex(): ({ search }: { search?: string }) => Promise<void>;
+    useIndexCount(): Promise<number>;
     useBulk(): () => Promise<Publication[]>;
     useValidate(): (ids: PublicationId[]) => Promise<void>;
   };
@@ -442,7 +443,7 @@ const Publication: PublicationModule = {
 
         const newIds = range(
           ids.length + 1,
-          ids.length + 1 + duplicateIds.size,
+          ids.length + 1 + duplicateIds.size
         );
 
         let duplicationCount = 0;
@@ -452,7 +453,7 @@ const Publication: PublicationModule = {
 
             set(
               PUBLICATIONS(newId),
-              snapshot.getLoadable(PUBLICATIONS(current)).valueOrThrow(),
+              snapshot.getLoadable(PUBLICATIONS(current)).valueOrThrow()
             );
 
             return [...acc, current, newId];
@@ -482,7 +483,7 @@ const Publication: PublicationModule = {
               set(PUBLICATION_ERRORS(id), errors);
             });
           },
-        [],
+        []
       );
     },
     useSetDeleted() {
@@ -491,7 +492,7 @@ const Publication: PublicationModule = {
           (ids, isDeleted = true) => {
             ids.forEach((id) => set(IS_PUBLICATION_DELETED(id), isDeleted));
           },
-        [],
+        []
       );
     },
     useResetAll() {
@@ -508,7 +509,7 @@ const Publication: PublicationModule = {
             reset(PUBLICATION_IDS);
             reset(FOCUSED_ROW_ID);
           },
-        [],
+        []
       );
     },
     useResetDeleted() {
@@ -522,7 +523,7 @@ const Publication: PublicationModule = {
                 reset(IS_PUBLICATION_DELETED(id));
               });
           },
-        [],
+        []
       );
     },
 
@@ -537,7 +538,7 @@ const Publication: PublicationModule = {
                 reset(PUBLICATION_OVERRIDES(id));
               });
           },
-        [],
+        []
       );
     },
     useOverriddenIds() {
@@ -638,7 +639,7 @@ const Publication: PublicationModule = {
             (keys, isVisible = true) => {
               keys.map((key) => set(IS_ATTRIBUTE_VISIBLE(key), isVisible));
             },
-          [],
+          []
         );
       },
       useResetAll() {
@@ -649,14 +650,14 @@ const Publication: PublicationModule = {
                 reset(IS_ATTRIBUTE_VISIBLE(key));
               });
             },
-          [],
+          []
         );
       },
       useValue<K extends PublicationKey>(id: PublicationId, key: K) {
         const compositeId: CompositeAttributeId = `${id}.${key}`;
 
         return useRecoilValue(
-          PUBLICATION_ATTRIBUTE(compositeId),
+          PUBLICATION_ATTRIBUTE(compositeId)
         ) as Publication[K];
       },
       useOverride() {
@@ -668,14 +669,14 @@ const Publication: PublicationModule = {
                 [attribute]: value,
               }));
             },
-          [],
+          []
         );
       },
 
       useErrorDescription(id, key) {
         const compositeId: CompositeAttributeId = `${id}.${key}`;
         return useRecoilValue(
-          PUBLICATION_ATTRIBUTE_ERROR_DESCRIPTION(compositeId),
+          PUBLICATION_ATTRIBUTE_ERROR_DESCRIPTION(compositeId)
         );
       },
 
@@ -687,36 +688,31 @@ const Publication: PublicationModule = {
 
   REMOTE: {
     async request(cb) {
-      return new Promise(async (resolve, reject) => {
-        try {
-          resolve(await request(cb));
-        } catch (error: any) {
-          reject(Publication.describeError(error) || error);
-        }
-      });
+      try {
+        return await request(cb);
+      } catch (error) {
+        throw Publication.describeError(error as PublicationError) || error;
+      }
     },
 
     useRequest(factory) {
       const { request } = Publication.REMOTE;
       return useRecoilCallback(
         ({ set, reset, snapshot }) =>
-          (args) => {
-            return new Promise(async (resolve, reject) => {
-              try {
-                const res = await request((http) =>
-                  factory({ set, reset, snapshot }, http)(args),
-                );
-                resolve(res);
-              } catch (error: any) {
-                set(
-                  _NOTIFICATIONS,
-                  _notify({ message: error, level: "warning" }),
-                );
-                reject(error);
-              }
-            });
+          async (args) => {
+            try {
+              return await request((http) =>
+                factory({ set, reset, snapshot }, http)(args)
+              );
+            } catch (error) {
+              set(
+                _NOTIFICATIONS,
+                _notify({ message: error as string, level: "warning" })
+              );
+              throw error;
+            }
           },
-        [],
+        []
       );
     },
 
@@ -739,13 +735,14 @@ const Publication: PublicationModule = {
               set(KEYWORDS, keywords);
               set(PUBLICATION_IDS, range(entries.length));
               entries.forEach((publication, index) =>
-                set(PUBLICATIONS(index), publication),
+                set(PUBLICATIONS(index), publication)
               );
-            },
+            }
         ),
-        350,
+        350
       );
     },
+
     useBulk() {
       return Publication.REMOTE.useRequest(
         ({ reset, snapshot }, http) =>
@@ -757,10 +754,10 @@ const Publication: PublicationModule = {
 
             const { data } = await http.post<Publication[]>(
               "publications/bulk",
-              publications,
+              publications
             );
             return data;
-          },
+          }
       );
     },
     useValidate() {
@@ -794,15 +791,15 @@ const Publication: PublicationModule = {
             if (publications.length > 0) {
               const { data } = await http.post<ValidationResult[]>(
                 "publications/validate",
-                publications,
+                publications
               );
 
               Publication.STORE.with({ set }).setErrors(
-                data.map((entry, index) => ({ ...entry, id: ids[index] })),
+                data.map((entry, index) => ({ ...entry, id: ids[index] }))
               );
             }
             set(IS_VALIDATING, false);
-          },
+          }
       );
     },
   },
@@ -813,16 +810,17 @@ const Publication: PublicationModule = {
       case "originalAuthors":
         return Author.REMOTE.search(value);
 
-      case "country":
+      case "country": {
         const all = Object.values(COUNTRIES);
 
         const countries = value
           ? Object.values(COUNTRIES).filter((opt) =>
-              opt.label.toLowerCase().startsWith(value.toLowerCase()),
+              opt.label.toLowerCase().startsWith(value.toLowerCase())
             )
           : all;
 
         return new Promise<Country[]>((resolve) => resolve(countries));
+      }
       default:
         return new Promise<[]>((resolve) => resolve([]));
     }
@@ -879,12 +877,12 @@ const Publication: PublicationModule = {
   },
 };
 
+export { COUNTRIES, Publication };
 export type {
-  PublicationKey,
-  PublicationKeyType,
   PublicationEntry,
   PublicationError,
   PublicationId,
+  PublicationKey,
+  PublicationKeyType,
   ValidationResult,
 };
-export { Publication, COUNTRIES };
