@@ -55,7 +55,7 @@ const SignIn: NextPage = () => {
       title="Error"
       content={
         description ? (
-          <div className="flex items-center justify-center w-full">
+          <div className="flex items-center justify-center w-full py-32">
             <section className="flex flex-col justify-between text-center rounded shadow p-7 w-96 aspect-square">
               <h1 className="text-2xl">{description.title}</h1>
               <div className="space-y-4 ">
