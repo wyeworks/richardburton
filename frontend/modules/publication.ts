@@ -66,7 +66,7 @@ const OVERRIDDEN_PUBLICATION_IDS = selector<PublicationId[] | undefined>({
   key: "overridden-publications-ids",
   get({ get }) {
     return get(VISIBLE_PUBLICATION_IDS)?.filter((id) =>
-      get(PUBLICATION_OVERRIDES(id))
+      get(PUBLICATION_OVERRIDES(id)),
     );
   },
 });
@@ -96,7 +96,7 @@ const DELETED_PUBLICATIONS_IDS = selector<PublicationId[] | undefined>({
   key: "deleted-publications-ids",
   get({ get }) {
     return get(PUBLICATION_IDS)?.filter((id) =>
-      get(IS_PUBLICATION_DELETED(id))
+      get(IS_PUBLICATION_DELETED(id)),
     );
   },
 });
@@ -112,7 +112,7 @@ const VISIBLE_PUBLICATION_IDS = selector<PublicationId[] | undefined>({
   key: "visible-publications-ids",
   get({ get }) {
     return get(PUBLICATION_IDS)?.filter(
-      (id) => !get(IS_PUBLICATION_DELETED(id))
+      (id) => !get(IS_PUBLICATION_DELETED(id)),
     );
   },
 });
@@ -197,7 +197,7 @@ const VISIBLE_ATTRIBUTES = selector<PublicationKey[]>({
   key: "visible-attributes",
   get({ get }) {
     return Publication.ATTRIBUTES.filter((key) =>
-      get(IS_ATTRIBUTE_VISIBLE(key))
+      get(IS_ATTRIBUTE_VISIBLE(key)),
     );
   },
 });
@@ -206,7 +206,7 @@ const HIDDEN_ATTRIBUTES = selector<PublicationKey[]>({
   key: "hidden-attributes",
   get({ get }) {
     return Publication.ATTRIBUTES.filter(
-      (key) => !get(IS_ATTRIBUTE_VISIBLE(key))
+      (key) => !get(IS_ATTRIBUTE_VISIBLE(key)),
     );
   },
 });
@@ -238,7 +238,7 @@ const PUBLICATION_ATTRIBUTE_ERROR_DESCRIPTION = selectorFamily<
       const [id, key] = compositeId.split(".") as [string, PublicationKey];
       return Publication.describeError(
         get(PUBLICATION_ERRORS(parseInt(id))),
-        key
+        key,
       );
     };
   },
@@ -326,12 +326,12 @@ interface PublicationModule {
       useResetAll(): Resetter;
       useValue<K extends PublicationKey>(
         id: PublicationId,
-        key: K
+        key: K,
       ): Publication[K];
       useOverride(): (
         id: PublicationId,
         attribute: PublicationKey,
-        value: string
+        value: string,
       ) => void;
       useErrorDescription(id: PublicationId, key: PublicationKey): string;
 
@@ -344,8 +344,8 @@ interface PublicationModule {
     useRequest<T = void, P = void>(
       factory: (
         params: Pick<CallbackInterface, "set" | "reset" | "snapshot">,
-        http: AxiosInstance
-      ) => (args: P) => Promise<T>
+        http: AxiosInstance,
+      ) => (args: P) => Promise<T>,
     ): (args: P) => Promise<T>;
 
     useIndex(): ({ search }: { search?: string }) => Promise<void>;
@@ -448,7 +448,7 @@ const Publication: PublicationModule = {
 
         const newIds = range(
           ids.length + 1,
-          ids.length + 1 + duplicateIds.size
+          ids.length + 1 + duplicateIds.size,
         );
 
         let duplicationCount = 0;
@@ -458,7 +458,7 @@ const Publication: PublicationModule = {
 
             set(
               PUBLICATIONS(newId),
-              snapshot.getLoadable(PUBLICATIONS(current)).valueOrThrow()
+              snapshot.getLoadable(PUBLICATIONS(current)).valueOrThrow(),
             );
 
             return [...acc, current, newId];
@@ -488,7 +488,7 @@ const Publication: PublicationModule = {
               set(PUBLICATION_ERRORS(id), errors);
             });
           },
-        []
+        [],
       );
     },
     useSetDeleted() {
@@ -497,7 +497,7 @@ const Publication: PublicationModule = {
           (ids, isDeleted = true) => {
             ids.forEach((id) => set(IS_PUBLICATION_DELETED(id), isDeleted));
           },
-        []
+        [],
       );
     },
     useResetAll() {
@@ -514,7 +514,7 @@ const Publication: PublicationModule = {
             reset(PUBLICATION_IDS);
             reset(FOCUSED_ROW_ID);
           },
-        []
+        [],
       );
     },
     useResetDeleted() {
@@ -528,7 +528,7 @@ const Publication: PublicationModule = {
                 reset(IS_PUBLICATION_DELETED(id));
               });
           },
-        []
+        [],
       );
     },
 
@@ -543,7 +543,7 @@ const Publication: PublicationModule = {
                 reset(PUBLICATION_OVERRIDES(id));
               });
           },
-        []
+        [],
       );
     },
     useOverriddenIds() {
@@ -648,7 +648,7 @@ const Publication: PublicationModule = {
             (keys, isVisible = true) => {
               keys.map((key) => set(IS_ATTRIBUTE_VISIBLE(key), isVisible));
             },
-          []
+          [],
         );
       },
       useResetAll() {
@@ -659,14 +659,14 @@ const Publication: PublicationModule = {
                 reset(IS_ATTRIBUTE_VISIBLE(key));
               });
             },
-          []
+          [],
         );
       },
       useValue<K extends PublicationKey>(id: PublicationId, key: K) {
         const compositeId: CompositeAttributeId = `${id}.${key}`;
 
         return useRecoilValue(
-          PUBLICATION_ATTRIBUTE(compositeId)
+          PUBLICATION_ATTRIBUTE(compositeId),
         ) as Publication[K];
       },
       useOverride() {
@@ -678,14 +678,14 @@ const Publication: PublicationModule = {
                 [attribute]: value,
               }));
             },
-          []
+          [],
         );
       },
 
       useErrorDescription(id, key) {
         const compositeId: CompositeAttributeId = `${id}.${key}`;
         return useRecoilValue(
-          PUBLICATION_ATTRIBUTE_ERROR_DESCRIPTION(compositeId)
+          PUBLICATION_ATTRIBUTE_ERROR_DESCRIPTION(compositeId),
         );
       },
 
@@ -711,17 +711,17 @@ const Publication: PublicationModule = {
           async (args) => {
             try {
               return await request((http) =>
-                factory({ set, reset, snapshot }, http)(args)
+                factory({ set, reset, snapshot }, http)(args),
               );
             } catch (error) {
               set(
                 _NOTIFICATIONS,
-                _notify({ message: error as string, level: "warning" })
+                _notify({ message: error as string, level: "warning" }),
               );
               throw error;
             }
           },
-        []
+        [],
       );
     },
 
@@ -747,11 +747,11 @@ const Publication: PublicationModule = {
               set(KEYWORDS, keywords);
               set(PUBLICATION_IDS, range(entries.length));
               entries.forEach((publication, index) =>
-                set(PUBLICATIONS(index), publication)
+                set(PUBLICATIONS(index), publication),
               );
-            }
+            },
         ),
-        350
+        350,
       );
     },
 
@@ -766,10 +766,10 @@ const Publication: PublicationModule = {
 
             const { data } = await http.post<Publication[]>(
               "publications/bulk",
-              publications
+              publications,
             );
             return data;
-          }
+          },
       );
     },
     useValidate() {
@@ -803,15 +803,15 @@ const Publication: PublicationModule = {
             if (publications.length > 0) {
               const { data } = await http.post<ValidationResult[]>(
                 "publications/validate",
-                publications
+                publications,
               );
 
               Publication.STORE.with({ set }).setErrors(
-                data.map((entry, index) => ({ ...entry, id: ids[index] }))
+                data.map((entry, index) => ({ ...entry, id: ids[index] })),
               );
             }
             set(IS_VALIDATING, false);
-          }
+          },
       );
     },
   },
@@ -827,7 +827,7 @@ const Publication: PublicationModule = {
 
         const countries = value
           ? Object.values(COUNTRIES).filter((opt) =>
-              opt.label.toLowerCase().startsWith(value.toLowerCase())
+              opt.label.toLowerCase().startsWith(value.toLowerCase()),
             )
           : all;
 

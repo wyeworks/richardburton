@@ -7,16 +7,14 @@
   src: url("./fonts/Montserrat-VariableFont_wght.ttf") format("ttf");
 }
 
-
 #__next {
   @apply h-screen text-gray-700;
 }
 
 body {
- @apply h-screen overflow-hidden font-light text-gray-900 bg-gray-100 font-montserrat;
+  @apply h-screen overflow-hidden font-light text-gray-900 bg-gray-100 font-montserrat;
 }
 
 .anchor {
-  @apply font-normal text-indigo-600 underline visited:text-indigo-700
+  @apply font-normal text-indigo-600 underline visited:text-indigo-700;
 }
-
