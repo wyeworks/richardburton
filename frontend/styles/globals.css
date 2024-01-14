@@ -16,20 +16,7 @@ body {
  @apply h-screen overflow-hidden font-light text-gray-900 bg-gray-100 font-montserrat;
 }
 
-.hover-1 {
-  --h: 1.2em;
-
-  line-height: var(--h);
-  color: #0000;
-  text-shadow:
-    0 0 #000,
-    0 var(--h) #1095c1;
-  overflow: hidden;
-  transition: .3s;
+.anchor {
+  @apply font-normal text-indigo-600 underline visited:text-indigo-700
 }
 
-.hover-1:hover {
-  text-shadow:
-    0 calc(-1 * var(--h)) #000,
-    0 0 #1095c1;
-}

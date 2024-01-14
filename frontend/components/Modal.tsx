@@ -51,7 +51,7 @@ const Modal: FC<Props> = ({ children, isOpen, onClose }) => {
               role="dialog"
               className="absolute w-1/2 h-[80%] min-h-0 mb-5 bg-white rounded-lg shadow-lg left-1/2 absolute-center-x overflow-y-scroll scrollbar-thin scrollbar-thumb-indigo-600"
               initial={{ scale: 0.9, transform: "translateX(-50%)" }}
-              animate={{ scale: 1, top: "15%", transform: "translateX(-50%)" }}
+              animate={{ scale: 1, top: "12%", transform: "translateX(-50%)" }}
               exit={{ scale: 0.9, top: 0 }}
             >
               {children}
