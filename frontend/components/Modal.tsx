@@ -15,7 +15,7 @@ interface ModalInterface {
 }
 
 function useModal(): ModalInterface {
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
 
   const open = useCallback(() => setIsOpen(true), []);
   const close = useCallback(() => setIsOpen(false), []);
