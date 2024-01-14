@@ -24,7 +24,6 @@ function useModal(): ModalInterface {
 }
 
 interface Props extends PropsWithChildren {
-  title: string;
   isOpen: boolean;
   onClose: () => void;
 }
@@ -42,7 +41,7 @@ const Modal: FC<Props> = ({ children, isOpen, onClose }) => {
         <FloatingPortal>
           <motion.div
             aria-modal="true"
-            className="fixed inset-0 z-50 flex items-start justify-center bg-indigo-900/30"
+            className="fixed inset-0 z-50 bg-indigo-900/30"
             onClick={handleOverlayClick}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -50,15 +49,14 @@ const Modal: FC<Props> = ({ children, isOpen, onClose }) => {
           >
             <motion.div
               role="dialog"
-              className="bg-white rounded shadow-lg p-7 mt-[15%]"
-              initial={{ scale: 0.9 }}
-              animate={{ scale: 1 }}
-              exit={{ scale: 0.9 }}
+              className="absolute w-1/2 h-[80%] min-h-0 mb-5 bg-white rounded-lg shadow-lg left-1/2 absolute-center-x overflow-y-scroll scrollbar-thin scrollbar-thumb-indigo-600"
+              initial={{ scale: 0.9, transform: "translateX(-50%)" }}
+              animate={{ scale: 1, top: "15%", transform: "translateX(-50%)" }}
+              exit={{ scale: 0.9, top: 0 }}
             >
               {children}
             </motion.div>
           </motion.div>
-          ,
         </FloatingPortal>
       )}
     </AnimatePresence>
@@ -66,3 +64,4 @@ const Modal: FC<Props> = ({ children, isOpen, onClose }) => {
 };
 
 export { Modal, useModal };
+export type { Props as ModalProps };
