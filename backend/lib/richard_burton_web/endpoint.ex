@@ -50,7 +50,7 @@ defmodule RichardBurtonWeb.Endpoint do
 
   plug(CORSPlug,
     origin: &RichardBurton.Application.origin/0,
-    expose: ["content-disposition"]
+    expose: ["content-disposition", "x-total-count"]
   )
 
   plug(RichardBurtonWeb.Router)

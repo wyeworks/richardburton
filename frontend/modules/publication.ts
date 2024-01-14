@@ -1,25 +1,25 @@
+import { request } from "app";
+import { AxiosInstance } from "axios";
+import { _NOTIFICATIONS, _notify } from "components/Notifications";
+import { isString, range } from "lodash";
+import hash from "object-hash";
 import {
-  atom,
-  atomFamily,
   CallbackInterface,
   MutableSnapshot,
   Resetter,
+  SetterOrUpdater,
+  Snapshot,
+  atom,
+  atomFamily,
   selector,
   selectorFamily,
-  Snapshot,
   useRecoilCallback,
   useRecoilState,
   useRecoilValue,
 } from "recoil";
-import { isString, range } from "lodash";
-import { request } from "app";
-import { _NOTIFICATIONS, _notify } from "components/Notifications";
-import { AxiosInstance } from "axios";
-import hash from "object-hash";
 import useDebounce from "utils/useDebounce";
 import { Author } from "./author";
 import { COUNTRIES, Country } from "./country";
-import { SetterOrUpdater } from "recoil";
 
 type Publication = {
   title: string;
@@ -36,6 +36,11 @@ type PublicationKey = keyof Publication;
 type PublicationError = null | string | Record<PublicationKey, string>;
 type PublicationEntry = ValidationResult & { id: number };
 type PublicationId = number;
+
+const TOTAL_INDEX_COUNT = atom<number | null>({
+  key: "total-index-count",
+  default: null,
+});
 
 const PUBLICATION_IDS = atom<PublicationId[] | undefined>({
   key: "publication-ids",
@@ -135,7 +140,7 @@ const IS_PUBLICATION_VALID = selectorFamily<boolean, PublicationId>({
   key: "is-publication-valid",
   get(id) {
     return function ({ get }) {
-      return !Boolean(get(PUBLICATION_ERRORS(id)));
+      return !get(PUBLICATION_ERRORS(id));
     };
   },
 });
@@ -296,6 +301,7 @@ interface PublicationModule {
     useIsValidating(): boolean;
 
     useKeywords(): string[] | undefined;
+    useIndexCount(): number | null;
 
     from: (snapshot: Snapshot) => {
       getVisibleIds(): PublicationId[] | undefined;
@@ -579,6 +585,10 @@ const Publication: PublicationModule = {
       return id === useRecoilValue(FOCUSED_ROW_ID);
     },
 
+    useIndexCount() {
+      return useRecoilValue(TOTAL_INDEX_COUNT);
+    },
+
     from: (snapshot) => ({
       getVisibleIds() {
         return snapshot.getLoadable(VISIBLE_PUBLICATION_IDS).valueOrThrow();
@@ -687,34 +697,29 @@ const Publication: PublicationModule = {
 
   REMOTE: {
     async request(cb) {
-      return new Promise(async (resolve, reject) => {
-        try {
-          resolve(await request(cb));
-        } catch (error: any) {
-          reject(Publication.describeError(error) || error);
-        }
-      });
+      try {
+        return await request(cb);
+      } catch (error) {
+        throw Publication.describeError(error as PublicationError) || error;
+      }
     },
 
     useRequest(factory) {
       const { request } = Publication.REMOTE;
       return useRecoilCallback(
         ({ set, reset, snapshot }) =>
-          (args) => {
-            return new Promise(async (resolve, reject) => {
-              try {
-                const res = await request((http) =>
-                  factory({ set, reset, snapshot }, http)(args),
-                );
-                resolve(res);
-              } catch (error: any) {
-                set(
-                  _NOTIFICATIONS,
-                  _notify({ message: error, level: "warning" }),
-                );
-                reject(error);
-              }
-            });
+          async (args) => {
+            try {
+              return await request((http) =>
+                factory({ set, reset, snapshot }, http)(args),
+              );
+            } catch (error) {
+              set(
+                _NOTIFICATIONS,
+                _notify({ message: error as string, level: "warning" }),
+              );
+              throw error;
+            }
           },
         [],
       );
@@ -733,9 +738,12 @@ const Publication: PublicationModule = {
 
               set(PUBLICATION_IDS, undefined);
 
-              const { data } = await http.get<Result>(url);
+              const { data, headers } = await http.get<Result>(url);
               const { entries, keywords } = data;
 
+              if (headers.xTotalCount) {
+                set(TOTAL_INDEX_COUNT, parseInt(headers.xTotalCount));
+              }
               set(KEYWORDS, keywords);
               set(PUBLICATION_IDS, range(entries.length));
               entries.forEach((publication, index) =>
@@ -746,6 +754,7 @@ const Publication: PublicationModule = {
         350,
       );
     },
+
     useBulk() {
       return Publication.REMOTE.useRequest(
         ({ reset, snapshot }, http) =>
@@ -813,7 +822,7 @@ const Publication: PublicationModule = {
       case "originalAuthors":
         return Author.REMOTE.search(value);
 
-      case "country":
+      case "country": {
         const all = Object.values(COUNTRIES);
 
         const countries = value
@@ -823,6 +832,7 @@ const Publication: PublicationModule = {
           : all;
 
         return new Promise<Country[]>((resolve) => resolve(countries));
+      }
       default:
         return new Promise<[]>((resolve) => resolve([]));
     }
@@ -879,12 +889,12 @@ const Publication: PublicationModule = {
   },
 };
 
+export { COUNTRIES, Publication };
 export type {
-  PublicationKey,
-  PublicationKeyType,
   PublicationEntry,
   PublicationError,
   PublicationId,
+  PublicationKey,
+  PublicationKeyType,
   ValidationResult,
 };
-export { Publication, COUNTRIES };
