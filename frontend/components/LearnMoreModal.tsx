@@ -7,11 +7,11 @@ import { Modal, ModalProps } from "./Modal";
 const LearnMoreModal: FC<ModalProps> = ({ isOpen, onClose }) => {
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
-      <article className="relative flex gap-5 p-8 overflow-hidden">
-        <Logo className="absolute text-indigo-700 pointer-events-none opacity-20 -left-1/2 -top-96 aspect-square" />
-        <hr className="absolute inset-x-7 top-20" />
+      <article className="relative flex gap-5 p-8">
+        <Logo className="absolute z-50 text-indigo-700 pointer-events-none opacity-20 -left-1/2 -top-96 aspect-square" />
+        <hr className="absolute inset-x-7 top-[5.5rem]" />
         <section className="w-7/12 space-y-6">
-          <header className="py-2 text-2xl ">
+          <header className="sticky z-30 py-2 text-2xl bg-white top-4">
             <h1 className="whitespace-nowrap">
               About the
               <strong className="font-normal"> Richard Burton Platform</strong>
@@ -81,7 +81,7 @@ const LearnMoreModal: FC<ModalProps> = ({ isOpen, onClose }) => {
           </div>
         </section>
         <aside className="w-5/12 space-y-6">
-          <header className="px-1 py-2">
+          <header className="sticky z-30 px-1 py-2 bg-white top-4">
             <h2 className="text-lg">
               About<strong className="font-normal"> Richard Burton</strong>
             </h2>
