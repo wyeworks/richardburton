@@ -47,7 +47,15 @@ const Home: NextPage = () => {
         </div>
       }
       footer={
-        <div className="flex justify-between gap-2">
+        <div className="flex gap-2">
+          {count && (
+            <Tooltip info message="Learn more.">
+              <button className="flex items-center gap-1 px-2 text-sm text-white transition-colors bg-indigo-600 rounded shadow hover:bg-indigo-700">
+                <Counter value={count} />
+                <span>publications registered so far.</span>
+              </button>
+            </Tooltip>
+          )}
           {isAuthenticated ? (
             <div className="flex gap-2">
               <PublicationDownload />
@@ -65,14 +73,12 @@ const Home: NextPage = () => {
           ) : (
             <SignInButton />
           )}
-          {count && (
-            <Tooltip info message="Learn more.">
-              <button className="flex items-center gap-1 px-2 text-white transition-colors bg-indigo-600 rounded shadow hover:bg-indigo-700">
-                <Counter value={count} />
-                <span>publications registered so far.</span>
-              </button>
-            </Tooltip>
-          )}
+          <div className="ml-auto">
+            <Button
+              type="outline"
+              label="Learn more about the Richard Burton Platform here"
+            />
+          </div>
         </div>
       }
     />
