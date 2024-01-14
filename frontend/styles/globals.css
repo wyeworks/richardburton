@@ -12,6 +12,9 @@
   @apply h-screen text-gray-700;
 }
 
+body {
+ @apply h-screen overflow-hidden font-light text-gray-900 bg-gray-100 font-montserrat;
+}
 
 .hover-1 {
   --h: 1.2em;

@@ -1,4 +1,4 @@
-import { DocumentProps, Html, Head, Main, NextScript } from "next/document";
+import { DocumentProps, Head, Html, Main, NextScript } from "next/document";
 import { FC } from "react";
 
 const Document: FC<DocumentProps> = () => {
@@ -7,7 +7,7 @@ const Document: FC<DocumentProps> = () => {
       <Head>
         <link rel="shortcut icon" href="/favicon.ico" />
       </Head>
-      <body className="h-screen font-light text-gray-900 bg-gray-100 font-montserrat">
+      <body>
         <Main />
         <NextScript />
       </body>
