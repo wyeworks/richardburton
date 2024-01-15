@@ -16,6 +16,9 @@ const Document: FC<DocumentProps> = () => {
           content="Brazilian, Literature, Richard Burton, Translation, English"
         />
         <meta property="og:image" content={`${FILES_URL}/thumbnail.svg`} />
+        <meta property="og:url" content={`${FILES_URL}/thumbnail.svg`} />
+        <meta property="og:secure_url" content={`${FILES_URL}/thumbnail.svg`} />
+        <meta property="og:type" content="image/svg" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="627" />
       </Head>
