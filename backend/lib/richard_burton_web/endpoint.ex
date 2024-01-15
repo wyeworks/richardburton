@@ -20,7 +20,7 @@ defmodule RichardBurtonWeb.Endpoint do
     at: "/",
     from: :richard_burton,
     gzip: false,
-    only: ~w(assets fonts images favicon.ico robots.txt files)
+    only: ~w(assets fonts images favicon.ico robots.txt)
   )
 
   # Code reloading can be explicitly enabled under the
