@@ -29,8 +29,6 @@ function useModal(): ModalInterface {
 function useURLQueryModal(param: string): ModalInterface {
   const router = useRouter();
 
-  console.log(router);
-
   const { [param]: value, ...rest } = router.query;
 
   const open = useCallback(() => {
