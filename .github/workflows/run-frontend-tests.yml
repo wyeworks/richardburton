@@ -1,0 +1,12 @@
+name: Run frontend app tests
+on: push
+jobs:
+  Vitest:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: "frontend"
+    steps:
+      - uses: actions/checkout@v3
+      - run: npm ci
+      - run: npm run test

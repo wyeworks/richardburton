@@ -18,7 +18,8 @@
     "paths": {
       "app": ["pages/_app"]
     },
-    "downlevelIteration": true
+    "downlevelIteration": true,
+    "types": ["vitest/globals"]
   },
 
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
