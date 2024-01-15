@@ -1,13 +1,13 @@
-import "styles/globals.css";
-import type { AppProps } from "next/app";
-import { FC } from "react";
 import axios, { AxiosInstance } from "axios";
-import { RecoilRoot } from "recoil";
 import Notifications from "components/Notifications";
 import ClearSelection from "listeners/ClearSelection";
+import HTTP from "modules/http";
 import { Publication } from "modules/publication";
 import { getSession, SessionProvider } from "next-auth/react";
-import HTTP from "modules/http";
+import type { AppProps } from "next/app";
+import { FC } from "react";
+import { RecoilRoot } from "recoil";
+import "styles/globals.css";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 const FILES_URL = process.env.NEXT_PUBLIC_FILES_URL;
@@ -25,7 +25,7 @@ http.interceptors.request.use(async (config) => {
 });
 
 async function request<T = void>(
-  cb: (http: AxiosInstance) => Promise<T> | T,
+  cb: (http: AxiosInstance) => Promise<T> | T
 ): Promise<T> {
   try {
     const result = await cb(http);
@@ -72,6 +72,7 @@ enum Key {
   ARROW_DOWN = "ArrowDown",
   BACKSPACE = "Backspace",
   COMMA = ",",
+  ESCAPE = "Escape",
 }
 
 const App: FC<AppProps> = ({ Component, pageProps }) => {
@@ -87,4 +88,4 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
 };
 
 export default App;
-export { request, Key, http, FILES_URL };
+export { FILES_URL, http, Key, request };

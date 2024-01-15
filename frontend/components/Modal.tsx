@@ -1,4 +1,5 @@
 import { FloatingPortal } from "@floating-ui/react";
+import { Key } from "app";
 import { AnimatePresence, motion } from "framer-motion";
 import { useRouter } from "next/router";
 import {
@@ -8,6 +9,7 @@ import {
   useCallback,
   useState,
 } from "react";
+import { useHotkey } from "utils/useHotkey";
 
 interface ModalInterface {
   open: () => void;
@@ -26,6 +28,9 @@ function useModal(): ModalInterface {
 
 function useURLQueryModal(param: string): ModalInterface {
   const router = useRouter();
+
+  console.log(router);
+
   const { [param]: value, ...rest } = router.query;
 
   const open = useCallback(() => {
@@ -45,11 +50,13 @@ interface Props extends PropsWithChildren {
 }
 
 const Modal: FC<Props> = ({ children, isOpen, onClose }) => {
-  function handleOverlayClick(event: MouseEvent<HTMLDivElement>) {
+  function handleClose(event: KeyboardEvent | MouseEvent) {
     if (event.target === event.currentTarget) {
       onClose();
     }
   }
+
+  useHotkey(Key.ESCAPE, handleClose);
 
   return (
     <AnimatePresence>
@@ -57,8 +64,9 @@ const Modal: FC<Props> = ({ children, isOpen, onClose }) => {
         <FloatingPortal>
           <motion.div
             aria-modal="true"
+            aria-label="Close modal"
             className="fixed inset-0 z-50 bg-indigo-900/30"
-            onClick={handleOverlayClick}
+            onClick={handleClose}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
