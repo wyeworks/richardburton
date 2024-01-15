@@ -51,17 +51,6 @@ describe("Modal", () => {
 
     expect(onClose).not.toHaveBeenCalled();
   });
-
-  it("does not close when escape key is pressed in the dialog", () => {
-    const onClose = vi.fn();
-    render(<Modal isOpen={true} onClose={onClose} />);
-
-    fireEvent.keyDown(document.querySelector("[role=dialog]")!, {
-      key: Key.ESCAPE,
-    });
-
-    expect(onClose).not.toHaveBeenCalled();
-  });
 });
 
 describe("useModal", () => {

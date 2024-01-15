@@ -54,7 +54,7 @@ const Modal: FC<Props> = ({ children, isOpen, onClose }) => {
     }
   }
 
-  useHotkey(Key.ESCAPE, handleClose);
+  useHotkey(Key.ESCAPE, onClose);
 
   return (
     <AnimatePresence>
