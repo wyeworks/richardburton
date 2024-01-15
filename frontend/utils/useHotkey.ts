@@ -4,7 +4,7 @@ import { useEffect } from "react";
 isHotkey;
 function useHotkey(
   hotkey: string | string[],
-  handle: (event: KeyboardEvent) => void
+  handle: (event: KeyboardEvent) => void,
 ) {
   const hotkeys = Array.isArray(hotkey) ? hotkey : [hotkey];
 
