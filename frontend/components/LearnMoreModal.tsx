@@ -89,9 +89,10 @@ const LearnMoreModal: FC<ModalProps> = ({ isOpen, onClose }) => {
           <div className="space-y-4">
             <div className="relative w-1/2 aspect-[0.7] float-right m-1">
               <Image
+                fill
                 alt="Portrait of Sir Richard Burton"
                 src="/richard.jpg"
-                fill
+                sizes="(max-width: 300px)"
               />
             </div>
             <p>
@@ -108,30 +109,29 @@ const LearnMoreModal: FC<ModalProps> = ({ isOpen, onClose }) => {
               Isabel Burton&apos;s worshipful two volume Life, which contains
               one long and one short autobiographical fragment by Burton.
             </p>
-            <p>
-              <ol className="ml-5 space-y-2 list-disc">
-                <li>
-                  Read more about Richard Burton&apos;s life in{" "}
-                  <a
-                    href="https://burtoniana.org"
-                    target="__blank"
-                    className="anchor"
-                  >
-                    burtoniana.org
-                  </a>
-                </li>
-                <li>
-                  Browse books translated by Richard Burton{" "}
-                  <Link
-                    href={`/?search=Richard+Burton`}
-                    className="anchor"
-                    onClick={onClose}
-                  >
-                    here
-                  </Link>
-                </li>
-              </ol>
-            </p>
+
+            <ol className="ml-5 space-y-2 list-disc">
+              <li>
+                Read more about Richard Burton&apos;s life in{" "}
+                <a
+                  href="https://burtoniana.org"
+                  target="__blank"
+                  className="anchor"
+                >
+                  burtoniana.org
+                </a>
+              </li>
+              <li>
+                Browse books translated by Richard Burton{" "}
+                <Link
+                  href={`/?search=Richard+Burton`}
+                  className="anchor"
+                  onClick={onClose}
+                >
+                  here
+                </Link>
+              </li>
+            </ol>
           </div>
         </aside>
       </article>

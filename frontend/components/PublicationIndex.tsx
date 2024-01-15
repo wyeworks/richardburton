@@ -1,5 +1,6 @@
+import VisibilityOffIcon from "assets/visibility-off.svg";
 import c from "classnames";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { times } from "lodash";
 import {
   Publication,
@@ -8,16 +9,15 @@ import {
 } from "modules/publication";
 import {
   FC,
-  forwardRef,
   HTMLProps,
   MouseEvent,
   ReactNode,
+  forwardRef,
   useMemo,
   useRef,
 } from "react";
 import { mergeRefs } from "react-merge-refs";
 import useVisible from "utils/useVisible";
-import VisibilityOffIcon from "assets/visibility-off.svg";
 import Button from "./Button";
 import Tooltip from "./Tooltip";
 
@@ -42,14 +42,14 @@ const ColumnHeader: FC<{ colId: ColId; toggleable?: boolean }> = ({
     <AnimatePresence initial={false}>
       {isVisible && (
         <TableHeader
-          layout
+          layout={toggleable ? true : undefined}
           className="px-4 pb-4 text-left whitespace-nowrap"
           initial={{ width: 0 }}
           animate={{ width: "auto" }}
           exit={{ width: 0 }}
         >
           <TableHeaderContent
-            layout
+            layout={toggleable ? true : undefined}
             className="flex items-center justify-between gap-2"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -134,7 +134,7 @@ const Column: FC<{
             "px-2 py-1 text-sm truncate justify",
             "group-hover:bg-indigo-100",
             "error:group-hover:bg-red-100 error:focused:bg-red-100",
-            "selected:bg-amber-100 selected:focused:error:bg-amber-100",
+            "selected:bg-amber-100 selected:focused:error:bg-amber-100"
           )}
           data-selected={selected}
           data-selectable={selectable}
@@ -167,7 +167,7 @@ type RowProps = Omit<HTMLTableRowProps, "ref"> & {
 
 const Row = forwardRef<HTMLTableRowElement, RowProps>(function Row(
   { rowId, Column, Content, SignalColumn, className, onClick, ...props },
-  ref,
+  ref
 ) {
   const clickable = Boolean(onClick);
 
@@ -175,7 +175,7 @@ const Row = forwardRef<HTMLTableRowElement, RowProps>(function Row(
 
   const compositeRef = useMemo(
     () => mergeRefs([ref, innerRef]),
-    [ref, innerRef],
+    [ref, innerRef]
   );
 
   const visible = useVisible(innerRef);
@@ -227,7 +227,7 @@ const SignalColumn: FC<{
         "sticky left-0 flex items-center justify-center h-full px-2 truncate bg-gray-100",
         "group-hover:bg-indigo-100",
         "error:group-hover:bg-red-100 error:focused:bg-red-100",
-        "selected:bg-amber-100 selected:focused:error:bg-amber-100",
+        "selected:bg-amber-100 selected:focused:error:bg-amber-100"
       )}
       data-selected={selected}
       data-selectable={selectable}
@@ -318,5 +318,5 @@ const PublicationIndex: FC<Props> = ({
 };
 
 export default PublicationIndex;
-export type { RowId, RowProps, ColId };
-export { Row, Column, ColumnHeader, Content, SignalColumn };
+export { Column, ColumnHeader, Content, Row, SignalColumn };
+export type { ColId, RowId, RowProps };
