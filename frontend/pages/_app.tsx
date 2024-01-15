@@ -25,7 +25,7 @@ http.interceptors.request.use(async (config) => {
 });
 
 async function request<T = void>(
-  cb: (http: AxiosInstance) => Promise<T> | T,
+  cb: (http: AxiosInstance) => Promise<T> | T
 ): Promise<T> {
   try {
     const result = await cb(http);
@@ -88,4 +88,4 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
 };
 
 export default App;
-export { FILES_URL, http, Key, request };
+export { API_URL, FILES_URL, http, Key, request };
