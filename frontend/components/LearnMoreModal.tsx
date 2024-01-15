@@ -7,9 +7,9 @@ import { Modal, ModalProps } from "./Modal";
 const LearnMoreModal: FC<ModalProps> = ({ isOpen, onClose }) => {
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
-      <article className="relative flex gap-5 p-8">
+      <article className="relative flex gap-5 p-8 overflow-hidden">
         <Logo className="absolute z-50 text-indigo-700 pointer-events-none opacity-20 -left-1/2 -top-96 aspect-square" />
-        <hr className="absolute inset-x-7 top-[5.5rem]" />
+        <hr className="absolute inset-x-7 top-[5.5rem] z-40" />
         <section className="w-7/12 space-y-6">
           <header className="sticky z-30 py-2 text-2xl bg-white top-4">
             <h1 className="whitespace-nowrap">
@@ -104,7 +104,7 @@ const LearnMoreModal: FC<ModalProps> = ({ isOpen, onClose }) => {
             </p>
             <p>
               Burton has been the subject of a dozen or more biographies,
-              several of which are available here in full, foundd on his wife
+              several of which are available here in full, founded on his wife
               Isabel Burton&apos;s worshipful two volume Life, which contains
               one long and one short autobiographical fragment by Burton.
             </p>
