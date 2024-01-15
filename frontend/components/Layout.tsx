@@ -56,3 +56,4 @@ const Layout: FC<Props> = ({
 };
 
 export default Layout;
+export { SUBHEADING_TEXT };
