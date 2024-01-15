@@ -3,7 +3,7 @@ import Button from "components/Button";
 import { Counter } from "components/Counter";
 import Layout from "components/Layout";
 import { LearnMoreModal } from "components/LearnMoreModal";
-import { useModal } from "components/Modal";
+import { useURLQueryModal } from "components/Modal";
 import PublicationDownload from "components/PublicationDownload";
 import PublicationHiddenAttributes from "components/PublicationHiddenAttributes";
 import PublicationIndex from "components/PublicationIndex";
@@ -23,21 +23,21 @@ import { useEffect } from "react";
 const Home: NextPage = () => {
   const index = Publication.REMOTE.useIndex();
   const reset = Publication.STORE.useResetAll();
-  const router = useRouter();
   const isAuthenticated = User.useIsAuthenticated();
-
   const count = Publication.STORE.useIndexCount();
+  const learnMoreModal = useURLQueryModal("learn-more");
 
-  const learnMoreModal = useModal();
+  const router = useRouter();
+  const { search } = router.query;
+  const { isReady } = router;
 
   useEffect(() => reset(), [reset]);
 
   useEffect(() => {
-    const { search } = router.query;
-    if (router.isReady) {
+    if (isReady) {
       index({ search: isString(search) ? search : undefined });
     }
-  }, [reset, index, router]);
+  }, [reset, index, search, isReady]);
 
   return (
     <>

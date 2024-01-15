@@ -1,5 +1,6 @@
 import { FloatingPortal } from "@floating-ui/react";
 import { AnimatePresence, motion } from "framer-motion";
+import { useRouter } from "next/router";
 import {
   FC,
   MouseEvent,
@@ -21,6 +22,21 @@ function useModal(): ModalInterface {
   const close = useCallback(() => setIsOpen(false), []);
 
   return { isOpen, open, close };
+}
+
+function useURLQueryModal(param: string): ModalInterface {
+  const router = useRouter();
+  const { [param]: value, ...rest } = router.query;
+
+  const open = useCallback(() => {
+    router.replace({ query: { ...rest, [param]: true } });
+  }, [router, param, rest]);
+
+  const close = useCallback(() => {
+    router.replace({ query: rest });
+  }, [router, rest]);
+
+  return { isOpen: Boolean(value), open, close };
 }
 
 interface Props extends PropsWithChildren {
@@ -63,5 +79,5 @@ const Modal: FC<Props> = ({ children, isOpen, onClose }) => {
   );
 };
 
-export { Modal, useModal };
+export { Modal, useModal, useURLQueryModal };
 export type { Props as ModalProps };
