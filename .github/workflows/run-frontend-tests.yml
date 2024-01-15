@@ -1,7 +1,7 @@
 name: Run frontend app tests
 on: push
 jobs:
-  ESLint:
+  Vitest:
     runs-on: ubuntu-latest
     defaults:
       run:
