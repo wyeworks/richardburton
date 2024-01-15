@@ -7,7 +7,7 @@ import { Modal, ModalProps } from "./Modal";
 const LearnMoreModal: FC<ModalProps> = ({ isOpen, onClose }) => {
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
-      <article className="relative flex gap-5 p-8 overflow-hidden">
+      <article className="relative flex gap-5 p-8 overflow-clip">
         <Logo className="absolute z-50 text-indigo-700 pointer-events-none opacity-20 -left-1/2 -top-96 aspect-square" />
         <hr className="absolute inset-x-7 top-[5.5rem] z-40" />
         <section className="w-7/12 space-y-6">
@@ -87,7 +87,7 @@ const LearnMoreModal: FC<ModalProps> = ({ isOpen, onClose }) => {
             </h2>
           </header>
           <div className="space-y-4">
-            <div className="relative w-1/2 aspect-[0.7] float-right m-1">
+            <div className="relative w-1/2 aspect-[0.7] float-right m-1 ml-4">
               <Image
                 fill
                 alt="Portrait of Sir Richard Burton"
@@ -96,18 +96,20 @@ const LearnMoreModal: FC<ModalProps> = ({ isOpen, onClose }) => {
               />
             </div>
             <p>
-              Soldier, explorer, linguist, ethnologist, and controversialist.
-              Mostly self-educated,
-              <em className="italic font-normal"> Richard Burton</em> mastered
-              half a dozen Eastern languages after joining the Army of the East
-              India Company in 1842, and is deemed the first translator of a
-              Brazilian literature book.
-            </p>
-            <p>
-              Burton has been the subject of a dozen or more biographies,
-              several of which are available here in full, founded on his wife
-              Isabel Burton&apos;s worshipful two volume Life, which contains
-              one long and one short autobiographical fragment by Burton.
+              According to{" "}
+              <a
+                className="anchor"
+                target="__blank"
+                href="https://burtoniana.org"
+              >
+                Burtoniana (2024)
+              </a>
+              , Richard Burton was a soldier, explorer, linguist, ethnologist,
+              and controversialist. Mostly self-educated, he mastered half a
+              dozen Eastern languages after joining the Army of the East India
+              Company in 1842, and is deemed the first translator of a Brazilian
+              literature book, together with his wife Isabel Burton:
+              &quot;Iracema, The Honey-lips: A legend of Brazil&quot; (1886).
             </p>
 
             <ol className="ml-5 space-y-2 list-disc">
