@@ -1,7 +1,7 @@
 import { FC } from "react";
 import Button from "./Button";
 import { Counter } from "./Counter";
-import { LearnMoreModal } from "./LearnMoreModal";
+import { LEARN_MORE_MODAL_KEY } from "./LearnMoreModal";
 import { useURLQueryModal } from "./Modal";
 import Tooltip from "./Tooltip";
 
@@ -10,23 +10,20 @@ interface Props {
 }
 
 const IndexCounter: FC<Props> = ({ count }) => {
-  const modal = useURLQueryModal("learn-more");
+  const modal = useURLQueryModal(LEARN_MORE_MODAL_KEY);
 
   return (
-    <>
-      {count && (
-        <Tooltip info message="Learn more">
-          <Button
-            label="publications registered so far"
-            aria-label={`${count} publications registered so far`}
-            onClick={modal.open}
-            Icon={<Counter value={count} />}
-            width="fit"
-          />
-        </Tooltip>
-      )}
-      <LearnMoreModal isOpen={modal.isOpen} onClose={modal.close} />
-    </>
+    count && (
+      <Tooltip info message="Learn more">
+        <Button
+          label="publications registered so far"
+          aria-label={`${count} publications registered so far`}
+          onClick={() => modal.open()}
+          Icon={<Counter value={count} />}
+          width="fit"
+        />
+      </Tooltip>
+    )
   );
 };
 

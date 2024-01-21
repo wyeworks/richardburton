@@ -143,13 +143,30 @@ describe("useURLQueryModal", () => {
     expect(result.current.isOpen).toBe(true);
   });
 
-  test("the open function is idempotent", () => {
+  test("the open function is idempotent relative to isOpen", () => {
     const { result } = renderHook(() => useURLQueryModal("modal"));
 
     act(() => result.current.open());
     act(() => result.current.open());
 
     expect(result.current.isOpen).toBe(true);
+  });
+
+  test("the open function sets the value", () => {
+    const { result } = renderHook(() => useURLQueryModal("modal"));
+
+    act(() => result.current.open("value"));
+
+    expect(result.current.value).toBe("value");
+  });
+
+  test("the open function is idempotent relative to the value", () => {
+    const { result } = renderHook(() => useURLQueryModal("modal"));
+
+    act(() => result.current.open("value"));
+    act(() => result.current.open("value"));
+
+    expect(result.current.value).toBe("value");
   });
 
   it("returns a close function", () => {
@@ -166,7 +183,7 @@ describe("useURLQueryModal", () => {
     expect(result.current.isOpen).toBe(false);
   });
 
-  test("the close function is idempotent", () => {
+  test("the close function is idempotent realtive to isOpen", () => {
     const { result } = renderHook(() => useURLQueryModal("modal"));
 
     act(() => result.current.open());
@@ -174,5 +191,24 @@ describe("useURLQueryModal", () => {
     act(() => result.current.close());
 
     expect(result.current.isOpen).toBe(false);
+  });
+
+  test("the close function sets the value to undefined", () => {
+    const { result } = renderHook(() => useURLQueryModal("modal"));
+
+    act(() => result.current.open("value"));
+    act(() => result.current.close());
+
+    expect(result.current.value).toBeUndefined();
+  });
+
+  test("the close function is idempotent relative to the value", () => {
+    const { result } = renderHook(() => useURLQueryModal("modal"));
+
+    act(() => result.current.open("value"));
+    act(() => result.current.close());
+    act(() => result.current.close());
+
+    expect(result.current.value).toBeUndefined();
   });
 });

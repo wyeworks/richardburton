@@ -12,7 +12,7 @@ import {
 import { useHotkey } from "utils/useHotkey";
 
 interface ModalInterface {
-  open: () => void;
+  open: (value?: string) => void;
   close: () => void;
   isOpen: boolean;
 }
@@ -26,20 +26,27 @@ function useModal(): ModalInterface {
   return { isOpen, open, close };
 }
 
-function useURLQueryModal(param: string): ModalInterface {
+interface URLModalInterface extends ModalInterface {
+  value?: string | string[];
+}
+
+function useURLQueryModal(param: string): URLModalInterface {
   const router = useRouter();
 
   const { [param]: value, ...rest } = router.query;
 
-  const open = useCallback(() => {
-    router.replace({ query: { ...rest, [param]: true } });
-  }, [router, param, rest]);
+  const open = useCallback(
+    (value: string = "true") => {
+      router.replace({ query: { ...rest, [param]: value } });
+    },
+    [router, param, rest],
+  );
 
   const close = useCallback(() => {
     router.replace({ query: rest });
   }, [router, rest]);
 
-  return { isOpen: Boolean(value), open, close };
+  return { isOpen: Boolean(value), value, open, close };
 }
 
 interface Props extends PropsWithChildren {
@@ -69,7 +76,8 @@ const Modal: FC<Props> = ({ children, isOpen, onClose }) => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
           >
-            <motion.div
+            <motion.dialog
+              open
               role="dialog"
               className="absolute w-11/12 lg:w-2/3 xl:w-1/2 max-h-[85%] max-lg:h-[80%] min-h-0 mb-5 bg-white rounded-lg shadow-lg left-1/2 absolute-center-x overflow-y-scroll overflow-x-clip scrollbar-thin scrollbar-thumb-indigo-600"
               initial={{ scale: 0.9, transform: "translateX(-50%)" }}
@@ -77,7 +85,7 @@ const Modal: FC<Props> = ({ children, isOpen, onClose }) => {
               exit={{ scale: 0.9, top: 0 }}
             >
               {children}
-            </motion.div>
+            </motion.dialog>
           </motion.div>
         </FloatingPortal>
       )}

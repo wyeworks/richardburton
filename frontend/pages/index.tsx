@@ -3,9 +3,15 @@ import Button from "components/Button";
 import { IndexCounter } from "components/IndexCounter";
 import Layout from "components/Layout";
 import { LearnMoreButton } from "components/LearnMoreButton";
+import { LearnMoreModal } from "components/LearnMoreModal";
+import { useURLQueryModal } from "components/Modal";
 import PublicationDownload from "components/PublicationDownload";
 import PublicationHiddenAttributes from "components/PublicationHiddenAttributes";
 import PublicationIndex from "components/PublicationIndex";
+import {
+  PUBLICATION_MODAL_KEY,
+  PublicationModal,
+} from "components/PublicationModal";
 import PublicationSearch from "components/PublicationSearch";
 import SignInButton from "components/SignInButton";
 import SignOutButton from "components/SignOutButton";
@@ -36,10 +42,21 @@ const Home: NextPage = () => {
     }
   }, [reset, index, search, isReady]);
 
+  const modal = useURLQueryModal(PUBLICATION_MODAL_KEY);
+
+  function handleRowClick(id: number) {
+    return () => modal.open(`${id}`);
+  }
+
   return (
     <Layout
       title="Richard Burton"
-      content={<PublicationIndex />}
+      content={
+        <>
+          <PublicationIndex onRowClick={handleRowClick} />
+          <PublicationModal />
+        </>
+      }
       leftAside={<PublicationHiddenAttributes />}
       subheader={
         <div className="flex flex-col space-y-2">
@@ -69,6 +86,7 @@ const Home: NextPage = () => {
           )}
           <div className="ml-auto">
             <LearnMoreButton />
+            <LearnMoreModal />
           </div>
         </div>
       }

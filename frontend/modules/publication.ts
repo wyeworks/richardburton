@@ -11,6 +11,7 @@ import {
   Snapshot,
   atom,
   atomFamily,
+  constSelector,
   selector,
   selectorFamily,
   useRecoilCallback,
@@ -254,6 +255,15 @@ const FOCUSED_ROW_ID = atom<number | undefined>({
   default: undefined,
 });
 
+const PUBLICATION = selectorFamily<Publication, PublicationId>({
+  key: "publication",
+  get(id) {
+    return function ({ get }) {
+      return get(PUBLICATIONS(id)) || null;
+    };
+  },
+});
+
 const ERROR_MESSAGES: Record<string, string> = {
   conflict: "A publication with this data already exists",
   required: "This field is required and cannot be blank",
@@ -302,6 +312,7 @@ interface PublicationModule {
 
     useKeywords(): string[] | undefined;
     useIndexCount(): number | null;
+    usePublication(id: PublicationId | undefined): Publication | null;
 
     from: (snapshot: Snapshot) => {
       getVisibleIds(): PublicationId[] | undefined;
@@ -587,6 +598,12 @@ const Publication: PublicationModule = {
 
     useIndexCount() {
       return useRecoilValue(TOTAL_INDEX_COUNT);
+    },
+
+    usePublication(id) {
+      return useRecoilValue(
+        id !== undefined ? PUBLICATION(id) : constSelector(null),
+      );
     },
 
     from: (snapshot) => ({
