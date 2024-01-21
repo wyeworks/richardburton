@@ -1,9 +1,10 @@
 import { FC } from "react";
 import Button from "./Button";
+import { LEARN_MORE_MODAL_KEY } from "./LearnMoreModal";
 import { useURLQueryModal } from "./Modal";
 
 const LearnMoreButton: FC = () => {
-  const modal = useURLQueryModal("learn-more");
+  const modal = useURLQueryModal(LEARN_MORE_MODAL_KEY);
 
   return (
     <Button
