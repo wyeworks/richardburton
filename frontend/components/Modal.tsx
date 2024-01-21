@@ -12,7 +12,7 @@ import {
 import { useHotkey } from "utils/useHotkey";
 
 interface ModalInterface {
-  open: () => void;
+  open: (value?: string) => void;
   close: () => void;
   isOpen: boolean;
 }
@@ -26,20 +26,27 @@ function useModal(): ModalInterface {
   return { isOpen, open, close };
 }
 
-function useURLQueryModal(param: string): ModalInterface {
+interface URLModalInterface extends ModalInterface {
+  value?: string | string[];
+}
+
+function useURLQueryModal(param: string): URLModalInterface {
   const router = useRouter();
 
   const { [param]: value, ...rest } = router.query;
 
-  const open = useCallback(() => {
-    router.replace({ query: { ...rest, [param]: true } });
-  }, [router, param, rest]);
+  const open = useCallback(
+    (value: string = "true") => {
+      router.replace({ query: { ...rest, [param]: value } });
+    },
+    [router, param, rest]
+  );
 
   const close = useCallback(() => {
     router.replace({ query: rest });
   }, [router, rest]);
 
-  return { isOpen: Boolean(value), open, close };
+  return { isOpen: Boolean(value), value, open, close };
 }
 
 interface Props extends PropsWithChildren {

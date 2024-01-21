@@ -19,7 +19,7 @@ const IndexCounter: FC<Props> = ({ count }) => {
           <Button
             label="publications registered so far"
             aria-label={`${count} publications registered so far`}
-            onClick={modal.open}
+            onClick={() => modal.open()}
             Icon={<Counter value={count} />}
             width="fit"
           />

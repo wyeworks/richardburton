@@ -9,7 +9,7 @@ const LearnMoreButton: FC = () => {
     <Button
       type="outline"
       label="Learn more about the Richard Burton Platform here"
-      onClick={modal.open}
+      onClick={() => modal.open()}
     />
   );
 };
