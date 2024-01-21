@@ -114,7 +114,7 @@ const LearnMoreModal: FC<ModalProps> = ({ isOpen, onClose }) => {
 
             <ol className="ml-5 space-y-2 list-disc">
               <li>
-                Read more about Richard Burton&apos;s life in{" "}
+                Read more about Richard Burton&apos;s life at{" "}
                 <a
                   href="https://burtoniana.org"
                   target="__blank"
