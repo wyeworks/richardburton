@@ -239,7 +239,7 @@ const SignalColumn: FC<{
   );
 };
 
-type Props = {
+interface Props {
   ExtendedRow?: FC<RowProps>;
   ExtendedColumn?: typeof Column;
   ExtendedColumnHeader?: typeof ColumnHeader;
@@ -248,8 +248,8 @@ type Props = {
   ExtraRow?: FC;
 
   onRowClick?: (id: RowId) => (event: MouseEvent) => void;
-  className?: string;
-};
+  selectable?: boolean;
+}
 
 const PublicationIndex: FC<Props> = ({
   ExtendedRow = Row,
@@ -259,12 +259,14 @@ const PublicationIndex: FC<Props> = ({
   ExtendedSignalColumn,
   ExtraRow,
   onRowClick,
-  className,
+  selectable = true,
 }) => {
   const ids = Publication.STORE.useVisibleIds();
 
   return ids && (ids.length > 0 || ExtraRow) ? (
-    <table className={c(className, "h-fit w-full table-fixed")}>
+    <table
+      className={c("h-fit w-full table-fixed", { "select-none": !selectable })}
+    >
       <thead className="sticky top-0 z-10 bg-gray-100">
         <tr>
           {ExtendedSignalColumn && <th className="w-10" />}
@@ -320,4 +322,3 @@ const PublicationIndex: FC<Props> = ({
 export default PublicationIndex;
 export { Column, ColumnHeader, Content, Row, SignalColumn };
 export type { ColId, RowId, RowProps };
-

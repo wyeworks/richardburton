@@ -1,19 +1,6 @@
-import c from "classnames";
-import { Publication } from "modules/publication";
-import {
-  FC,
-  KeyboardEventHandler,
-  MouseEvent,
-  useCallback,
-  useEffect,
-  useRef,
-} from "react";
-import Tooltip from "./Tooltip";
-import {
-  useIsSelected,
-  useIsSelectionEmpty,
-  useSelectionEvent,
-} from "react-selection-manager";
+import { Key } from "app";
+import AddCircleIcon from "assets/add-circle.svg";
+import ErrorIcon from "assets/error.svg";
 import PublicationIndex, {
   Column,
   ColumnHeader,
@@ -24,10 +11,22 @@ import PublicationIndex, {
   SignalColumn,
 } from "components/PublicationIndex";
 import { isElement } from "lodash";
-import { Key } from "app";
-import AddCircleIcon from "assets/add-circle.svg";
-import ErrorIcon from "assets/error.svg";
+import { Publication } from "modules/publication";
+import {
+  FC,
+  KeyboardEventHandler,
+  MouseEvent,
+  useCallback,
+  useEffect,
+  useRef,
+} from "react";
+import {
+  useIsSelected,
+  useIsSelectionEmpty,
+  useSelectionEvent,
+} from "react-selection-manager";
 import DataInput from "./DataInput";
+import Tooltip from "./Tooltip";
 
 const ExtendedColumn: typeof Column = (props) => {
   const { useIsValid, useIsFocused } = Publication.STORE;
@@ -200,7 +199,6 @@ const PublicationReview: FC = () => {
 
   return (
     <PublicationIndex
-      className={c(!isSelectionEmpty && "select-none")}
       ExtendedRow={ExtendedRow}
       ExtendedColumn={ExtendedColumn}
       ExtendedColumnHeader={ExtendedColumnHeader}
@@ -208,6 +206,7 @@ const PublicationReview: FC = () => {
       ExtendedSignalColumn={ExtendedSignalColumn}
       ExtraRow={NewPublicationRow}
       onRowClick={toggleSelection}
+      selectable={isSelectionEmpty}
     />
   );
 };
