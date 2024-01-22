@@ -118,7 +118,8 @@ const AboutRichardBurtonPlatform: FC = () => (
 
 const LearnMoreHeading: FC = () => (
   <div className="font-light">
-    About the <strong className="font-normal">Richard Burton Platform</strong>
+    About the <br className="sm:hidden" />
+    <strong className="font-normal">Richard Burton Platform</strong>
   </div>
 );
 
