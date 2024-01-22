@@ -79,7 +79,7 @@ const Modal: FC<Props> = ({ children, isOpen, onClose }) => {
             <motion.dialog
               open
               role="dialog"
-              className="absolute w-11/12 lg:w-2/3 xl:w-1/2 max-h-[85%] max-lg:h-[80%] min-h-0 mb-5 bg-white rounded-lg shadow-lg left-1/2 absolute-center-x overflow-y-scroll overflow-x-clip scrollbar-thin scrollbar-thumb-indigo-600"
+              className="absolute w-11/12 lg:w-2/3 xl:w-1/2 max-h-[85%] lg:max-h-[80%] min-h-0 mb-5 bg-white rounded-lg shadow-lg left-1/2 absolute-center-x overflow-y-scroll overflow-x-clip scrollbar-thin scrollbar-thumb-indigo-600"
               initial={{ scale: 0.9, transform: "translateX(-50%)" }}
               animate={{ scale: 1, top: "12%", transform: "translateX(-50%)" }}
               exit={{ scale: 0.9, top: 0 }}

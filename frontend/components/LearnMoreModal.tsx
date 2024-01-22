@@ -13,11 +13,12 @@ const AboutRichardBurton: FC = () => {
     <div className="space-y-6">
       <header className="sticky z-30 px-1 py-2 bg-white top-4">
         <h2 className="text-lg">
-          About<strong className="font-normal"> Richard Burton</strong>
+          About
+          <strong className="font-normal"> Richard Burton</strong>
         </h2>
       </header>
       <div className="space-y-4">
-        <div className="relative w-1/2 aspect-[0.7] float-right m-1 ml-4">
+        <div className="relative sm:w-1/2 aspect-[0.7] sm:float-right m-1 sm:ml-4">
           <Image
             fill
             alt="Portrait of Sir Richard Burton"
@@ -116,7 +117,7 @@ const AboutRichardBurtonPlatform: FC = () => (
 );
 
 const LearnMoreHeading: FC = () => (
-  <div className="whitespace-nowrap">
+  <div className="font-light">
     About the <strong className="font-normal">Richard Burton Platform</strong>
   </div>
 );
@@ -130,6 +131,7 @@ const LearnMoreModal: FC = () => {
         heading={<LearnMoreHeading />}
         content={<AboutRichardBurtonPlatform />}
         aside={<AboutRichardBurton />}
+        noSeparator
       />
     </Modal>
   );

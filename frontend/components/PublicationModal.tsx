@@ -30,12 +30,14 @@ const Searchable: FC<{ label: string; value?: string }> = ({
 const PublicationHeading: FC<{ publication: Publication }> = ({
   publication,
 }) => (
-  <div className="flex items-center gap-2 text-2xl font-normal">
+  <div className="flex flex-col w-full text-2xl font-normal sm:gap-2 sm:items-center sm:flex-row">
     <Tooltip info message="Translation's title">
-      <span>{publication.title}</span>
+      <span className="w-full truncate sm:w-min whitespace-nowrap">
+        {publication.title}
+      </span>
     </Tooltip>
     <Tooltip info message="Who translated this publication">
-      <span className="text-xl font-light tracking-tighter text-indigo-500">
+      <span className="text-lg font-light tracking-tighter text-indigo-500 sm:text-xl">
         ({publication.authors})
       </span>
     </Tooltip>
