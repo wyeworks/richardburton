@@ -1,7 +1,6 @@
 import VisibilityOffIcon from "assets/visibility-off.svg";
 import c from "classnames";
 import { AnimatePresence, motion } from "framer-motion";
-import { times } from "lodash";
 import {
   Publication,
   PublicationId,
@@ -19,6 +18,8 @@ import {
 import { mergeRefs } from "react-merge-refs";
 import useVisible from "utils/useVisible";
 import Button from "./Button";
+import { EmptySearchResults } from "./EmptySearchResults";
+import { ListSkeleton } from "./ListSkeleton";
 import Tooltip from "./Tooltip";
 
 type RowId = PublicationId;
@@ -251,7 +252,7 @@ interface Props {
   selectable?: boolean;
 }
 
-const PublicationIndex: FC<Props> = ({
+const PublicationIndexTable: FC<Props> = ({
   ExtendedRow = Row,
   ExtendedColumn = Column,
   ExtendedColumnHeader = ColumnHeader,
@@ -294,31 +295,18 @@ const PublicationIndex: FC<Props> = ({
       </tbody>
     </table>
   ) : ids ? (
-    <div className="flex items-center justify-center w-full h-full">
-      <div className="flex flex-col items-center justify-center pb-32 group">
-        <div className="h-56 m-8 border-2 border-gray-300 rounded-2xl aspect-square group-hover:border-indigo-200" />
-        <span className="text-xl text-gray-300 group-hover:text-indigo-200">
-          No results found, try another query.
-        </span>
-      </div>
-    </div>
+    <EmptySearchResults />
   ) : (
-    <ul
-      className="w-full space-y-2 animate-pulse"
-      aria-label="Loading"
-      role="presentation"
-    >
-      {times(12, (index) => (
-        <li
-          key={index}
-          className="w-full h-8 bg-gray-200 rounded hover:bg-indigo-100"
-          style={{ opacity: index > 7 ? 1 - (2 * (index - 6)) / 12 : 1 }}
-        />
-      ))}
-    </ul>
+    <ListSkeleton rows={12} />
   );
 };
 
-export default PublicationIndex;
-export { Column, ColumnHeader, Content, Row, SignalColumn };
+export {
+  Column,
+  ColumnHeader,
+  Content,
+  PublicationIndexTable,
+  Row,
+  SignalColumn,
+};
 export type { ColId, RowId, RowProps };

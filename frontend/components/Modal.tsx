@@ -80,7 +80,7 @@ const Modal: FC<Props> = ({ children, isOpen, onClose }) => {
 
   useHotkey(Key.ESCAPE, onClose);
 
-  const isMoreThanSmall = useMediaQuery({ query: "(min-width: 640px)" });
+  const isWiderThanSmall = useMediaQuery({ query: "(min-width: 640px)" });
 
   return (
     <AnimatePresence>
@@ -109,7 +109,7 @@ const Modal: FC<Props> = ({ children, isOpen, onClose }) => {
               initial={{ scale: 0.9, transform: "translateX(-50%)" }}
               animate={{
                 scale: 1,
-                top: isMoreThanSmall ? "12%" : "0",
+                top: isWiderThanSmall ? "12%" : "0",
                 transform: "translateX(-50%)",
               }}
               exit={{ scale: 0.9, top: 0 }}

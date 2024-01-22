@@ -1,15 +1,16 @@
 import { Key } from "app";
 import AddCircleIcon from "assets/add-circle.svg";
 import ErrorIcon from "assets/error.svg";
-import PublicationIndex, {
+import {
   Column,
   ColumnHeader,
   Content,
+  PublicationIndexTable,
   Row,
   RowId,
   RowProps,
   SignalColumn,
-} from "components/PublicationIndex";
+} from "components/PublicationIndexTable";
 import { isElement } from "lodash";
 import { Publication } from "modules/publication";
 import {
@@ -198,7 +199,7 @@ const PublicationReview: FC = () => {
     });
 
   return (
-    <PublicationIndex
+    <PublicationIndexTable
       ExtendedRow={ExtendedRow}
       ExtendedColumn={ExtendedColumn}
       ExtendedColumnHeader={ExtendedColumnHeader}

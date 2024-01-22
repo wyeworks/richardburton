@@ -7,7 +7,8 @@ import { LearnMoreModal } from "components/LearnMoreModal";
 import { useURLQueryModal } from "components/Modal";
 import PublicationDownload from "components/PublicationDownload";
 import PublicationHiddenAttributes from "components/PublicationHiddenAttributes";
-import PublicationIndex from "components/PublicationIndex";
+import { PublicationIndexList } from "components/PublicationIndexList";
+import { PublicationIndexTable } from "components/PublicationIndexTable";
 import {
   PUBLICATION_MODAL_KEY,
   PublicationModal,
@@ -53,14 +54,21 @@ const Home: NextPage = () => {
       title="Richard Burton"
       content={
         <>
-          <PublicationIndex onRowClick={handleRowClick} />
+          <div className="hidden sm:block">
+            <PublicationIndexTable onRowClick={handleRowClick} />
+          </div>
+          <div className="sm:hidden">
+            <PublicationIndexList onItemClick={handleRowClick} />
+          </div>
           <PublicationModal />
         </>
       }
       leftAside={<PublicationHiddenAttributes />}
       subheader={
         <div className="flex flex-col space-y-2">
-          <StrikeHeading label="Browse data about Brazilian literary books translated to English" />
+          <div className="hidden sm:contents">
+            <StrikeHeading label="Browse data about Brazilian literary books translated to English" />
+          </div>
           <PublicationSearch />
         </div>
       }
