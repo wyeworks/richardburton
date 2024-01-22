@@ -12,6 +12,7 @@ const PublicationItem: FC<{ id: number }> = ({ id }) => {
         <div className="p-2 space-y-4">
           <div>
             <span className="font-normal">{publication.title}</span>
+            <br className="sm:hidden" />
             <span className="whitespace-nowrap"> ({publication.authors})</span>
           </div>
           <div className="text-sm text-indigo-600">
