@@ -1,5 +1,8 @@
 import { FloatingPortal } from "@floating-ui/react";
 import { Key } from "app";
+import CloseIcon from "assets/close.svg";
+import Logo from "assets/logo.svg";
+import clsx from "classnames";
 import { AnimatePresence, motion } from "framer-motion";
 import { useRouter } from "next/router";
 import {
@@ -9,6 +12,7 @@ import {
   useCallback,
   useState,
 } from "react";
+import { useMediaQuery } from "react-responsive";
 import { useHotkey } from "utils/useHotkey";
 
 interface ModalInterface {
@@ -49,19 +53,34 @@ function useURLQueryModal(param: string): URLModalInterface {
   return { isOpen: Boolean(value), value, open, close };
 }
 
+const Header: FC<{ onClose: Props["onClose"] }> = ({ onClose }) => (
+  <header className="sticky top-0 z-50 flex items-center justify-between text-white bg-indigo-700 sm:hidden">
+    <Logo className="p-2 h-11" />
+    <span className="font-normal">Richard Burton Platform</span>
+    <button
+      className="z-50 flex items-center justify-center h-11 aspect-square"
+      onClick={onClose}
+    >
+      <CloseIcon className="h-8" />
+    </button>
+  </header>
+);
+
 interface Props extends PropsWithChildren {
   isOpen: boolean;
   onClose: () => void;
 }
 
 const Modal: FC<Props> = ({ children, isOpen, onClose }) => {
-  function handleClose(event: KeyboardEvent | MouseEvent) {
+  function handleOverlayClick(event: KeyboardEvent | MouseEvent) {
     if (event.target === event.currentTarget) {
       onClose();
     }
   }
 
   useHotkey(Key.ESCAPE, onClose);
+
+  const isMoreThanSmall = useMediaQuery({ query: "(min-width: 640px)" });
 
   return (
     <AnimatePresence>
@@ -71,17 +90,28 @@ const Modal: FC<Props> = ({ children, isOpen, onClose }) => {
             aria-modal="true"
             aria-label="Close modal"
             className="fixed inset-0 z-50 bg-indigo-900/30"
-            onClick={handleClose}
+            onClick={handleOverlayClick}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
           >
+            <Header onClose={onClose} />
             <motion.dialog
               open
               role="dialog"
-              className="absolute w-11/12 lg:w-2/3 xl:w-1/2 max-h-[85%] lg:max-h-[80%] min-h-0 mb-5 bg-white rounded-lg shadow-lg left-1/2 absolute-center-x overflow-y-scroll overflow-x-clip scrollbar-thin scrollbar-thumb-indigo-600"
+              className={clsx(
+                "mb-5 bg-white sm:rounded-lg shadow-lg scrollbar-thin scrollbar-thumb-indigo-600",
+                "overflow-y-scroll overflow-x-clip",
+                "absolute left-1/2 absolute-center-x",
+                "w-full sm:w-11/12 lg:w-2/3 xl:w-1/2",
+                "h-full sm:h-auto sm:max-h-[85%] lg:max-h-[80%] min-h-0",
+              )}
               initial={{ scale: 0.9, transform: "translateX(-50%)" }}
-              animate={{ scale: 1, top: "12%", transform: "translateX(-50%)" }}
+              animate={{
+                scale: 1,
+                top: isMoreThanSmall ? "12%" : "0",
+                transform: "translateX(-50%)",
+              }}
               exit={{ scale: 0.9, top: 0 }}
             >
               {children}

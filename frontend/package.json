@@ -30,6 +30,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-merge-refs": "^2.1.1",
+    "react-responsive": "^9.0.2",
     "react-selection-manager": "^0.0.6",
     "recoil": "^0.7.7",
     "sharp": "^0.33.0",

@@ -17,7 +17,7 @@ const Article: FC<Props> = ({ content, heading, aside, noSeparator }) => {
         <hr className="absolute inset-x-7 top-28 sm:top-[5.5rem] z-40" />
       )}
       <section className={clsx("space-y-6 h-fit", aside ? "w-7/12" : "w-full")}>
-        <header className="sticky z-30 w-full py-2 text-2xl bg-white top-4">
+        <header className="sticky z-30 w-full py-2 text-2xl bg-white top-10 sm:top-4">
           <h1 className="flex items-center w-full gap-2 text-2xl font-normal">
             {heading}
           </h1>

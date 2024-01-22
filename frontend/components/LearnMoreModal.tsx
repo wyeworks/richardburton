@@ -11,7 +11,7 @@ const AboutRichardBurton: FC = () => {
 
   return (
     <div className="space-y-6">
-      <header className="sticky z-30 px-1 py-2 bg-white top-4">
+      <header className="sticky z-30 px-1 py-2 bg-white top-10 sm:top-4">
         <h2 className="text-lg">
           About
           <strong className="font-normal"> Richard Burton</strong>
