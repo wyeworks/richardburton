@@ -20,6 +20,8 @@ const PublicationItem: FC<{ id: number }> = ({ id }) => {
             <span className="font-normal whitespace-nowrap">
               {publication.originalAuthors}
             </span>
+            , published by{" "}
+            <span className="font-normal">{publication.publisher}</span>
           </div>
         </div>
 

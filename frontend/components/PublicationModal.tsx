@@ -56,7 +56,7 @@ const PublicationDescription: FC<{ publication: Publication }> = ({
       label={COUNTRIES[publication!.country].label}
       value={COUNTRIES[publication!.country].id}
     />{" "}
-    in {publication?.year}.
+    in {publication?.year} by <Searchable label={publication.publisher} />.
   </p>
 );
 
