@@ -73,7 +73,7 @@ const Home: NextPage = () => {
         </div>
       }
       footer={
-        <div className="flex gap-2">
+        <div className="flex justify-center gap-2 sm:justify-start">
           <IndexCounter count={count} />
           {isAuthenticated ? (
             <div className="flex gap-2">
@@ -90,12 +90,14 @@ const Home: NextPage = () => {
               <SignOutButton />
             </div>
           ) : (
-            <SignInButton />
+            <div className="hidden sm:block">
+              <SignInButton />
+            </div>
           )}
-          <div className="ml-auto">
+          <div className="hidden ml-auto sm:block">
             <LearnMoreButton />
-            <LearnMoreModal />
           </div>
+          <LearnMoreModal />
         </div>
       }
     />

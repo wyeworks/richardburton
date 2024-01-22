@@ -15,13 +15,15 @@ const IndexCounter: FC<Props> = ({ count }) => {
   return (
     count && (
       <Tooltip info message="Learn more">
-        <Button
-          label="publications registered so far"
-          aria-label={`${count} publications registered so far`}
-          onClick={() => modal.open()}
-          Icon={<Counter value={count} />}
-          width="fit"
-        />
+        <div className="w-full sm:w-auto">
+          <Button
+            label="publications registered so far"
+            aria-label={`${count} publications registered so far`}
+            onClick={() => modal.open()}
+            Icon={<Counter value={count} />}
+            width="full"
+          />
+        </div>
       </Tooltip>
     )
   );
