@@ -43,7 +43,7 @@
     "@testing-library/react": "^14.1.2",
     "@types/is-hotkey": "^0.1.10",
     "@types/lodash": "^4.14.202",
-    "@types/node": "20.10.3",
+    "@types/node": "20.11.20",
     "@types/object-hash": "^3.0.6",
     "@types/qs": "^6.9.10",
     "@types/react": "18.2.42",
