@@ -31,6 +31,6 @@ module.exports = {
       addVariant("selected", '&[data-selected="true"]');
       addVariant("focused", '&[data-focused="true"]');
     }),
-    scrollbar,
+    scrollbar({ preferredStrategy: "pseudoelements" }),
   ],
 };
