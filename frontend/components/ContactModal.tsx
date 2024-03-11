@@ -1,4 +1,4 @@
-import { FC, FormEvent } from "react";
+import { FC } from "react";
 import { useForm } from "utils/useForm";
 import { z } from "zod";
 import { Article } from "./Article";
@@ -27,90 +27,32 @@ const ContactForm: FC = () => {
   const { close } = useURLQueryModal(CONTACT_MODAL_KEY);
   const notify = useNotify();
 
-  const [contact, setContact, errors] = useForm(Contact);
-
-  const {
-    name = "",
-    institution = "",
-    subject = "",
-    address = "",
-    message = "",
-  } = contact;
-
-  async function handleSubmit(event: FormEvent) {
-    event.preventDefault();
-
-    const { success } = Contact.safeParse(contact);
-
-    if (!success) {
-      setContact({
-        name,
-        institution,
-        subject,
-        address,
-        message,
+  const { inputs, form } = useForm(Contact, {
+    onSuccess() {
+      notify({
+        level: "success",
+        message: "Your message has been sent!",
       });
-      return;
-    }
-
-    notify({
-      level: "success",
-      message: "Your message has been sent!",
-    });
-
-    close();
-  }
-
-  function handleChange(key: keyof Contact) {
-    return (value: string) => {
-      setContact({ ...contact, [key]: value });
-    };
-  }
+      close();
+    },
+  });
 
   return (
-    <form
-      className="py-4 space-y-5 text-sm sm:text-base"
-      onSubmit={handleSubmit}
-    >
+    <form className="py-4 space-y-5 text-sm sm:text-base" {...form}>
       <section className="space-y-6">
         <p>{SENDER_INTRODUCTION}</p>
         <fieldset className="space-y-6">
-          <TextInput
-            label="Name"
-            value={name}
-            onChange={handleChange("name")}
-            error={errors.name}
-          />
-          <TextInput
-            label="Email"
-            value={address}
-            onChange={handleChange("address")}
-            error={errors.address}
-          />
-          <TextInput
-            label="Institution"
-            value={institution}
-            onChange={handleChange("institution")}
-            error={errors.institution}
-          />
+          <TextInput label="Name" {...inputs.name} />
+          <TextInput label="Email" {...inputs.address} />
+          <TextInput label="Institution" {...inputs.institution} />
         </fieldset>
       </section>
 
       <section className="space-y-6">
         <p>{MESSAGE_INTRODUCTION}</p>
         <fieldset className="space-y-6">
-          <TextInput
-            label="Subject"
-            value={subject}
-            onChange={handleChange("subject")}
-            error={errors.subject}
-          />
-          <TextArea
-            label="Write your message here..."
-            value={message}
-            onChange={handleChange("message")}
-            error={errors.message}
-          />
+          <TextInput label="Subject" {...inputs.subject} />
+          <TextArea label="Write your message here..." {...inputs.message} />
         </fieldset>
       </section>
 
