@@ -1,5 +1,5 @@
-import { forwardRef } from "react";
 import CheckIcon from "assets/check.svg";
+import { forwardRef } from "react";
 import Button, { ButtonProps } from "./Button";
 
 type Props = ButtonProps & {
@@ -18,7 +18,7 @@ const Toggle = forwardRef<HTMLButtonElement, Props>(function Toggle(
     <Button
       {...props}
       ref={ref}
-      type={checked ? "primary" : "outline"}
+      variant={checked ? "primary" : "outline"}
       Icon={checked ? CheckedIcon : UncheckedIcon}
       label={label}
       onClick={onClick}

@@ -1,8 +1,8 @@
+import RestorePageIcon from "assets/restore-page.svg";
 import { Publication } from "modules/publication";
 import { FC } from "react";
-import Button from "./Button";
-import RestorePageIcon from "assets/restore-page.svg";
 import { useClearSelection } from "react-selection-manager";
+import Button from "./Button";
 
 const ResetOverridden: FC = () => {
   const overriddenCount = Publication.STORE.useOverriddenCount();
@@ -23,7 +23,7 @@ const ResetOverridden: FC = () => {
   return overriddenCount !== 0 ? (
     <Button
       label={`Reset ${overriddenCount} overriden`}
-      type="outline"
+      variant="outline"
       Icon={RestorePageIcon}
       alignment="left"
       width="fit"
