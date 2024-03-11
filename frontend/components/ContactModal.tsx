@@ -28,7 +28,7 @@ const ContactForm: FC = () => {
   const notify = useNotify();
 
   const { inputs, form } = useForm(Contact, {
-    onSuccess() {
+    onSubmit() {
       notify({
         level: "success",
         message: "Your message has been sent!",

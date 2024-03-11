@@ -60,7 +60,7 @@ interface InputProps {
   error?: string;
 }
 interface Options {
-  onSuccess?: () => void;
+  onSubmit?: () => void;
 }
 
 export function useForm<T extends ZodObject<ZodRawShape>>(
@@ -70,7 +70,7 @@ export function useForm<T extends ZodObject<ZodRawShape>>(
   inputs: Record<keyof z.infer<T>, InputProps>;
   form: { onSubmit: FormEventHandler };
 } {
-  const { onSuccess } = options ?? {};
+  const { onSubmit } = options ?? {};
 
   const [defaults, strict] = stripDefaults(schema);
   const [values, setValues] = useState<Partial<z.infer<T>>>({});
@@ -93,7 +93,7 @@ export function useForm<T extends ZodObject<ZodRawShape>>(
     };
   }
 
-  function onSubmit(event: FormEvent) {
+  function handleSubmit(event: FormEvent) {
     event.preventDefault();
 
     const result = schema.safeParse(input);
@@ -104,7 +104,7 @@ export function useForm<T extends ZodObject<ZodRawShape>>(
       return;
     }
 
-    onSuccess?.();
+    onSubmit?.();
   }
 
   const inputs = Object.entries(strict.shape).reduce(
@@ -120,5 +120,5 @@ export function useForm<T extends ZodObject<ZodRawShape>>(
     {} as Record<keyof z.infer<T>, InputProps>,
   );
 
-  return { inputs, form: { onSubmit } };
+  return { inputs, form: { onSubmit: handleSubmit } };
 }
