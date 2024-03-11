@@ -1,5 +1,7 @@
 import AddIcon from "assets/add.svg";
 import Button from "components/Button";
+import { ContactButton } from "components/ContactButton";
+import { ContactModal } from "components/ContactModal";
 import { IndexCounter } from "components/IndexCounter";
 import Layout from "components/Layout";
 import { LearnMoreButton } from "components/LearnMoreButton";
@@ -73,7 +75,7 @@ const Home: NextPage = () => {
         </div>
       }
       footer={
-        <div className="flex justify-center gap-2 sm:justify-start">
+        <div className="flex flex-col justify-center gap-2 sm:justify-start sm:flex-row sm:items-start">
           <IndexCounter count={count} />
           {isAuthenticated ? (
             <div className="flex gap-2">
@@ -94,9 +96,13 @@ const Home: NextPage = () => {
               <SignInButton />
             </div>
           )}
-          <div className="hidden ml-auto sm:block">
+
+          <div className="flex gap-2 sm:ml-auto">
             <LearnMoreButton />
+            <ContactButton />
           </div>
+
+          <ContactModal />
           <LearnMoreModal />
         </div>
       }
