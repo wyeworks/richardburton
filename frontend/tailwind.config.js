@@ -27,9 +27,13 @@ module.exports = {
   },
   plugins: [
     plugin(function ({ addVariant }) {
-      addVariant("error", '&[data-error="true"]');
+      const error = `[data-error="true"]`;
       addVariant("selected", '&[data-selected="true"]');
       addVariant("focused", '&[data-focused="true"]');
+
+      addVariant("error", `&${error}`);
+      addVariant("error-within", `&:has(${error})`);
+      addVariant("peer-error", `:merge(.peer):is(${error}) ~ &`);
     }),
     scrollbar({ preferredStrategy: "pseudoelements" }),
   ],
