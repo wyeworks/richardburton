@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useState } from "react";
+import { FormEvent, FormEventHandler, useState } from "react";
 import { ZodDefault, ZodObject, ZodRawShape, ZodSchema, z } from "zod";
 
 function stripDefaults<T extends ZodObject<ZodRawShape>>(
@@ -48,13 +48,24 @@ function validate<T extends ZodObject<ZodRawShape>>(
   ];
 }
 
+interface InputProps {
+  value: string;
+  onChange: (value: string) => void;
+  error?: string;
+}
+interface Options {
+  onSuccess?: () => void;
+}
+
 export function useForm<T extends ZodObject<ZodRawShape>>(
   schema: T,
-): [
-  z.infer<T>,
-  Dispatch<SetStateAction<Partial<z.TypeOf<T>>>>,
-  Partial<Record<keyof z.infer<T>, string>>,
-] {
+  options?: Options,
+): {
+  inputs: Record<keyof z.infer<T>, InputProps>;
+  form: { onSubmit: FormEventHandler };
+} {
+  const { onSuccess } = options ?? {};
+
   const [defaults, strict] = stripDefaults(schema);
   const [values, setValues] = useState<Partial<z.infer<T>>>({});
 
@@ -62,5 +73,41 @@ export function useForm<T extends ZodObject<ZodRawShape>>(
 
   const [parsed, errors] = validate(strict, input);
 
-  return [parsed, setValues, errors];
+  function handleChange(key: keyof z.infer<T>) {
+    return (value: string) => {
+      setValues({ ...values, [key]: value });
+    };
+  }
+
+  function onSubmit(event: FormEvent) {
+    event.preventDefault();
+
+    const { success } = schema.safeParse(parsed);
+
+    if (!success) {
+      const placeholders = Object.keys(strict.shape).reduce(
+        (acc, key) => ({ ...acc, [key]: "" }),
+        {},
+      );
+
+      setValues(placeholders);
+      return;
+    }
+
+    onSuccess?.();
+  }
+
+  const inputs = Object.entries(strict.shape).reduce(
+    (acc, [key]) => ({
+      ...acc,
+      [key]: {
+        value: input[key] ?? defaults[key],
+        error: errors[key],
+        onChange: handleChange(key),
+      },
+    }),
+    {} as Record<keyof z.infer<T>, InputProps>,
+  );
+
+  return { inputs, form: { onSubmit } };
 }
