@@ -1,8 +1,8 @@
+import RestoreTrashIcon from "assets/restore-trash.svg";
 import { Publication } from "modules/publication";
 import { FC } from "react";
-import Button from "./Button";
-import RestoreTrashIcon from "assets/restore-trash.svg";
 import { useClearSelection } from "react-selection-manager";
+import Button from "./Button";
 
 const ResetDeleted: FC = () => {
   const deletedCount = Publication.STORE.useDeletedCount();
@@ -17,7 +17,7 @@ const ResetDeleted: FC = () => {
   return deletedCount !== 0 ? (
     <Button
       label={`Reset ${deletedCount} deleted`}
-      type="outline"
+      variant="outline"
       Icon={RestoreTrashIcon}
       alignment="left"
       width="fit"

@@ -81,7 +81,7 @@ const Home: NextPage = () => {
               <Link href="/publications/new">
                 <Button
                   label="Add publications"
-                  type="outline"
+                  variant="outline"
                   Icon={AddIcon}
                   alignment="left"
                   width="fixed"
