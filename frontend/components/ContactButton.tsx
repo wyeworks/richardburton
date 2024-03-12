@@ -7,7 +7,11 @@ const ContactButton: FC = () => {
   const modal = useURLQueryModal(CONTACT_MODAL_KEY);
 
   return (
-    <Button variant="secondary" label="Contact" onClick={() => modal.open()} />
+    <Button
+      variant="secondary"
+      label="Contact Us"
+      onClick={() => modal.open()}
+    />
   );
 };
 
