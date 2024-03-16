@@ -1,4 +1,10 @@
-import { FormEvent, FormEventHandler, useState } from "react";
+import {
+  Dispatch,
+  FormEvent,
+  FormEventHandler,
+  SetStateAction,
+  useState,
+} from "react";
 import { ZodDefault, ZodObject, ZodRawShape, ZodSchema, z } from "zod";
 
 function stripDefaults<T extends ZodObject<ZodRawShape>>(
@@ -59,13 +65,18 @@ interface InputProps {
   onBlur: () => void;
   error?: string;
 }
-interface Options {
-  onSubmit?: () => void;
+interface Options<T> {
+  onSubmit?: (
+    values: T,
+    misc: {
+      setErrors: Dispatch<SetStateAction<Partial<Record<keyof T, string>>>>;
+    },
+  ) => void;
 }
 
 export function useForm<T extends ZodObject<ZodRawShape>>(
   schema: T,
-  options?: Options,
+  options?: Options<z.infer<T>>,
 ): {
   inputs: Record<keyof z.infer<T>, InputProps>;
   form: { onSubmit: FormEventHandler };
@@ -104,7 +115,7 @@ export function useForm<T extends ZodObject<ZodRawShape>>(
       return;
     }
 
-    onSubmit?.();
+    onSubmit?.(input, { setErrors });
   }
 
   const inputs = Object.entries(strict.shape).reduce(
