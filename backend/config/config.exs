@@ -4,13 +4,13 @@
 # This configuration file is loaded before any dependency and
 # is restricted to this project.
 
-# General application configuration
+# Configures the app
 import Config
 
 config :richard_burton,
   ecto_repos: [RichardBurton.Repo]
 
-# Postgrex configuration
+# Configures Postgrex
 config :richard_burton, RichardBurton.Repo,
   timeout: String.to_integer(System.get_env("POSTGREX_TIMEOUT", "15000"))
 
