@@ -52,7 +52,9 @@ defmodule RichardBurton.MixProject do
       {:httpoison, "~> 2.2.1"},
       {:mox, "~> 1.1.0", only: :test},
       {:countries, "~> 1.6.0"},
-      {:ssl_verify_fun, "~> 1.1.7"}
+      {:ssl_verify_fun, "~> 1.1.7"},
+      {:swoosh, "~> 1.16.1"},
+      {:gen_smtp, "1.2.0"}
     ]
   end
 
