@@ -1,4 +1,6 @@
-import { FC } from "react";
+import { GOOGLE_RECAPTCHA_SITEKEY, http } from "app";
+import { FC, useRef } from "react";
+import ReCAPTCHA from "react-google-recaptcha";
 import { useForm } from "utils/useForm";
 import { z } from "zod";
 import { Article } from "./Article";
@@ -26,10 +28,13 @@ const MESSAGE_INTRODUCTION = `Kindly provide a concise description of your purpo
 const ContactForm: FC = () => {
   const { close } = useURLQueryModal(CONTACT_MODAL_KEY);
   const notify = useNotify();
+  const recaptchaRef = useRef<ReCAPTCHA>(null);
 
   const { inputs, form } = useForm(Contact, {
     async onSubmit(values) {
-      await http.post("/contact", values);
+      const recaptchaToken = await recaptchaRef.current!.executeAsync();
+
+      await http.post("/contact", { ...values, recaptchaToken });
 
       notify({
         level: "success",
@@ -61,6 +66,12 @@ const ContactForm: FC = () => {
       <footer className="flex justify-end gap-2">
         <Button label="Cancel" variant="outline" onClick={close} />
         <Button type="submit" label="Send" />
+        <ReCAPTCHA
+          ref={recaptchaRef}
+          size="invisible"
+          sitekey={GOOGLE_RECAPTCHA_SITEKEY}
+          hidden
+        />
       </footer>
     </form>
   );
