@@ -13,11 +13,13 @@ RUN \
 
 
 # Rebuild the source code only when needed
-FROM node:18-alpine AS builder
+FROM node:21-alpine AS builder
 ARG NEXT_PUBLIC_API_URL
 ARG NEXT_PUBLIC_FILES_URL
+ARG NEXT_PUBLIC_GOOGLE_RECAPTCHA_SITEKEY
 ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 ENV NEXT_PUBLIC_FILES_URL=$NEXT_PUBLIC_FILES_URL
+ENV NEXT_PUBLIC_GOOGLE_RECAPTCHA_SITEKEY=$NEXT_PUBLIC_GOOGLE_RECAPTCHA_SITEKEY
 
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
@@ -31,7 +33,7 @@ COPY . .
 RUN npm run build
 
 # Production image, copy all the files and run next
-FROM node:18-alpine AS prod
+FROM node:21-alpine AS prod
 WORKDIR /app
 
 ENV NODE_ENV production
@@ -53,7 +55,7 @@ USER nextjs
 CMD node server.js
 
 # Development image
-FROM node:18-alpine as dev
+FROM node:21-alpine as dev
 
 WORKDIR /app
 COPY package*.json ./
