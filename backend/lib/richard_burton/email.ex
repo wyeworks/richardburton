@@ -20,23 +20,22 @@ defmodule RichardBurton.Email do
   def changeset(email, params) do
     email
     |> cast(params, [:name, :institution, :address, :subject, :message])
-    |> validate_required([:name, :institution, :address, :subject, :message])
+    |> validate_required([:name, :address, :subject, :message])
   end
 
   def contact(params) do
     case changes = Email.changeset(%Email{}, params) do
       %Ecto.Changeset{valid?: true} ->
-        %{
-          name: name,
-          institution: institution,
-          address: address,
-          subject: subject,
-          message: message
-        } = Ecto.Changeset.apply_changes(changes)
+        email =
+          %{
+            address: address,
+            subject: subject,
+            message: message
+          } = Ecto.Changeset.apply_changes(changes) |> IO.inspect()
 
         case Mailer.deliver(
                new(
-                 from: {"#{name} (#{institution})", address},
+                 from: {get_contact_name(email), address},
                  to: Application.get_env(:richard_burton, :smtp_from),
                  subject: subject,
                  text_body: message
@@ -50,4 +49,8 @@ defmodule RichardBurton.Email do
         {:error, {:invalid, changes.errors}}
     end
   end
+
+  defp get_contact_name(%{name: name, institution: nil}), do: name
+  defp get_contact_name(%{name: name, institution: ""}), do: name
+  defp get_contact_name(%{name: name, institution: institution}), do: "#{name} (#{institution})"
 end
