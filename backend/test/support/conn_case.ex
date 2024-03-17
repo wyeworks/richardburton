@@ -63,4 +63,8 @@ defmodule RichardBurtonWeb.ConnCase do
   def expect_auth_recaptcha_verify(n \\ 1) do
     expect(RichardBurton.Auth.RecaptchaMock, :verify, n, fn _ -> :ok end)
   end
+
+  def expect_mailer_deliver(n \\ 1) do
+    expect(RichardBurton.MailerMock, :deliver, n, fn _ -> {:ok, "Whatever"} end)
+  end
 end

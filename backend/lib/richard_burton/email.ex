@@ -31,7 +31,7 @@ defmodule RichardBurton.Email do
             address: address,
             subject: subject,
             message: message
-          } = Ecto.Changeset.apply_changes(changes) |> IO.inspect()
+          } = Ecto.Changeset.apply_changes(changes)
 
         case Mailer.deliver(
                new(
