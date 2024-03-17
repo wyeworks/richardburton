@@ -38,4 +38,5 @@ defmodule RichardBurton.Mailer.SMTP do
   defp get_contact_name(%{name: name, institution: nil}), do: name
   defp get_contact_name(%{name: name, institution: ""}), do: name
   defp get_contact_name(%{name: name, institution: institution}), do: "#{name} (#{institution})"
+  defp get_contact_name(%{name: name}), do: name
 end
