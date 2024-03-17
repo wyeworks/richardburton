@@ -72,7 +72,7 @@ interface Props extends PropsWithChildren {
 }
 
 const Modal: FC<Props> = ({ children, isOpen, onClose }) => {
-  function handleOverlayClick(event: KeyboardEvent | MouseEvent) {
+  function handleOverlayMouseDown(event: MouseEvent) {
     if (event.target === event.currentTarget) {
       onClose();
     }
@@ -90,7 +90,7 @@ const Modal: FC<Props> = ({ children, isOpen, onClose }) => {
             aria-modal="true"
             aria-label="Close modal"
             className="fixed inset-0 z-50 bg-indigo-900/30"
-            onClick={handleOverlayClick}
+            onMouseDown={handleOverlayMouseDown}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
