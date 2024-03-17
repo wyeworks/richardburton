@@ -27,17 +27,50 @@ defmodule RichardBurton.Email do
   def contact(params) do
     case changeset = Email.changeset(%Email{}, params) do
       %Ecto.Changeset{valid?: true} ->
-        changeset |> Ecto.Changeset.apply_changes() |> send
+        changeset |> Ecto.Changeset.apply_changes() |> send_email(confirmation: true)
 
       %Ecto.Changeset{valid?: false} ->
         {:error, {:invalid, RichardBurton.Validation.get_errors(changeset)}}
     end
   end
 
-  defp send(email) do
+  defp send_email(email, confirmation: false) do
     case Mailer.send(email) do
       {:ok, _} -> :ok
       {:error, reason} -> {:error, reason}
     end
+  end
+
+  defp send_email(email, confirmation: true) do
+    case Mailer.send(email) do
+      {:ok, _} ->
+        send_email(
+          %{
+            name: "Richard Burton",
+            institution: "IFRS Canoas",
+            address: Application.get_env(:richard_burton, :smtp_from),
+            subject: "Contact Confirmation from Richard Burton",
+            message: get_confimation_message(email)
+          },
+          confirmation: false
+        )
+
+      {:error, reason} ->
+        {:error, reason}
+    end
+  end
+
+  defp get_confimation_message(email) do
+    """
+    Thank you for contacting the Richard Burton Platform research team. We will get back to you as soon as possible.
+
+    The contact information and message you sent are as follows:
+
+    Name: #{email.name}
+    Institution: #{email.institution}
+    Email: #{email.address}
+    Subject: #{email.subject}
+    Message: #{email.message}
+    """
   end
 end

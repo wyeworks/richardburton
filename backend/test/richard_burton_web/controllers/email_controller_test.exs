@@ -8,7 +8,7 @@ defmodule RichardBurtonWeb.EmailControllerTest do
   describe "POST /contact" do
     test "returns 200 and a success message when all the fields are sent", %{conn: conn} do
       expect_auth_recaptcha_verify(1)
-      expect_mailer_deliver(1)
+      expect_mailer_send(2)
 
       params = %{
         "name" => "João Silva",
@@ -26,7 +26,7 @@ defmodule RichardBurtonWeb.EmailControllerTest do
 
     test "returns 200 and a success message when only the institution is omitted", %{conn: conn} do
       expect_auth_recaptcha_verify(1)
-      expect_mailer_deliver(1)
+      expect_mailer_send(2)
 
       params = %{
         "name" => "João Silva",
@@ -43,7 +43,7 @@ defmodule RichardBurtonWeb.EmailControllerTest do
 
     test "returns 400 when the sender's name is omitted", %{conn: conn} do
       expect_auth_recaptcha_verify(1)
-      expect_mailer_deliver(0)
+      expect_mailer_send(0)
 
       params = %{
         "address" => "johndoe@canoas.ifrs.edu.br",
@@ -59,7 +59,7 @@ defmodule RichardBurtonWeb.EmailControllerTest do
 
     test "returns 400 when the sender's email is omitted", %{conn: conn} do
       expect_auth_recaptcha_verify(1)
-      expect_mailer_deliver(0)
+      expect_mailer_send(0)
 
       params = %{
         "name" => "João Silva",
@@ -75,7 +75,7 @@ defmodule RichardBurtonWeb.EmailControllerTest do
 
     test "returns 400 when the sender's email is invalid", %{conn: conn} do
       expect_auth_recaptcha_verify(1)
-      expect_mailer_deliver(0)
+      expect_mailer_send(0)
 
       params = %{
         "name" => "João Silva",
@@ -92,7 +92,7 @@ defmodule RichardBurtonWeb.EmailControllerTest do
 
     test "returns 400 when the subject is omitted", %{conn: conn} do
       expect_auth_recaptcha_verify(1)
-      expect_mailer_deliver(0)
+      expect_mailer_send(0)
 
       params = %{
         "name" => "João Silva",
@@ -108,7 +108,7 @@ defmodule RichardBurtonWeb.EmailControllerTest do
 
     test "returns 400 when the message is omitted", %{conn: conn} do
       expect_auth_recaptcha_verify(1)
-      expect_mailer_deliver(0)
+      expect_mailer_send(0)
 
       params = %{
         "name" => "João Silva",
@@ -124,7 +124,7 @@ defmodule RichardBurtonWeb.EmailControllerTest do
 
     test "returns 401 when the recaptcha token is omitted", %{conn: conn} do
       expect_auth_recaptcha_verify(0)
-      expect_mailer_deliver(0)
+      expect_mailer_send(0)
 
       params = %{
         "name" => "João Silva",
