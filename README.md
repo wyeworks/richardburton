@@ -69,6 +69,7 @@ Environment variables are configuration units relevant to the app's build or run
 | ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
 | `NEXT_PUBLIC_API_URL`   | URL of the backend server API                                                                                                                                                | `http://localhost:4000/api`                                                                                 |
 | `NEXT_PUBLIC_FILES_URL` | URL of the backend server files                                                                                                                                              | `http://localhost:4000/files`                                                                               |
+|`NEXT_PUBLIC_GOOGLE_RECAPTCHA_SITEKEY`| Sitekey from Google Recaptcha| Sign up for one in `http://www.google.com/recaptcha/admin`
 | `NEXT_INTERNAL_API_URL` | URL of the backend server API. For use in a closed environment. Set to the same value of `NEXT_PUBLIC_API_URL` if Phoenix server public url is reachable from NextJS server. | `http://localhost:4000/api`                                                                                 |
 | `NEXTAUTH_URL`          | The canonical URL of the site ([read more](https://next-auth.js.org/configuration/options#nextauth_url))                                                                     | `http://localhost:3000`                                                                                     |
 | `NEXTAUTH_SECRET`       | Secret for JWT encryption                                                                                                                                                    | Generate with `openssl rand -base64 32`                                                                     |
@@ -92,6 +93,18 @@ Environment variables are configuration units relevant to the app's build or run
 | `PHX_SECRET_KEY_BASE`      | Phoenix secret key base                                                                                           | Generate with `mix phx.gen.secret`                                                                          |
 | `PHX_CONSUMER_URL`         | URL of the frontend api. This is used to configure CORS headers                                                   | `http://localhost:3000`                                                                                     |
 | `POSTGREX_TIMEOUT`         | Timeout in milliseconds for database requests. Optional. Default is 15000. **Must be available in compile time.** | 15000                                                                                                       |
+|`GOOGLE_RECAPTCHA_SECRET_KEY`| Sitekey from Google Recaptcha| Sign up for one in `http://www.google.com/recaptcha/admin`
+|`GOOGLE_RECAPTCHA_VERIFICATION_URL`|URL to verify Google Recaptcha tokens |`https://www.google.com/recaptcha/api/siteverify`
+|`SMTP_HOST`|SMTP relay host||
+|`SMTP_PORT`|Port used to connect to the configured SMTP service|
+|`SMTP_USER`|User to be used to send emails through the configured SMTP service||
+|`SMTP_PASS`|Password of the user to be used to send emails through the configured SMTP service||
+|`SMTP_FROM`|Default address to be used in behalf of the application||
+|`SMTP_FROM`|Default name to be used in behalf of the application|`Richard Burton`|
+
+
+
+
 
 # Development mode
 
@@ -138,7 +151,7 @@ Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
 
 ### Backend secrets
 
-To configure backend secrets in development mode, you should create a file named `dev.local.exs` in `backend/config` and add the relevant configuration for `google_client_id`, `google_openid_config_url` and `google_oauth2_certs_url`. These variables are the same as those described in the [environment variables](#environment-variables) section, although downcased. `phx_consumer_id` is already predefined in `config/dev.exs`, but it can be overrided by defining a value in `dev.local.exs`.
+To configure backend secrets in development mode, you should create a file named `dev.local.exs` in `backend/config` and add the relevant configuration for `google_*` and `smtp_*`. These variables are the same as those described in the [environment variables](#environment-variables) section, although downcased. `phx_consumer_id` is already predefined in `config/dev.exs`, but it can be overrided by defining a value in `dev.local.exs`.
 
 The configuration file must follow this format:
 
