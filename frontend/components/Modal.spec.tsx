@@ -20,11 +20,11 @@ describe("Modal", () => {
     expect(close).toBe(modal);
   });
 
-  it("closes when the modal is clicked", () => {
+  it("closes when the modal is moused down", () => {
     const onClose = vi.fn();
     render(<Modal isOpen={true} onClose={onClose} />);
 
-    fireEvent.click(document.querySelector("[aria-modal=true]")!);
+    fireEvent.mouseDown(document.querySelector("[aria-modal=true]")!);
 
     expect(onClose).toHaveBeenCalled();
   });
