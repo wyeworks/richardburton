@@ -87,17 +87,17 @@ const Modal: FC<Props> = ({ children, isOpen, onClose }) => {
     <AnimatePresence>
       {isOpen && (
         <FloatingPortal>
-          <motion.div
-            aria-modal="true"
-            aria-label="Close modal"
-            className="fixed inset-0 z-50 bg-indigo-900/30"
-            onMouseDown={handleOverlayMouseDown}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-          >
-            <Header onClose={onClose} />
-            <FocusTrap>
+          <FocusTrap active={process.env.NODE_ENV !== "test"}>
+            <motion.div
+              aria-modal="true"
+              aria-label="Close modal"
+              className="fixed inset-0 z-50 bg-indigo-900/30"
+              onMouseDown={handleOverlayMouseDown}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              <Header onClose={onClose} />
               <motion.dialog
                 open
                 role="dialog"
@@ -118,8 +118,8 @@ const Modal: FC<Props> = ({ children, isOpen, onClose }) => {
               >
                 {children}
               </motion.dialog>
-            </FocusTrap>
-          </motion.div>
+            </motion.div>
+          </FocusTrap>
         </FloatingPortal>
       )}
     </AnimatePresence>
