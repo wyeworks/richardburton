@@ -97,10 +97,10 @@ export function useForm<T extends ZodObject<ZodRawShape>>(
     };
   }
 
-  function handleBlur() {
+  function handleBlur(key: keyof z.infer<T>) {
     return () => {
       const [, errors] = validate(strict, input, { all: false });
-      setErrors(errors);
+      setErrors((prev) => ({ ...prev, [key]: errors[key] }));
     };
   }
 
@@ -125,7 +125,7 @@ export function useForm<T extends ZodObject<ZodRawShape>>(
         value: input[key] ?? defaults[key],
         error: errors[key],
         onChange: handleChange(key),
-        onBlur: handleBlur(),
+        onBlur: handleBlur(key),
       },
     }),
     {} as Record<keyof z.infer<T>, InputProps>,

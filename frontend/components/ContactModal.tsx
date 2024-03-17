@@ -1,4 +1,5 @@
 import { GOOGLE_RECAPTCHA_SITEKEY, http } from "app";
+import { isAxiosError } from "axios";
 import { FC, useRef } from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 import { useForm } from "utils/useForm";
@@ -13,11 +14,11 @@ import TextInput from "./TextInput";
 const CONTACT_MODAL_KEY = "contact";
 
 const Contact = z.object({
-  name: z.string().min(1, "Required"),
+  name: z.string().trim().min(1, "Required"),
   institution: z.string().optional(),
-  address: z.string().min(1, "Required"),
-  subject: z.string().min(1, "Required"),
-  message: z.string().min(1, "Required"),
+  address: z.string().trim().email().min(1, "Required"),
+  subject: z.string().trim().min(1, "Required"),
+  message: z.string().trim().min(1, "Required"),
 });
 
 type Contact = z.infer<typeof Contact>;
@@ -31,16 +32,26 @@ const ContactForm: FC = () => {
   const recaptchaRef = useRef<ReCAPTCHA>(null);
 
   const { inputs, form } = useForm(Contact, {
-    async onSubmit(values) {
+    async onSubmit(values, { setErrors }) {
       const recaptchaToken = await recaptchaRef.current!.executeAsync();
 
-      await http.post("/contact", { ...values, recaptchaToken });
+      try {
+        await http.post("/contact", { ...values, recaptchaToken });
+        notify({ level: "success", message: "Your message has been sent!" });
+        close();
+      } catch (error) {
+        if (
+          isAxiosError(error) &&
+          error.response &&
+          error.response.status === 400 &&
+          "issues" in error.response.data
+        ) {
+          setErrors(error.response.data.issues);
+          return;
+        }
 
-      notify({
-        level: "success",
-        message: "Your message has been sent!",
-      });
-      close();
+        notify({ level: "error", message: "Something went wrong." });
+      }
     },
   });
 
