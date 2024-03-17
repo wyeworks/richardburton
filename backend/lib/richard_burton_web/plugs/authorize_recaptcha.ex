@@ -19,7 +19,7 @@ defmodule RichardBurtonWeb.Plugs.AuthorizeRecaptcha do
   end
 
   defp verify(%{params: %{"recaptcha_token" => recaptcha_token}}) do
-    case Auth.Recaptcha.Google.verify(recaptcha_token) do
+    case Auth.Recaptcha.verify(recaptcha_token) do
       :ok -> :ok
       {:error, _} -> :error
     end
