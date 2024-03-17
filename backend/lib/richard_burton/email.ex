@@ -5,7 +5,6 @@ defmodule RichardBurton.Email do
   use Ecto.Schema
   import Ecto.Changeset
   import EctoCommons.EmailValidator
-  import Swoosh.Email
 
   alias RichardBurton.Email
   alias RichardBurton.Mailer
@@ -28,28 +27,17 @@ defmodule RichardBurton.Email do
   def contact(params) do
     case changeset = Email.changeset(%Email{}, params) do
       %Ecto.Changeset{valid?: true} ->
-        changeset |> Ecto.Changeset.apply_changes() |> deliver
+        changeset |> Ecto.Changeset.apply_changes() |> send
 
       %Ecto.Changeset{valid?: false} ->
         {:error, {:invalid, RichardBurton.Validation.get_errors(changeset)}}
     end
   end
 
-  defp deliver(email = %{address: address, subject: subject, message: message}) do
-    case Mailer.deliver(
-           new(
-             from: {get_contact_name(email), address},
-             to: Application.get_env(:richard_burton, :smtp_from),
-             subject: subject,
-             text_body: message
-           )
-         ) do
+  defp send(email) do
+    case Mailer.send(email) do
       {:ok, _} -> :ok
       {:error, reason} -> {:error, reason}
     end
   end
-
-  defp get_contact_name(%{name: name, institution: nil}), do: name
-  defp get_contact_name(%{name: name, institution: ""}), do: name
-  defp get_contact_name(%{name: name, institution: institution}), do: "#{name} (#{institution})"
 end
