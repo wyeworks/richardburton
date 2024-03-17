@@ -1,27 +1,27 @@
-import { mergeRefs } from "react-merge-refs";
 import {
-  useFloating,
-  autoUpdate,
-  offset,
-  flip,
-  shift,
-  useHover,
-  useFocus,
-  useDismiss,
-  useRole,
-  useInteractions,
   FloatingPortal,
   Placement,
+  autoUpdate,
+  flip,
+  offset,
+  shift,
+  useDismiss,
+  useFloating,
+  useFocus,
+  useHover,
+  useInteractions,
+  useRole,
 } from "@floating-ui/react";
+import classNames from "classnames";
 import {
-  cloneElement,
   FC,
   MutableRefObject,
   ReactElement,
+  cloneElement,
   useMemo,
   useState,
 } from "react";
-import classNames from "classnames";
+import { mergeRefs } from "react-merge-refs";
 
 // Adapted from https://floating-ui.com/docs/tooltip
 
@@ -98,8 +98,8 @@ const TooltipProvider: FC<Props> = ({
     children as unknown as { ref: MutableRefObject<unknown> }
   ).ref;
   const ref = useMemo(
-    () => mergeRefs([state.reference, childrenRef]),
-    [state.reference, childrenRef],
+    () => mergeRefs([state.refs.setReference, childrenRef]),
+    [state.refs.setReference, childrenRef],
   );
 
   return (
@@ -119,17 +119,17 @@ const TooltipProvider: FC<Props> = ({
       <FloatingPortal>
         {state.open && (
           <div
-            ref={state.floating}
-            style={{
-              position: state.strategy,
-              top: state.y ?? 0,
-              left: absoluteCenter ? undefined : state.x ?? 0,
-              visibility: state.x == null ? "hidden" : "visible",
-            }}
+            ref={state.refs.setFloating}
             {...state.getFloatingProps({
               className: classNames("z-50", {
                 "left-1/2 -translate-x-1/2": absoluteCenter,
               }),
+              style: {
+                position: state.strategy,
+                top: state.y ?? 0,
+                left: absoluteCenter ? undefined : state.x ?? 0,
+                visibility: state.x == null ? "hidden" : "visible",
+              },
             })}
           >
             {content}

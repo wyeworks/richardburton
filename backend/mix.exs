@@ -5,7 +5,7 @@ defmodule RichardBurton.MixProject do
     [
       app: :richard_burton,
       version: "0.1.0",
-      elixir: "~> 1.14",
+      elixir: "~> 1.16",
       elixirc_paths: elixirc_paths(Mix.env()),
       compilers: Mix.compilers(),
       start_permanent: Mix.env() == :prod,
@@ -33,25 +33,25 @@ defmodule RichardBurton.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:phoenix, "~> 1.7"},
-      {:phoenix_ecto, "~> 4.4.3"},
+      {:phoenix, "~> 1.7.11"},
+      {:phoenix_ecto, "~> 4.5.1"},
       {:phoenix_view, "~> 2.0.3"},
-      {:ecto_sql, "~> 3.11"},
-      {:postgrex, ">= 0.0.0"},
+      {:ecto_sql, "~> 3.11.1"},
+      {:postgrex, "~> 0.17.5"},
       {:phoenix_live_dashboard, "~> 0.8.3"},
-      {:telemetry_metrics, "~> 0.6.1"},
+      {:telemetry_metrics, "~> 0.6.2"},
       {:telemetry_poller, "~> 1.0.0"},
       {:jason, "~> 1.4.1"},
-      {:plug, "~> 1.15.2"},
-      {:plug_cowboy, "~> 2.6.1"},
-      {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
+      {:plug, "~> 1.15.3"},
+      {:plug_cowboy, "~> 2.7.0"},
+      {:credo, "~> 1.7.5", only: [:dev, :test], runtime: false},
       {:csv, "~> 3.2.1"},
       {:cors_plug, "~> 3.0.3"},
-      {:ex_doc, "~> 0.30.9", only: :dev, runtime: false},
+      {:ex_doc, "~> 0.31.2", only: :dev, runtime: false},
       {:joken, "~> 2.6.0"},
       {:httpoison, "~> 2.2.1"},
       {:mox, "~> 1.1.0", only: :test},
-      {:countries, "~> 1.6"},
+      {:countries, "~> 1.6.0"},
       {:ssl_verify_fun, "~> 1.1.7"}
     ]
   end
