@@ -1,12 +1,13 @@
 defmodule RichardBurton.Mailer do
-  use Swoosh.Mailer,
-    otp_app: :richard_burton,
-    adapter: Swoosh.Adapters.SMTP,
-    relay: Application.compile_env(:richard_burton, :smtp_host),
-    username: Application.compile_env(:richard_burton, :smtp_user),
-    password: Application.compile_env(:richard_burton, :smtp_pass),
-    port: Application.compile_env(:richard_burton, :smtp_port),
-    tls: Application.compile_env(:richard_burton, :smtp_tls),
-    retries: 1,
-    no_mx_lookups: false
+  @moduledoc """
+  Behaviour for Mailer
+  """
+
+  @callback deliver(email :: Swoosh.Email.t()) :: {:ok, String.t()} | {:error, String.t()}
+
+  @spec deliver(email :: Swoosh.Email.t()) :: {:ok, String.t()} | {:error, String.t()}
+  def deliver(email), do: impl().deliver(email)
+
+  defp impl,
+    do: Application.get_env(:richard_burton, :mailer, RichardBurton.Mailer.SMTP)
 end
