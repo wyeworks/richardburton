@@ -6,6 +6,7 @@ services:
       args:
         NEXT_PUBLIC_API_URL: $NEXT_PUBLIC_API_URL
         NEXT_PUBLIC_FILES_URL: $NEXT_PUBLIC_FILES_URL
+        NEXT_PUBLIC_GOOGLE_RECAPTCHA_SITEKEY: $NEXT_PUBLIC_GOOGLE_RECAPTCHA_SITEKEY
     environment:
       # Server
       PORT: $NEXT_PORT
@@ -36,6 +37,7 @@ services:
       # Google Identity Provider
       GOOGLE_OPENID_CONFIG_URL: $GOOGLE_OPENID_CONFIG_URL
       GOOGLE_OAUTH2_CERTS_URL: $GOOGLE_OAUTH2_CERTS_URL
+
     ports:
       - "$PHX_PORT:$PHX_PORT"
 
