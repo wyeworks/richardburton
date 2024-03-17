@@ -4,6 +4,7 @@ defmodule RichardBurton.Email do
   """
   use Ecto.Schema
   import Ecto.Changeset
+  import EctoCommons.EmailValidator
   import Swoosh.Email
 
   alias RichardBurton.Email
@@ -21,6 +22,7 @@ defmodule RichardBurton.Email do
     email
     |> cast(params, [:name, :institution, :address, :subject, :message])
     |> validate_required([:name, :address, :subject, :message])
+    |> validate_email(:address)
   end
 
   def contact(params) do
@@ -46,7 +48,7 @@ defmodule RichardBurton.Email do
         end
 
       %Ecto.Changeset{valid?: false} ->
-        {:error, {:invalid, changes.errors}}
+        {:error, {:invalid, RichardBurton.Validation.get_errors(changes)}}
     end
   end
 

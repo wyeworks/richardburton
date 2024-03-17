@@ -38,6 +38,7 @@ defmodule RichardBurton.Validation do
   defp get_description(%{validation: :length, kind: :min, count: 1}), do: :required
   defp get_description(%{validation: :assoc}), do: :required
   defp get_description(%{validation: :alpha2}), do: :alpha2
+  defp get_description(%{validation: :email}), do: :invalid
   defp get_description(%{constraint: :unique}), do: :conflict
 
   defp simplify_errors(node) when is_map(node) do
