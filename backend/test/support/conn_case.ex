@@ -59,4 +59,8 @@ defmodule RichardBurtonWeb.ConnCase do
     expect_auth_verify(n)
     expect(RichardBurton.AuthMock, :authorize, n, fn _, :admin -> :ok end)
   end
+
+  def expect_auth_recaptcha_verify(n \\ 1) do
+    expect(RichardBurton.Auth.RecaptchaMock, :verify, n, fn _ -> :ok end)
+  end
 end

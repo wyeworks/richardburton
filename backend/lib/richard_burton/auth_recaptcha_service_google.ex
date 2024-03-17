@@ -1,5 +1,11 @@
 defmodule RichardBurton.Auth.Recaptcha.Google do
-  @spec verify(binary()) :: none()
+  @moduledoc """
+  Google Recaptcha implementation for RichardBurton.Auth.Recaptcha behaviour
+  """
+  @behaviour RichardBurton.Auth.Recaptcha
+
+  @impl true
+  @spec verify(token :: String.t()) :: {:ok, String.t()} | {:error, String.t()}
   def verify(token) do
     verification_url = Application.get_env(:richard_burton, :google_recaptcha_verification_url)
     verification_secret = Application.get_env(:richard_burton, :google_recaptcha_secret_key)
