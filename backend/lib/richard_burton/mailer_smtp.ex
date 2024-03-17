@@ -4,6 +4,8 @@ defmodule RichardBurton.Mailer.SMTP do
   """
   @behaviour RichardBurton.Mailer
 
+  import Swoosh.Email
+
   use Swoosh.Mailer,
     otp_app: :richard_burton,
     adapter: Swoosh.Adapters.SMTP,
@@ -14,4 +16,26 @@ defmodule RichardBurton.Mailer.SMTP do
     tls: Application.compile_env(:richard_burton, :smtp_tls),
     retries: 1,
     no_mx_lookups: false
+
+  @spec send(RichardBurton.Email.t()) :: {:ok, any()} | {:error, any()}
+  def send(email) do
+    case deliver(get_swoosh_email(email)) do
+      {:ok, payload} -> {:ok, payload}
+      {:error, reason} -> {:error, reason}
+    end
+  end
+
+  @spec get_swoosh_email(RichardBurton.Email.t()) :: Swoosh.Email.t()
+  defp get_swoosh_email(email = %{address: address, subject: subject, message: message}) do
+    new(
+      from: {get_contact_name(email), address},
+      to: Application.get_env(:richard_burton, :smtp_from),
+      subject: subject,
+      text_body: message
+    )
+  end
+
+  defp get_contact_name(%{name: name, institution: nil}), do: name
+  defp get_contact_name(%{name: name, institution: ""}), do: name
+  defp get_contact_name(%{name: name, institution: institution}), do: "#{name} (#{institution})"
 end

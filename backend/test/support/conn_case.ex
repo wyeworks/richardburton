@@ -65,6 +65,6 @@ defmodule RichardBurtonWeb.ConnCase do
   end
 
   def expect_mailer_deliver(n \\ 1) do
-    expect(RichardBurton.MailerMock, :deliver, n, fn _ -> {:ok, "Whatever"} end)
+    expect(RichardBurton.MailerMock, :send, n, fn _ -> {:ok, "Whatever"} end)
   end
 end

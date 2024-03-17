@@ -3,10 +3,10 @@ defmodule RichardBurton.Mailer do
   Behaviour for Mailer
   """
 
-  @callback deliver(email :: Swoosh.Email.t()) :: {:ok, String.t()} | {:error, String.t()}
+  @callback send(email :: RichardBurton.Email.t()) :: {:ok, String.t()} | {:error, String.t()}
 
-  @spec deliver(email :: Swoosh.Email.t()) :: {:ok, String.t()} | {:error, String.t()}
-  def deliver(email), do: impl().deliver(email)
+  @spec send(email :: RichardBurton.Email.t()) :: {:ok, any()} | {:error, any()}
+  def send(email), do: impl().send(email)
 
   defp impl,
     do: Application.get_env(:richard_burton, :mailer, RichardBurton.Mailer.SMTP)
