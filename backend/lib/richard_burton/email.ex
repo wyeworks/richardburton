@@ -26,29 +26,26 @@ defmodule RichardBurton.Email do
   end
 
   def contact(params) do
-    case changes = Email.changeset(%Email{}, params) do
+    case changeset = Email.changeset(%Email{}, params) do
       %Ecto.Changeset{valid?: true} ->
-        email =
-          %{
-            address: address,
-            subject: subject,
-            message: message
-          } = Ecto.Changeset.apply_changes(changes)
-
-        case Mailer.deliver(
-               new(
-                 from: {get_contact_name(email), address},
-                 to: Application.get_env(:richard_burton, :smtp_from),
-                 subject: subject,
-                 text_body: message
-               )
-             ) do
-          {:ok, _} -> :ok
-          {:error, reason} -> {:error, reason}
-        end
+        changeset |> Ecto.Changeset.apply_changes() |> deliver
 
       %Ecto.Changeset{valid?: false} ->
-        {:error, {:invalid, RichardBurton.Validation.get_errors(changes)}}
+        {:error, {:invalid, RichardBurton.Validation.get_errors(changeset)}}
+    end
+  end
+
+  defp deliver(email = %{address: address, subject: subject, message: message}) do
+    case Mailer.deliver(
+           new(
+             from: {get_contact_name(email), address},
+             to: Application.get_env(:richard_burton, :smtp_from),
+             subject: subject,
+             text_body: message
+           )
+         ) do
+      {:ok, _} -> :ok
+      {:error, reason} -> {:error, reason}
     end
   end
 
