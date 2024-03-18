@@ -15,11 +15,12 @@ defmodule RichardBurton.Email do
     field :address, :string
     field :subject, :string
     field :message, :string
+    field :to, :string
   end
 
   def changeset(email, params) do
     email
-    |> cast(params, [:name, :institution, :address, :subject, :message])
+    |> cast(params, [:name, :institution, :address, :subject, :message, :to])
     |> validate_required([:name, :address, :subject, :message])
     |> validate_email(:address)
   end
@@ -41,7 +42,7 @@ defmodule RichardBurton.Email do
     end
   end
 
-  defp send_email(email, confirmation: true) do
+  defp send_email(%{address: address} = email, confirmation: true) do
     case Mailer.send(email) do
       {:ok, _} ->
         send_email(
@@ -50,7 +51,8 @@ defmodule RichardBurton.Email do
             institution: "IFRS Canoas",
             address: Application.get_env(:richard_burton, :smtp_from),
             subject: "Contact Confirmation from Richard Burton",
-            message: get_confimation_message(email)
+            message: get_confimation_message(email),
+            to: address
           },
           confirmation: false
         )
