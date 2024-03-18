@@ -26,10 +26,20 @@ defmodule RichardBurton.Mailer.SMTP do
   end
 
   @spec get_swoosh_email(RichardBurton.Email.t()) :: Swoosh.Email.t()
-  defp get_swoosh_email(email = %{address: address, subject: subject, message: message}) do
+  defp get_swoosh_email(email = %{address: address, subject: subject, message: message, to: nil}) do
     new(
       from: {get_contact_name(email), address},
       to: Application.get_env(:richard_burton, :smtp_from),
+      subject: subject,
+      text_body: message
+    )
+  end
+
+  @spec get_swoosh_email(RichardBurton.Email.t()) :: Swoosh.Email.t()
+  defp get_swoosh_email(email = %{address: address, subject: subject, message: message, to: to}) do
+    new(
+      from: {get_contact_name(email), address},
+      to: to,
       subject: subject,
       text_body: message
     )
