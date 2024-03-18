@@ -63,7 +63,7 @@ const ColumnHeader: FC<{ colId: ColId; toggleable?: boolean }> = ({
                   label={hideLabel}
                   labelSrOnly
                   width="fit"
-                  type="outline"
+                  variant="outline"
                   Icon={VisibilityOffIcon}
                   onClick={() => setVisible([colId], false)}
                 />

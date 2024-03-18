@@ -1,9 +1,9 @@
+import GoogleIcon from "assets/google.svg";
 import Button from "components/Button";
 import Layout from "components/Layout";
 import { NextPage } from "next";
-import { useRouter } from "next/router";
-import GoogleIcon from "assets/google.svg";
 import { signIn, useSession } from "next-auth/react";
+import { useRouter } from "next/router";
 import { useEffect } from "react";
 
 type ErrorCode = "AccessDenied" | "Verification" | "Default" | "Configuration";
@@ -66,7 +66,7 @@ const SignIn: NextPage = () => {
               </div>
               <Button
                 label="Try again"
-                type="outline"
+                variant="outline"
                 onClick={() => signIn("google", { callbackUrl: "/" })}
                 Icon={GoogleIcon}
               />

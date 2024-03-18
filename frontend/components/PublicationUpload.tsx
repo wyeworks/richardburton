@@ -1,8 +1,8 @@
+import UploadIcon from "assets/upload.svg";
 import { Publication, ValidationResult } from "modules/publication";
 import { ChangeEvent, FC, useRef, useState } from "react";
-import Tooltip from "./Tooltip";
-import UploadIcon from "assets/upload.svg";
 import Button from "./Button";
+import Tooltip from "./Tooltip";
 
 const PublicationUpload: FC = () => {
   const { useResetAll, useTotalCount } = Publication.STORE;
@@ -48,7 +48,7 @@ const PublicationUpload: FC = () => {
       <Tooltip warning message={message} placement="top">
         <Button
           label="Upload.csv"
-          type="outline"
+          variant="outline"
           Icon={UploadIcon}
           alignment="left"
           width="fixed"

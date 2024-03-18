@@ -9,7 +9,7 @@ import {
 } from "react";
 
 type Props = Omit<
-  HTMLProps<HTMLInputElement>,
+  HTMLProps<HTMLTextAreaElement>,
   "value" | "onChange" | "className" | "label"
 > & {
   value: string;
@@ -17,18 +17,18 @@ type Props = Omit<
   onChange?: (value: string) => void;
   left?: ReactNode;
   right?: ReactNode;
-  inputRef?: Ref<HTMLInputElement>;
+  inputRef?: Ref<HTMLTextAreaElement>;
   label?: string;
 };
 
-export default forwardRef<HTMLDivElement, Props>(function TextInput(
+export default forwardRef<HTMLDivElement, Props>(function TextArea(
   { value, error, left, right, inputRef, onChange, label, ...props },
   ref,
 ) {
   const labelId = useId();
   const errorId = useId();
 
-  function handleChange(event: ChangeEvent<HTMLInputElement>) {
+  function handleChange(event: ChangeEvent<HTMLTextAreaElement>) {
     onChange?.(event.target.value);
   }
 
@@ -45,11 +45,11 @@ export default forwardRef<HTMLDivElement, Props>(function TextInput(
       )}
     >
       {left}
-      <input
+      <textarea
         {...props}
         ref={inputRef}
         value={value}
-        className="w-full px-1 bg-transparent outline-none peer shrink grow placeholder:text-xs error:focus:text-white error:placeholder-white"
+        className="w-full px-1 bg-transparent outline-none min-h-40 peer shrink grow placeholder:text-xs error:focus:text-white error:placeholder-white"
         onChange={handleChange}
         data-error={Boolean(error)}
         placeholder={label ? "" : props.placeholder}
@@ -64,7 +64,7 @@ export default forwardRef<HTMLDivElement, Props>(function TextInput(
             "absolute transition-all pointer-events-none",
             "peer-placeholder-shown:text-gray-600 peer-placeholder-shown:text-sm text-xs peer-focus:text-xs text-indigo-600 peer-focus:text-indigo-600",
             "peer-placeholder-shown:left-2 left-0 peer-focus:left-0 ",
-            "peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 -translate-y-full peer-focus:-translate-y-full top-0 peer-focus:top-0",
+            "peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-4 -translate-y-full peer-focus:-translate-y-full top-0 peer-focus:top-0",
             "peer-error:text-red-600 peer-error:-translate-y-full peer-error:top-0 peer-error:left-0 peer-error:text-xs",
           )}
         >

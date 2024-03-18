@@ -4,30 +4,32 @@ import { FC, forwardRef, HTMLProps, ReactNode } from "react";
 
 type Props = HTMLProps<HTMLButtonElement> & {
   label: string;
-  type?: "primary" | "secondary" | "outline" | "danger";
+  variant?: "primary" | "secondary" | "outline" | "danger";
   Icon?: FC<{ className: string }> | ReactNode;
   alignment?: "center" | "left";
   width?: "full" | "fixed" | "fit";
   labelSrOnly?: boolean;
+  type?: "button" | "submit" | "reset";
 };
 
 const Button = forwardRef<HTMLButtonElement, Props>(function Button(
   {
     label,
     onClick,
-    type = "primary",
+    variant = "primary",
     Icon,
     alignment = "center",
     width = "full",
+    type = "button",
     labelSrOnly,
     ...props
   },
   ref,
 ) {
-  const isPrimary = type === "primary";
-  const isSecondary = type === "secondary";
-  const isOutline = type === "outline";
-  const isDanger = type === "danger";
+  const isPrimary = variant === "primary";
+  const isSecondary = variant === "secondary";
+  const isOutline = variant === "outline";
+  const isDanger = variant === "danger";
   const isTextCentered = alignment === "center";
   const isFixedWidth = width === "fixed";
   const isFullWidth = width === "full";
@@ -52,6 +54,7 @@ const Button = forwardRef<HTMLButtonElement, Props>(function Button(
         },
       )}
       onClick={onClick}
+      type={type}
     >
       {Icon && isFunction(Icon) ? (
         <Icon

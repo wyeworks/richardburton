@@ -1,6 +1,6 @@
 defmodule RichardBurtonWeb.AuthorControllerTest do
   @moduledoc """
-  Tests for the Publication controller
+  Tests for the Author controller
   """
   use RichardBurtonWeb.ConnCase
   import Routes, only: [author_path: 2]

@@ -17,6 +17,18 @@ services:
       PGHOST: db
       # Google Identity Provider
       GOOGLE_CLIENT_ID: $GOOGLE_CLIENT_ID
+      # Google Recaptcha
+      GOOGLE_RECAPTCHA_SECRET_KEY: $GOOGLE_RECAPTCHA_SECRET_KEY
+      GOOGLE_RECAPTCHA_VERIFICATION_URL: https://www.google.com/recaptcha/api/siteverify
+      # SMTP
+      SMTP_HOST: $SMTP_HOST
+      SMTP_USER: $SMTP_USER
+      SMTP_PASS: $SMTP_PASS
+      SMTP_PORT: $SMTP_PORT
+      SMTP_FROM: $SMTP_FROM
+      SMTP_NAME: $SMTP_NAME
+      SMTP_TLS: $SMTP_TLS
+
     depends_on:
       - db
 

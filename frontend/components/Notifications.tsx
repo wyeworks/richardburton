@@ -1,5 +1,6 @@
+import { FloatingPortal } from "@floating-ui/react";
 import classNames from "classnames";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { useRouter } from "next/router";
 import { FC, useEffect } from "react";
 import {
@@ -47,7 +48,7 @@ const Notifications: FC = () => {
     }
   }, [notifications, setNotifications]);
 
-  useEffect(() => resetNotifications, [router, resetNotifications]);
+  useEffect(() => resetNotifications, [router.pathname, resetNotifications]);
 
   const shownNotificationsCount =
     notifications.length === MAX_SNACKBARS
@@ -67,38 +68,41 @@ const Notifications: FC = () => {
     });
 
   return (
-    <section className="fixed z-50 flex flex-col items-center space-y-2 -translate-x-1/2 left-1/2 top-10">
-      <AnimatePresence>
-        {snackbars.map(
-          ({ key, message, level }) =>
-            (key !== "notification-stack" || stackedNotificationsCount > 0) && (
-              <motion.div
-                layout
-                key={key}
-                className="flex py-2 pl-1 pr-3 space-x-3 bg-white rounded shadow-md w-96"
-                initial={{ scale: 0.9, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0.9, opacity: 0 }}
-                transition={{ duration: 0.1 }}
-                aria-modal="true"
-                aria-describedby="snackbar-message"
-                aria-label="Notification"
-              >
-                <div
-                  role="presentation"
-                  className={classNames(
-                    "flex items-center justify-center w-7 h-6",
-                    { "text-indigo-700 text-xl": level === "info" },
-                  )}
+    <FloatingPortal>
+      <section className="fixed z-[60] flex flex-col items-center space-y-2 -translate-x-1/2 left-1/2 top-10">
+        <AnimatePresence>
+          {snackbars.map(
+            ({ key, message, level }) =>
+              (key !== "notification-stack" ||
+                stackedNotificationsCount > 0) && (
+                <motion.div
+                  layout
+                  key={key}
+                  className="flex py-2 pl-1 pr-3 space-x-3 bg-white rounded shadow-md w-96"
+                  initial={{ scale: 0.9, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0.9, opacity: 0 }}
+                  transition={{ duration: 0.1 }}
+                  aria-modal="true"
+                  aria-describedby="snackbar-message"
+                  aria-label="Notification"
                 >
-                  {NOTIFICATION_ICONS[level]}
-                </div>
-                <label id={`snackbar-message-${key}`}>{message}</label>
-              </motion.div>
-            ),
-        )}
-      </AnimatePresence>
-    </section>
+                  <div
+                    role="presentation"
+                    className={classNames(
+                      "flex items-center justify-center w-7 h-6",
+                      { "text-indigo-700 text-xl": level === "info" },
+                    )}
+                  >
+                    {NOTIFICATION_ICONS[level]}
+                  </div>
+                  <label id={`snackbar-message-${key}`}>{message}</label>
+                </motion.div>
+              ),
+          )}
+        </AnimatePresence>
+      </section>
+    </FloatingPortal>
   );
 };
 
@@ -121,4 +125,4 @@ function useNotify(): Notifier {
 }
 
 export default Notifications;
-export { useNotify, NOTIFICATIONS as _NOTIFICATIONS, _notify };
+export { NOTIFICATIONS as _NOTIFICATIONS, _notify, useNotify };

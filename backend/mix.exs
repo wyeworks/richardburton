@@ -37,6 +37,7 @@ defmodule RichardBurton.MixProject do
       {:phoenix_ecto, "~> 4.5.1"},
       {:phoenix_view, "~> 2.0.3"},
       {:ecto_sql, "~> 3.11.1"},
+      {:ecto_commons, "~> 0.3.4"},
       {:postgrex, "~> 0.17.5"},
       {:phoenix_live_dashboard, "~> 0.8.3"},
       {:telemetry_metrics, "~> 0.6.2"},
@@ -52,7 +53,9 @@ defmodule RichardBurton.MixProject do
       {:httpoison, "~> 2.2.1"},
       {:mox, "~> 1.1.0", only: :test},
       {:countries, "~> 1.6.0"},
-      {:ssl_verify_fun, "~> 1.1.7"}
+      {:ssl_verify_fun, "~> 1.1.7"},
+      {:swoosh, "~> 1.16.1"},
+      {:gen_smtp, "1.2.0"}
     ]
   end
 

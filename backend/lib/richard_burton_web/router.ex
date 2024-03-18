@@ -18,9 +18,19 @@ defmodule RichardBurtonWeb.Router do
     plug(RichardBurtonWeb.Plugs.AuthorizeAdmin)
   end
 
+  pipeline :authorize_recaptcha do
+    plug(RichardBurtonWeb.Plugs.AuthorizeRecaptcha)
+  end
+
   scope "/api", RichardBurtonWeb do
     pipe_through(:api)
     get("/publications", PublicationController, :index)
+  end
+
+  scope "/api", RichardBurtonWeb do
+    pipe_through(:api)
+    pipe_through(:authorize_recaptcha)
+    post("/contact", EmailController, :contact)
   end
 
   scope "/api", RichardBurtonWeb do
