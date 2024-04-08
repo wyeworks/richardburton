@@ -46,7 +46,7 @@
     "@types/node": "20.11.25",
     "@types/object-hash": "^3.0.6",
     "@types/qs": "^6.9.12",
-    "@types/react": "18.2.64",
+    "@types/react": "18.2.74",
     "@types/react-dom": "18.2.21",
     "@types/uuid": "^9.0.8",
     "@vitejs/plugin-react": "^4.2.1",
