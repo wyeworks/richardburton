@@ -42,7 +42,7 @@ defmodule RichardBurton.Email do
     end
   end
 
-  defp send_email(%{address: address} = email, confirmation: true) do
+  defp send_email(email = %{address: address}, confirmation: true) do
     case Mailer.send(email) do
       {:ok, _} ->
         send_email(
