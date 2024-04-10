@@ -8,7 +8,7 @@ const LearnMoreButton: FC = () => {
 
   return (
     <Button
-      type="outline"
+      variant="outline"
       label="Learn more about the Richard Burton Platform here"
       onClick={() => modal.open()}
     />

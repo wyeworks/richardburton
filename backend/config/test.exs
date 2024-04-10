@@ -27,7 +27,7 @@ config :richard_burton, RichardBurtonWeb.Endpoint,
   server: false
 
 # Print only warnings and errors during test
-config :logger, backends: [:console], level: :warn
+config :logger, backends: [:console], level: :warning
 
 # Initialize plugs at runtime for faster test compilation
 config :phoenix, :plug_init_mode, :runtime

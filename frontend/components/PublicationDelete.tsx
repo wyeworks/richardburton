@@ -1,3 +1,4 @@
+import TrashIcon from "assets/trash.svg";
 import { Publication } from "modules/publication";
 import { FC } from "react";
 import {
@@ -6,7 +7,6 @@ import {
   useSelectionSize,
 } from "react-selection-manager";
 import Button from "./Button";
-import TrashIcon from "assets/trash.svg";
 
 const PublicationDelete: FC = () => {
   const setDeleted = Publication.STORE.useSetDeleted();
@@ -24,7 +24,7 @@ const PublicationDelete: FC = () => {
   return (
     <Button
       label={`Delete ${selectionSize}`}
-      type="danger"
+      variant="danger"
       alignment="left"
       width="fit"
       Icon={TrashIcon}

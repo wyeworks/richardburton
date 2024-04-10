@@ -1,10 +1,10 @@
+import ErrorCircleIcon from "assets/error-circle.svg";
+import { toString } from "lodash";
 import { Publication } from "modules/publication";
 import { FC } from "react";
-import ErrorCircleIcon from "assets/error-circle.svg";
-import Tooltip from "./Tooltip";
-import Button from "./Button";
-import { toString } from "lodash";
 import { useRecoilCallback } from "recoil";
+import Button from "./Button";
+import Tooltip from "./Tooltip";
 
 const PublicationErrorCounter: FC = () => {
   const publicationCount = Publication.STORE.useVisibleCount();
@@ -40,7 +40,7 @@ const PublicationErrorCounter: FC = () => {
       } with errors`}
     >
       <Button
-        type="danger"
+        variant="danger"
         width="fit"
         Icon={ErrorCircleIcon}
         label={toString(invalidPublicationCount)}
