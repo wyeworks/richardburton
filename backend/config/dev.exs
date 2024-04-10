@@ -3,6 +3,14 @@ import Config
 config :richard_burton,
   phx_consumer_url: "http://localhost:3000"
 
+config :richard_burton,
+  google_openid_config_url: "https://accounts.google.com/.well-known/openid-configuration",
+  google_oauth2_certs_url: "https://www.googleapis.com/oauth2/v2/certs",
+  google_recaptcha_verification_url: "https://www.google.com/recaptcha/api/siteverify",
+  smtp_from: "richard.burton@canoas.ifrs.edu.br",
+  smtp_name: "Richard Burton",
+  smtp_tls: :never
+
 import_config "dev.local.exs"
 
 # Configure your database

@@ -113,10 +113,14 @@ Environment variables are configuration units relevant to the app's build or run
 It's possible to run the development server using Docker, with fast reload enabled both in the frontend and in the backend server. You must have [Docker](https://www.docker.com/) installed for this to work. Environment variables, except secrets, are already set with recommended values in `docker.compose.dev.yml`. You must provide secret values in a `.env.development.local` file in the project's root with the following [environment variables](#environment-variables):
 
 ```Properties
-GOOGLE_CLIENT_ID=value
-GOOGLE_CLIENT_SECRET=value
-GOOGLE_OPENID_CONFIG_URL=value
-GOOGLE_OAUTH2_CERTS_URL=value
+GOOGLE_CLIENT_ID=?
+GOOGLE_CLIENT_SECRET=?
+GOOGLE_RECAPTCHA_SECRET_KEY=?
+NEXT_PUBLIC_GOOGLE_RECAPTCHA_SITEKEY=?
+SMTP_HOST=?
+SMTP_USER=?
+SMTP_PASS=?
+SMTP_PORT=?
 ```
 
 We recommend using `GNU Make` as command line tool for running the server without having to specify all the configuration flags in `docker compose up` command. Defined `make` targets for the development environments are:
@@ -159,9 +163,13 @@ The configuration file must follow this format:
 Import Config
 
 config :richard_burton,
-  google_cliente_id: "value",
-  google_openid_config_url: "value",
-  google_oauth2_certs_url: "value",
+  google_client_id: ?,
+  google_recaptcha_secret_key: ?,
+  smtp_host: ?,
+  smtp_user: ?,
+  smtp_pass: ?,
+  smtp_port: ?
+  
 ```
 
 ## To start the frontend server:
@@ -181,8 +189,9 @@ To configure frontend secrets in development mode, you should create a file name
 The configuration file must follow this format:
 
 ```properties
-GOOGLE_CLIENT_ID=value
-GOOGLE_CLIENT_SECRET=value
+GOOGLE_CLIENT_ID=?
+GOOGLE_CLIENT_SECRET=?
+NEXT_PUBLIC_GOOGLE_RECAPTCHA_SITEKEY=?
 ```
 
 # Deployment

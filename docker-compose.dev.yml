@@ -39,6 +39,10 @@ services:
       GOOGLE_OAUTH2_CERTS_URL: https://www.googleapis.com/oauth2/v2/certs
       # Ecto configuration
       PGDATABASE: richard_burton_dev
+       # SMTP
+      SMTP_FROM: riburton@canoas.ifrs.edu.br
+      SMTP_NAME: Richard & Isabel Burton Platform
+      SMTP_TLS: never
     volumes:
       - ./backend:/app
     ports:
