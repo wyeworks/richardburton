@@ -1,3 +1,4 @@
+import CopyIcon from "assets/copy.svg";
 import { Publication } from "modules/publication";
 import { FC } from "react";
 import {
@@ -6,7 +7,6 @@ import {
   useSelectionSize,
 } from "react-selection-manager";
 import Button from "./Button";
-import CopyIcon from "assets/copy.svg";
 
 const PublicationDuplicate: FC = () => {
   const duplicate = Publication.STORE.useDuplicate();
@@ -26,7 +26,7 @@ const PublicationDuplicate: FC = () => {
   return (
     <Button
       label={`Duplicate ${selectionSize}`}
-      type="secondary"
+      variant="secondary"
       alignment="left"
       width="fit"
       Icon={CopyIcon}

@@ -3,6 +3,7 @@ import { Key } from "app";
 import CloseIcon from "assets/close.svg";
 import Logo from "assets/logo.svg";
 import clsx from "classnames";
+import FocusTrap from "focus-trap-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useRouter } from "next/router";
 import {
@@ -72,7 +73,7 @@ interface Props extends PropsWithChildren {
 }
 
 const Modal: FC<Props> = ({ children, isOpen, onClose }) => {
-  function handleOverlayClick(event: KeyboardEvent | MouseEvent) {
+  function handleOverlayMouseDown(event: MouseEvent) {
     if (event.target === event.currentTarget) {
       onClose();
     }
@@ -86,37 +87,39 @@ const Modal: FC<Props> = ({ children, isOpen, onClose }) => {
     <AnimatePresence>
       {isOpen && (
         <FloatingPortal>
-          <motion.div
-            aria-modal="true"
-            aria-label="Close modal"
-            className="fixed inset-0 z-50 bg-indigo-900/30"
-            onClick={handleOverlayClick}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-          >
-            <Header onClose={onClose} />
-            <motion.dialog
-              open
-              role="dialog"
-              className={clsx(
-                "mb-5 bg-white sm:rounded-lg shadow-lg scrollbar-thin scrollbar-thumb-indigo-600",
-                "overflow-y-scroll overflow-x-clip",
-                "absolute left-1/2 absolute-center-x",
-                "w-full sm:w-11/12 lg:w-2/3 xl:w-1/2",
-                "h-full sm:h-auto sm:max-h-[85%] lg:max-h-[80%] min-h-0",
-              )}
-              initial={{ scale: 0.9, transform: "translateX(-50%)" }}
-              animate={{
-                scale: 1,
-                top: isWiderThanSmall ? "12%" : "0",
-                transform: "translateX(-50%)",
-              }}
-              exit={{ scale: 0.9, top: 0 }}
+          <FocusTrap active={process.env.NODE_ENV !== "test"}>
+            <motion.div
+              aria-modal="true"
+              aria-label="Close modal"
+              className="fixed inset-0 z-50 bg-indigo-900/30"
+              onMouseDown={handleOverlayMouseDown}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
             >
-              {children}
-            </motion.dialog>
-          </motion.div>
+              <Header onClose={onClose} />
+              <motion.dialog
+                open
+                role="dialog"
+                className={clsx(
+                  "mb-5 bg-white sm:rounded-lg shadow-lg scrollbar-thin scrollbar-thumb-indigo-600",
+                  "overflow-y-auto overflow-x-clip",
+                  "absolute left-1/2 absolute-center-x",
+                  "w-full sm:w-11/12 lg:w-2/3 xl:w-1/2",
+                  "h-full sm:h-auto sm:max-h-[85%] lg:max-h-[80%] min-h-0",
+                )}
+                initial={{ scale: 0.9, transform: "translateX(-50%)" }}
+                animate={{
+                  scale: 1,
+                  top: isWiderThanSmall ? "12%" : "0",
+                  transform: "translateX(-50%)",
+                }}
+                exit={{ scale: 0.9, top: 0 }}
+              >
+                {children}
+              </motion.dialog>
+            </motion.div>
+          </FocusTrap>
         </FloatingPortal>
       )}
     </AnimatePresence>

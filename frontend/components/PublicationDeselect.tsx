@@ -1,6 +1,6 @@
-import { FC } from "react";
 import DeselectIcon from "assets/deselect.svg";
-import { useSelectionSize, useClearSelection } from "react-selection-manager";
+import { FC } from "react";
+import { useClearSelection, useSelectionSize } from "react-selection-manager";
 import Button from "./Button";
 
 const PublicationDeselect: FC = () => {
@@ -9,7 +9,7 @@ const PublicationDeselect: FC = () => {
 
   return (
     <Button
-      type="outline"
+      variant="outline"
       width="fit"
       label={`Deselect ${selectionSize}`}
       Icon={DeselectIcon}

@@ -1,5 +1,4 @@
 {
-  "elixir.projectPath": "./backend",
   "elixirLS.projectDir": "./backend",
   "files.associations": {
     ".env*": "properties"
@@ -9,5 +8,8 @@
     "source.organizeImports": "explicit"
   },
   "editor.defaultFormatter": "esbenp.prettier-vscode",
-  "prettier.requireConfig": true
+  "prettier.requireConfig": true,
+  "[elixir]": {
+    "editor.defaultFormatter": "JakeBecker.elixir-ls"
+  }
 }

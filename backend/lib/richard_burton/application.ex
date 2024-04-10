@@ -27,7 +27,16 @@ defmodule RichardBurton.Application do
       "PHX_CONSUMER_URL",
       "GOOGLE_CLIENT_ID",
       "GOOGLE_OPENID_CONFIG_URL",
-      "GOOGLE_OAUTH2_CERTS_URL"
+      "GOOGLE_OAUTH2_CERTS_URL",
+      "GOOGLE_RECAPTCHA_VERIFICATION_URL",
+      "GOOGLE_RECAPTCHA_SECRET_KEY",
+      "SMTP_HOST",
+      "SMTP_USER",
+      "SMTP_PASS",
+      "SMTP_PORT",
+      "SMTP_FROM",
+      "SMTP_NAME",
+      "SMTP_TLS"
     ]
     |> Enum.map(&{&1, &1 |> String.downcase() |> String.to_atom()})
     |> Enum.filter(fn {key, _} -> is_nil(System.get_env(key)) end)
