@@ -14,16 +14,32 @@ jobs:
           known_hosts: ${{ secrets.IFRS_SSH_HOST }}
           if_key_exists: fail
       - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - run: export TZ=America/Sao_Paulo
       - run: git config --global user.email "ghactions@wyeworks.com"
       - run: git config --global user.name "GitHub Actions from WyeWorks"
+      - run: git remote add ifrs-frontend git@gitlab.com:ifrscanoas/richard-burton/frontend.git
+      - run: git fetch ifrs-frontend
+      # Splits the repo so we can push only the frontend folder
       - run: git subtree split -P frontend -b stage-release
       - run: git checkout stage-release
-      - run: git clean -f -d
-      - run: rm -f Dockerfile .dockerignore
-      - run: git commit -a -m "Remove Dockerfile and .dockerignore"
-      - run: git remote add ifrs-frontend git@gitlab.com:ifrscanoas/richard-burton/frontend.git
-      - run: git reset $(git commit-tree HEAD^{tree} -m "Release to Stage `TZ=America/Sao_Paulo date '+%d %b %Y %T São Paulo (UTC%Z)'`")
+      # Squashes the whole branch into a single temporary commit
+      - run: git reset --soft $(git rev-list --max-parents=0 stage-release)
+      - run: git commit --amend -m "Temporary Commit"
+      # Generates a diff between the current branch and the IFRS remote
+      - run: git diff ifrs-frontend/stage > changes.diff
+      # Rebases the current branch with the IFRS remote to ensure fast-forward merge in the IFRS remote
       - run: git pull --rebase ifrs-frontend stage -X theirs
+      - run: git reset --soft ifrs-frontend/stage
+      # Applies the diff generated before, so deletions are kept
+      - run: git apply --reject changes.diff || echo "Patch partially applied with .rej files generated." && cat *.rej
+      - run: git add . -A
+      # Ommits files that must not be synced with the ones in the IFRS remote
+      - run: git restore --staged .gitignore Dockerfile .dockerignore .gitlab-ci.yml .ci '*rej' '*diff' '*gitkeep'
+      # Commits and push a single release commit
+      - run: git status
+      - run: git commit --amend -m "Release to Stage `TZ=America/Sao_Paulo date '+%d %b %Y %T São Paulo (UTC%Z)'`"
       - run: git push -f ifrs-frontend stage-release
 
   DeployBackend:
@@ -36,15 +52,30 @@ jobs:
           known_hosts: ${{ secrets.IFRS_SSH_HOST }}
           if_key_exists: fail
       - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
       - run: export TZ=America/Sao_Paulo
       - run: git config --global user.email "ghactions@wyeworks.com"
       - run: git config --global user.name "GitHub Actions from WyeWorks"
+      - run: git remote add ifrs-backend git@gitlab.com:ifrscanoas/richard-burton/backend.git
+      - run: git fetch ifrs-backend
+      # Splits the repo so we can push only the backend folder
       - run: git subtree split -P backend -b stage-release
       - run: git checkout stage-release
-      - run: git clean -f -d
-      - run: rm -f Dockerfile .dockerignore
-      - run: git commit -a -m "Remove Dockerfile and .dockerignore"
-      - run: git remote add ifrs-backend git@gitlab.com:ifrscanoas/richard-burton/backend.git
-      - run: git reset $(git commit-tree HEAD^{tree} -m "Release to Stage `TZ=America/Sao_Paulo date '+%d %b %Y %T São Paulo (UTC%Z)'`")
+      # Squashes the whole branch into a single temporary commit
+      - run: git reset --soft $(git rev-list --max-parents=0 stage-release)
+      - run: git commit --amend -m "Temporary Commit"
+      # Generates a diff between the current branch and the IFRS remote
+      - run: git diff ifrs-backend/stage > changes.diff
+      # Rebases the current branch with the IFRS remote to ensure fast-forward merge in the IFRS remote
       - run: git pull --rebase ifrs-backend stage -X theirs
+      - run: git reset --soft ifrs-backend/stage
+      # Applies the diff generated before, so deletions are kept
+      - run: git apply --reject changes.diff || echo "Patch partially applied with .rej files generated." && cat *.rej
+      - run: git add . -A
+      # Ommits files that must not be synced with the ones in the IFRS remote
+      - run: git restore --staged .gitignore Dockerfile .dockerignore .gitlab-ci.yml .ci '*rej' '*diff' '*gitkeep'
+      # Commits and push a single release commit
+      - run: git status
+      - run: git commit --amend -m "Release to Stage `TZ=America/Sao_Paulo date '+%d %b %Y %T São Paulo (UTC%Z)'`"
       - run: git push -f ifrs-backend stage-release
