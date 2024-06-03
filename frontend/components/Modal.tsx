@@ -1,9 +1,12 @@
-import { FloatingPortal } from "@floating-ui/react";
+import {
+  FloatingFocusManager,
+  FloatingPortal,
+  useFloating,
+} from "@floating-ui/react";
 import { Key } from "app";
 import CloseIcon from "assets/close.svg";
 import Logo from "assets/logo.svg";
 import clsx from "classnames";
-import FocusTrap from "focus-trap-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useRouter } from "next/router";
 import {
@@ -83,12 +86,15 @@ const Modal: FC<Props> = ({ children, isOpen, onClose }) => {
 
   const isWiderThanSmall = useMediaQuery({ query: "(min-width: 640px)" });
 
+  const { context, refs } = useFloating();
+
   return (
     <AnimatePresence>
       {isOpen && (
         <FloatingPortal>
-          <FocusTrap active={process.env.NODE_ENV !== "test"}>
+          <FloatingFocusManager context={context} initialFocus={refs.floating}>
             <motion.div
+              ref={refs.setFloating}
               aria-modal="true"
               aria-label="Close modal"
               className="fixed inset-0 z-50 bg-indigo-900/30"
@@ -119,7 +125,7 @@ const Modal: FC<Props> = ({ children, isOpen, onClose }) => {
                 {children}
               </motion.dialog>
             </motion.div>
-          </FocusTrap>
+          </FloatingFocusManager>
         </FloatingPortal>
       )}
     </AnimatePresence>
