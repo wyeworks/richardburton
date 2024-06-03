@@ -11,8 +11,8 @@ defmodule RichardBurtonWeb.EmailController do
       {:error, {:invalid, issues}} ->
         conn |> put_status(400) |> json(%{issues: issues})
 
-      {:error, _} ->
-        conn |> put_status(500) |> json(%{message: "Could not send email."})
+      {:error, reason} ->
+        throw(reason)
     end
   end
 end
