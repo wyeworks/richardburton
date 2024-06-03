@@ -49,7 +49,7 @@ defmodule RichardBurton.Email do
           %{
             name: "Richard Burton",
             institution: "IFRS Canoas",
-            address: Application.get_env(:richard_burton, :smtp_from),
+            address: System.get_env("SMTP_FROM"),
             subject: "Contact Confirmation from Richard Burton",
             message: get_confimation_message(email),
             to: address

@@ -6,20 +6,24 @@ defmodule RichardBurton.Mailer.SMTP do
 
   import Swoosh.Email
 
-  use Swoosh.Mailer,
-    otp_app: :richard_burton,
-    adapter: Swoosh.Adapters.SMTP,
-    relay: Application.compile_env(:richard_burton, :smtp_host),
-    username: Application.compile_env(:richard_burton, :smtp_user),
-    password: Application.compile_env(:richard_burton, :smtp_pass),
-    port: Application.compile_env(:richard_burton, :smtp_port),
-    tls: Application.compile_env(:richard_burton, :smtp_tls),
-    retries: 1,
-    no_mx_lookups: false
+  use Swoosh.Mailer, otp_app: :richard_burton
+
+  defp config() do
+    [
+      adapter: Swoosh.Adapters.SMTP,
+      relay: System.get_env("SMTP_HOST"),
+      username: System.get_env("SMTP_USER"),
+      password: System.get_env("SMTP_PASS"),
+      port: System.get_env("SMTP_PORT"),
+      tls: System.get_env("SMTP_TLS"),
+      retries: 1,
+      no_mx_lookups: false
+    ]
+  end
 
   @spec send(RichardBurton.Email.t()) :: {:ok, any()} | {:error, any()}
   def send(email) do
-    case deliver(get_swoosh_email(email)) do
+    case deliver(get_swoosh_email(email), config()) do
       {:ok, payload} -> {:ok, payload}
       {:error, reason} -> {:error, reason}
     end
