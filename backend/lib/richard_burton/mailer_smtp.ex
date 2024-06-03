@@ -15,7 +15,7 @@ defmodule RichardBurton.Mailer.SMTP do
       username: System.get_env("SMTP_USER"),
       password: System.get_env("SMTP_PASS"),
       port: System.get_env("SMTP_PORT"),
-      tls: System.get_env("SMTP_TLS"),
+      tls: String.to_atom(System.get_env("SMTP_TLS")),
       retries: 1,
       no_mx_lookups: false
     ]
