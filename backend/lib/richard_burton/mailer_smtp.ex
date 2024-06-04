@@ -9,17 +9,23 @@ defmodule RichardBurton.Mailer.SMTP do
   use Swoosh.Mailer, otp_app: :richard_burton
 
   defp config() do
-    [
-      adapter: Swoosh.Adapters.SMTP,
-      relay: System.get_env("SMTP_HOST"),
-      username: System.get_env("SMTP_USER"),
-      password: System.get_env("SMTP_PASS"),
-      port: System.get_env("SMTP_PORT"),
-      tls: System.get_env("SMTP_TLS"),
-      retries: 1,
-      no_mx_lookups: false
-    ]
+    Keyword.merge(
+      [
+        adapter: Swoosh.Adapters.SMTP,
+        relay: System.get_env("SMTP_HOST"),
+        username: System.get_env("SMTP_USER"),
+        port: System.get_env("SMTP_PORT"),
+        tls: System.get_env("SMTP_TLS"),
+        retries: 1,
+        no_mx_lookups: false
+      ],
+      config_auth(System.get_env("SMTP_PASS"))
+    )
   end
+
+  defp config_auth(nil), do: [auth: :never]
+  defp config_auth(""), do: [auth: :never]
+  defp config_auth(password), do: [password: password]
 
   @spec send(RichardBurton.Email.t()) :: {:ok, any()} | {:error, any()}
   def send(email) do
