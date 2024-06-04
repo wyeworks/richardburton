@@ -123,4 +123,20 @@ describe("useForm", () => {
       },
     });
   });
+
+  test("inputs are disabled when form is disabled", () => {
+    const Schema = z.object({
+      foo: z.string().min(1, "Required"),
+      bar: z.string().min(1, "Required"),
+    });
+
+    const hook = renderHook(() => useForm(Schema, { disabled: true }));
+
+    expect(hook.result.current).toMatchObject({
+      inputs: {
+        foo: { disabled: true },
+        bar: { disabled: true },
+      },
+    });
+  });
 });
