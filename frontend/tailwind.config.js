@@ -34,6 +34,8 @@ module.exports = {
       addVariant("error", `&${error}`);
       addVariant("error-within", `&:has(${error})`);
       addVariant("peer-error", `:merge(.peer):is(${error}) ~ &`);
+
+      addVariant("loading", '&[data-loading="true"]');
     }),
     scrollbar({ preferredStrategy: "pseudoelements" }),
   ],

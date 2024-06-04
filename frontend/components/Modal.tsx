@@ -108,7 +108,7 @@ const Modal: FC<Props> = ({ children, isOpen, onClose }) => {
                 open
                 role="dialog"
                 className={clsx(
-                  "mb-5 bg-white sm:rounded-lg shadow-lg scrollbar-thin scrollbar-thumb-indigo-600",
+                  "mb-5 sm:rounded-lg bg-white shadow-lg scrollbar-thin scrollbar-thumb-indigo-600",
                   "overflow-y-auto overflow-x-clip",
                   "absolute left-1/2 absolute-center-x",
                   "w-full sm:w-11/12 lg:w-2/3 xl:w-1/2",
