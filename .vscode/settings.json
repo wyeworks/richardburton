@@ -11,5 +11,8 @@
   "prettier.requireConfig": true,
   "[elixir]": {
     "editor.defaultFormatter": "JakeBecker.elixir-ls"
+  },
+  "[svg]": {
+    "editor.defaultFormatter": "jock.svg"
   }
 }

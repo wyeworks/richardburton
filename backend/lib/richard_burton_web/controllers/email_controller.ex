@@ -1,6 +1,5 @@
 defmodule RichardBurtonWeb.EmailController do
   use Phoenix.Controller
-  require Logger
   alias RichardBurton.Email
 
   @spec contact(Plug.Conn.t(), any()) :: Plug.Conn.t()
@@ -13,8 +12,7 @@ defmodule RichardBurtonWeb.EmailController do
         conn |> put_status(400) |> json(%{issues: issues})
 
       {:error, reason} ->
-        reason |> IO.inspect() |> Logger.error()
-        conn |> put_status(500) |> json(%{message: "Could not send email."})
+        throw(reason)
     end
   end
 end

@@ -66,6 +66,7 @@ interface InputProps {
   error?: string;
 }
 interface Options<T> {
+  disabled?: boolean;
   onSubmit?: (
     values: T,
     misc: {
@@ -81,7 +82,7 @@ export function useForm<T extends ZodObject<ZodRawShape>>(
   inputs: Record<keyof z.infer<T>, InputProps>;
   form: { onSubmit: FormEventHandler };
 } {
-  const { onSubmit } = options ?? {};
+  const { onSubmit, disabled } = options ?? {};
 
   const [defaults, strict] = stripDefaults(schema);
   const [values, setValues] = useState<Partial<z.infer<T>>>({});
@@ -122,6 +123,7 @@ export function useForm<T extends ZodObject<ZodRawShape>>(
     (acc, [key]) => ({
       ...acc,
       [key]: {
+        disabled,
         value: input[key] ?? defaults[key],
         error: errors[key],
         onChange: handleChange(key),

@@ -1,9 +1,10 @@
 import { GOOGLE_RECAPTCHA_SITEKEY, http } from "app";
 import { isAxiosError } from "axios";
-import { FC, useRef } from "react";
+import { FC, useRef, useState } from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 import { useForm } from "utils/useForm";
 import { z } from "zod";
+import AppLoader from "./AppLoader";
 import { Article } from "./Article";
 import Button from "./Button";
 import { Modal, useURLQueryModal } from "./Modal";
@@ -31,13 +32,18 @@ const ContactForm: FC = () => {
   const notify = useNotify();
   const recaptchaRef = useRef<ReCAPTCHA>(null);
 
+  const [loading, setLoading] = useState(false);
+
   const { inputs, form } = useForm(Contact, {
+    disabled: loading,
     async onSubmit(values, { setErrors }) {
+      setLoading(true);
       const recaptchaToken = await recaptchaRef.current!.executeAsync();
 
       try {
         await http.post("/contact", { ...values, recaptchaToken });
         notify({ level: "success", message: "Your message has been sent!" });
+
         close();
       } catch (error) {
         if (
@@ -51,12 +57,14 @@ const ContactForm: FC = () => {
         }
 
         notify({ level: "error", message: "Something went wrong." });
+      } finally {
+        setLoading(false);
       }
     },
   });
 
   return (
-    <form className="py-4 space-y-5 text-sm sm:text-base" {...form}>
+    <form className="relative py-4 space-y-5 text-sm sm:text-base" {...form}>
       <section className="space-y-6">
         <p>{SENDER_INTRODUCTION}</p>
         <fieldset className="space-y-6">
@@ -75,8 +83,14 @@ const ContactForm: FC = () => {
       </section>
 
       <footer className="flex justify-end gap-2">
-        <Button label="Cancel" variant="outline" onClick={close} />
-        <Button type="submit" label="Send" />
+        {loading && <AppLoader />}
+        <Button
+          label="Cancel"
+          variant="outline"
+          onClick={close}
+          disabled={loading}
+        />
+        <Button type="submit" label="Send" loading={loading} />
         <ReCAPTCHA
           ref={recaptchaRef}
           size="invisible"
@@ -90,6 +104,7 @@ const ContactForm: FC = () => {
 
 const ContactModal: FC = () => {
   const { isOpen, close } = useURLQueryModal(CONTACT_MODAL_KEY);
+
   return (
     <Modal isOpen={isOpen} onClose={close}>
       <Article heading={<div>Contact Us</div>} content={<ContactForm />} />

@@ -18,3 +18,15 @@ body {
 .anchor {
   @apply font-normal text-indigo-600 underline visited:text-indigo-700;
 }
+
+.absolute-center-x {
+  @apply transform -translate-x-1/2 left-1/2;
+}
+
+.absolute-center-y {
+  @apply transform -translate-y-1/2 top-1/2;
+}
+
+.absolute-center {
+  @apply absolute-center-x absolute-center-y;
+}
