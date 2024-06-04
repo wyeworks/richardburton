@@ -39,7 +39,7 @@ defmodule RichardBurton.Mailer.SMTP do
   defp get_swoosh_email(email = %{address: address, subject: subject, message: message, to: nil}) do
     new(
       from: {get_contact_name(email), address},
-      to: Application.get_env(:richard_burton, :smtp_from),
+      to: System.get_env("SMTP_FROM"),
       subject: subject,
       text_body: message
     )
