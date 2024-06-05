@@ -8,7 +8,7 @@ const PublicationItem: FC<{ id: number }> = ({ id }) => {
 
   return (
     publication && (
-      <div className="flex justify-between mr-1 rounded-lg shadow overflow-clip">
+      <div className="flex justify-between mr-1 border border-gray-200 rounded-lg overflow-clip">
         <div className="p-2 space-y-4">
           <div>
             <span className="font-normal">{publication.title}</span>

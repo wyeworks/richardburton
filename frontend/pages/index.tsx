@@ -71,7 +71,9 @@ const Home: NextPage = () => {
             </span>
             <span className="border-b grow h-fit" />
           </div>
-          <PublicationSearch />
+          <div className="pr-3 md:pr-0">
+            <PublicationSearch />
+          </div>
         </div>
       }
       footer={
