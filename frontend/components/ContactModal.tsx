@@ -24,8 +24,8 @@ const Contact = z.object({
 
 type Contact = z.infer<typeof Contact>;
 
-const SENDER_INTRODUCTION = `Please share your contact details to enable us to address your query promptly. Your full name and email address are essential for us to send you a response. If you're associated with an institution and you think it's relevant to your message, feel free to include that information as well, though it's completely optional. We assure you that your details will be kept confidential and used solely for communication purposes related to your inquiry.`;
-const MESSAGE_INTRODUCTION = `Kindly provide a concise description of your purpose for reaching out. Whether you're interested in collaborating with our research, offering feedback on our data, or sharing insights about our web application, we invite you to outline your thoughts succinctly. This initial communication is an important step in establishing a productive dialogue. We're committed to understanding your perspective and exploring how we can effectively respond or engage in further discussions.`;
+const SENDER_INTRODUCTION = `Please fill in your contact details to enable us to address your query promptly. Your full name and email address are essential for us to send you a response, and you can include your institution details as well (optional field though). We assure you that your details will be kept confidential and used solely for communication purposes only.`;
+const MESSAGE_INTRODUCTION = `Provide a concise description of your purpose for reaching out. Whether you're interested in collaborating with our research, offering feedback on our data, or sharing insights about our web application, we invite you to outline your thoughts briefly. This initial communication is an important step for us to give you an effective reply and/or engaging in further discussions`;
 
 const ContactForm: FC = () => {
   const { close } = useURLQueryModal(CONTACT_MODAL_KEY);
@@ -80,6 +80,7 @@ const ContactForm: FC = () => {
           <TextInput label="Subject" {...inputs.subject} />
           <TextArea label="Write your message here..." {...inputs.message} />
         </fieldset>
+        <div>Thank you for your contact!</div>
       </section>
 
       <footer className="flex justify-end gap-2">

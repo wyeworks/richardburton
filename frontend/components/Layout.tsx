@@ -1,17 +1,21 @@
+import Dot from "assets/dot.svg";
 import Logo from "assets/logo.svg";
 import Head from "next/head";
 import Link from "next/link";
 import { FC, ReactNode } from "react";
+import Anchor from "./Anchor";
+import { CONTACT_MODAL_KEY } from "./ContactModal";
+import { LEARN_MORE_MODAL_KEY } from "./LearnMoreModal";
 
 type Props = {
-  title: string;
+  title?: string;
   footer?: ReactNode;
   content: ReactNode;
   subheader?: ReactNode;
   leftAside?: ReactNode;
 };
 
-const HEADING_TEXT = "Richard Burton Platform";
+const HEADING_TEXT = "Richard & Isabel Burton Platform";
 const SUBHEADING_TEXT = "A database about Brazilian literature in translation";
 
 const Layout: FC<Props> = ({
@@ -23,23 +27,31 @@ const Layout: FC<Props> = ({
 }) => {
   return (
     <>
-      <Head>
-        <title>{title}</title>
-      </Head>
+      {title && (
+        <Head>
+          <title>{title}</title>
+        </Head>
+      )}
       <div className="flex flex-col h-full px-1 sm:px-8 overflow-x-clip">
         <header className="sticky top-0 z-20 bg-gray-100 sm:pb-6">
           <h1 className="select-none py-1.5 -mx-8 text-center text-white bg-indigo-600 flex items-center justify-center">
-            <Link
-              href="/"
-              className="flex sm:flex-row flex-col items-center justify-center flex-shrink gap-2 sm:gap-4 px-2 py-0.5 transition-colors rounded hover:bg-indigo-500 shadow-white"
-            >
-              <span className="inline-flex items-center gap-3 py-1 pr-5 text-lg font-medium sm:pr-0">
-                <Logo className="h-8" />
-                {HEADING_TEXT}
-              </span>
-              <hr className="w-0.5 h-8 bg-current border-none hidden sm:block" />
+            <div className="flex flex-col items-center justify-center flex-shrink transition-colors sm:flex-row sm:gap-4 shadow-white">
+              <Link
+                href="/"
+                className="px-3 py-0.5 rounded hover:bg-indigo-500"
+              >
+                <span className="inline-flex items-center gap-3 py-1 pr-5 text-lg font-medium sm:pr-0">
+                  <Logo className="h-8" />
+                  {HEADING_TEXT}
+                </span>
+              </Link>
+              <hr className="w-0.5 mr-2 h-8 bg-current border-none hidden sm:block" />
               <div className="inline text-base">{SUBHEADING_TEXT}</div>
-            </Link>
+              <hr className="w-0.5 h-8 mx-2 bg-current border-none hidden sm:block" />
+              <Anchor query={`${LEARN_MORE_MODAL_KEY}=true`}>Learn More</Anchor>
+              <Dot className="size-1" />
+              <Anchor query={`${CONTACT_MODAL_KEY}=true`}>Contact Us</Anchor>
+            </div>
           </h1>
           {subheader}
         </header>

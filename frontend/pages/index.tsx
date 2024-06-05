@@ -1,10 +1,8 @@
 import AddIcon from "assets/add.svg";
 import Button from "components/Button";
-import { ContactButton } from "components/ContactButton";
 import { ContactModal } from "components/ContactModal";
-import { IndexCounter } from "components/IndexCounter";
+import { Counter } from "components/Counter";
 import Layout from "components/Layout";
-import { LearnMoreButton } from "components/LearnMoreButton";
 import { LearnMoreModal } from "components/LearnMoreModal";
 import { useURLQueryModal } from "components/Modal";
 import PublicationDownload from "components/PublicationDownload";
@@ -18,7 +16,6 @@ import {
 import PublicationSearch from "components/PublicationSearch";
 import SignInButton from "components/SignInButton";
 import SignOutButton from "components/SignOutButton";
-import StrikeHeading from "components/StrikeHeading";
 import { isString } from "lodash";
 import { Publication } from "modules/publication";
 import { User } from "modules/users";
@@ -31,7 +28,7 @@ const Home: NextPage = () => {
   const index = Publication.REMOTE.useIndex();
   const reset = Publication.STORE.useResetAll();
   const isAuthenticated = User.useIsAuthenticated();
-  const count = Publication.STORE.useIndexCount();
+  const count = Publication.STORE.useIndexCount() || 0;
 
   const router = useRouter();
   const { search } = router.query;
@@ -53,7 +50,6 @@ const Home: NextPage = () => {
 
   return (
     <Layout
-      title="Richard Burton"
       content={
         <>
           <div className="hidden sm:block">
@@ -67,16 +63,19 @@ const Home: NextPage = () => {
       }
       leftAside={<PublicationHiddenAttributes />}
       subheader={
-        <div className="flex flex-col space-y-2">
-          <div className="hidden sm:contents">
-            <StrikeHeading label="Browse data about Brazilian literary books translated to English" />
+        <div className="py-4 space-y-4">
+          <div className="flex items-center justify-center gap-3 text-sm text-indigo-700">
+            <span className="border-b grow h-fit" />
+            <span>
+              <Counter value={count} /> publications registered so far
+            </span>
+            <span className="border-b grow h-fit" />
           </div>
           <PublicationSearch />
         </div>
       }
       footer={
         <div className="flex flex-col justify-center gap-2 sm:justify-start sm:flex-row sm:items-start">
-          <IndexCounter count={count} />
           {isAuthenticated ? (
             <div className="flex gap-2">
               <PublicationDownload />
@@ -96,11 +95,6 @@ const Home: NextPage = () => {
               <SignInButton />
             </div>
           )}
-
-          <div className="flex gap-2 sm:ml-auto">
-            <LearnMoreButton />
-            <ContactButton />
-          </div>
 
           <ContactModal />
           <LearnMoreModal />

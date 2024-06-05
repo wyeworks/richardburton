@@ -31,8 +31,8 @@ const PublicationSearch: FC = () => {
   return (
     <section className="space-y-3">
       <input
-        className="w-full p-2 bg-gray-100 rounded shadow-sm outline-none placeholder:text-sm focus:bg-gray-active hover:bg-gray-active"
-        placeholder="Search publications"
+        className="w-full p-2 bg-gray-100 border border-gray-200 rounded outline-none placeholder:text-sm focus:bg-gray-active hover:bg-gray-active"
+        placeholder="Browse data about Brazilian literature in translation"
         aria-label="Search publications"
         value={search}
         onChange={handleChange}
