@@ -99,10 +99,10 @@ Environment variables are configuration units relevant to the app's build or run
 |`SMTP_PORT`|Port used to connect to the configured SMTP service|
 |`SMTP_USER`|User to be used to send emails through the configured SMTP service||
 |`SMTP_PASS`|Password of the user to be used to send emails through the configured SMTP service||
-|`SMTP_FROM`|Default address to be used in behalf of the application||
-|`SMTP_FROM`|Default name to be used in behalf of the application|`Richard & Isabel Burton`|
-
-
+|`SMTP_FROM`|Default name to be used in behalf of the application||
+|`SMTP_NAME`|Default name to be used in behalf of the application|`Richard & Isabel Burton`|
+|`SMTP_TLS`|Wether TLS is used in the communication to the SMTP service. Can be `always`, `never` or `if_available`| `if_available`|
+|`SMTP_REPLY_TO`| Reply inbox to be addressed when answering to emails from this app. Also used as administrative inbox, for example, to receive "Contact Form" messages.|
 
 
 

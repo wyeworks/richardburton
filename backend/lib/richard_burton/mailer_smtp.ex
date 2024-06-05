@@ -36,12 +36,13 @@ defmodule RichardBurton.Mailer.SMTP do
   end
 
   @spec get_swoosh_email(RichardBurton.Email.t()) :: Swoosh.Email.t()
-  defp get_swoosh_email(email = %{message: message, to: nil}) do
+  defp get_swoosh_email(email = %{message: message, address: address, to: nil}) do
     new(
       from: get_from(),
-      to: System.get_env("SMTP_FROM"),
+      to: System.get_env("SMTP_REPLY_TO"),
       subject: get_subject(email),
-      text_body: message
+      text_body: message,
+      reply_to: address
     )
   end
 
@@ -51,7 +52,8 @@ defmodule RichardBurton.Mailer.SMTP do
       from: get_from(),
       to: to,
       subject: subject,
-      text_body: message
+      text_body: message,
+      reply_to: System.get_env("SMTP_REPLY_TO")
     )
   end
 

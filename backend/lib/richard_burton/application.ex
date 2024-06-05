@@ -36,7 +36,8 @@ defmodule RichardBurton.Application do
       "SMTP_PORT",
       "SMTP_FROM",
       "SMTP_NAME",
-      "SMTP_TLS"
+      "SMTP_TLS",
+      "SMTP_REPLY_TO"
     ]
     |> Enum.map(&{&1, &1 |> String.downcase() |> String.to_atom()})
     |> Enum.filter(fn {key, _} -> is_nil(System.get_env(key)) end)
