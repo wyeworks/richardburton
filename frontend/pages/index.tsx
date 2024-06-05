@@ -50,7 +50,6 @@ const Home: NextPage = () => {
 
   return (
     <Layout
-      title="Richard Burton"
       content={
         <>
           <div className="hidden sm:block">

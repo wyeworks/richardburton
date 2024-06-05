@@ -47,10 +47,10 @@ defmodule RichardBurton.Email do
       {:ok, _} ->
         send_email(
           %{
-            name: "Richard Burton",
+            name: "Richard & Isabel Burton Platform",
             institution: "IFRS Canoas",
             address: System.get_env("SMTP_FROM"),
-            subject: "Contact Confirmation from Richard Burton",
+            subject: "Contact Confirmation from Richard & Isabel Burton Platform",
             message: get_confimation_message(email),
             to: address
           },
@@ -64,7 +64,7 @@ defmodule RichardBurton.Email do
 
   defp get_confimation_message(email) do
     """
-    Thank you for contacting the Richard Burton Platform research team. We will get back to you as soon as possible.
+    Thank you for contacting the Richard & Isabel Burton Platform research team. We will get back to you as soon as possible.
 
     The contact information and message you sent are as follows:
 

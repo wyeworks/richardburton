@@ -60,7 +60,7 @@ function useURLQueryModal(param: string): URLModalInterface {
 const Header: FC<{ onClose: Props["onClose"] }> = ({ onClose }) => (
   <header className="sticky top-0 z-50 flex items-center justify-between text-white bg-indigo-700 sm:hidden">
     <Logo className="p-2 h-11" />
-    <span className="font-normal">Richard Burton Platform</span>
+    <span className="font-normal">Richard & Isabel Burton Platform</span>
     <button
       className="z-50 flex items-center justify-center h-11 aspect-square"
       onClick={onClose}

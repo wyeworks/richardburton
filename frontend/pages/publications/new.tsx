@@ -1,21 +1,21 @@
-import { NextPage } from "next";
-import { Publication } from "modules/publication";
 import PublicationReview from "components/PublicationReview";
+import { Publication } from "modules/publication";
+import { NextPage } from "next";
 
 import Layout from "components/Layout";
-import { useEffect } from "react";
-import PublicationUpload from "components/PublicationUpload";
+import PublicationCounter from "components/PublicationCounter";
+import PublicationDelete from "components/PublicationDelete";
+import PublicationDeselect from "components/PublicationDeselect";
+import PublicationDuplicate from "components/PublicationDuplicate";
+import PublicationErrorCounter from "components/PublicationErrorCounter";
 import PublicationSubmit from "components/PublicationSubmit";
+import PublicationUpload from "components/PublicationUpload";
 import ResetDeleted from "components/ResetDeleted";
 import ResetOverridden from "components/ResetOverridden";
-import PublicationDelete from "components/PublicationDelete";
-import StrikeHeading from "components/StrikeHeading";
-import PublicationErrorCounter from "components/PublicationErrorCounter";
-import PublicationCounter from "components/PublicationCounter";
 import RowIdToggle from "components/RowIdToggle";
-import PublicationDuplicate from "components/PublicationDuplicate";
+import StrikeHeading from "components/StrikeHeading";
+import { useEffect } from "react";
 import { useIsSelectionEmpty } from "react-selection-manager";
-import PublicationDeselect from "components/PublicationDeselect";
 
 const NewPublications: NextPage = () => {
   const setAll = Publication.STORE.useSetAll();
@@ -29,7 +29,6 @@ const NewPublications: NextPage = () => {
 
   return (
     <Layout
-      title="Richard Burton"
       subheader={
         <StrikeHeading label="Prepare new publications to be inserted in the database" />
       }

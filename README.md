@@ -100,7 +100,7 @@ Environment variables are configuration units relevant to the app's build or run
 |`SMTP_USER`|User to be used to send emails through the configured SMTP service||
 |`SMTP_PASS`|Password of the user to be used to send emails through the configured SMTP service||
 |`SMTP_FROM`|Default address to be used in behalf of the application||
-|`SMTP_FROM`|Default name to be used in behalf of the application|`Richard Burton`|
+|`SMTP_FROM`|Default name to be used in behalf of the application|`Richard & Isabel Burton`|
 
 
 

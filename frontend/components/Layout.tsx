@@ -8,14 +8,14 @@ import { CONTACT_MODAL_KEY } from "./ContactModal";
 import { LEARN_MORE_MODAL_KEY } from "./LearnMoreModal";
 
 type Props = {
-  title: string;
+  title?: string;
   footer?: ReactNode;
   content: ReactNode;
   subheader?: ReactNode;
   leftAside?: ReactNode;
 };
 
-const HEADING_TEXT = "Richard Burton Platform";
+const HEADING_TEXT = "Richard & Isabel Burton Platform";
 const SUBHEADING_TEXT = "A database about Brazilian literature in translation";
 
 const Layout: FC<Props> = ({
@@ -27,9 +27,11 @@ const Layout: FC<Props> = ({
 }) => {
   return (
     <>
-      <Head>
-        <title>{title}</title>
-      </Head>
+      {title && (
+        <Head>
+          <title>{title}</title>
+        </Head>
+      )}
       <div className="flex flex-col h-full px-1 sm:px-8 overflow-x-clip">
         <header className="sticky top-0 z-20 bg-gray-100 sm:pb-6">
           <h1 className="select-none py-1.5 -mx-8 text-center text-white bg-indigo-600 flex items-center justify-center">
