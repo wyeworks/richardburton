@@ -1,4 +1,4 @@
-import { FILES_URL, request } from "app";
+import { request } from "app";
 import DownloadIcon from "assets/download.svg";
 import { snakeCase } from "lodash";
 import { Publication } from "modules/publication";
@@ -32,7 +32,7 @@ const PublicationDownload: FC = () => {
         );
 
         const { data, headers } = await http.get(
-          `${FILES_URL}/publications?${query}`,
+          `/files/publications?${query}`,
           { responseType: "blob" },
         );
 

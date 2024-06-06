@@ -9,12 +9,10 @@ import { FC } from "react";
 import { RecoilRoot } from "recoil";
 import "styles/globals.css";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
-const FILES_URL = process.env.NEXT_PUBLIC_FILES_URL;
 const GOOGLE_RECAPTCHA_SITEKEY =
   process.env.NEXT_PUBLIC_GOOGLE_RECAPTCHA_SITEKEY!;
 
-const http = HTTP.client({ baseURL: API_URL });
+const http = HTTP.client({ baseURL: "/api/v1" });
 
 http.interceptors.request.use(async (config) => {
   const session = await getSession();
@@ -90,4 +88,4 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
 };
 
 export default App;
-export { API_URL, FILES_URL, GOOGLE_RECAPTCHA_SITEKEY, http, Key, request };
+export { GOOGLE_RECAPTCHA_SITEKEY, http, Key, request };

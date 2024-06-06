@@ -4,13 +4,8 @@ services:
     build:
       target: dev
       args:
-        NEXT_PUBLIC_API_URL: $NEXT_PUBLIC_API_URL
-        NEXT_PUBLIC_FILES_URL: $NEXT_PUBLIC_FILES_URL
         NEXT_PUBLIC_GOOGLE_RECAPTCHA_SITEKEY: $NEXT_PUBLIC_GOOGLE_RECAPTCHA_SITEKEY
     environment:
-      # Browser
-      NEXT_PUBLIC_API_URL: http://localhost:4000/api
-      NEXT_PUBLIC_FILES_URL: http://localhost:4000/files
       # Server
       PORT: 3000
       NEXT_INTERNAL_API_URL: http://host.docker.internal:4000/api

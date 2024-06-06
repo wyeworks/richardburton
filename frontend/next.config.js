@@ -3,6 +3,15 @@ const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
 
+  async rewrites() {
+    return [
+      {
+        source: "/api/v1/:path*",
+        destination: `${process.env.NEXT_INTERNAL_API_URL}/:path*`,
+      },
+    ];
+  },
+
   webpack(config) {
     config.module.rules.push({
       test: /\.svg$/i,
