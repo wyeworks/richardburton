@@ -134,7 +134,7 @@ const AboutRichardBurtonPlatform: FC = () => (
     </p>
     <p>
       The R&I platform&apos;s data collection includes titles of books from
-      Brazilian literature translated into English. It doesn&apos; include
+      Brazilian literature translated into English. It doesn&apos;t include
       titles of anthologies, collections or works published in magazines,
       newspapers and/or electronic media.
     </p>
