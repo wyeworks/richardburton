@@ -3,6 +3,8 @@ on: push
 jobs:
   NextJS:
     runs-on: ubuntu-latest
+    env:
+      NEXT_INTERNAL_API_URL: http://phoenix:4000/api
     defaults:
       run:
         working-directory: "frontend"
