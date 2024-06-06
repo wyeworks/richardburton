@@ -28,7 +28,7 @@ services:
       SMTP_FROM: $SMTP_FROM
       SMTP_NAME: $SMTP_NAME
       SMTP_TLS: $SMTP_TLS
-      SMTP_REPLY_TO: $SMTP_REPLY_TO
+      SMTP_ADMIN_INBOX: $SMTP_ADMIN_INBOX
 
     depends_on:
       - db

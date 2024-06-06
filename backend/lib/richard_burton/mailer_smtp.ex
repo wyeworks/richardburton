@@ -39,7 +39,7 @@ defmodule RichardBurton.Mailer.SMTP do
   defp get_swoosh_email(email = %{message: message, address: address, to: nil}) do
     new(
       from: get_from(),
-      to: System.get_env("SMTP_REPLY_TO"),
+      to: System.get_env("SMTP_ADMIN_INBOX"),
       subject: get_subject(email),
       text_body: message,
       reply_to: address
@@ -52,8 +52,7 @@ defmodule RichardBurton.Mailer.SMTP do
       from: get_from(),
       to: to,
       subject: subject,
-      text_body: message,
-      reply_to: System.get_env("SMTP_REPLY_TO")
+      text_body: message
     )
   end
 
