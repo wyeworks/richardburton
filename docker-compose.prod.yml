@@ -5,7 +5,6 @@ services:
       target: prod
       args:
         NEXT_PUBLIC_API_URL: $NEXT_PUBLIC_API_URL
-        NEXT_PUBLIC_FILES_URL: $NEXT_PUBLIC_FILES_URL
         NEXT_PUBLIC_GOOGLE_RECAPTCHA_SITEKEY: $NEXT_PUBLIC_GOOGLE_RECAPTCHA_SITEKEY
     environment:
       # Server

@@ -10,7 +10,6 @@ import { RecoilRoot } from "recoil";
 import "styles/globals.css";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
-const FILES_URL = process.env.NEXT_PUBLIC_FILES_URL;
 const GOOGLE_RECAPTCHA_SITEKEY =
   process.env.NEXT_PUBLIC_GOOGLE_RECAPTCHA_SITEKEY!;
 
@@ -90,4 +89,4 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
 };
 
 export default App;
-export { API_URL, FILES_URL, GOOGLE_RECAPTCHA_SITEKEY, http, Key, request };
+export { API_URL, GOOGLE_RECAPTCHA_SITEKEY, http, Key, request };

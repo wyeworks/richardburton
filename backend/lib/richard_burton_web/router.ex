@@ -50,7 +50,7 @@ defmodule RichardBurtonWeb.Router do
     post("/users", UserController, :create)
   end
 
-  scope "/files", RichardBurtonWeb do
+  scope "/api/files", RichardBurtonWeb do
     pipe_through(:files)
     pipe_through(:authorize_admin)
 
