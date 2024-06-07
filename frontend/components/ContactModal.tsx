@@ -38,9 +38,9 @@ const ContactForm: FC = () => {
     disabled: loading,
     async onSubmit(values, { setErrors }) {
       setLoading(true);
-      const recaptchaToken = await recaptchaRef.current!.executeAsync();
 
       try {
+        const recaptchaToken = await recaptchaRef.current!.executeAsync();
         await http.post("/contact", { ...values, recaptchaToken });
         notify({ level: "success", message: "Your message has been sent!" });
 
