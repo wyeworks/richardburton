@@ -59,9 +59,9 @@ defmodule RichardBurton.Country do
 
   def validate_countries(countries) when is_binary(countries) do
     invalid =
-      String.split(countries, ",")
-      |> Enum.map(&String.trim/1)
-      |> Enum.map(fn code -> changeset(%Country{}, %{"code" => code}) end)
+      countries
+      |> nest()
+      |> Enum.map(&changeset(%Country{}, &1))
       |> Enum.reject(fn cset -> cset.valid? end)
 
     message = "Invalid countries: #{Enum.map_join(invalid, ", ", &get_change(&1, :code))}"
@@ -75,7 +75,7 @@ defmodule RichardBurton.Country do
   @spec fingerprint(binary() | maybe_improper_list()) :: binary()
   def fingerprint(countries) when is_binary(countries) do
     countries
-    |> Publication.Codec.nest_countries()
+    |> nest()
     |> Enum.map(fn %{"code" => code} -> %Country{code: code} end)
     |> fingerprint()
   end
@@ -120,4 +120,15 @@ defmodule RichardBurton.Country do
   end
 
   def link_fingerprint(changeset = %Ecto.Changeset{valid?: false}), do: changeset
+
+  def nest(countries) when is_binary(countries) do
+    countries |> String.split(",") |> Enum.map(&%{"code" => String.trim(&1)})
+  end
+
+  def flatten(countries) when is_list(countries), do: Enum.map_join(countries, ", ", &get_code/1)
+  def flatten(countries), do: countries
+
+  def get_code(%Country{code: code}), do: code
+  def get_code(%{"code" => code}), do: code
+  def get_code(%{code: code}), do: code
 end

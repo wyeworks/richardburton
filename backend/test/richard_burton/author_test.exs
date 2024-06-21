@@ -268,4 +268,41 @@ defmodule RichardBurton.AuthorTest do
       end
     end
   end
+
+  describe "flatten/1" do
+    test "with a list of maps with string keys, returns a list of maps with code key" do
+      authors = [
+        %{"name" => "Richard Burton"},
+        %{"name" => "Isabel Burton"}
+      ]
+
+      assert "Richard Burton, Isabel Burton" = Author.flatten(authors)
+    end
+
+    test "with a list of maps with atom keys, returns a list of maps with code key" do
+      authors = [
+        %{name: "Richard Burton"},
+        %{name: "Isabel Burton"}
+      ]
+
+      assert "Richard Burton, Isabel Burton" = Author.flatten(authors)
+    end
+
+    test "with a list of Author structs, returns a list of maps with code key" do
+      authors = [
+        %Author{name: "Richard Burton"},
+        %Author{name: "Isabel Burton"}
+      ]
+
+      assert "Richard Burton, Isabel Burton" = Author.flatten(authors)
+    end
+  end
+
+  describe "nest/1" do
+    test "with a comma separated string, returns a list of maps with code key" do
+      authors = "Richard Burton, Isabel Burton"
+
+      assert [%{"name" => "Richard Burton"}, %{"name" => "Isabel Burton"}] = Author.nest(authors)
+    end
+  end
 end

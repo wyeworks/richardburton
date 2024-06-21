@@ -3,7 +3,9 @@ defmodule RichardBurton.Publication.Codec do
   Serialization and deserialization utilities for publications
   """
 
+  alias RichardBurton.Author
   alias RichardBurton.Codec
+  alias RichardBurton.Country
   alias RichardBurton.Util
   alias RichardBurton.Publication
   alias RichardBurton.FlatPublication
@@ -87,23 +89,19 @@ defmodule RichardBurton.Publication.Codec do
   end
 
   defp nest_entry({"authors", value}),
-    do: {"authors", nest_authors(value)}
+    do: {"authors", Author.nest(value)}
 
   defp nest_entry({"original_authors", value}),
-    do: {"original_authors", nest_authors(value)}
+    do: {"original_authors", Author.nest(value)}
 
   defp nest_entry({"countries", value}),
-    do: {"countries", nest_countries(value)}
+    do: {"countries", Country.nest(value)}
 
   defp nest_entry({key, value}),
     do: {key, value}
 
   def nest_authors(authors) when is_binary(authors) do
     Enum.map(String.split(authors, ","), &%{"name" => String.trim(&1)})
-  end
-
-  def nest_countries(countries) when is_binary(countries) do
-    Enum.map(String.split(countries, ","), &%{"code" => String.trim(&1)})
   end
 
   def flatten(publication = %Publication{}) do
@@ -135,29 +133,10 @@ defmodule RichardBurton.Publication.Codec do
     publication_like_map |> Codec.flatten() |> Map.new(&(&1 |> rename_key |> flatten_entry))
   end
 
-  defp flatten_entry({"authors", value}),
-    do: {"authors", flatten_authors(value)}
-
-  defp flatten_entry({"original_authors", value}),
-    do: {"original_authors", flatten_authors(value)}
-
-  defp flatten_entry({"countries", value}),
-    do: {"countries", flatten_countries(value)}
-
-  defp flatten_entry({key, value}),
-    do: {key, value}
-
-  defp flatten_authors(authors) when is_list(authors) do
-    Enum.map_join(authors, ", ", &(Map.get(&1, "name") || Map.get(&1, :name)))
-  end
-
-  defp flatten_authors(authors), do: authors
-
-  defp flatten_countries(countries) when is_list(countries) do
-    Enum.map_join(countries, ", ", &(Map.get(&1, "code") || Map.get(&1, :code)))
-  end
-
-  defp flatten_countries(countries), do: countries
+  defp flatten_entry({"authors", value}), do: {"authors", Author.flatten(value)}
+  defp flatten_entry({"original_authors", value}), do: {"original_authors", Author.flatten(value)}
+  defp flatten_entry({"countries", value}), do: {"countries", Country.flatten(value)}
+  defp flatten_entry({key, value}), do: {key, value}
 
   defp rename_key({"translated_book_authors", v}), do: {"authors", v}
   defp rename_key({"translated_book_original_book_title", v}), do: {"original_title", v}

@@ -309,4 +309,41 @@ defmodule RichardBurton.CountryTest do
       assert is_nil(get_fingerprint(changeset))
     end
   end
+
+  describe "flatten/1" do
+    test "with a list of maps with string keys, returns a list of maps with code key" do
+      countries = [
+        %{"code" => "GB"},
+        %{"code" => "US"}
+      ]
+
+      assert "GB, US" = Country.flatten(countries)
+    end
+
+    test "with a list of maps with atom keys, returns a list of maps with code key" do
+      countries = [
+        %{code: "GB"},
+        %{code: "US"}
+      ]
+
+      assert "GB, US" = Country.flatten(countries)
+    end
+
+    test "with a list of Country structs, returns a list of maps with code key" do
+      countries = [
+        %Country{code: "GB"},
+        %Country{code: "US"}
+      ]
+
+      assert "GB, US" = Country.flatten(countries)
+    end
+  end
+
+  describe "nest/1" do
+    test "with a comma separated string, returns a list of maps with code key" do
+      countries = "GB, US"
+
+      assert [%{"code" => "GB"}, %{"code" => "US"}] = Country.nest(countries)
+    end
+  end
 end
