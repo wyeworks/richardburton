@@ -24,7 +24,7 @@ import { COUNTRIES, Country } from "./country";
 
 type Publication = {
   title: string;
-  country: string;
+  countries: string;
   year: string;
   publisher: string;
   authors: string;
@@ -181,7 +181,7 @@ const TOTAL_PUBLICATION_COUNT = selector<number>({
 
 const DEFAULT_ATTRIBUTE_VISIBILITY: Record<PublicationKey, boolean> = {
   title: true,
-  country: true,
+  countries: true,
   year: true,
   publisher: true,
   authors: true,
@@ -273,7 +273,7 @@ const ERROR_MESSAGES: Record<string, string> = {
   alpha2: "This field should be a valid ISO 3166-1 alpha 2 country code",
 };
 
-type PublicationKeyType = "array" | "text" | "enum" | "number";
+type PublicationKeyType = "array" | "text" | "enum" | "enumArray" | "number";
 
 interface PublicationModule {
   ATTRIBUTES: PublicationKey[];
@@ -364,7 +364,7 @@ interface PublicationModule {
     useValidate(): (ids: PublicationId[]) => Promise<void>;
   };
 
-  autocomplete(value: string, attribute: "country"): Promise<Country[]>;
+  autocomplete(value: string, attribute: "countries"): Promise<Country[]>;
   autocomplete(value: string, attribute: "originalAuthors"): Promise<Author[]>;
   autocomplete(value: string, attribute: "authors"): Promise<Author[]>;
   autocomplete(value: string, attribute: string): Promise<[]>;
@@ -383,14 +383,14 @@ const Publication: PublicationModule = {
     "title",
     "authors",
     "year",
-    "country",
+    "countries",
     "publisher",
   ],
   ATTRIBUTE_LABELS: {
     authors: "Translators",
     originalAuthors: "Original Authors",
     originalTitle: "Original Title",
-    country: "Country",
+    countries: "Country",
     publisher: "Publisher",
     title: "Title",
     year: "Year",
@@ -400,7 +400,7 @@ const Publication: PublicationModule = {
     authors: "array",
     originalAuthors: "array",
     originalTitle: "text",
-    country: "enum",
+    countries: "enumArray",
     publisher: "text",
     title: "text",
     year: "number",
@@ -410,7 +410,7 @@ const Publication: PublicationModule = {
     authors: true,
     originalAuthors: true,
     originalTitle: false,
-    country: true,
+    countries: true,
     publisher: true,
     title: false,
     year: true,
@@ -833,13 +833,14 @@ const Publication: PublicationModule = {
     },
   },
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   autocomplete(value, attribute): Promise<any> {
     switch (attribute) {
       case "authors":
       case "originalAuthors":
         return Author.REMOTE.search(value);
 
-      case "country": {
+      case "countries": {
         const all = Object.values(COUNTRIES);
 
         const countries = value
@@ -863,10 +864,13 @@ const Publication: PublicationModule = {
   },
 
   describeValue(value, attribute) {
-    if (attribute === "country") {
-      const country = COUNTRIES[value];
-      if (country) {
-        return COUNTRIES[value].label;
+    if (attribute === "countries") {
+      const countries = COUNTRIES[value];
+      if (countries) {
+        return value
+          .split(",")
+          .map((v) => COUNTRIES[v.trim()].label)
+          .join(", ");
       } else {
         console.warn("Unknown country code: ", value);
         return value;
@@ -896,7 +900,7 @@ const Publication: PublicationModule = {
   empty() {
     return {
       authors: "",
-      country: "",
+      countries: "",
       originalAuthors: "",
       originalTitle: "",
       publisher: "",

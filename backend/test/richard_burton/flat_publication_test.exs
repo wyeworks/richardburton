@@ -11,7 +11,7 @@ defmodule RichardBurton.FlatPublicationTest do
 
   @valid_attrs %{
     "title" => "Manuel de Moraes: A Chronicle of the Seventeenth Century",
-    "country" => "GB",
+    "countries" => "GB",
     "year" => 1886,
     "publisher" => "Bickers & Son",
     "authors" => "Richard Burton, Isabel Burton",
@@ -33,7 +33,7 @@ defmodule RichardBurton.FlatPublicationTest do
 
   @empty_attrs_error_map %{
     title: :required,
-    country: :required,
+    countries: :required,
     year: :required,
     publisher: :required,
     authors: :required,
@@ -64,26 +64,6 @@ defmodule RichardBurton.FlatPublicationTest do
 
     test "when title is nil, is invalid" do
       refute change_valid(%{"title" => nil}).valid?
-    end
-
-    test "when country is blank, is invalid" do
-      refute change_valid(%{"country" => ""}).valid?
-    end
-
-    test "when country is nil, is invalid" do
-      refute change_valid(%{"country" => nil}).valid?
-    end
-
-    test "when country is valid alpha3 code, is invalid" do
-      refute change_valid(%{"country" => "USA"}).valid?
-    end
-
-    test "when country is invalid 3 digit code, is invalid" do
-      refute change_valid(%{"country" => "EUA"}).valid?
-    end
-
-    test "when country is invalid 2 digit code, is invalid" do
-      refute change_valid(%{"country" => "XX"}).valid?
     end
 
     test "when publisher is blank, is invalid" do

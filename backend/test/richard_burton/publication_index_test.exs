@@ -12,7 +12,8 @@ defmodule RichardBurton.Publication.IndexTest do
   @publications [
     %FlatPublication{
       authors: "Arthur Brakel",
-      country: "CA",
+      countries: "CA",
+      countries_fingerprint: "4B650E5C4785025DEE7BD65E3C5C527356717D7A1C0BFEF5B4ADA8CA1E9CBE17",
       original_authors: "Cyro dos Anjos",
       original_title: "O amanuense Belmiro",
       publisher: "Fairleigh Dickinson University Press",
@@ -21,7 +22,8 @@ defmodule RichardBurton.Publication.IndexTest do
     },
     %FlatPublication{
       authors: "Arthur Brakel",
-      country: "GB",
+      countries: "GB",
+      countries_fingerprint: "B4043B0B8297E379BC559AB33B6AE9C7A9B4EF6519D3BAEE53270F0C0DD3D960",
       original_authors: "Cyro dos Anjos",
       original_title: "O amanuense Belmiro",
       publisher: "Associated University Presses",
@@ -30,7 +32,8 @@ defmodule RichardBurton.Publication.IndexTest do
     },
     %FlatPublication{
       authors: "Dorothy Scott Loos",
-      country: "US",
+      countries: "GB, US",
+      countries_fingerprint: "F060274D35CC0709781F13A9331376B035C9A04546FE43381BC5749F1362C8BF",
       original_authors: "Rachel de Queiroz",
       original_title: "Dora Doralina",
       publisher: "Dutton",
@@ -39,7 +42,8 @@ defmodule RichardBurton.Publication.IndexTest do
     },
     %FlatPublication{
       authors: "E. Percy Ellis",
-      country: "BR",
+      countries: "BR",
+      countries_fingerprint: "BBAF8352442730E92C16C5EA6B0FF7CC595C24E02D8E8BFC5FEA5A4E0BB0B46B",
       original_authors: "Machado de Assis",
       original_title: "Memórias póstumas de Brás Cubas",
       publisher: "Instituto Nacional do Livro",
@@ -48,7 +52,8 @@ defmodule RichardBurton.Publication.IndexTest do
     },
     %FlatPublication{
       authors: "Fred P. Ellison",
-      country: "US",
+      countries: "US",
+      countries_fingerprint: "9B202ECBC6D45C6D8901D989A918878397A3EB9D00E8F48022FC051B19D21A1D",
       original_authors: "Rachel de Queiroz",
       original_title: "As três Marias",
       publisher: "University of Texas Press",
@@ -57,7 +62,8 @@ defmodule RichardBurton.Publication.IndexTest do
     },
     %FlatPublication{
       authors: "Gregory Rabassa",
-      country: "US",
+      countries: "US",
+      countries_fingerprint: "9B202ECBC6D45C6D8901D989A918878397A3EB9D00E8F48022FC051B19D21A1D",
       original_authors: "Machado de Assis",
       original_title: "Memórias póstumas de Brás Cubas",
       publisher: "Oxford University Press",
@@ -66,7 +72,8 @@ defmodule RichardBurton.Publication.IndexTest do
     },
     %FlatPublication{
       authors: "Jean Neel Karnoff",
-      country: "GB",
+      countries: "GB",
+      countries_fingerprint: "B4043B0B8297E379BC559AB33B6AE9C7A9B4EF6519D3BAEE53270F0C0DD3D960",
       original_authors: "Erico Verissimo",
       original_title: "Olhai os lírios do campo",
       publisher: "Greenwood",
@@ -75,7 +82,8 @@ defmodule RichardBurton.Publication.IndexTest do
     },
     %FlatPublication{
       authors: "L. C. Kaplan",
-      country: "US",
+      countries: "US",
+      countries_fingerprint: "9B202ECBC6D45C6D8901D989A918878397A3EB9D00E8F48022FC051B19D21A1D",
       original_authors: "Graciliano Ramos",
       original_title: "Angústia",
       publisher: "Alfred A. Knopf",
@@ -84,7 +92,8 @@ defmodule RichardBurton.Publication.IndexTest do
     },
     %FlatPublication{
       authors: "Linton Lemos Barrett",
-      country: "GB",
+      countries: "GB",
+      countries_fingerprint: "B4043B0B8297E379BC559AB33B6AE9C7A9B4EF6519D3BAEE53270F0C0DD3D960",
       original_authors: "Erico Verissimo",
       original_title: "O tempo e o vento",
       publisher: "Arco Publications",
@@ -93,7 +102,8 @@ defmodule RichardBurton.Publication.IndexTest do
     },
     %FlatPublication{
       authors: "Linton Lemos Barrett",
-      country: "GB",
+      countries: "GB",
+      countries_fingerprint: "B4043B0B8297E379BC559AB33B6AE9C7A9B4EF6519D3BAEE53270F0C0DD3D960",
       original_authors: "Erico Verissimo",
       original_title: "Noite",
       publisher: "Arco Publications",
@@ -102,7 +112,8 @@ defmodule RichardBurton.Publication.IndexTest do
     },
     %FlatPublication{
       authors: "Linton Lemos Barrett",
-      country: "US",
+      countries: "US",
+      countries_fingerprint: "9B202ECBC6D45C6D8901D989A918878397A3EB9D00E8F48022FC051B19D21A1D",
       original_authors: "Erico Verissimo",
       original_title: "O tempo e o vento",
       publisher: "Macmillan",
@@ -111,7 +122,8 @@ defmodule RichardBurton.Publication.IndexTest do
     },
     %FlatPublication{
       authors: "Linton Lemos Barrett",
-      country: "US",
+      countries: "US",
+      countries_fingerprint: "9B202ECBC6D45C6D8901D989A918878397A3EB9D00E8F48022FC051B19D21A1D",
       original_authors: "Erico Verissimo",
       original_title: "Noite",
       publisher: "Macmillan",
@@ -120,7 +132,8 @@ defmodule RichardBurton.Publication.IndexTest do
     },
     %FlatPublication{
       authors: "Linton Lemos Barrett, Marie Barrett",
-      country: "US",
+      countries: "US",
+      countries_fingerprint: "9B202ECBC6D45C6D8901D989A918878397A3EB9D00E8F48022FC051B19D21A1D",
       original_authors: "Erico Verissimo",
       original_title: "O senhor embaixador",
       publisher: "Macmillan",
@@ -129,7 +142,8 @@ defmodule RichardBurton.Publication.IndexTest do
     },
     %FlatPublication{
       authors: "Margaret Richardson Hollingsworth",
-      country: "US",
+      countries: "US",
+      countries_fingerprint: "9B202ECBC6D45C6D8901D989A918878397A3EB9D00E8F48022FC051B19D21A1D",
       original_authors: "Mário de Andrade",
       original_title: "Amar verbo intransitivo",
       publisher: "MacCaulay",
@@ -138,7 +152,8 @@ defmodule RichardBurton.Publication.IndexTest do
     },
     %FlatPublication{
       authors: "Thomas Colchie",
-      country: "US",
+      countries: "US",
+      countries_fingerprint: "9B202ECBC6D45C6D8901D989A918878397A3EB9D00E8F48022FC051B19D21A1D",
       original_authors: "Graciliano Ramos",
       original_title: "Memórias do cárcere",
       publisher: "Evans",
@@ -147,7 +162,8 @@ defmodule RichardBurton.Publication.IndexTest do
     },
     %FlatPublication{
       authors: "William L. Grossman",
-      country: "GB",
+      countries: "GB",
+      countries_fingerprint: "B4043B0B8297E379BC559AB33B6AE9C7A9B4EF6519D3BAEE53270F0C0DD3D960",
       original_authors: "Machado de Assis",
       original_title: "Memórias póstumas de Brás Cubas",
       publisher: "W.H. Allen",
@@ -156,7 +172,8 @@ defmodule RichardBurton.Publication.IndexTest do
     },
     %FlatPublication{
       authors: "William L. Grossman",
-      country: "US",
+      countries: "US",
+      countries_fingerprint: "9B202ECBC6D45C6D8901D989A918878397A3EB9D00E8F48022FC051B19D21A1D",
       original_authors: "Machado de Assis",
       original_title: "Memórias póstumas de Brás Cubas",
       publisher: "Noonday Press",
@@ -331,7 +348,7 @@ defmodule RichardBurton.Publication.IndexTest do
       assert_search_results(
         publications,
         expect: [
-          country: expected_countries
+          countries: expected_countries
         ]
       )
     end

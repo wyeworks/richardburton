@@ -11,7 +11,7 @@ defmodule RichardBurton.Publication.Codec do
   @empty_flat_attrs %{
     "title" => "",
     "year" => "",
-    "country" => "",
+    "countries" => "",
     "publisher" => "",
     "authors" => "",
     "original_title" => "",
@@ -21,7 +21,7 @@ defmodule RichardBurton.Publication.Codec do
   @csv_headers [
     "original_authors",
     "year",
-    "country",
+    "countries",
     "original_title",
     "title",
     "authors",
@@ -92,11 +92,18 @@ defmodule RichardBurton.Publication.Codec do
   defp nest_entry({"original_authors", value}),
     do: {"original_authors", nest_authors(value)}
 
+  defp nest_entry({"countries", value}),
+    do: {"countries", nest_countries(value)}
+
   defp nest_entry({key, value}),
     do: {key, value}
 
   def nest_authors(authors) when is_binary(authors) do
     Enum.map(String.split(authors, ","), &%{"name" => String.trim(&1)})
+  end
+
+  def nest_countries(countries) when is_binary(countries) do
+    Enum.map(String.split(countries, ","), &%{"code" => String.trim(&1)})
   end
 
   def flatten(publication = %Publication{}) do
@@ -134,6 +141,9 @@ defmodule RichardBurton.Publication.Codec do
   defp flatten_entry({"original_authors", value}),
     do: {"original_authors", flatten_authors(value)}
 
+  defp flatten_entry({"countries", value}),
+    do: {"countries", flatten_countries(value)}
+
   defp flatten_entry({key, value}),
     do: {key, value}
 
@@ -142,6 +152,12 @@ defmodule RichardBurton.Publication.Codec do
   end
 
   defp flatten_authors(authors), do: authors
+
+  defp flatten_countries(countries) when is_list(countries) do
+    Enum.map_join(countries, ", ", &(Map.get(&1, "code") || Map.get(&1, :code)))
+  end
+
+  defp flatten_countries(countries), do: countries
 
   defp rename_key({"translated_book_authors", v}), do: {"authors", v}
   defp rename_key({"translated_book_original_book_title", v}), do: {"original_title", v}

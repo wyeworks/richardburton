@@ -6,6 +6,7 @@ defmodule RichardBurton.Publication.CodecTest do
   use RichardBurton.DataCase
 
   alias RichardBurton.Author
+  alias RichardBurton.Country
   alias RichardBurton.Publication
   alias RichardBurton.FlatPublication
   alias RichardBurton.TranslatedBook
@@ -18,7 +19,7 @@ defmodule RichardBurton.Publication.CodecTest do
       output = [
         %{
           "authors" => "Isabel Burton, Richard Burton",
-          "country" => "GB",
+          "countries" => "GB",
           "original_authors" => "José de Alencar",
           "original_title" => "Iracema",
           "publisher" => "Bickers & Son",
@@ -27,7 +28,7 @@ defmodule RichardBurton.Publication.CodecTest do
         },
         %{
           "authors" => "J. T. W. Sadler",
-          "country" => "US",
+          "countries" => "US, GB",
           "original_authors" => "José de Alencar",
           "original_title" => "Ubirajara",
           "publisher" => "Ronald Massey",
@@ -36,7 +37,7 @@ defmodule RichardBurton.Publication.CodecTest do
         },
         %{
           "authors" => "",
-          "country" => "GB",
+          "countries" => "GB",
           "original_authors" => "José de Alencar",
           "original_title" => "Iracema",
           "publisher" => "Bickers & Son",
@@ -45,7 +46,7 @@ defmodule RichardBurton.Publication.CodecTest do
         },
         %{
           "authors" => "J. T. W. Sadler",
-          "country" => "",
+          "countries" => "",
           "original_authors" => "",
           "original_title" => "",
           "publisher" => "",
@@ -65,7 +66,7 @@ defmodule RichardBurton.Publication.CodecTest do
       output = [
         %{
           "authors" => "Isabel Burton",
-          "country" => "GB",
+          "countries" => "GB",
           "original_authors" => "José de Alencar",
           "original_title" => "Iracema",
           "publisher" => "",
@@ -74,7 +75,7 @@ defmodule RichardBurton.Publication.CodecTest do
         },
         %{
           "authors" => "Ronald Massey",
-          "country" => "Ubirajara",
+          "countries" => "Ubirajara",
           "original_authors" => "",
           "original_title" => "Ubirajara: A Legend of the Tupy Indians",
           "publisher" => "",
@@ -83,7 +84,7 @@ defmodule RichardBurton.Publication.CodecTest do
         },
         %{
           "authors" => "",
-          "country" => "",
+          "countries" => "",
           "original_authors" =>
             "José de Alencar,1886,GB,Iracema,Iraçéma the Honey-Lips: A Legend of Brazil,Isabel Burton,Bickers & Son",
           "original_title" => "",
@@ -111,7 +112,7 @@ defmodule RichardBurton.Publication.CodecTest do
     @output %{
       "title" => "Iraçéma the Honey-Lips: A Legend of Brazil",
       "year" => "1886",
-      "country" => "GB",
+      "countries" => "GB",
       "publisher" => "Bickers & Son",
       "authors" => "Isabel Burton",
       "original_authors" => "José de Alencar",
@@ -121,7 +122,8 @@ defmodule RichardBurton.Publication.CodecTest do
     @output_struct %FlatPublication{
       title: "Iraçéma the Honey-Lips: A Legend of Brazil",
       year: 1886,
-      country: "GB",
+      countries: "GB",
+      countries_fingerprint: "B4043B0B8297E379BC559AB33B6AE9C7A9B4EF6519D3BAEE53270F0C0DD3D960",
       publisher: "Bickers & Son",
       authors: "Isabel Burton",
       original_authors: "José de Alencar",
@@ -134,7 +136,7 @@ defmodule RichardBurton.Publication.CodecTest do
       input = %{
         "title" => "Iraçéma the Honey-Lips: A Legend of Brazil",
         "year" => "1886",
-        "country" => "GB",
+        "countries" => "GB",
         "publisher" => "Bickers & Son",
         "translated_book" => %{
           "authors" => [
@@ -156,7 +158,7 @@ defmodule RichardBurton.Publication.CodecTest do
       input = %{
         title: "Iraçéma the Honey-Lips: A Legend of Brazil",
         year: "1886",
-        country: "GB",
+        countries: [%Country{code: "GB"}],
         publisher: "Bickers & Son",
         translated_book: %{
           authors: [
@@ -178,16 +180,12 @@ defmodule RichardBurton.Publication.CodecTest do
       input = %Publication{
         title: "Iraçéma the Honey-Lips: A Legend of Brazil",
         year: "1886",
-        country: "GB",
+        countries: [%Country{code: "GB"}],
         publisher: "Bickers & Son",
         translated_book: %TranslatedBook{
-          authors: [
-            %Author{name: "Isabel Burton"}
-          ],
+          authors: [%Author{name: "Isabel Burton"}],
           original_book: %OriginalBook{
-            authors: [
-              %Author{name: "José de Alencar"}
-            ],
+            authors: [%Author{name: "José de Alencar"}],
             title: "Iracema"
           }
         }
@@ -201,7 +199,7 @@ defmodule RichardBurton.Publication.CodecTest do
         %{
           "title" => "Iraçéma the Honey-Lips: A Legend of Brazil",
           "year" => "1886",
-          "country" => "GB",
+          "countries" => [%{"code" => "GB"}],
           "publisher" => "Bickers & Son",
           "translated_book" => %{
             "authors" => [
@@ -218,7 +216,7 @@ defmodule RichardBurton.Publication.CodecTest do
         %{
           title: "Iraçéma the Honey-Lips: A Legend of Brazil",
           year: "1886",
-          country: "GB",
+          countries: [%{code: "GB"}],
           publisher: "Bickers & Son",
           translated_book: %{
             authors: [
@@ -235,7 +233,7 @@ defmodule RichardBurton.Publication.CodecTest do
         %Publication{
           title: "Iraçéma the Honey-Lips: A Legend of Brazil",
           year: "1886",
-          country: "GB",
+          countries: [%Country{code: "GB"}],
           publisher: "Bickers & Son",
           translated_book: %TranslatedBook{
             authors: [
@@ -259,7 +257,7 @@ defmodule RichardBurton.Publication.CodecTest do
     @output_publication %{
       "title" => "Ubirajara: A Legend of the Tupy Indians",
       "year" => "",
-      "country" => "",
+      "countries" => "",
       "publisher" => "",
       "authors" => "J. T. W. Sadler",
       "original_authors" => "",
@@ -270,7 +268,7 @@ defmodule RichardBurton.Publication.CodecTest do
       input_publication = %{
         "title" => "Ubirajara: A Legend of the Tupy Indians",
         "year" => "",
-        "country" => "",
+        "countries" => "",
         "publisher" => "",
         "translated_book" => %{
           "authors" => [
@@ -290,7 +288,7 @@ defmodule RichardBurton.Publication.CodecTest do
           publication: input_publication,
           errors: %{
             year: "required",
-            country: "required",
+            countries: "required",
             publisher: "required",
             translated_book: %{
               original_book: %{
@@ -315,7 +313,7 @@ defmodule RichardBurton.Publication.CodecTest do
           "publication" => @output_publication,
           "errors" => %{
             "year" => "required",
-            "country" => "required",
+            "countries" => "required",
             "publisher" => "required",
             "original_authors" => "required",
             "original_title" => "required"
@@ -339,7 +337,7 @@ defmodule RichardBurton.Publication.CodecTest do
     @output %{
       "title" => "Iraçéma the Honey-Lips: A Legend of Brazil",
       "year" => "1886",
-      "country" => "GB",
+      "countries" => [%{"code" => "GB"}],
       "publisher" => "Bickers & Son",
       "translated_book" => %{
         "authors" => [
@@ -357,7 +355,8 @@ defmodule RichardBurton.Publication.CodecTest do
     @output_struct %Publication{
       title: "Iraçéma the Honey-Lips: A Legend of Brazil",
       year: 1886,
-      country: "GB",
+      countries: [%Country{code: "GB"}],
+      countries_fingerprint: "B4043B0B8297E379BC559AB33B6AE9C7A9B4EF6519D3BAEE53270F0C0DD3D960",
       publisher: "Bickers & Son",
       translated_book: %TranslatedBook{
         authors: [
@@ -382,7 +381,7 @@ defmodule RichardBurton.Publication.CodecTest do
       input = %{
         "title" => "Iraçéma the Honey-Lips: A Legend of Brazil",
         "year" => "1886",
-        "country" => "GB",
+        "countries" => "GB",
         "publisher" => "Bickers & Son",
         "authors" => "Isabel Burton",
         "original_authors" => "José de Alencar",
@@ -396,7 +395,7 @@ defmodule RichardBurton.Publication.CodecTest do
       input = %{
         title: "Iraçéma the Honey-Lips: A Legend of Brazil",
         year: "1886",
-        country: "GB",
+        countries: "GB",
         publisher: "Bickers & Son",
         authors: "Isabel Burton",
         original_authors: "José de Alencar",
@@ -410,7 +409,7 @@ defmodule RichardBurton.Publication.CodecTest do
       input = %FlatPublication{
         title: "Iraçéma the Honey-Lips: A Legend of Brazil",
         year: "1886",
-        country: "GB",
+        countries: "GB",
         publisher: "Bickers & Son",
         authors: "Isabel Burton",
         original_authors: "José de Alencar",
@@ -425,7 +424,7 @@ defmodule RichardBurton.Publication.CodecTest do
         %{
           "title" => "Iraçéma the Honey-Lips: A Legend of Brazil",
           "year" => "1886",
-          "country" => "GB",
+          "countries" => "GB",
           "publisher" => "Bickers & Son",
           "authors" => "Isabel Burton",
           "original_authors" => "José de Alencar",
@@ -434,7 +433,7 @@ defmodule RichardBurton.Publication.CodecTest do
         %{
           title: "Iraçéma the Honey-Lips: A Legend of Brazil",
           year: "1886",
-          country: "GB",
+          countries: "GB",
           publisher: "Bickers & Son",
           authors: "Isabel Burton",
           original_authors: "José de Alencar",
@@ -443,7 +442,7 @@ defmodule RichardBurton.Publication.CodecTest do
         %FlatPublication{
           title: "Iraçéma the Honey-Lips: A Legend of Brazil",
           year: "1886",
-          country: "GB",
+          countries: "GB",
           publisher: "Bickers & Son",
           authors: "Isabel Burton",
           original_authors: "José de Alencar",

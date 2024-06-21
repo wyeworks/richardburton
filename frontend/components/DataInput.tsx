@@ -1,27 +1,29 @@
 import {
-  FC,
-  FocusEvent,
-  forwardRef,
-  HTMLProps,
-  Ref,
-  useEffect,
-  useState,
-} from "react";
-import TextDataInput from "./TextDataInput";
-import TextArrayDataInput from "./TextArrayDataInput";
-import {
   Publication,
   PublicationId,
   PublicationKey,
   PublicationKeyType,
 } from "modules/publication";
-import Tooltip from "./Tooltip";
+import {
+  FC,
+  FocusEvent,
+  HTMLProps,
+  Ref,
+  forwardRef,
+  useEffect,
+  useState,
+} from "react";
+import TextArrayDataInput from "./TextArrayDataInput";
+import TextDataInput from "./TextDataInput";
+import TextEnumArrayDataInput from "./TextEnumArrayDataInput";
 import TextEnumDataInput from "./TextEnumDataInput";
 import TextNumberDataInput from "./TextNumberDataInput";
+import Tooltip from "./Tooltip";
 
 const COMPONENTS_PER_TYPE: Record<PublicationKeyType, FC<Props>> = {
   text: TextDataInput,
   enum: TextEnumDataInput,
+  enumArray: TextEnumArrayDataInput,
   number: TextNumberDataInput,
   array: TextArrayDataInput,
 };

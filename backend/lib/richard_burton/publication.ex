@@ -13,17 +13,19 @@ defmodule RichardBurton.Publication do
   alias RichardBurton.Validation
   alias RichardBurton.Country
 
-  @external_attributes [:country, :publisher, :title, :year, :translated_book]
+  @external_attributes [:countries, :publisher, :title, :year, :translated_book]
 
   @derive {Jason.Encoder, only: @external_attributes}
   schema "publications" do
-    field(:country, :string)
     field(:publisher, :string)
     field(:title, :string)
     field(:year, :integer)
     field(:translated_book_fingerprint, :string)
+    field(:countries_fingerprint, :string)
 
     belongs_to(:translated_book, TranslatedBook)
+
+    many_to_many(:countries, Country, join_through: "publication_countries")
 
     timestamps()
   end
@@ -39,15 +41,16 @@ defmodule RichardBurton.Publication do
   @doc false
   def changeset(publication, attrs) do
     publication
-    |> cast(attrs, [:title, :year, :country, :publisher])
+    |> cast(attrs, [:title, :year, :publisher])
     |> cast_assoc(:translated_book, required: true)
-    |> validate_required([:title, :year, :country, :publisher])
-    |> Country.validate_country()
-    |> TranslatedBook.link_fingerprint()
+    |> cast_assoc(:countries, required: true)
+    |> validate_length(:countries, min: 1)
+    |> validate_required([:title, :year, :publisher])
     |> unique_constraint(
-      [:title, :year, :country, :publisher, :translated_book_fingerprint],
+      [:title, :year, :publisher, :countries_fingerprint, :translated_book_fingerprint],
       name: "publications_composite_key"
     )
+    |> link_fingerprints()
   end
 
   def all do
@@ -57,13 +60,13 @@ defmodule RichardBurton.Publication do
   end
 
   def preload(data) do
-    Repo.preload(data, translated_book: [:authors, original_book: [:authors]])
+    Repo.preload(data, [:countries, translated_book: [:authors, original_book: [:authors]]])
   end
 
   def insert(attrs) do
     %Publication{}
     |> changeset(attrs)
-    |> TranslatedBook.link()
+    |> link_assocs()
     |> Repo.insert()
     |> case do
       {:ok, publication} ->
@@ -75,7 +78,19 @@ defmodule RichardBurton.Publication do
   end
 
   def validate(attrs) do
-    Validation.validate(changeset(%Publication{}, attrs), &TranslatedBook.link/1)
+    Validation.validate(changeset(%Publication{}, attrs), &link_assocs/1)
+  end
+
+  defp link_fingerprints(changeset) do
+    changeset
+    |> TranslatedBook.link_fingerprint()
+    |> Country.link_fingerprint()
+  end
+
+  defp link_assocs(changeset) do
+    changeset
+    |> Country.link()
+    |> TranslatedBook.link()
   end
 
   def insert_all(attrs_list) do

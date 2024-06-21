@@ -1,4 +1,4 @@
-import { COUNTRIES, Publication } from "modules/publication";
+import { Publication } from "modules/publication";
 import Link from "next/link";
 import { FC } from "react";
 import { z } from "zod";
@@ -27,6 +27,21 @@ const Searchable: FC<{ label: string; value?: string }> = ({
   );
 };
 
+const SearchableList: FC<{ items: { label: string; value?: string }[] }> = ({
+  items,
+}) => (
+  <ul className="contents">
+    {items.map((item, index) => (
+      <li key={item.value} className="contents">
+        {index === items.length - 1 && " and "}
+        <Searchable {...item} />
+        {index < items.length - 2 && ", "}
+        {index === items.length - 1 && " "}
+      </li>
+    ))}
+  </ul>
+);
+
 const PublicationHeading: FC<{ publication: Publication }> = ({
   publication,
 }) => (
@@ -52,10 +67,15 @@ const PublicationDescription: FC<{ publication: Publication }> = ({
     <Searchable label={publication.originalTitle} />, by{" "}
     <Searchable label={publication.originalAuthors} />. It was written by{" "}
     <Searchable label={publication.authors} /> and published in{" "}
-    <Searchable
-      label={COUNTRIES[publication!.country].label}
-      value={COUNTRIES[publication!.country].id}
-    />{" "}
+    <SearchableList
+      items={publication.countries
+        .split(",")
+        .map((id) => id.trim())
+        .map((id) => ({
+          id,
+          label: Publication.describeValue(id, "countries"),
+        }))}
+    />
     in {publication?.year} by <Searchable label={publication.publisher} />.
   </p>
 );
@@ -66,6 +86,8 @@ const PublicationModal: FC = () => {
   const publicationId = Param.parse(value);
 
   const publication = Publication.STORE.usePublication(publicationId);
+
+  console.log({ publication });
 
   return (
     <Modal isOpen={modal.isOpen} onClose={modal.close}>

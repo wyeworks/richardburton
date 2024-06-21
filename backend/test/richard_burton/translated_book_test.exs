@@ -187,7 +187,7 @@ defmodule RichardBurton.TranslatedBookTest do
   describe "link/1" do
     @publication_attrs %{
       "title" => "Manuel de Moraes: A Chronicle of the Seventeenth Century",
-      "country" => "GB",
+      "countries" => [%{"code" => "GB"}],
       "year" => 1886,
       "publisher" => "Bickers & Son",
       "translated_book" => %{
