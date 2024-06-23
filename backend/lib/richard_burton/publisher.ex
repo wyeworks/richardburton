@@ -4,6 +4,7 @@ defmodule RichardBurton.Publisher do
   """
   use Ecto.Schema
   import Ecto.Changeset
+  import Ecto.Query
 
   alias RichardBurton.Publisher
   alias RichardBurton.Repo
@@ -83,6 +84,24 @@ defmodule RichardBurton.Publisher do
   end
 
   def link_fingerprint(changeset = %Ecto.Changeset{valid?: false}), do: changeset
+
+  @spec search(binary(), :fuzzy | :prefix) :: any()
+  def search(term, :prefix) when is_binary(term) do
+    from(p in Publisher, where: ilike(p.name, ^"#{term}%"))
+    |> Repo.all()
+  end
+
+  def search(term, :fuzzy) when is_binary(term) do
+    from(p in Publisher, where: fragment("similarity((?), (?)) > 0.3", p.name, ^term))
+    |> Repo.all()
+  end
+
+  def search(term) when is_binary(term) do
+    case search(term, :prefix) do
+      [] -> search(term, :fuzzy)
+      keywords when is_list(keywords) -> keywords
+    end
+  end
 
   def nest(publishers) when is_binary(publishers) do
     publishers |> String.split(",") |> Enum.map(&%{"name" => String.trim(&1)})

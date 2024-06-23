@@ -21,6 +21,7 @@ import {
 import useDebounce from "utils/useDebounce";
 import { Author } from "./author";
 import { COUNTRIES, Country } from "./country";
+import { Publisher } from "./publisher";
 
 type Publication = {
   title: string;
@@ -367,6 +368,7 @@ interface PublicationModule {
   autocomplete(value: string, attribute: "countries"): Promise<Country[]>;
   autocomplete(value: string, attribute: "originalAuthors"): Promise<Author[]>;
   autocomplete(value: string, attribute: "authors"): Promise<Author[]>;
+  autocomplete(value: string, attribute: "publishers"): Promise<[]>;
   autocomplete(value: string, attribute: string): Promise<[]>;
 
   define(attribute: PublicationKey): Record<string, unknown>;
@@ -839,6 +841,8 @@ const Publication: PublicationModule = {
       case "authors":
       case "originalAuthors":
         return Author.REMOTE.search(value);
+      case "publishers":
+        return Publisher.REMOTE.search(value);
 
       case "countries": {
         const all = Object.values(COUNTRIES);
