@@ -11,7 +11,7 @@ defmodule RichardBurtonWeb.PublicationControllerTest do
     "title" => "Iraçéma the Honey-Lips: A Legend of Brazil",
     "year" => "1886",
     "countries" => "GB",
-    "publisher" => "Bickers & Son",
+    "publishers" => "Bickers & Son",
     "authors" => "Isabel Burton",
     "original_authors" => "José de Alencar",
     "original_title" => "Iracema"
@@ -37,7 +37,7 @@ defmodule RichardBurtonWeb.PublicationControllerTest do
       "title" => "Manuel de Moraes: A Chronicle of the Seventeenth Century",
       "countries" => "GB",
       "year" => 1886,
-      "publisher" => "Bickers & Son",
+      "publishers" => "Bickers & Son",
       "authors" => "Richard Burton, Isabel Burton",
       "original_authors" => "J. M. Pereira da Silva",
       "original_title" => "Manuel de Moraes: crônica do século XVII"
@@ -47,7 +47,7 @@ defmodule RichardBurtonWeb.PublicationControllerTest do
       "title" => "Iraçéma the Honey-Lips: A Legend of Brazil",
       "year" => 1886,
       "countries" => "GB",
-      "publisher" => "Bickers & Son",
+      "publishers" => "Bickers & Son",
       "authors" => "Isabel Burton",
       "original_authors" => "José de Alencar",
       "original_title" => "Iracema"
@@ -57,7 +57,7 @@ defmodule RichardBurtonWeb.PublicationControllerTest do
       "title" => "",
       "year" => "1886",
       "countries" => "GB",
-      "publisher" => "Bickers & Son",
+      "publishers" => "Bickers & Son",
       "authors" => "",
       "original_authors" => "José de Alencar",
       "original_title" => "Iracema"
@@ -113,7 +113,7 @@ defmodule RichardBurtonWeb.PublicationControllerTest do
       "title" => "Iraçéma the Honey-Lips: A Legend of Brazil",
       "year" => "1886",
       "countries" => "GB",
-      "publisher" => "Bickers & Son",
+      "publishers" => "Bickers & Son",
       "authors" => "Isabel Burton, Richard Burton",
       "original_authors" => "José de Alencar",
       "original_title" => "Iracema"
@@ -122,7 +122,7 @@ defmodule RichardBurtonWeb.PublicationControllerTest do
       "title" => "Ubirajara: A Legend of the Tupy Indians",
       "year" => "1922",
       "countries" => "US",
-      "publisher" => "Ronald Massey",
+      "publishers" => "Ronald Massey",
       "authors" => "J. T. W. Sadler",
       "original_authors" => "José de Alencar",
       "original_title" => "Ubirajara"
@@ -131,7 +131,7 @@ defmodule RichardBurtonWeb.PublicationControllerTest do
       "title" => "",
       "year" => "AAAA",
       "countries" => "GB",
-      "publisher" => "Bickers & Son",
+      "publishers" => "Bickers & Son",
       "authors" => "",
       "original_authors" => "José de Alencar",
       "original_title" => "Iracema"
@@ -140,7 +140,7 @@ defmodule RichardBurtonWeb.PublicationControllerTest do
       "title" => "Ubirajara: A Legend of the Tupy Indians",
       "year" => "",
       "countries" => "",
-      "publisher" => "",
+      "publishers" => "",
       "authors" => "J. T. W. Sadler",
       "original_authors" => "",
       "original_title" => ""
@@ -149,7 +149,7 @@ defmodule RichardBurtonWeb.PublicationControllerTest do
       "title" => "Ubirajara: A Legend of the Tupy Indians",
       "year" => "",
       "countries" => "USA",
-      "publisher" => "",
+      "publishers" => "",
       "authors" => "J. T. W. Sadler",
       "original_authors" => "",
       "original_title" => ""
@@ -185,7 +185,7 @@ defmodule RichardBurtonWeb.PublicationControllerTest do
         "errors" => %{
           "year" => "required",
           "countries" => "required",
-          "publisher" => "required",
+          "publishers" => "required",
           "original_authors" => "required",
           "original_title" => "required"
         }
@@ -195,7 +195,7 @@ defmodule RichardBurtonWeb.PublicationControllerTest do
         "errors" => %{
           "year" => "required",
           "countries" => "alpha2",
-          "publisher" => "required",
+          "publishers" => "required",
           "original_authors" => "required",
           "original_title" => "required"
         }
@@ -219,7 +219,7 @@ defmodule RichardBurtonWeb.PublicationControllerTest do
           "title" => "Iraçéma the Honey-Lips: A Legend of Brazil",
           "year" => "1886",
           "countries" => "GB",
-          "publisher" => "Bickers & Son",
+          "publishers" => "Bickers & Son",
           "authors" => "Isabel Burton, Richard Burton",
           "original_authors" => "José de Alencar",
           "original_title" => "Iracema"
@@ -231,7 +231,7 @@ defmodule RichardBurtonWeb.PublicationControllerTest do
           "title" => "Ubirajara: A Legend of the Tupy Indians",
           "year" => "1922",
           "countries" => "US, GB",
-          "publisher" => "Ronald Massey",
+          "publishers" => "Ronald Massey",
           "authors" => "J. T. W. Sadler",
           "original_authors" => "José de Alencar",
           "original_title" => "Ubirajara"
@@ -243,7 +243,7 @@ defmodule RichardBurtonWeb.PublicationControllerTest do
           "title" => "",
           "year" => "AAAA",
           "countries" => "GB",
-          "publisher" => "Bickers & Son",
+          "publishers" => "Bickers & Son",
           "authors" => "",
           "original_authors" => "José de Alencar",
           "original_title" => "Iracema"
@@ -259,7 +259,7 @@ defmodule RichardBurtonWeb.PublicationControllerTest do
           "title" => "Ubirajara: A Legend of the Tupy Indians",
           "year" => "",
           "countries" => "",
-          "publisher" => "",
+          "publishers" => "",
           "authors" => "J. T. W. Sadler",
           "original_authors" => "",
           "original_title" => ""
@@ -267,7 +267,7 @@ defmodule RichardBurtonWeb.PublicationControllerTest do
         "errors" => %{
           "year" => "required",
           "countries" => "required",
-          "publisher" => "required",
+          "publishers" => "required",
           "original_authors" => "required",
           "original_title" => "required"
         }
@@ -312,7 +312,7 @@ defmodule RichardBurtonWeb.PublicationControllerTest do
       conn = get(meta.conn, publication_path(meta.conn, :export))
 
       expected_data =
-        "authors;countries;original_authors;original_title;publisher;title;year\nIsabel Burton;GB;José de Alencar;Iracema;Bickers & Son;Iraçéma the Honey-Lips: A Legend of Brazil;1886\n"
+        "authors;countries;original_authors;original_title;publishers;title;year\nIsabel Burton;GB;José de Alencar;Iracema;Bickers & Son;Iraçéma the Honey-Lips: A Legend of Brazil;1886\n"
 
       expected_filename = "publications.csv"
       expected_content_disposition = ["attachment; filename=\"#{expected_filename}\""]
@@ -342,7 +342,7 @@ defmodule RichardBurtonWeb.PublicationControllerTest do
       conn = get(meta.conn, path)
 
       expected_data =
-        "authors;countries;original_authors;original_title;publisher;title;year\nIsabel Burton;GB;José de Alencar;Iracema;Bickers & Son;Iraçéma the Honey-Lips: A Legend of Brazil;1886\n"
+        "authors;countries;original_authors;original_title;publishers;title;year\nIsabel Burton;GB;José de Alencar;Iracema;Bickers & Son;Iraçéma the Honey-Lips: A Legend of Brazil;1886\n"
 
       expected_filename = "publications-#{search}.csv"
       expected_content_disposition = ["attachment; filename=\"#{expected_filename}\""]

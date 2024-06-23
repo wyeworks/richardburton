@@ -26,7 +26,7 @@ type Publication = {
   title: string;
   countries: string;
   year: string;
-  publisher: string;
+  publishers: string;
   authors: string;
   originalTitle: string;
   originalAuthors: string;
@@ -183,7 +183,7 @@ const DEFAULT_ATTRIBUTE_VISIBILITY: Record<PublicationKey, boolean> = {
   title: true,
   countries: true,
   year: true,
-  publisher: true,
+  publishers: true,
   authors: true,
   originalTitle: true,
   originalAuthors: true,
@@ -384,14 +384,14 @@ const Publication: PublicationModule = {
     "authors",
     "year",
     "countries",
-    "publisher",
+    "publishers",
   ],
   ATTRIBUTE_LABELS: {
     authors: "Translators",
     originalAuthors: "Original Authors",
     originalTitle: "Original Title",
     countries: "Country",
-    publisher: "Publisher",
+    publishers: "Publisher",
     title: "Title",
     year: "Year",
   },
@@ -401,7 +401,7 @@ const Publication: PublicationModule = {
     originalAuthors: "array",
     originalTitle: "text",
     countries: "enumArray",
-    publisher: "text",
+    publishers: "array",
     title: "text",
     year: "number",
   },
@@ -411,7 +411,7 @@ const Publication: PublicationModule = {
     originalAuthors: true,
     originalTitle: false,
     countries: true,
-    publisher: true,
+    publishers: true,
     title: false,
     year: true,
   },
@@ -903,7 +903,7 @@ const Publication: PublicationModule = {
       countries: "",
       originalAuthors: "",
       originalTitle: "",
-      publisher: "",
+      publishers: "",
       title: "",
       year: "",
     };

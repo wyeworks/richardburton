@@ -8,13 +8,14 @@ defmodule RichardBurton.Publication.Codec do
   alias RichardBurton.Country
   alias RichardBurton.Util
   alias RichardBurton.Publication
+  alias RichardBurton.Publisher
   alias RichardBurton.FlatPublication
 
   @empty_flat_attrs %{
     "title" => "",
     "year" => "",
     "countries" => "",
-    "publisher" => "",
+    "publishers" => "",
     "authors" => "",
     "original_title" => "",
     "original_authors" => ""
@@ -27,7 +28,7 @@ defmodule RichardBurton.Publication.Codec do
     "original_title",
     "title",
     "authors",
-    "publisher"
+    "publishers"
   ]
 
   def from_csv(path) do
@@ -97,6 +98,9 @@ defmodule RichardBurton.Publication.Codec do
   defp nest_entry({"countries", value}),
     do: {"countries", Country.nest(value)}
 
+  defp nest_entry({"publishers", value}),
+    do: {"publishers", Publisher.nest(value)}
+
   defp nest_entry({key, value}),
     do: {key, value}
 
@@ -136,6 +140,7 @@ defmodule RichardBurton.Publication.Codec do
   defp flatten_entry({"authors", value}), do: {"authors", Author.flatten(value)}
   defp flatten_entry({"original_authors", value}), do: {"original_authors", Author.flatten(value)}
   defp flatten_entry({"countries", value}), do: {"countries", Country.flatten(value)}
+  defp flatten_entry({"publishers", value}), do: {"publishers", Publisher.flatten(value)}
   defp flatten_entry({key, value}), do: {key, value}
 
   defp rename_key({"translated_book_authors", v}), do: {"authors", v}

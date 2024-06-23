@@ -7,25 +7,27 @@ defmodule RichardBurton.Publication do
 
   require Ecto.Query
 
+  alias RichardBurton.Country
   alias RichardBurton.Publication
+  alias RichardBurton.Publisher
   alias RichardBurton.Repo
   alias RichardBurton.TranslatedBook
   alias RichardBurton.Validation
-  alias RichardBurton.Country
 
-  @external_attributes [:countries, :publisher, :title, :year, :translated_book]
+  @external_attributes [:countries, :publishers, :title, :year, :translated_book]
 
   @derive {Jason.Encoder, only: @external_attributes}
   schema "publications" do
-    field(:publisher, :string)
     field(:title, :string)
     field(:year, :integer)
     field(:translated_book_fingerprint, :string)
     field(:countries_fingerprint, :string)
+    field(:publishers_fingerprint, :string)
 
     belongs_to(:translated_book, TranslatedBook)
 
     many_to_many(:countries, Country, join_through: "publication_countries")
+    many_to_many(:publishers, Publisher, join_through: "publication_publishers")
 
     timestamps()
   end
@@ -41,13 +43,20 @@ defmodule RichardBurton.Publication do
   @doc false
   def changeset(publication, attrs) do
     publication
-    |> cast(attrs, [:title, :year, :publisher])
+    |> cast(attrs, [:title, :year])
     |> cast_assoc(:translated_book, required: true)
     |> cast_assoc(:countries, required: true)
+    |> cast_assoc(:publishers, required: true)
     |> validate_length(:countries, min: 1)
-    |> validate_required([:title, :year, :publisher])
+    |> validate_required([:title, :year])
     |> unique_constraint(
-      [:title, :year, :publisher, :countries_fingerprint, :translated_book_fingerprint],
+      [
+        :title,
+        :year,
+        :publishers_fingerprint,
+        :countries_fingerprint,
+        :translated_book_fingerprint
+      ],
       name: "publications_composite_key"
     )
     |> link_fingerprints()
@@ -60,7 +69,11 @@ defmodule RichardBurton.Publication do
   end
 
   def preload(data) do
-    Repo.preload(data, [:countries, translated_book: [:authors, original_book: [:authors]]])
+    Repo.preload(data, [
+      :countries,
+      :publishers,
+      translated_book: [:authors, original_book: [:authors]]
+    ])
   end
 
   def insert(attrs) do
@@ -85,12 +98,14 @@ defmodule RichardBurton.Publication do
     changeset
     |> TranslatedBook.link_fingerprint()
     |> Country.link_fingerprint()
+    |> Publisher.link_fingerprint()
   end
 
   defp link_assocs(changeset) do
     changeset
     |> Country.link()
     |> TranslatedBook.link()
+    |> Publisher.link()
   end
 
   def insert_all(attrs_list) do

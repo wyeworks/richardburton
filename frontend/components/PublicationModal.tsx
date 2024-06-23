@@ -76,7 +76,17 @@ const PublicationDescription: FC<{ publication: Publication }> = ({
           label: Publication.describeValue(id, "countries"),
         }))}
     />
-    in {publication?.year} by <Searchable label={publication.publisher} />.
+    in {publication?.year} by{" "}
+    <SearchableList
+      items={publication.publishers
+        .split(",")
+        .map((id) => id.trim())
+        .map((id) => ({
+          id,
+          label: Publication.describeValue(id, "publishers"),
+        }))}
+    />
+    .
   </p>
 );
 
@@ -86,8 +96,6 @@ const PublicationModal: FC = () => {
   const publicationId = Param.parse(value);
 
   const publication = Publication.STORE.usePublication(publicationId);
-
-  console.log({ publication });
 
   return (
     <Modal isOpen={modal.isOpen} onClose={modal.close}>

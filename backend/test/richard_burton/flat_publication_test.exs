@@ -13,7 +13,7 @@ defmodule RichardBurton.FlatPublicationTest do
     "title" => "Manuel de Moraes: A Chronicle of the Seventeenth Century",
     "countries" => "GB",
     "year" => 1886,
-    "publisher" => "Bickers & Son",
+    "publishers" => "Bickers & Son",
     "authors" => "Richard Burton, Isabel Burton",
     "original_authors" => "J. M. Pereira da Silva",
     "original_title" => "Manuel de Moraes: crônica do século XVII"
@@ -35,7 +35,7 @@ defmodule RichardBurton.FlatPublicationTest do
     title: :required,
     countries: :required,
     year: :required,
-    publisher: :required,
+    publishers: :required,
     authors: :required,
     original_authors: :required,
     original_title: :required
@@ -66,12 +66,12 @@ defmodule RichardBurton.FlatPublicationTest do
       refute change_valid(%{"title" => nil}).valid?
     end
 
-    test "when publisher is blank, is invalid" do
-      refute change_valid(%{"publisher" => ""}).valid?
+    test "when publishers is blank, is invalid" do
+      refute change_valid(%{"publishers" => ""}).valid?
     end
 
-    test "when publisher is nil, is invalid" do
-      refute change_valid(%{"publisher" => nil}).valid?
+    test "when publishers is nil, is invalid" do
+      refute change_valid(%{"publishers" => nil}).valid?
     end
 
     test "when year is nil, is invalid" do
