@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="ExDoc v0.31.2">
+    <meta name="project" content="richard_burton v0.1.0">
+
+
+    <title>API Reference — richard_burton v0.1.0</title>
+    <link rel="stylesheet" href="dist/html-elixir-JKHCEBPC.css" />
+
+
+    <script src="dist/handlebars.runtime-NWIB6V2M.js"></script>
+    <script src="dist/handlebars.templates-A7S2WMC7.js"></script>
+    <script src="dist/sidebar_items-EFD5C78C.js"></script>
+
+      <script src="docs_config.js"></script>
+
+    <script async src="dist/html-JRPQ5PR6.js"></script>
+
+
+  </head>
+  <body data-type="extras" class="page-extra">
+    <script>
+
+      try {
+        var settings = JSON.parse(localStorage.getItem('ex_doc:settings') || '{}');
+
+        if (settings.theme === 'dark' ||
+           ((settings.theme === 'system' || settings.theme == null) &&
+             window.matchMedia('(prefers-color-scheme: dark)').matches)
+           ) {
+          document.body.classList.add('dark')
+        }
+      } catch (error) { }
+    </script>
+
+<div class="main">
+
+<button id="sidebar-menu" class="sidebar-button sidebar-toggle" aria-label="toggle sidebar" aria-controls="sidebar">
+  <i class="ri-menu-line ri-lg" title="Collapse/expand sidebar"></i>
+</button>
+
+<div class="background-layer"></div>
+
+<nav id="sidebar" class="sidebar">
+
+  <div class="sidebar-header">
+    <div class="sidebar-projectInfo">
+
+      <div>
+        <a href="api-reference.html" class="sidebar-projectName" translate="no">
+richard_burton
+        </a>
+        <div class="sidebar-projectVersion" translate="no">
+          v0.1.0
+        </div>
+      </div>
+    </div>
+    <ul id="sidebar-listNav" class="sidebar-listNav" role="tablist">
+      <li>
+        <button id="extras-list-tab-button" role="tab" data-type="extras" aria-controls="extras-tab-panel" aria-selected="true" tabindex="0">
+Pages
+        </button>
+      </li>
+
+        <li>
+          <button id="modules-list-tab-button" role="tab" data-type="modules" aria-controls="modules-tab-panel" aria-selected="false" tabindex="-1">
+            Modules
+          </button>
+        </li>
+
+
+        <li>
+          <button id="tasks-list-tab-button" role="tab" data-type="tasks" aria-controls="tasks-tab-panel" aria-selected="false" tabindex="-1">
+            <span translate="no">Mix</span> Tasks
+          </button>
+        </li>
+
+    </ul>
+  </div>
+
+  <div id="extras-tab-panel" class="sidebar-tabpanel" role="tabpanel" aria-labelledby="extras-list-tab-button">
+    <ul id="extras-full-list" class="full-list"></ul>
+  </div>
+
+    <div id="modules-tab-panel" class="sidebar-tabpanel" role="tabpanel" aria-labelledby="modules-list-tab-button" hidden>
+      <ul id="modules-full-list" class="full-list"></ul>
+    </div>
+
+
+    <div id="tasks-tab-panel" class="sidebar-tabpanel" role="tabpanel" aria-labelledby="tasks-list-tab-button" hidden>
+      <ul id="tasks-full-list" class="full-list"></ul>
+    </div>
+
+</nav>
+
+<main class="content">
+  <output role="status" id="toast"></output>
+  <div class="content-outer">
+    <div id="content" class="content-inner">
+      <div class="top-search">
+        <div class="search-settings">
+          <form class="search-bar" action="search.html">
+            <label class="search-label">
+              <span class="sr-only">Search documentation of richard_burton</span>
+              <input name="q" type="text" class="search-input" placeholder="Press / to search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
+            </label>
+            <button type="submit" class="search-button" aria-label="Submit Search">
+              <i class="ri-search-2-line ri-lg" aria-hidden="true" title="Submit search"></i>
+            </button>
+            <button type="button" tabindex="-1" class="search-close-button" aria-hidden="true">
+              <i class="ri-close-line ri-lg" title="Cancel search"></i>
+            </button>
+          </form>
+          <div class="autocomplete">
+          </div>
+          <button class="icon-settings display-settings">
+            <i class="ri-settings-3-line"></i>
+            <span class="sr-only">Settings</span>
+          </button>
+        </div>
+
+      </div>
+
+<h1>
+
+
+  <span>API Reference <small class="app-vsn">richard_burton v0.1.0</small></span>
+</h1>
+
+
+  <section class="details-list">
+    <h2 id="modules" class="section-heading">
+  <a href="#modules" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Modules</span>
+</h2>
+
+    <div class="summary">
+<div class="summary-row">
+  <div class="summary-signature">
+    <a href="RichardBurton.html" translate="no">RichardBurton</a>
+
+  </div>
+
+    <div class="summary-synopsis"><p>RichardBurton keeps the contexts that define your domain
+and business logic.</p></div>
+
+</div>
+<div class="summary-row">
+  <div class="summary-signature">
+    <a href="RichardBurton.Auth.html" translate="no">RichardBurton.Auth</a>
+
+  </div>
+
+    <div class="summary-synopsis"><p>Behaviour for authentication services</p></div>
+
+</div>
+<div class="summary-row">
+  <div class="summary-signature">
+    <a href="RichardBurton.Auth.Google.html" translate="no">RichardBurton.Auth.Google</a>
+
+  </div>
+
+    <div class="summary-synopsis"><p>Google idp implementation for RichardBurton.Auth behaviour</p></div>
+
+</div>
+<div class="summary-row">
+  <div class="summary-signature">
+    <a href="RichardBurton.Auth.Recaptcha.html" translate="no">RichardBurton.Auth.Recaptcha</a>
+
+  </div>
+
+    <div class="summary-synopsis"><p>Behaviour for recaptcha authorization services</p></div>
+
+</div>
+<div class="summary-row">
+  <div class="summary-signature">
+    <a href="RichardBurton.Auth.Recaptcha.Google.html" translate="no">RichardBurton.Auth.Recaptcha.Google</a>
+
+  </div>
+
+    <div class="summary-synopsis"><p>Google Recaptcha implementation for RichardBurton.Auth.Recaptcha behaviour</p></div>
+
+</div>
+<div class="summary-row">
+  <div class="summary-signature">
+    <a href="RichardBurton.Author.html" translate="no">RichardBurton.Author</a>
+
+  </div>
+
+    <div class="summary-synopsis"><p>Schema for authors</p></div>
+
+</div>
+<div class="summary-row">
+  <div class="summary-signature">
+    <a href="RichardBurton.Codec.html" translate="no">RichardBurton.Codec</a>
+
+  </div>
+
+    <div class="summary-synopsis"><p>Utilities for serialization and deserialization</p></div>
+
+</div>
+<div class="summary-row">
+  <div class="summary-signature">
+    <a href="RichardBurton.Country.html" translate="no">RichardBurton.Country</a>
+
+  </div>
+
+    <div class="summary-synopsis"><p>Schema for countries</p></div>
+
+</div>
+<div class="summary-row">
+  <div class="summary-signature">
+    <a href="RichardBurton.Email.html" translate="no">RichardBurton.Email</a>
+
+  </div>
+
+    <div class="summary-synopsis"><p>Schema for emails</p></div>
+
+</div>
+<div class="summary-row">
+  <div class="summary-signature">
+    <a href="RichardBurton.FlatPublication.html" translate="no">RichardBurton.FlatPublication</a>
+
+  </div>
+
+    <div class="summary-synopsis"><p>Schema for publications</p></div>
+
+</div>
+<div class="summary-row">
+  <div class="summary-signature">
+    <a href="RichardBurton.Mailer.html" translate="no">RichardBurton.Mailer</a>
+
+  </div>
+
+    <div class="summary-synopsis"><p>Behaviour for Mailer</p></div>
+
+</div>
+<div class="summary-row">
+  <div class="summary-signature">
+    <a href="RichardBurton.Mailer.SMTP.html" translate="no">RichardBurton.Mailer.SMTP</a>
+
+  </div>
+
+    <div class="summary-synopsis"><p>STMP implementation for RichardBurton.Mailer behaviour</p></div>
+
+</div>
+<div class="summary-row">
+  <div class="summary-signature">
+    <a href="RichardBurton.OriginalBook.html" translate="no">RichardBurton.OriginalBook</a>
+
+  </div>
+
+    <div class="summary-synopsis"><p>Schema for original books</p></div>
+
+</div>
+<div class="summary-row">
+  <div class="summary-signature">
+    <a href="RichardBurton.Publication.html" translate="no">RichardBurton.Publication</a>
+
+  </div>
+
+    <div class="summary-synopsis"><p>Schema for publications</p></div>
+
+</div>
+<div class="summary-row">
+  <div class="summary-signature">
+    <a href="RichardBurton.Publication.Codec.html" translate="no">RichardBurton.Publication.Codec</a>
+
+  </div>
+
+    <div class="summary-synopsis"><p>Serialization and deserialization utilities for publications</p></div>
+
+</div>
+<div class="summary-row">
+  <div class="summary-signature">
+    <a href="RichardBurton.Publication.Index.html" translate="no">RichardBurton.Publication.Index</a>
+
+  </div>
+
+    <div class="summary-synopsis"><p>Interface with the searchable publication index</p></div>
+
+</div>
+<div class="summary-row">
+  <div class="summary-signature">
+    <a href="RichardBurton.Publication.Index.SearchDocument.html" translate="no">RichardBurton.Publication.Index.SearchDocument</a>
+
+  </div>
+
+    <div class="summary-synopsis"><p>Schema for searchable documents</p></div>
+
+</div>
+<div class="summary-row">
+  <div class="summary-signature">
+    <a href="RichardBurton.Publication.Index.SearchKeyword.html" translate="no">RichardBurton.Publication.Index.SearchKeyword</a>
+
+  </div>
+
+    <div class="summary-synopsis"><p>Schema for searchable documents</p></div>
+
+</div>
+<div class="summary-row">
+  <div class="summary-signature">
+    <a href="RichardBurton.Publisher.html" translate="no">RichardBurton.Publisher</a>
+
+  </div>
+
+    <div class="summary-synopsis"><p>Schema for publishers</p></div>
+
+</div>
+<div class="summary-row">
+  <div class="summary-signature">
+    <a href="RichardBurton.Release.html" translate="no">RichardBurton.Release</a>
+
+  </div>
+
+    <div class="summary-synopsis"><p>Used for executing DB release tasks when run in production without Mix
+installed.</p></div>
+
+</div>
+<div class="summary-row">
+  <div class="summary-signature">
+    <a href="RichardBurton.Repo.html" translate="no">RichardBurton.Repo</a>
+
+  </div>
+
+</div>
+<div class="summary-row">
+  <div class="summary-signature">
+    <a href="RichardBurton.TranslatedBook.html" translate="no">RichardBurton.TranslatedBook</a>
+
+  </div>
+
+    <div class="summary-synopsis"><p>Schema for translated books</p></div>
+
+</div>
+<div class="summary-row">
+  <div class="summary-signature">
+    <a href="RichardBurton.User.html" translate="no">RichardBurton.User</a>
+
+  </div>
+
+    <div class="summary-synopsis"><p>Schema for users</p></div>
+
+</div>
+<div class="summary-row">
+  <div class="summary-signature">
+    <a href="RichardBurton.Util.html" translate="no">RichardBurton.Util</a>
+
+  </div>
+
+    <div class="summary-synopsis"><p>Utilities for general purpose</p></div>
+
+</div>
+<div class="summary-row">
+  <div class="summary-signature">
+    <a href="RichardBurton.Validation.html" translate="no">RichardBurton.Validation</a>
+
+  </div>
+
+    <div class="summary-synopsis"><p>Utilities for data validation</p></div>
+
+</div>
+<div class="summary-row">
+  <div class="summary-signature">
+    <a href="RichardBurtonWeb.html" translate="no">RichardBurtonWeb</a>
+
+  </div>
+
+    <div class="summary-synopsis"><p>The entrypoint for defining your web interface, such
+as controllers, views, channels and so on.</p></div>
+
+</div>
+<div class="summary-row">
+  <div class="summary-signature">
+    <a href="RichardBurtonWeb.AuthorController.html" translate="no">RichardBurtonWeb.AuthorController</a>
+
+  </div>
+
+</div>
+<div class="summary-row">
+  <div class="summary-signature">
+    <a href="RichardBurtonWeb.EmailController.html" translate="no">RichardBurtonWeb.EmailController</a>
+
+  </div>
+
+</div>
+<div class="summary-row">
+  <div class="summary-signature">
+    <a href="RichardBurtonWeb.Endpoint.html" translate="no">RichardBurtonWeb.Endpoint</a>
+
+  </div>
+
+</div>
+<div class="summary-row">
+  <div class="summary-signature">
+    <a href="RichardBurtonWeb.ErrorHelpers.html" translate="no">RichardBurtonWeb.ErrorHelpers</a>
+
+  </div>
+
+    <div class="summary-synopsis"><p>Conveniences for translating and building error messages.</p></div>
+
+</div>
+<div class="summary-row">
+  <div class="summary-signature">
+    <a href="RichardBurtonWeb.ErrorView.html" translate="no">RichardBurtonWeb.ErrorView</a>
+
+  </div>
+
+</div>
+<div class="summary-row">
+  <div class="summary-signature">
+    <a href="RichardBurtonWeb.Plugs.Authenticate.html" translate="no">RichardBurtonWeb.Plugs.Authenticate</a>
+
+  </div>
+
+    <div class="summary-synopsis"><p>Plug for authentication with Google</p></div>
+
+</div>
+<div class="summary-row">
+  <div class="summary-signature">
+    <a href="RichardBurtonWeb.Plugs.AuthorizeAdmin.html" translate="no">RichardBurtonWeb.Plugs.AuthorizeAdmin</a>
+
+  </div>
+
+    <div class="summary-synopsis"><p>Plug for authentication with Google</p></div>
+
+</div>
+<div class="summary-row">
+  <div class="summary-signature">
+    <a href="RichardBurtonWeb.Plugs.AuthorizeRecaptcha.html" translate="no">RichardBurtonWeb.Plugs.AuthorizeRecaptcha</a>
+
+  </div>
+
+    <div class="summary-synopsis"><p>Plug for recaptcha verification</p></div>
+
+</div>
+<div class="summary-row">
+  <div class="summary-signature">
+    <a href="RichardBurtonWeb.PublicationController.html" translate="no">RichardBurtonWeb.PublicationController</a>
+
+  </div>
+
+</div>
+<div class="summary-row">
+  <div class="summary-signature">
+    <a href="RichardBurtonWeb.PublisherController.html" translate="no">RichardBurtonWeb.PublisherController</a>
+
+  </div>
+
+</div>
+<div class="summary-row">
+  <div class="summary-signature">
+    <a href="RichardBurtonWeb.Router.html" translate="no">RichardBurtonWeb.Router</a>
+
+  </div>
+
+</div>
+<div class="summary-row">
+  <div class="summary-signature">
+    <a href="RichardBurtonWeb.UserController.html" translate="no">RichardBurtonWeb.UserController</a>
+
+  </div>
+
+</div>
+
+    </div>
+  </section>
+
+
+  <section class="details-list">
+    <h2 id="mix-tasks" class="section-heading">
+  <a href="#mix-tasks" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Mix Tasks</span>
+</h2>
+
+    <div class="summary">
+<div class="summary-row">
+  <div class="summary-signature">
+    <a href="Mix.Tasks.Rb.LoadData.html" translate="no">mix rb.load_data</a>
+
+  </div>
+
+    <div class="summary-synopsis"><p>Mix task to initialize the repo using a data.csv file in the project's root directory</p></div>
+
+</div>
+
+    </div>
+  </section>
+
+<div class="bottom-actions">
+  <div class="bottom-actions-item">
+
+  </div>
+  <div class="bottom-actions-item">
+
+  </div>
+</div>
+      <footer class="footer">
+        <p>
+
+          <span class="line">
+            <button class="a-main footer-button display-quick-switch" title="Search HexDocs packages">
+              Search HexDocs
+            </button>
+
+          </span>
+        </p>
+
+        <p class="built-using">
+          Built using
+          <a href="https://github.com/elixir-lang/ex_doc" title="ExDoc" target="_blank" rel="help noopener" translate="no">ExDoc</a> (v0.31.2) for the
+
+            <a href="https://elixir-lang.org" title="Elixir" target="_blank" translate="no">Elixir programming language</a>
+
+        </p>
+
+      </footer>
+    </div>
+  </div>
+</main>
+</div>
+
+
+  </body>
+</html>
