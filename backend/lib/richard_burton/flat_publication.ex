@@ -49,6 +49,10 @@ defmodule RichardBurton.FlatPublication do
     |> TranslatedBook.link_fingerprint()
   end
 
+  def all() do
+    Repo.all(FlatPublication)
+  end
+
   def validate(attrs) do
     %FlatPublication{} |> changeset(attrs) |> validate_changeset()
   end
