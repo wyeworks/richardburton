@@ -12,154 +12,188 @@ defmodule RichardBurton.Publication.IndexTest do
   @publications [
     %FlatPublication{
       authors: "Arthur Brakel",
-      country: "CA",
+      countries: "CA",
+      countries_fingerprint: "4B650E5C4785025DEE7BD65E3C5C527356717D7A1C0BFEF5B4ADA8CA1E9CBE17",
       original_authors: "Cyro dos Anjos",
       original_title: "O amanuense Belmiro",
-      publisher: "Fairleigh Dickinson University Press",
+      publishers: "Fairleigh Dickinson University Press",
+      publishers_fingerprint: "BDBBE0C6ACE0F5D7CDAC2301CBD7DDE19808618AF03AB6B6546FF30A82F4FA5E",
       title: "Diary of a Civil Servant",
       year: 1986
     },
     %FlatPublication{
       authors: "Arthur Brakel",
-      country: "GB",
+      countries: "GB",
+      countries_fingerprint: "B4043B0B8297E379BC559AB33B6AE9C7A9B4EF6519D3BAEE53270F0C0DD3D960",
       original_authors: "Cyro dos Anjos",
       original_title: "O amanuense Belmiro",
-      publisher: "Associated University Presses",
+      publishers: "Associated University Presses",
+      publishers_fingerprint: "FA1B59EB992D97EB10B6219661EA4C9C740D509048CC0DF9A86EB3BC8EB8E45B",
       title: "Diary of a Civil Servant",
       year: 1988
     },
     %FlatPublication{
       authors: "Dorothy Scott Loos",
-      country: "US",
+      countries: "GB, US",
+      countries_fingerprint: "F060274D35CC0709781F13A9331376B035C9A04546FE43381BC5749F1362C8BF",
       original_authors: "Rachel de Queiroz",
       original_title: "Dora Doralina",
-      publisher: "Dutton",
+      publishers: "Dutton",
+      publishers_fingerprint: "289485905D12E66D52118BCFECB6C911B1A8E4379477DD98ED30F2ED795E260C",
       title: "Dora Doralina",
       year: 1984
     },
     %FlatPublication{
       authors: "E. Percy Ellis",
-      country: "BR",
+      countries: "BR",
+      countries_fingerprint: "BBAF8352442730E92C16C5EA6B0FF7CC595C24E02D8E8BFC5FEA5A4E0BB0B46B",
       original_authors: "Machado de Assis",
       original_title: "Memórias póstumas de Brás Cubas",
-      publisher: "Instituto Nacional do Livro",
+      publishers: "Instituto Nacional do Livro",
+      publishers_fingerprint: "CFC153F1AB2F32958A66F3F4B36EECFFDF8A28C48F202DE09FFEFF6BE98F1027",
       title: "Posthumous Reminiscences of Brás Cubas",
       year: 1955
     },
     %FlatPublication{
       authors: "Fred P. Ellison",
-      country: "US",
+      countries: "US",
+      countries_fingerprint: "9B202ECBC6D45C6D8901D989A918878397A3EB9D00E8F48022FC051B19D21A1D",
       original_authors: "Rachel de Queiroz",
       original_title: "As três Marias",
-      publisher: "University of Texas Press",
+      publishers: "University of Texas Press",
+      publishers_fingerprint: "2F6FE554F3CF1014B2345ADE7C06166EA58D929FBEE633D4A782126F5C4331EA",
       title: "The Three Marias",
       year: 1963
     },
     %FlatPublication{
       authors: "Gregory Rabassa",
-      country: "US",
+      countries: "US",
+      countries_fingerprint: "9B202ECBC6D45C6D8901D989A918878397A3EB9D00E8F48022FC051B19D21A1D",
       original_authors: "Machado de Assis",
       original_title: "Memórias póstumas de Brás Cubas",
-      publisher: "Oxford University Press",
+      publishers: "Oxford University Press",
+      publishers_fingerprint: "27E4CE2B302408251962F38DD2928A99EB212A7BB09088BBBE6F77944A11A90D",
       title: "Posthumous Memoirs of Bras Cubas",
       year: 1997
     },
     %FlatPublication{
       authors: "Jean Neel Karnoff",
-      country: "GB",
+      countries: "GB",
+      countries_fingerprint: "B4043B0B8297E379BC559AB33B6AE9C7A9B4EF6519D3BAEE53270F0C0DD3D960",
       original_authors: "Erico Verissimo",
       original_title: "Olhai os lírios do campo",
-      publisher: "Greenwood",
+      publishers: "Greenwood",
+      publishers_fingerprint: "37AA9A83218BF5F4A5F6EABA530C07E64316BA03788B42D0A2A419719B8B12BC",
       title: "Consider the Lilies of the Field",
       year: 1969
     },
     %FlatPublication{
       authors: "L. C. Kaplan",
-      country: "US",
+      countries: "US",
+      countries_fingerprint: "9B202ECBC6D45C6D8901D989A918878397A3EB9D00E8F48022FC051B19D21A1D",
       original_authors: "Graciliano Ramos",
       original_title: "Angústia",
-      publisher: "Alfred A. Knopf",
+      publishers: "Alfred A. Knopf",
+      publishers_fingerprint: "A4AFA4682BC9F658DD5DAD7649822F925C9A4FB0A72459F631FA32D07CC405D4",
       title: "Anguish",
       year: 1946
     },
     %FlatPublication{
       authors: "Linton Lemos Barrett",
-      country: "GB",
+      countries: "GB",
+      countries_fingerprint: "B4043B0B8297E379BC559AB33B6AE9C7A9B4EF6519D3BAEE53270F0C0DD3D960",
       original_authors: "Erico Verissimo",
       original_title: "O tempo e o vento",
-      publisher: "Arco Publications",
+      publishers: "Arco Publications",
+      publishers_fingerprint: "DD6D4A5F8B8C4DD9BB9E5AD5634BB98CC3568E943729417FD69846D75C07B802",
       title: "Time and the Wind",
       year: 1954
     },
     %FlatPublication{
       authors: "Linton Lemos Barrett",
-      country: "GB",
+      countries: "GB",
+      countries_fingerprint: "B4043B0B8297E379BC559AB33B6AE9C7A9B4EF6519D3BAEE53270F0C0DD3D960",
       original_authors: "Erico Verissimo",
       original_title: "Noite",
-      publisher: "Arco Publications",
+      publishers: "Arco Publications",
+      publishers_fingerprint: "DD6D4A5F8B8C4DD9BB9E5AD5634BB98CC3568E943729417FD69846D75C07B802",
       title: "Night",
       year: 1956
     },
     %FlatPublication{
       authors: "Linton Lemos Barrett",
-      country: "US",
+      countries: "US",
+      countries_fingerprint: "9B202ECBC6D45C6D8901D989A918878397A3EB9D00E8F48022FC051B19D21A1D",
       original_authors: "Erico Verissimo",
       original_title: "O tempo e o vento",
-      publisher: "Macmillan",
+      publishers: "Macmillan",
+      publishers_fingerprint: "873D23F97EEB8B04973339EC8A202DC8AEC0B33298D2E194301E223ECD7E9C05",
       title: "Time and the Wind",
       year: 1951
     },
     %FlatPublication{
       authors: "Linton Lemos Barrett",
-      country: "US",
+      countries: "US",
+      countries_fingerprint: "9B202ECBC6D45C6D8901D989A918878397A3EB9D00E8F48022FC051B19D21A1D",
       original_authors: "Erico Verissimo",
       original_title: "Noite",
-      publisher: "Macmillan",
+      publishers: "Macmillan",
+      publishers_fingerprint: "873D23F97EEB8B04973339EC8A202DC8AEC0B33298D2E194301E223ECD7E9C05",
       title: "Night",
       year: 1956
     },
     %FlatPublication{
       authors: "Linton Lemos Barrett, Marie Barrett",
-      country: "US",
+      countries: "US",
+      countries_fingerprint: "9B202ECBC6D45C6D8901D989A918878397A3EB9D00E8F48022FC051B19D21A1D",
       original_authors: "Erico Verissimo",
       original_title: "O senhor embaixador",
-      publisher: "Macmillan",
+      publishers: "Macmillan",
+      publishers_fingerprint: "873D23F97EEB8B04973339EC8A202DC8AEC0B33298D2E194301E223ECD7E9C05",
       title: "His Excellency, the Ambassador",
       year: 1967
     },
     %FlatPublication{
       authors: "Margaret Richardson Hollingsworth",
-      country: "US",
+      countries: "US",
+      countries_fingerprint: "9B202ECBC6D45C6D8901D989A918878397A3EB9D00E8F48022FC051B19D21A1D",
       original_authors: "Mário de Andrade",
       original_title: "Amar verbo intransitivo",
-      publisher: "MacCaulay",
+      publishers: "MacCaulay",
+      publishers_fingerprint: "A092A747DE2B957ADC822F5FEE63B2078F4CEE237438789BBF9A6D10F9F104E1",
       title: "Fraulein",
       year: 1933
     },
     %FlatPublication{
       authors: "Thomas Colchie",
-      country: "US",
+      countries: "US",
+      countries_fingerprint: "9B202ECBC6D45C6D8901D989A918878397A3EB9D00E8F48022FC051B19D21A1D",
       original_authors: "Graciliano Ramos",
       original_title: "Memórias do cárcere",
-      publisher: "Evans",
+      publishers: "Evans",
+      publishers_fingerprint: "8658EBF1EDF525094102102EB55229187C236F9147950C775273B2D33AF516F0",
       title: "Jail Prison Memoirs",
       year: 1974
     },
     %FlatPublication{
       authors: "William L. Grossman",
-      country: "GB",
+      countries: "GB",
+      countries_fingerprint: "B4043B0B8297E379BC559AB33B6AE9C7A9B4EF6519D3BAEE53270F0C0DD3D960",
       original_authors: "Machado de Assis",
       original_title: "Memórias póstumas de Brás Cubas",
-      publisher: "W.H. Allen",
+      publishers: "W.H. Allen",
+      publishers_fingerprint: "0AE69A42F21F227103D46FF569A689AC1A139BD3F036C74DEA48E8C86FF93326",
       title: "Epitaph of a Small Winner",
       year: 1953
     },
     %FlatPublication{
       authors: "William L. Grossman",
-      country: "US",
+      countries: "US",
+      countries_fingerprint: "9B202ECBC6D45C6D8901D989A918878397A3EB9D00E8F48022FC051B19D21A1D",
       original_authors: "Machado de Assis",
       original_title: "Memórias póstumas de Brás Cubas",
-      publisher: "Noonday Press",
+      publishers: "Noonday Press",
+      publishers_fingerprint: "3444E1379BFB654A280E4E86B4BD0916534828F1AA529FFB8714D315E203F166",
       title: "Epitaph of a Small Winner",
       year: 1952
     }
@@ -331,7 +365,7 @@ defmodule RichardBurton.Publication.IndexTest do
       assert_search_results(
         publications,
         expect: [
-          country: expected_countries
+          countries: expected_countries
         ]
       )
     end
@@ -361,7 +395,7 @@ defmodule RichardBurton.Publication.IndexTest do
       assert_search_results(
         publications,
         expect: [
-          publisher: expected_publishers
+          publishers: expected_publishers
         ]
       )
     end

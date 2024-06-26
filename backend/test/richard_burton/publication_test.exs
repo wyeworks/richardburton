@@ -12,9 +12,9 @@ defmodule RichardBurton.PublicationTest do
 
   @valid_attrs %{
     "title" => "Manuel de Moraes: A Chronicle of the Seventeenth Century",
-    "country" => "GB",
+    "countries" => [%{"code" => "GB"}],
     "year" => 1886,
-    "publisher" => "Bickers & Son",
+    "publishers" => [%{"name" => "Bickers & Son"}],
     "translated_book" => %{
       "authors" => [
         %{"name" => "Richard Burton"},
@@ -34,17 +34,17 @@ defmodule RichardBurton.PublicationTest do
 
   @empty_attrs_error_map %{
     title: :required,
-    country: :required,
+    countries: :required,
     year: :required,
-    publisher: :required,
+    publishers: :required,
     translated_book: :required
   }
 
   @skeleton_attrs_error_map %{
     title: :required,
-    country: :required,
+    countries: :required,
     year: :required,
-    publisher: :required,
+    publishers: :required,
     translated_book: %{
       authors: :required,
       original_book: %{authors: :required, title: :required}
@@ -76,32 +76,32 @@ defmodule RichardBurton.PublicationTest do
       refute change_valid(%{"title" => nil}).valid?
     end
 
-    test "when country is blank, is invalid" do
-      refute change_valid(%{"country" => ""}).valid?
+    test "when countries is blank, is invalid" do
+      refute change_valid(%{"countries" => ""}).valid?
     end
 
-    test "when country is nil, is invalid" do
-      refute change_valid(%{"country" => nil}).valid?
+    test "when countries is nil, is invalid" do
+      refute change_valid(%{"countries" => nil}).valid?
     end
 
-    test "when country is valid alpha3 code, is invalid" do
-      refute change_valid(%{"country" => "USA"}).valid?
+    test "when countries is valid alpha3 code, is invalid" do
+      refute change_valid(%{"countries" => "USA"}).valid?
     end
 
-    test "when country is invalid 3 digit code, is invalid" do
-      refute change_valid(%{"country" => "EUA"}).valid?
+    test "when countries is invalid 3 digit code, is invalid" do
+      refute change_valid(%{"countries" => "EUA"}).valid?
     end
 
-    test "when country is invalid 2 digit code, is invalid" do
-      refute change_valid(%{"country" => "XX"}).valid?
+    test "when countries is invalid 2 digit code, is invalid" do
+      refute change_valid(%{"countries" => "XX"}).valid?
     end
 
-    test "when publisher is blank, is invalid" do
-      refute change_valid(%{"publisher" => ""}).valid?
+    test "when publishers is blank, is invalid" do
+      refute change_valid(%{"publishers" => ""}).valid?
     end
 
-    test "when publisher is nil, is invalid" do
-      refute change_valid(%{"publisher" => nil}).valid?
+    test "when publishers is nil, is invalid" do
+      refute change_valid(%{"publishers" => nil}).valid?
     end
 
     test "when year is nil, is invalid" do

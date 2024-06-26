@@ -1,26 +1,43 @@
-import { forwardRef, HTMLProps, KeyboardEvent, useRef, useState } from "react";
+import { ForwardedRef, KeyboardEvent, useRef, useState } from "react";
 import Pill from "./Pill";
 
-import MenuProvider from "./MenuProvider";
 import { Key } from "app";
+import { isString } from "lodash";
+import { z } from "zod";
+import MenuProvider from "./MenuProvider";
 import TextInput from "./TextInput";
 
-type Item = string;
+type Item = { id: string; label: string };
 
-type Props = Omit<HTMLProps<HTMLInputElement>, "value" | "onChange"> & {
-  value: Item[];
+type Props<ItemType extends string | Item> = {
+  placeholder?: string;
+  value: ItemType[];
   error?: string;
-  onChange: (value: Item[]) => void;
-  getOptions: (search: string) => Promise<Item[]> | Item[];
+  onKeyDown?: (event: KeyboardEvent<HTMLInputElement>) => void;
+  onChange: (value: ItemType[]) => void;
+  getOptions: (search: string) => Promise<ItemType[]> | ItemType[];
+  forwardedRef?: ForwardedRef<HTMLDivElement>;
 };
 
-export default forwardRef<HTMLDivElement, Props>(function Multicombobox(
-  { value, placeholder, getOptions, onChange, onKeyDown, error, ...props },
-  ref,
-) {
+function isStringArray(value: unknown): value is string[] {
+  return z.string().array().safeParse(value).success;
+}
+
+export default function Multicombobox<ItemType extends string | Item>({
+  value,
+  placeholder,
+  getOptions,
+  onChange,
+  onKeyDown,
+  error,
+  forwardedRef,
+  ...props
+}: Props<ItemType>) {
   const [inputValue, setInputValue] = useState("");
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
-  const [options, setOptions] = useState<string[]>([]);
+  const [options, setOptions] = useState<ItemType[]>([]);
+
+  const isEnum = isStringArray(value) && isStringArray(options);
 
   const [isOpen, setIsOpen] = useState(false);
 
@@ -28,7 +45,7 @@ export default forwardRef<HTMLDivElement, Props>(function Multicombobox(
     onChange(value.filter((_, i) => i !== index));
   }
 
-  function select(item: Item) {
+  function select(item: ItemType) {
     if (!value.includes(item)) onChange([...value, item]);
   }
 
@@ -38,10 +55,14 @@ export default forwardRef<HTMLDivElement, Props>(function Multicombobox(
     if (event.key === Key.COMMA) {
       event.preventDefault();
 
+      if (isEnum) {
+        setOptions([]);
+      }
+
       if (!isInputValueBlank) {
         setInputValue("");
         setOptions([]);
-        select(inputValue);
+        select(inputValue as ItemType);
       }
     }
 
@@ -56,7 +77,7 @@ export default forwardRef<HTMLDivElement, Props>(function Multicombobox(
       if (activeIndex != null && options[activeIndex]) {
         select(options[activeIndex]);
       } else {
-        select(inputValue);
+        select(inputValue as ItemType);
       }
     }
 
@@ -81,7 +102,7 @@ export default forwardRef<HTMLDivElement, Props>(function Multicombobox(
     }
   }
 
-  function handleOptionSelect(option: string) {
+  function handleOptionSelect(option: ItemType) {
     select(option);
     setInputValue("");
     inputRef.current?.focus();
@@ -90,7 +111,7 @@ export default forwardRef<HTMLDivElement, Props>(function Multicombobox(
   const inputRef = useRef<HTMLInputElement>(null);
 
   return (
-    <MenuProvider
+    <MenuProvider<ItemType>
       options={options}
       isOpen={isOpen}
       activeIndex={activeIndex}
@@ -100,7 +121,7 @@ export default forwardRef<HTMLDivElement, Props>(function Multicombobox(
     >
       <TextInput
         {...props}
-        ref={ref}
+        ref={forwardedRef}
         inputRef={inputRef}
         value={inputValue}
         error={error}
@@ -114,7 +135,7 @@ export default forwardRef<HTMLDivElement, Props>(function Multicombobox(
             {value.map((item, index) => (
               <Pill
                 key={`${item}-${index}`}
-                label={item}
+                label={isString(item) ? item : item.label}
                 onRemove={() => unselect(index)}
               />
             ))}
@@ -123,4 +144,4 @@ export default forwardRef<HTMLDivElement, Props>(function Multicombobox(
       />
     </MenuProvider>
   );
-});
+}

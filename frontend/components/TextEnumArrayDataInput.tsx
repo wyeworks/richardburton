@@ -4,19 +4,30 @@ import { FC, forwardRef, useCallback, useMemo } from "react";
 import { DataInputProps } from "./DataInput";
 import Multicombobox from "./Multicombobox";
 
+type Enum = { id: string; label: string };
+
 export default forwardRef<HTMLDivElement, DataInputProps>(
-  function TextArrayDataInput(
+  function TextEnumArrayDataInput(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     { colId, value, onChange, ...props },
     ref,
   ) {
-    const items = useMemo(
-      () => (value === "" ? [] : value.split(",")),
-      [value],
+    const toEnum = useCallback(
+      (id: string): Enum => {
+        return { id, label: Publication.describeValue(id, colId) };
+      },
+      [colId],
     );
 
-    function handleChange(value: string[]) {
-      onChange?.(value.join(","));
+    const items = useMemo(
+      () => (value === "" ? [] : value.split(",").map(toEnum)),
+      [value, toEnum],
+    );
+
+    console.log({ value, items });
+
+    function handleChange(value: Enum[]) {
+      onChange?.(value.map(({ id }) => id).join(","));
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -29,7 +40,7 @@ export default forwardRef<HTMLDivElement, DataInputProps>(
     );
 
     return (
-      <Multicombobox<string>
+      <Multicombobox<Enum>
         {...props}
         forwardedRef={ref}
         value={items}

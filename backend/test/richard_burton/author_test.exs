@@ -8,8 +8,6 @@ defmodule RichardBurton.AuthorTest do
 
   alias RichardBurton.Author
   alias RichardBurton.Validation
-  alias RichardBurton.OriginalBook
-  alias RichardBurton.TranslatedBook
 
   @valid_attrs %{"name" => "J. M. Pereira da Silva"}
 
@@ -41,13 +39,13 @@ defmodule RichardBurton.AuthorTest do
     attrs |> changeset() |> Repo.insert!()
   end
 
-  defp linked(changeset = %Ecto.Changeset{}) do
+  defp get_authors(changeset = %Ecto.Changeset{}) do
     changeset
     |> get_change(:authors)
     |> Enum.map(&apply_changes/1)
   end
 
-  defp linked_fingerprint(changeset = %Ecto.Changeset{}) do
+  defp get_fingerprint(changeset = %Ecto.Changeset{}) do
     get_change(changeset, :authors_fingerprint)
   end
 
@@ -114,140 +112,94 @@ defmodule RichardBurton.AuthorTest do
     end
   end
 
+  defmodule WithManyAuthors do
+    use Ecto.Schema
+    import Ecto.Changeset
+
+    schema "with_many_authors" do
+      field(:authors_fingerprint, :string)
+      has_many :authors, Author
+    end
+
+    def changeset(attrs) do
+      %WithManyAuthors{} |> cast(attrs, []) |> cast_assoc(:authors)
+    end
+  end
+
   describe "link/1" do
-    @original_book_attrs %{
-      "title" => "Title",
-      "authors" => [
-        %{"name" => "Richard Burton"},
-        %{"name" => "Isabel Burton"}
-      ]
-    }
-
-    @translated_book_attrs %{
-      "authors" => [
-        %{"name" => "Richard Burton"},
-        %{"name" => "Isabel Burton"}
-      ],
-      "original_book" => %{
-        "title" => "Dom Casmurro",
-        "authors" => [%{"name" => "Machado de Assis"}]
+    test "links existing authors to changeset" do
+      attrs = %{
+        "authors" => [
+          %{"name" => "Richard Burton"},
+          %{"name" => "Isabel Burton"}
+        ]
       }
-    }
 
-    test "links existing authors to OriginalBook changeset" do
-      authors = Enum.map(@original_book_attrs["authors"], &insert!/1)
+      authors = Enum.map(attrs["authors"], &insert!/1)
 
       changeset =
-        %OriginalBook{}
-        |> OriginalBook.changeset(@original_book_attrs)
+        attrs
+        |> WithManyAuthors.changeset()
         |> Author.link()
 
       assert changeset.valid?
-
-      assert authors == linked(changeset)
+      assert authors == get_authors(changeset)
     end
 
-    test "links existing authors to TranslatedBook changeset" do
-      authors = Enum.map(@translated_book_attrs["authors"], &insert!/1)
+    test "links non-existing authors to changeset, inserting them" do
+      attrs = %{
+        "authors" => [
+          %{"name" => "Richard Burton"},
+          %{"name" => "Isabel Burton"}
+        ]
+      }
 
       changeset =
-        %TranslatedBook{}
-        |> TranslatedBook.changeset(@translated_book_attrs)
+        attrs
+        |> WithManyAuthors.changeset()
         |> Author.link()
 
       assert changeset.valid?
-
-      assert authors == linked(changeset)
+      assert Author.all() == get_authors(changeset)
     end
 
-    test "links non-existing authors to OriginalBook changeset, inserting them" do
+    test "has no side effects when changeset is invalid" do
       changeset =
-        %OriginalBook{}
-        |> OriginalBook.changeset(@original_book_attrs)
-        |> Author.link()
-
-      assert changeset.valid?
-
-      assert Author.all() == linked(changeset)
-    end
-
-    test "links non-existing authors to TranslatedBook changeset, inserting them" do
-      changeset =
-        %TranslatedBook{}
-        |> TranslatedBook.changeset(@translated_book_attrs)
-        |> Author.link()
-
-      assert changeset.valid?
-
-      assert Author.all() == linked(changeset)
-    end
-
-    test "has no side effects when OriginalBook changeset is invalid" do
-      changeset =
-        %OriginalBook{}
-        |> OriginalBook.changeset(%{})
+        %{"authors" => [%{}]}
+        |> WithManyAuthors.changeset()
         |> Author.link()
 
       refute changeset.valid?
-
-      assert Enum.empty?(Author.all())
-    end
-
-    test "has no side effects when TranslatedBook changeset is invalid" do
-      changeset =
-        %TranslatedBook{}
-        |> TranslatedBook.changeset(%{})
-        |> Author.link()
-
-      refute changeset.valid?
-
       assert Enum.empty?(Author.all())
     end
   end
 
   describe "link_fingerprint/1" do
-    test "links fingerprint using author names to OriginalBook changeset" do
+    test "links fingerprint using author names to changeset" do
+      attrs = %{
+        "authors" => [
+          %{"name" => "Richard Burton"},
+          %{"name" => "Isabel Burton"}
+        ]
+      }
+
       changeset =
-        %OriginalBook{}
-        |> OriginalBook.changeset(@original_book_attrs)
+        attrs
+        |> WithManyAuthors.changeset()
         |> Author.link_fingerprint()
 
       assert changeset.valid?
-
-      assert Author.fingerprint(linked(changeset)) == linked_fingerprint(changeset)
+      assert Author.fingerprint(get_authors(changeset)) == get_fingerprint(changeset)
     end
 
-    test "links fingerprint using author names to TranslatedBook changeset" do
+    test "does not link fingerprint to invalid changeset" do
       changeset =
-        %TranslatedBook{}
-        |> TranslatedBook.changeset(@translated_book_attrs)
-        |> Author.link_fingerprint()
-
-      assert changeset.valid?
-
-      assert Author.fingerprint(linked(changeset)) == linked_fingerprint(changeset)
-    end
-
-    test "does not link fingerprint to invalid OriginalBook changeset" do
-      changeset =
-        %OriginalBook{}
-        |> OriginalBook.changeset(%{})
+        %{"authors" => [%{}]}
+        |> WithManyAuthors.changeset()
         |> Author.link_fingerprint()
 
       refute changeset.valid?
-
-      assert is_nil(linked_fingerprint(changeset))
-    end
-
-    test "does not link fingerprint to invalid TranslatedBook changeset" do
-      changeset =
-        %TranslatedBook{}
-        |> TranslatedBook.changeset(%{})
-        |> Author.link_fingerprint()
-
-      refute changeset.valid?
-
-      assert is_nil(linked_fingerprint(changeset))
+      assert is_nil(get_fingerprint(changeset))
     end
   end
 
@@ -314,6 +266,43 @@ defmodule RichardBurton.AuthorTest do
       for %Author{name: name} <- Author.search(term) do
         assert name in ["Richard Burton", "Richard A. Mazzara"]
       end
+    end
+  end
+
+  describe "flatten/1" do
+    test "with a list of maps with string keys, returns a list of maps with code key" do
+      authors = [
+        %{"name" => "Richard Burton"},
+        %{"name" => "Isabel Burton"}
+      ]
+
+      assert "Richard Burton, Isabel Burton" = Author.flatten(authors)
+    end
+
+    test "with a list of maps with atom keys, returns a list of maps with code key" do
+      authors = [
+        %{name: "Richard Burton"},
+        %{name: "Isabel Burton"}
+      ]
+
+      assert "Richard Burton, Isabel Burton" = Author.flatten(authors)
+    end
+
+    test "with a list of Author structs, returns a list of maps with code key" do
+      authors = [
+        %Author{name: "Richard Burton"},
+        %Author{name: "Isabel Burton"}
+      ]
+
+      assert "Richard Burton, Isabel Burton" = Author.flatten(authors)
+    end
+  end
+
+  describe "nest/1" do
+    test "with a comma separated string, returns a list of maps with code key" do
+      authors = "Richard Burton, Isabel Burton"
+
+      assert [%{"name" => "Richard Burton"}, %{"name" => "Isabel Burton"}] = Author.nest(authors)
     end
   end
 end

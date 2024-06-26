@@ -22,13 +22,15 @@ const PublicationItem: FC<{ id: number }> = ({ id }) => {
               {publication.originalAuthors}
             </span>
             , published by{" "}
-            <span className="font-normal">{publication.publisher}</span>
+            <span className="font-normal">{publication.publishers}</span>
           </div>
         </div>
 
         <div className="p-2">
           <div>{publication.year}</div>
-          <div className="ml-1 text-xs text-center">{publication.country}</div>
+          <div className="ml-1 text-xs text-center">
+            {publication.countries}
+          </div>
         </div>
       </div>
     )

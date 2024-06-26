@@ -7,7 +7,7 @@ defmodule RichardBurton.FlatPublication do
   import Ecto.Query
 
   alias RichardBurton.FlatPublication
-  alias RichardBurton.Publication
+  alias RichardBurton.Publisher
   alias RichardBurton.Repo
   alias RichardBurton.TranslatedBook
   alias RichardBurton.Validation
@@ -16,8 +16,8 @@ defmodule RichardBurton.FlatPublication do
   @external_attributes [
     :title,
     :year,
-    :country,
-    :publisher,
+    :countries,
+    :publishers,
     :authors,
     :original_title,
     :original_authors
@@ -27,25 +27,30 @@ defmodule RichardBurton.FlatPublication do
   schema "flat_publications" do
     field(:title, :string)
     field(:year, :integer)
-    field(:country, :string)
+    field(:countries, :string)
     field(:authors, :string)
-    field(:publisher, :string)
+    field(:publishers, :string)
     field(:original_title, :string)
     field(:original_authors, :string)
 
+    field(:countries_fingerprint, :string)
     field(:translated_book_fingerprint, :string)
+    field(:publishers_fingerprint, :string)
   end
 
   @doc false
   def changeset(flat_publication, attrs) do
-    %Publication{}
-    |> Publication.changeset(Publication.Codec.nest(attrs))
-
     flat_publication
     |> cast(attrs, @external_attributes)
     |> validate_required(@external_attributes)
-    |> Country.validate_country()
+    |> Country.validate_countries()
+    |> Country.link_fingerprint()
+    |> Publisher.link_fingerprint()
     |> TranslatedBook.link_fingerprint()
+  end
+
+  def all() do
+    Repo.all(FlatPublication)
   end
 
   def validate(attrs) do
@@ -62,8 +67,8 @@ defmodule RichardBurton.FlatPublication do
         [
           :title,
           :year,
-          :country,
-          :publisher,
+          :countries_fingerprint,
+          :publishers_fingerprint,
           :translated_book_fingerprint
         ],
         &{&1, get_field(changeset, &1)}

@@ -3,16 +3,19 @@ defmodule RichardBurton.Publication.Codec do
   Serialization and deserialization utilities for publications
   """
 
+  alias RichardBurton.Author
   alias RichardBurton.Codec
+  alias RichardBurton.Country
   alias RichardBurton.Util
   alias RichardBurton.Publication
+  alias RichardBurton.Publisher
   alias RichardBurton.FlatPublication
 
   @empty_flat_attrs %{
     "title" => "",
     "year" => "",
-    "country" => "",
-    "publisher" => "",
+    "countries" => "",
+    "publishers" => "",
     "authors" => "",
     "original_title" => "",
     "original_authors" => ""
@@ -21,11 +24,11 @@ defmodule RichardBurton.Publication.Codec do
   @csv_headers [
     "original_authors",
     "year",
-    "country",
+    "countries",
     "original_title",
     "title",
     "authors",
-    "publisher"
+    "publishers"
   ]
 
   def from_csv(path) do
@@ -87,10 +90,16 @@ defmodule RichardBurton.Publication.Codec do
   end
 
   defp nest_entry({"authors", value}),
-    do: {"authors", nest_authors(value)}
+    do: {"authors", Author.nest(value)}
 
   defp nest_entry({"original_authors", value}),
-    do: {"original_authors", nest_authors(value)}
+    do: {"original_authors", Author.nest(value)}
+
+  defp nest_entry({"countries", value}),
+    do: {"countries", Country.nest(value)}
+
+  defp nest_entry({"publishers", value}),
+    do: {"publishers", Publisher.nest(value)}
 
   defp nest_entry({key, value}),
     do: {key, value}
@@ -128,20 +137,11 @@ defmodule RichardBurton.Publication.Codec do
     publication_like_map |> Codec.flatten() |> Map.new(&(&1 |> rename_key |> flatten_entry))
   end
 
-  defp flatten_entry({"authors", value}),
-    do: {"authors", flatten_authors(value)}
-
-  defp flatten_entry({"original_authors", value}),
-    do: {"original_authors", flatten_authors(value)}
-
-  defp flatten_entry({key, value}),
-    do: {key, value}
-
-  defp flatten_authors(authors) when is_list(authors) do
-    Enum.map_join(authors, ", ", &(Map.get(&1, "name") || Map.get(&1, :name)))
-  end
-
-  defp flatten_authors(authors), do: authors
+  defp flatten_entry({"authors", value}), do: {"authors", Author.flatten(value)}
+  defp flatten_entry({"original_authors", value}), do: {"original_authors", Author.flatten(value)}
+  defp flatten_entry({"countries", value}), do: {"countries", Country.flatten(value)}
+  defp flatten_entry({"publishers", value}), do: {"publishers", Publisher.flatten(value)}
+  defp flatten_entry({key, value}), do: {key, value}
 
   defp rename_key({"translated_book_authors", v}), do: {"authors", v}
   defp rename_key({"translated_book_original_book_title", v}), do: {"original_title", v}

@@ -81,6 +81,7 @@ defmodule RichardBurton.Author do
 
   def link_fingerprint(changeset = %Ecto.Changeset{valid?: false}), do: changeset
 
+  @spec search(binary(), :fuzzy | :prefix) :: any()
   def search(term, :prefix) when is_binary(term) do
     from(a in Author, where: ilike(a.name, ^"#{term}%"))
     |> Repo.all()
@@ -97,4 +98,15 @@ defmodule RichardBurton.Author do
       keywords when is_list(keywords) -> keywords
     end
   end
+
+  def nest(authors) when is_binary(authors) do
+    authors |> String.split(",") |> Enum.map(&%{"name" => String.trim(&1)})
+  end
+
+  def flatten(authors) when is_list(authors), do: Enum.map_join(authors, ", ", &get_name/1)
+  def flatten(authors), do: authors
+
+  def get_name(%Author{name: name}), do: name
+  def get_name(%{"name" => name}), do: name
+  def get_name(%{name: name}), do: name
 end
