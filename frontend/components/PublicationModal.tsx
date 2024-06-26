@@ -1,4 +1,4 @@
-import { Publication } from "modules/publication";
+import { Publication, PublicationKey } from "modules/publication";
 import Link from "next/link";
 import { FC } from "react";
 import { z } from "zod";
@@ -33,7 +33,7 @@ const SearchableList: FC<{ items: { label: string; value?: string }[] }> = ({
   <ul className="contents">
     {items.map((item, index) => (
       <li key={item.value} className="contents">
-        {index === items.length - 1 && " and "}
+        {index != 0 && index === items.length - 1 && " and "}
         <Searchable {...item} />
         {index < items.length - 2 && ", "}
         {index === items.length - 1 && " "}
@@ -60,35 +60,31 @@ const PublicationHeading: FC<{ publication: Publication }> = ({
 );
 
 const PublicationDescription: FC<{ publication: Publication }> = ({
-  publication,
-}) => (
-  <p>
-    <Searchable label={publication.title} /> is a translation of{" "}
-    <Searchable label={publication.originalTitle} />, by{" "}
-    <Searchable label={publication.originalAuthors} />. It was written by{" "}
-    <Searchable label={publication.authors} /> and published in{" "}
-    <SearchableList
-      items={publication.countries
-        .split(",")
-        .map((id) => id.trim())
-        .map((id) => ({
-          id,
-          label: Publication.describeValue(id, "countries"),
-        }))}
-    />
-    in {publication?.year} by{" "}
-    <SearchableList
-      items={publication.publishers
-        .split(",")
-        .map((id) => id.trim())
-        .map((id) => ({
-          id,
-          label: Publication.describeValue(id, "publishers"),
-        }))}
-    />
-    .
-  </p>
-);
+  publication: p,
+}) => {
+  function getSearchableItems(p: Publication, key: PublicationKey) {
+    return p[key]
+      .split(",")
+      .map((id) => id.trim())
+      .map((id) => ({
+        id,
+        label: Publication.describeValue(id, key),
+      }));
+  }
+
+  return (
+    <p>
+      <Searchable label={p.title} /> is a translation of{" "}
+      <Searchable label={p.originalTitle} />, by{" "}
+      <SearchableList items={getSearchableItems(p, "originalAuthors")} />. It
+      was written by <SearchableList items={getSearchableItems(p, "authors")} />{" "}
+      and published in{" "}
+      <SearchableList items={getSearchableItems(p, "countries")} />
+      in {p.year} by{" "}
+      <SearchableList items={getSearchableItems(p, "publishers")} />.
+    </p>
+  );
+};
 
 const PublicationModal: FC = () => {
   const { value, ...modal } = useURLQueryModal(PUBLICATION_MODAL_KEY);
